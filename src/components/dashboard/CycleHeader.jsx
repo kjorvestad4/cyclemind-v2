@@ -7,14 +7,15 @@ export default function CycleHeader({ cycles, cycleLength = 28, lastPeriodDate }
     ? [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0]
     : null;
 
-  // Pick the most recent start date between lastPeriodDate and latest cycle
+  // Pick the most recent date between lastPeriodDate (typed by user) and latest cycle record
+  // lastPeriodDate takes priority if it's more recent or equal
   let resolvedStartDateStr = null;
-  if (latestCycle && lastPeriodDate) {
-    resolvedStartDateStr = latestCycle.start_date >= lastPeriodDate ? latestCycle.start_date : lastPeriodDate;
-  } else if (latestCycle) {
-    resolvedStartDateStr = latestCycle.start_date;
+  if (lastPeriodDate && latestCycle) {
+    resolvedStartDateStr = lastPeriodDate >= latestCycle.start_date ? lastPeriodDate : latestCycle.start_date;
   } else if (lastPeriodDate) {
     resolvedStartDateStr = lastPeriodDate;
+  } else if (latestCycle) {
+    resolvedStartDateStr = latestCycle.start_date;
   }
 
   if (!resolvedStartDateStr) {
