@@ -182,11 +182,17 @@ export default function Dashboard() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs">Date of Last Period</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Date of Last Period</Label>
+                {lastPeriodDate && <button type="button" onClick={() => setLastPeriodDate("")} className="text-[10px] text-muted-foreground hover:text-destructive underline">Clear</button>}
+              </div>
               <Input type="date" value={lastPeriodDate} onChange={(e) => setLastPeriodDate(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Date of Last Ovulation</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Date of Last Ovulation</Label>
+                {lastOvulationDate && <button type="button" onClick={() => setLastOvulationDate("")} className="text-[10px] text-muted-foreground hover:text-destructive underline">Clear</button>}
+              </div>
               <Input type="date" value={lastOvulationDate} onChange={(e) => setLastOvulationDate(e.target.value)} />
             </div>
           </div>
