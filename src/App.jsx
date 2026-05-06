@@ -23,27 +23,52 @@ const pageVariants = {
 const AnimatedOutlet = () => {
   const location = useLocation();
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={location.pathname}
-        variants={pageVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        transition={{ duration: 0.18, ease: "easeInOut" }}
-        style={{ willChange: "transform, opacity" }}
-      >
-        <Routes location={location}>
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/log" element={<DailyLog />} />
-            <Route path="/insights" element={<Insights />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/profile" element={<Profile />} />
-          </Route>
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </motion.div>
+    <AnimatePresence mode="wait" initial={false} key={location.pathname}>
+      <Routes location={location}>
+        <Route element={<AppLayout />}>
+          <Route
+            path="/"
+            element={
+              <motion.div key="dashboard" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
+                <Dashboard />
+              </motion.div>
+            }
+          />
+          <Route
+            path="/log"
+            element={
+              <motion.div key="log" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
+                <DailyLog />
+              </motion.div>
+            }
+          />
+          <Route
+            path="/insights"
+            element={
+              <motion.div key="insights" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
+                <Insights />
+              </motion.div>
+            }
+          />
+          <Route
+            path="/resources"
+            element={
+              <motion.div key="resources" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
+                <Resources />
+              </motion.div>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <motion.div key="profile" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
+                <Profile />
+              </motion.div>
+            }
+          />
+        </Route>
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
     </AnimatePresence>
   );
 };
