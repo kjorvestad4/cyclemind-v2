@@ -103,7 +103,7 @@ export default function Dashboard() {
       </div>
 
       {/* Cycle Status */}
-      <CycleHeader cycles={cycles} cycleLength={cycleLength} />
+      <CycleHeader cycles={cycles} cycleLength={cycleLength} lastPeriodDate={lastPeriodDate || null} />
 
       {/* Quick Log Button */}
       <Button

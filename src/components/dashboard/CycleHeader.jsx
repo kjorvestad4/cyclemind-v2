@@ -1,27 +1,39 @@
 import { format, differenceInDays } from "date-fns";
 import { Moon, Sun, Droplets } from "lucide-react";
 
-export default function CycleHeader({ cycles, cycleLength = 28 }) {
-  if (!cycles || cycles.length === 0) {
+export default function CycleHeader({ cycles, cycleLength = 28, lastPeriodDate }) {
+  // Determine the best start date: most recent cycle record OR lastPeriodDate from profile
+  const latestCycle = cycles && cycles.length > 0
+    ? [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0]
+    : null;
+
+  // Pick the most recent start date between lastPeriodDate and latest cycle
+  let resolvedStartDateStr = null;
+  if (latestCycle && lastPeriodDate) {
+    resolvedStartDateStr = latestCycle.start_date >= lastPeriodDate ? latestCycle.start_date : lastPeriodDate;
+  } else if (latestCycle) {
+    resolvedStartDateStr = latestCycle.start_date;
+  } else if (lastPeriodDate) {
+    resolvedStartDateStr = lastPeriodDate;
+  }
+
+  if (!resolvedStartDateStr) {
     return (
       <div className="bg-gradient-to-br from-primary/10 via-accent/20 to-secondary rounded-2xl p-6 text-center">
-        <p className="text-muted-foreground text-sm">
-          Welcome to CycleMind 🌙
-        </p>
+        <p className="text-muted-foreground text-sm">Welcome to CycleMind 🌙</p>
         <p className="text-foreground font-medium mt-1">
-          Start by marking your last period start date in your profile.
+          Please enter your last period date below to see cycle information.
         </p>
       </div>
     );
   }
 
-  const latestCycle = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const startDate = new Date(latestCycle.start_date);
+  const startDate = new Date(resolvedStartDateStr);
   startDate.setHours(0, 0, 0, 0);
   const currentDay = differenceInDays(today, startDate) + 1;
-  const effectiveCycleLength = latestCycle.cycle_length || cycleLength;
+  const effectiveCycleLength = (latestCycle?.cycle_length) || cycleLength;
   const lutealStart = Math.max(1, effectiveCycleLength - 13);
   const isLuteal = currentDay >= lutealStart;
   const daysUntilPeriod = isLuteal ? Math.max(0, effectiveCycleLength - currentDay + 1) : null;
