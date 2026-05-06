@@ -74,12 +74,14 @@ export default function Dashboard() {
   });
 
   const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
-  // Use user-entered ovulation date if available; otherwise estimate from last period
-  const isOvulationEstimated = !lastOvulationDate && !!lastPeriodDate;
+  // Resolve the active period date: typed value OR latest saved cycle
+  const activePeriodDate = lastPeriodDate || (cycles.length > 0 ? cycles[0].start_date : null);
+  // Use user-entered ovulation date if available; otherwise estimate from active period date
+  const isOvulationEstimated = !lastOvulationDate && !!activePeriodDate;
   const computedOvulationDate = lastOvulationDate
     ? lastOvulationDate
-    : lastPeriodDate
-      ? format(addDays(parseLocalDate(lastPeriodDate), ovulationDay - 1), "yyyy-MM-dd")
+    : activePeriodDate
+      ? format(addDays(parseLocalDate(activePeriodDate), ovulationDay - 1), "yyyy-MM-dd")
       : null;
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
@@ -102,7 +104,7 @@ export default function Dashboard() {
       </div>
 
       {/* Cycle Status */}
-      <CycleHeader cycles={cycles} cycleLength={cycleLength} lastPeriodDate={lastPeriodDate || null} />
+      <CycleHeader cycles={cycles} cycleLength={cycleLength} lastPeriodDate={activePeriodDate} />
 
       {/* Quick Log Button */}
       <Button
@@ -138,7 +140,7 @@ export default function Dashboard() {
           entries={entries}
           cycles={cycles}
           onDayClick={(date) => navigate(`/log?date=${date}`)}
-          lastPeriodDate={lastPeriodDate || null}
+          lastPeriodDate={activePeriodDate}
           ovulationDate={computedOvulationDate}
           ovulationEstimated={isOvulationEstimated}
         />

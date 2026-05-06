@@ -7,8 +7,8 @@ export default function CycleHeader({ cycles, cycleLength = 28, lastPeriodDate }
     ? [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0]
     : null;
 
-  // Only use lastPeriodDate entered by user — ignore saved cycle records if no date is typed
-  const resolvedStartDateStr = lastPeriodDate || null;
+  // Use lastPeriodDate if typed, otherwise fall back to most recent saved cycle
+  const resolvedStartDateStr = lastPeriodDate || latestCycle?.start_date || null;
 
   if (!resolvedStartDateStr) {
     return (
