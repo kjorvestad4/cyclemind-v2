@@ -24,12 +24,18 @@ export default function Profile() {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [cycleLength, setCycleLength] = useState(28);
+  const [ovulationDay, setOvulationDay] = useState(14);
+  const [lastPeriodDate, setLastPeriodDate] = useState("");
+  const [lastOvulationDate, setLastOvulationDate] = useState("");
   const [newPeriodDate, setNewPeriodDate] = useState(format(new Date(), "yyyy-MM-dd"));
 
   useEffect(() => {
     base44.auth.me().then((u) => {
       setUser(u);
       if (u?.cycle_length) setCycleLength(u.cycle_length);
+      if (u?.ovulation_day) setOvulationDay(u.ovulation_day);
+      if (u?.last_period_date) setLastPeriodDate(u.last_period_date);
+      if (u?.last_ovulation_date) setLastOvulationDate(u.last_ovulation_date);
     }).catch(() => {});
   }, []);
 
@@ -40,7 +46,12 @@ export default function Profile() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async () => {
-      await base44.auth.updateMe({ cycle_length: cycleLength });
+      await base44.auth.updateMe({
+        cycle_length: cycleLength,
+        ovulation_day: ovulationDay,
+        last_period_date: lastPeriodDate,
+        last_ovulation_date: lastOvulationDate,
+      });
     },
     onSuccess: () => {
       toast.success("Profile updated!");
@@ -105,34 +116,63 @@ export default function Profile() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label className="text-xs">Typical Cycle Length (days)</Label>
-            <div className="flex gap-2">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Cycle Length (days)</Label>
               <Input
                 type="number"
                 min={20}
-                max={45}
+                max={60}
                 value={cycleLength}
-                onChange={(e) => setCycleLength(parseInt(e.target.value) || 28)}
-                className="w-24"
+                onChange={(e) => {
+                  const val = parseInt(e.target.value) || 28;
+                  setCycleLength(val);
+                  setOvulationDay(Math.max(1, val - 14));
+                }}
               />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => updateProfileMutation.mutate()}
-                disabled={updateProfileMutation.isPending}
-              >
-                Save
-              </Button>
             </div>
-            <p className="text-[10px] text-muted-foreground">
-              Luteal phase is estimated as the last 14 days of your cycle.
-            </p>
-            <div className="mt-2 rounded-lg bg-accent/50 border border-accent-foreground/10 px-3 py-2 flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">Estimated Day of Ovulation</span>
-              <span className="text-xs font-semibold text-accent-foreground">Day {Math.max(1, cycleLength - 14)}</span>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Ovulation Day</Label>
+              <Input
+                type="number"
+                min={1}
+                max={cycleLength - 1}
+                value={ovulationDay}
+                onChange={(e) => setOvulationDay(parseInt(e.target.value) || 14)}
+              />
             </div>
           </div>
+          <p className="text-[10px] text-muted-foreground">
+            Ovulation day auto-fills as cycle length − 14. Adjust if your cycle is non-standard.
+          </p>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">Date of Last Period</Label>
+            <Input
+              type="date"
+              value={lastPeriodDate}
+              onChange={(e) => setLastPeriodDate(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">Date of Last Ovulation</Label>
+            <Input
+              type="date"
+              value={lastOvulationDate}
+              onChange={(e) => setLastOvulationDate(e.target.value)}
+            />
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => updateProfileMutation.mutate()}
+            disabled={updateProfileMutation.isPending}
+            className="w-full"
+          >
+            Save Settings
+          </Button>
         </CardContent>
       </Card>
 
