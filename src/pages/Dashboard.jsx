@@ -21,7 +21,7 @@ export default function Dashboard() {
   const [ovulationDay, setOvulationDay] = useState(14);
   const [lastPeriodDate, setLastPeriodDate] = useState("");
   const [lastOvulationDate, setLastOvulationDate] = useState("");
-  const [newPeriodDate, setNewPeriodDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [newPeriodDate, setNewPeriodDate] = useState("");
 
   useEffect(() => {
     base44.auth.me().then((u) => {
