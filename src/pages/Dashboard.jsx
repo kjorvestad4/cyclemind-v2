@@ -212,10 +212,13 @@ export default function Dashboard() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-2">
-            <Label className="text-xs">First day of menstrual flow</Label>
+            <div className="flex items-center justify-between">
+              <Label className="text-xs">First day of menstrual flow</Label>
+              {newPeriodDate && <button type="button" onClick={() => setNewPeriodDate("")} className="text-[10px] text-muted-foreground hover:text-destructive underline">Clear</button>}
+            </div>
             <Input type="date" value={newPeriodDate} onChange={(e) => setNewPeriodDate(e.target.value)} />
           </div>
-          <Button onClick={() => addCycleMutation.mutate()} disabled={addCycleMutation.isPending} className="w-full">
+          <Button onClick={() => addCycleMutation.mutate()} disabled={addCycleMutation.isPending || !newPeriodDate} className="w-full">
             Record Period Start
           </Button>
         </CardContent>
