@@ -28,10 +28,8 @@ export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDa
     entryMap[e.date] = e;
   });
 
-  // Only show cycle start markers when the user has entered a period date
-  const cycleStartDates = lastPeriodDate
-    ? new Set((cycles || []).map((c) => c.start_date))
-    : new Set();
+  // Always show cycle start markers from saved cycle records
+  const cycleStartDates = new Set((cycles || []).map((c) => c.start_date));
   const lastPeriodStr = lastPeriodDate || null;
   const ovulationStr = ovulationDate || null;
 
