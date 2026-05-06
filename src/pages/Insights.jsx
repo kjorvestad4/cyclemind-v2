@@ -27,10 +27,14 @@ export default function Insights() {
 
   const analysis = useMemo(() => computeAnalysis(cycles, entries), [cycles, entries]);
 
-  if (cycles.length < 2) {
-    return (
-      <div className="space-y-6">
-        <h2 className="font-serif text-2xl font-semibold">Insights</h2>
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="font-serif text-2xl font-semibold">{cycles.length >= 2 ? "Insights & Analysis" : "Insights"}</h2>
+        {entries.length > 0 && <PdfReportButton cycles={cycles} entries={entries} analysis={analysis} user={user} />}
+      </div>
+
+      {cycles.length < 2 && (
         <div className="bg-card rounded-2xl border border-border/50 p-8 text-center space-y-3">
           <Info className="w-10 h-10 text-primary mx-auto" />
           <p className="font-semibold text-lg">Need More Data</p>
@@ -39,26 +43,13 @@ export default function Insights() {
             Keep tracking — you're doing great! 💜
           </p>
         </div>
-        {entries.length > 0 && (
-          <RecentTrendChart entries={entries} />
-        )}
-        <Disclaimer />
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h2 className="font-serif text-2xl font-semibold">Insights & Analysis</h2>
-        <PdfReportButton cycles={cycles} entries={entries} analysis={analysis} user={user} />
-      </div>
+      )}
 
       {/* Diagnostic Flags */}
-      <DiagnosticCards analysis={analysis} />
+      {cycles.length >= 2 && <DiagnosticCards analysis={analysis} />}
 
       {/* Phase Comparison */}
-      {analysis.phaseComparison && (
+      {cycles.length >= 2 && analysis.phaseComparison && (
         <Card className="border-border/50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold">Luteal vs Follicular Phase</CardTitle>
@@ -85,7 +76,7 @@ export default function Insights() {
       <RecentTrendChart entries={entries} />
 
       {/* Top Symptoms */}
-      {analysis.topSymptoms && analysis.topSymptoms.length > 0 && (
+      {cycles.length >= 2 && analysis.topSymptoms && analysis.topSymptoms.length > 0 && (
         <Card className="border-border/50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold">Top Luteal Phase Symptoms</CardTitle>
