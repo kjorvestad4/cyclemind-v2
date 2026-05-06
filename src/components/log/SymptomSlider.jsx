@@ -26,22 +26,18 @@ export default function SymptomSlider({ symptom, value, onChange }) {
             key={score}
             onClick={() => onChange(symptom.key, score === value ? 0 : score)}
             className={`
-              flex-1 py-2 rounded-lg text-xs font-semibold border transition-all
+              flex-1 py-2 rounded-lg text-xs font-semibold border transition-all flex flex-col items-center gap-0.5
               ${value === score
                 ? SEVERITY_COLORS[score]
                 : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted"
               }
             `}
           >
-            {score}
+            <span>{score}</span>
+            <span className="text-[8px] font-normal leading-tight text-center">{SEVERITY_LABELS[score]}</span>
           </button>
         ))}
       </div>
-      {value > 0 && (
-        <p className="text-[10px] text-muted-foreground text-right">
-          {SEVERITY_LABELS[value]}
-        </p>
-      )}
     </div>
   );
 }
