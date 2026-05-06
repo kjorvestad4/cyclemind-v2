@@ -1,0 +1,22 @@
+{
+  "name": "Cycle",
+  "type": "object",
+  "properties": {
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "First day of menstrual period"
+    },
+    "cycle_length": {
+      "type": "number",
+      "description": "Length of this cycle in days (filled when next cycle starts)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes for this cycle"
+    }
+  },
+  "required": [
+    "start_date"
+  ]
+}

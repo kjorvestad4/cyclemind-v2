@@ -1,0 +1,19 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user"
+    },
+    "cycle_length": {
+      "type": "number",
+      "description": "Typical cycle length in days",
+      "default": 28
+    }
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "name": "DailyEntry",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of this entry"
+    },
+    "cycle_day": {
+      "type": "number",
+      "description": "Day number within the current cycle"
+    },
+    "s_depressed": {
+      "type": "number",
+      "description": "Felt depressed, sad, down, or blue (1-6)"
+    },
+    "s_hopeless": {
+      "type": "number",
+      "description": "Felt hopeless (1-6)"
+    },
+    "s_worthless": {
+      "type": "number",
+      "description": "Felt worthless or guilty (1-6)"
+    },
+    "s_anxious": {
+      "type": "number",
+      "description": "Felt anxious, tense, keyed up, or on edge (1-6)"
+    },
+    "s_mood_swings": {
+      "type": "number",
+      "description": "Had mood swings (1-6)"
+    },
+    "s_sensitive": {
+      "type": "number",
+      "description": "Was more sensitive to rejection (1-6)"
+    },
+    "s_angry": {
+      "type": "number",
+      "description": "Felt angry, irritable (1-6)"
+    },
+    "s_conflicts": {
+      "type": "number",
+      "description": "Had conflicts or problems with people (1-6)"
+    },
+    "s_less_interest": {
+      "type": "number",
+      "description": "Had less interest in usual activities (1-6)"
+    },
+    "s_concentration": {
+      "type": "number",
+      "description": "Had difficulty concentrating (1-6)"
+    },
+    "s_lethargic": {
+      "type": "number",
+      "description": "Felt lethargic, tired, fatigued (1-6)"
+    },
+    "s_appetite": {
+      "type": "number",
+      "description": "Had increased appetite or overate (1-6)"
+    },
+    "s_cravings": {
+      "type": "number",
+      "description": "Had cravings for specific foods (1-6)"
+    },
+    "s_hypersomnia": {
+      "type": "number",
+      "description": "Slept more, took naps (1-6)"
+    },
+    "s_insomnia": {
+      "type": "number",
+      "description": "Had trouble getting to sleep or staying asleep (1-6)"
+    },
+    "s_overwhelmed": {
+      "type": "number",
+      "description": "Felt overwhelmed or could not cope (1-6)"
+    },
+    "s_out_of_control": {
+      "type": "number",
+      "description": "Felt out of control (1-6)"
+    },
+    "s_breast_tender": {
+      "type": "number",
+      "description": "Had breast tenderness (1-6)"
+    },
+    "s_bloating": {
+      "type": "number",
+      "description": "Had breast swelling, bloating, weight gain (1-6)"
+    },
+    "s_headache": {
+      "type": "number",
+      "description": "Had headache (1-6)"
+    },
+    "s_pain": {
+      "type": "number",
+      "description": "Had joint or muscle pain (1-6)"
+    },
+    "s_productivity": {
+      "type": "number",
+      "description": "Reduced productivity or inefficiency (1-6)"
+    },
+    "s_social": {
+      "type": "number",
+      "description": "Interfered with hobbies or social activities (1-6)"
+    },
+    "s_relationships": {
+      "type": "number",
+      "description": "Interfered with relationships (1-6)"
+    },
+    "s_impulsivity": {
+      "type": "number",
+      "description": "Felt impulsive or acted on impulses (1-6)"
+    },
+    "s_decreased_sleep_need": {
+      "type": "number",
+      "description": "Decreased need for sleep (1-6)"
+    },
+    "s_elevated_mood": {
+      "type": "number",
+      "description": "Elevated mood, unusually energetic (1-6)"
+    },
+    "menstrual_flow": {
+      "type": "string",
+      "enum": [
+        "",
+        "H",
+        "M",
+        "L"
+      ],
+      "description": "Menstrual flow: H=heavy, M=medium, L=light/spotting"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional daily notes"
+    }
+  },
+  "required": [
+    "date"
+  ]
+}
