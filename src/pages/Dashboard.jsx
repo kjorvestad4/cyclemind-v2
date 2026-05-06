@@ -1,20 +1,36 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { PenLine, TrendingUp, Heart } from "lucide-react";
+import { PenLine, TrendingUp, Heart, CalendarDays, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 import CycleHeader from "@/components/dashboard/CycleHeader";
 import CalendarView from "@/components/dashboard/CalendarView";
 import { ALL_SYMPTOMS, calculateDayTotal } from "@/lib/symptoms";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
+  const [cycleLength, setCycleLength] = useState(28);
+  const [ovulationDay, setOvulationDay] = useState(14);
+  const [lastPeriodDate, setLastPeriodDate] = useState("");
+  const [lastOvulationDate, setLastOvulationDate] = useState("");
+  const [newPeriodDate, setNewPeriodDate] = useState(format(new Date(), "yyyy-MM-dd"));
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then((u) => {
+      setUser(u);
+      if (u?.cycle_length) setCycleLength(u.cycle_length);
+      if (u?.ovulation_day) setOvulationDay(u.ovulation_day);
+      if (u?.last_period_date) setLastPeriodDate(u.last_period_date);
+      if (u?.last_ovulation_date) setLastOvulationDate(u.last_ovulation_date);
+    }).catch(() => {});
   }, []);
 
   const { data: cycles = [] } = useQuery({
@@ -27,14 +43,43 @@ export default function Dashboard() {
     queryFn: () => base44.entities.DailyEntry.list("-date", 100),
   });
 
+  const updateProfileMutation = useMutation({
+    mutationFn: async () => {
+      await base44.auth.updateMe({
+        cycle_length: cycleLength,
+        ovulation_day: ovulationDay,
+        last_period_date: lastPeriodDate,
+        last_ovulation_date: lastOvulationDate,
+      });
+    },
+    onSuccess: () => toast.success("Settings saved!"),
+  });
+
+  const addCycleMutation = useMutation({
+    mutationFn: async () => {
+      if (cycles.length > 0) {
+        const prevCycle = cycles[0];
+        const prevStart = new Date(prevCycle.start_date);
+        const newStart = new Date(newPeriodDate);
+        const daysDiff = Math.round((newStart - prevStart) / (1000 * 60 * 60 * 24));
+        if (daysDiff > 0) {
+          await base44.entities.Cycle.update(prevCycle.id, { cycle_length: daysDiff });
+        }
+      }
+      await base44.entities.Cycle.create({ start_date: newPeriodDate });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cycles"] });
+      toast.success("Period start date recorded! 🩸");
+    },
+  });
+
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const todayEntry = entries.find((e) => e.date === todayStr);
   const todayTotal = calculateDayTotal(todayEntry);
   const todayFilledCount = todayEntry
     ? ALL_SYMPTOMS.filter((s) => todayEntry[s.key] > 0).length
     : 0;
-
-  const cycleLength = user?.cycle_length || 28;
 
   return (
     <div className="space-y-6">
@@ -87,6 +132,76 @@ export default function Dashboard() {
           onDayClick={(date) => navigate(`/log?date=${date}`)}
         />
       </div>
+
+      {/* Cycle Settings */}
+      <Card className="border-border/50">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <CalendarDays className="w-4 h-4 text-primary" />
+            Cycle Settings
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Cycle Length (days)</Label>
+              <Input
+                type="number"
+                min={20}
+                max={60}
+                value={cycleLength}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value) || 28;
+                  setCycleLength(val);
+                  setOvulationDay(Math.max(1, val - 14));
+                }}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Ovulation Day</Label>
+              <Input
+                type="number"
+                min={1}
+                max={cycleLength - 1}
+                value={ovulationDay}
+                onChange={(e) => setOvulationDay(parseInt(e.target.value) || 14)}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Date of Last Period</Label>
+              <Input type="date" value={lastPeriodDate} onChange={(e) => setLastPeriodDate(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Date of Last Ovulation</Label>
+              <Input type="date" value={lastOvulationDate} onChange={(e) => setLastOvulationDate(e.target.value)} />
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => updateProfileMutation.mutate()} disabled={updateProfileMutation.isPending} className="w-full">
+            Save Settings
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Mark Period Start */}
+      <Card className="border-border/50">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <Plus className="w-4 h-4 text-accent-foreground" />
+            Mark Period Start (Day 1)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="space-y-2">
+            <Label className="text-xs">First day of menstrual flow</Label>
+            <Input type="date" value={newPeriodDate} onChange={(e) => setNewPeriodDate(e.target.value)} />
+          </div>
+          <Button onClick={() => addCycleMutation.mutate()} disabled={addCycleMutation.isPending} className="w-full">
+            Record Period Start
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 gap-3">

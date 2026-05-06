@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { User, CalendarDays, Plus, LogOut, Shield, Trash2 } from "lucide-react";
+import { User, CalendarDays, LogOut, Shield, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,8 +27,6 @@ export default function Profile() {
   const [ovulationDay, setOvulationDay] = useState(14);
   const [lastPeriodDate, setLastPeriodDate] = useState("");
   const [lastOvulationDate, setLastOvulationDate] = useState("");
-  const [newPeriodDate, setNewPeriodDate] = useState(format(new Date(), "yyyy-MM-dd"));
-
   useEffect(() => {
     base44.auth.me().then((u) => {
       setUser(u);
@@ -55,26 +53,6 @@ export default function Profile() {
     },
     onSuccess: () => {
       toast.success("Profile updated!");
-    },
-  });
-
-  const addCycleMutation = useMutation({
-    mutationFn: async () => {
-      // Update previous cycle's length if exists
-      if (cycles.length > 0) {
-        const prevCycle = cycles[0]; // most recent
-        const prevStart = new Date(prevCycle.start_date);
-        const newStart = new Date(newPeriodDate);
-        const daysDiff = Math.round((newStart - prevStart) / (1000 * 60 * 60 * 24));
-        if (daysDiff > 0) {
-          await base44.entities.Cycle.update(prevCycle.id, { cycle_length: daysDiff });
-        }
-      }
-      await base44.entities.Cycle.create({ start_date: newPeriodDate });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      toast.success("Period start date recorded! 🩸");
     },
   });
 
@@ -172,33 +150,6 @@ export default function Profile() {
             className="w-full"
           >
             Save Settings
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Log New Period */}
-      <Card className="border-border/50">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Plus className="w-4 h-4 text-accent-foreground" />
-            Mark Period Start (Day 1)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="space-y-2">
-            <Label className="text-xs">First day of menstrual flow</Label>
-            <Input
-              type="date"
-              value={newPeriodDate}
-              onChange={(e) => setNewPeriodDate(e.target.value)}
-            />
-          </div>
-          <Button
-            onClick={() => addCycleMutation.mutate()}
-            disabled={addCycleMutation.isPending}
-            className="w-full"
-          >
-            Record Period Start
           </Button>
         </CardContent>
       </Card>
