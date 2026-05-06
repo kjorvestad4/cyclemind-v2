@@ -15,7 +15,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDate, ovulationDate }) {
+export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDate, ovulationDate, ovulationEstimated }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const monthStart = startOfMonth(currentMonth);
@@ -144,7 +144,8 @@ export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDa
           <span className="w-2.5 h-2.5 rounded-full bg-rose-200/60 border border-rose-300" /> Last Period
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-full bg-purple-200/60 border border-purple-300" /> Ovulation
+          <span className="w-2.5 h-2.5 rounded-full bg-purple-200/60 border border-purple-300" />
+          {ovulationEstimated ? "Expected Ovulation" : "Ovulation"}
         </span>
       </div>
     </div>

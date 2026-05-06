@@ -74,11 +74,14 @@ export default function Dashboard() {
     },
   });
 
-  // Compute ovulation date: lastPeriodDate + (ovulationDay - 1)
   const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
-  const computedOvulationDate = lastPeriodDate
-    ? format(addDays(parseLocalDate(lastPeriodDate), ovulationDay - 1), "yyyy-MM-dd")
-    : lastOvulationDate || null;
+  // Use user-entered ovulation date if available; otherwise estimate from last period
+  const isOvulationEstimated = !lastOvulationDate && !!lastPeriodDate;
+  const computedOvulationDate = lastOvulationDate
+    ? lastOvulationDate
+    : lastPeriodDate
+      ? format(addDays(parseLocalDate(lastPeriodDate), ovulationDay - 1), "yyyy-MM-dd")
+      : null;
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const todayEntry = entries.find((e) => e.date === todayStr);
@@ -138,6 +141,7 @@ export default function Dashboard() {
           onDayClick={(date) => navigate(`/log?date=${date}`)}
           lastPeriodDate={lastPeriodDate || null}
           ovulationDate={computedOvulationDate}
+          ovulationEstimated={isOvulationEstimated}
         />
       </div>
 
