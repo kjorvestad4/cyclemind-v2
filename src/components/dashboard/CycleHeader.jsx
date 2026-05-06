@@ -24,8 +24,9 @@ export default function CycleHeader({ cycles, cycleLength = 28, lastPeriodDate }
   today.setHours(0, 0, 0, 0);
   const startDate = new Date(resolvedStartDateStr);
   startDate.setHours(0, 0, 0, 0);
-  const currentDay = differenceInDays(today, startDate) + 1;
+  const daysSinceStart = differenceInDays(today, startDate);
   const effectiveCycleLength = (latestCycle?.cycle_length) || cycleLength;
+  const currentDay = (daysSinceStart % effectiveCycleLength) + 1;
   const lutealStart = Math.max(1, effectiveCycleLength - 13);
   const isLuteal = currentDay >= lutealStart;
   const daysUntilPeriod = isLuteal ? Math.max(0, effectiveCycleLength - currentDay + 1) : null;
