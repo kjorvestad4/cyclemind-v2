@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { PenLine, TrendingUp, Heart, CalendarDays, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,6 +74,12 @@ export default function Dashboard() {
     },
   });
 
+  // Compute ovulation date: lastPeriodDate + (ovulationDay - 1)
+  const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
+  const computedOvulationDate = lastPeriodDate
+    ? format(addDays(parseLocalDate(lastPeriodDate), ovulationDay - 1), "yyyy-MM-dd")
+    : lastOvulationDate || null;
+
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const todayEntry = entries.find((e) => e.date === todayStr);
   const todayTotal = calculateDayTotal(todayEntry);
@@ -130,6 +136,8 @@ export default function Dashboard() {
           entries={entries}
           cycles={cycles}
           onDayClick={(date) => navigate(`/log?date=${date}`)}
+          lastPeriodDate={lastPeriodDate || null}
+          ovulationDate={computedOvulationDate}
         />
       </div>
 

@@ -15,7 +15,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function CalendarView({ entries, cycles, onDayClick }) {
+export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDate, ovulationDate }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const monthStart = startOfMonth(currentMonth);
@@ -29,6 +29,8 @@ export default function CalendarView({ entries, cycles, onDayClick }) {
   });
 
   const cycleStartDates = new Set((cycles || []).map((c) => c.start_date));
+  const lastPeriodStr = lastPeriodDate || null;
+  const ovulationStr = ovulationDate || null;
 
   const getDaySeverity = (dateStr) => {
     const entry = entryMap[dateStr];
@@ -90,6 +92,8 @@ export default function CalendarView({ entries, cycles, onDayClick }) {
           const inMonth = isSameMonth(d, currentMonth);
           const today = isToday(d);
           const isCycleStart = cycleStartDates.has(dateStr);
+          const isLastPeriod = lastPeriodStr === dateStr;
+          const isOvulation = ovulationStr === dateStr;
           const severity = getDaySeverity(dateStr);
           const hasEntry = !!entryMap[dateStr];
 
@@ -101,7 +105,7 @@ export default function CalendarView({ entries, cycles, onDayClick }) {
                 relative aspect-square rounded-lg text-xs font-medium flex items-center justify-center transition-all
                 ${!inMonth ? "opacity-30" : ""}
                 ${today ? "ring-2 ring-primary ring-offset-1 ring-offset-background" : ""}
-                ${severity ? severityStyle[severity] : "hover:bg-muted"}
+                ${severity ? severityStyle[severity] : isLastPeriod ? "bg-rose-200/60 text-rose-800" : isOvulation ? "bg-purple-200/60 text-purple-800" : "hover:bg-muted"}
                 ${isCycleStart ? "border-2 border-accent-foreground" : ""}
               `}
             >
@@ -111,6 +115,12 @@ export default function CalendarView({ entries, cycles, onDayClick }) {
               )}
               {isCycleStart && (
                 <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-accent-foreground" />
+              )}
+              {isLastPeriod && !isCycleStart && (
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-rose-500" />
+              )}
+              {isOvulation && (
+                <div className="absolute -top-0.5 -left-0.5 w-2 h-2 rounded-full bg-purple-500" />
               )}
             </button>
           );
@@ -128,7 +138,13 @@ export default function CalendarView({ entries, cycles, onDayClick }) {
           <span className="w-2.5 h-2.5 rounded-sm bg-orange-200/50 border border-orange-200" /> Severe
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-sm border-2 border-accent-foreground" /> Period
+          <span className="w-2.5 h-2.5 rounded-sm border-2 border-accent-foreground" /> Period Start
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-full bg-rose-200/60 border border-rose-300" /> Last Period
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-full bg-purple-200/60 border border-purple-300" /> Ovulation
         </span>
       </div>
     </div>
