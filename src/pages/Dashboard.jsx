@@ -141,6 +141,7 @@ export default function Dashboard() {
           cycles={cycles}
           onDayClick={(date) => navigate(`/log?date=${date}`)}
           lastPeriodDate={lastPeriodDate || null}
+          newPeriodDate={newPeriodDate || null}
           ovulationDate={computedOvulationDate}
           ovulationEstimated={isOvulationEstimated}
         />

@@ -15,7 +15,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDate, ovulationDate, ovulationEstimated }) {
+export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDate, newPeriodDate, ovulationDate, ovulationEstimated }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const monthStart = startOfMonth(currentMonth);
@@ -33,6 +33,7 @@ export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDa
     ? new Set((cycles || []).map((c) => c.start_date))
     : new Set();
   const lastPeriodStr = lastPeriodDate || null;
+  const newPeriodStr = newPeriodDate || null;
   const ovulationStr = ovulationDate || null;
 
   const getDaySeverity = (dateStr) => {
@@ -96,6 +97,7 @@ export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDa
           const today = isToday(d);
           const isCycleStart = cycleStartDates.has(dateStr);
           const isLastPeriod = lastPeriodStr === dateStr;
+          const isNewPeriod = newPeriodStr === dateStr;
           const isOvulation = ovulationStr === dateStr;
           const severity = getDaySeverity(dateStr);
           const hasEntry = !!entryMap[dateStr];
@@ -108,18 +110,18 @@ export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDa
                 relative aspect-square rounded-lg text-xs font-medium flex items-center justify-center transition-all
                 ${!inMonth ? "opacity-30" : ""}
                 ${today ? "ring-2 ring-primary ring-offset-1 ring-offset-background" : ""}
-                ${severity ? severityStyle[severity] : isLastPeriod ? "bg-rose-200/60 text-rose-800" : isOvulation ? "bg-purple-200/60 text-purple-800" : "hover:bg-muted"}
-                ${isCycleStart ? "border-2 border-accent-foreground" : ""}
+                ${severity ? severityStyle[severity] : isNewPeriod || isLastPeriod ? "bg-rose-200/60 text-rose-800" : isOvulation ? "bg-purple-200/60 text-purple-800" : "hover:bg-muted"}
+                ${isCycleStart || isNewPeriod ? "border-2 border-accent-foreground" : ""}
               `}
             >
               {format(d, "d")}
               {hasEntry && !severity && (
                 <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
               )}
-              {isCycleStart && (
+              {(isCycleStart || isNewPeriod) && (
                 <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-accent-foreground" />
               )}
-              {isLastPeriod && !isCycleStart && (
+              {(isLastPeriod || isNewPeriod) && !isCycleStart && (
                 <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-rose-500" />
               )}
               {isOvulation && (
