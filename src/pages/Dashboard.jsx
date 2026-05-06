@@ -76,12 +76,12 @@ export default function Dashboard() {
   const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
   // Resolve the active period date: typed value OR latest saved cycle
   const activePeriodDate = lastPeriodDate || (cycles.length > 0 ? cycles[0].start_date : null);
-  // Use user-entered ovulation date if available; otherwise estimate from active period date
-  const isOvulationEstimated = !lastOvulationDate && !!activePeriodDate;
+  // Only compute ovulation when the user has explicitly typed a period date
+  const isOvulationEstimated = !lastOvulationDate && !!lastPeriodDate;
   const computedOvulationDate = lastOvulationDate
     ? lastOvulationDate
-    : activePeriodDate
-      ? format(addDays(parseLocalDate(activePeriodDate), ovulationDay - 1), "yyyy-MM-dd")
+    : lastPeriodDate
+      ? format(addDays(parseLocalDate(lastPeriodDate), ovulationDay - 1), "yyyy-MM-dd")
       : null;
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
