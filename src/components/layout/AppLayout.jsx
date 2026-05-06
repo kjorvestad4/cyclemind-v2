@@ -1,5 +1,5 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
-import { CalendarDays, PenLine, BarChart3, BookOpen, User } from "lucide-react";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { CalendarDays, PenLine, BarChart3, BookOpen, User, ChevronLeft } from "lucide-react";
 
 const NAV_ITEMS = [
   { path: "/", icon: CalendarDays, label: "Dashboard" },
@@ -11,19 +11,35 @@ const NAV_ITEMS = [
 
 export default function AppLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const isRoot = location.pathname === "/";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <span className="text-primary text-sm">🌙</span>
-            </div>
-            <h1 className="font-serif text-lg font-semibold text-foreground">CycleMind</h1>
-          </Link>
-          <p className="text-[10px] text-muted-foreground max-w-[140px] text-right leading-tight">
+      <header
+        className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            {!isRoot && (
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors shrink-0"
+                aria-label="Go back"
+              >
+                <ChevronLeft className="w-5 h-5 text-foreground" />
+              </button>
+            )}
+            <Link to="/" className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span className="text-primary text-sm">🌙</span>
+              </div>
+              <h1 className="font-serif text-lg font-semibold text-foreground">CycleMind</h1>
+            </Link>
+          </div>
+          <p className="text-[10px] text-muted-foreground max-w-[140px] text-right leading-tight shrink-0">
             Not medical advice. Always consult your doctor.
           </p>
         </div>
@@ -35,7 +51,10 @@ export default function AppLayout() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-lg border-t border-border/50">
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-lg border-t border-border/50"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
         <div className="max-w-2xl mx-auto flex justify-around py-2 px-2">
           {NAV_ITEMS.map(({ path, icon: Icon, label }) => {
             const isActive = location.pathname === path;

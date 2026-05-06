@@ -88,5 +88,10 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
+    overscroll-behavior-y: none;
+  }
+  button, a, svg, [role="button"] {
+    user-select: none;
+    -webkit-user-select: none;
   }
 }

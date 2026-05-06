@@ -215,6 +215,44 @@ export default function Profile() {
         </CardContent>
       </Card>
 
+      {/* Delete Account */}
+      <Card className="border-destructive/30">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold text-destructive flex items-center gap-2">
+            <Trash2 className="w-4 h-4" />
+            Danger Zone
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="w-full" size="sm">
+                Delete Account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete your account and all associated data including cycles, daily entries, and settings. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={() => {
+                    toast.error("Please contact support to delete your account.");
+                  }}
+                >
+                  Delete Account
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardContent>
+      </Card>
+
       <p className="text-[10px] text-muted-foreground text-center pb-4">
         CycleMind v1.0 • Based on the DRSP (Endicott, Nee & Harrison, 2006)
       </p>
