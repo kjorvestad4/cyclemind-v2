@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, subDays, addDays } from "date-fns";
-import { ChevronLeft, ChevronRight, Save, Check, Notebook } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, Check, Notebook, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -81,6 +81,20 @@ export default function DailyLog() {
       queryClient.invalidateQueries({ queryKey: ["entries"] });
       setHasUnsavedChanges(false);
       toast.success("Entry saved! Keep it up 💜");
+    },
+  });
+
+  const clearMutation = useMutation({
+    mutationFn: async () => {
+      await base44.entities.DailyEntry.delete(existingEntry.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["entries"] });
+      setScores({});
+      setFlow("");
+      setNotes("");
+      setHasUnsavedChanges(false);
+      toast.success("Entry cleared.");
     },
   });
 
@@ -166,12 +180,24 @@ export default function DailyLog() {
         )}
       </div>
 
-      {/* Save Button */}
-      <div className="sticky bottom-20 z-30">
+      {/* Save / Clear Buttons */}
+      <div className="sticky bottom-20 z-30 flex gap-2">
+        {existingEntry && (
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-12 w-12 rounded-2xl shrink-0 text-muted-foreground hover:text-destructive hover:border-destructive"
+            onClick={() => clearMutation.mutate()}
+            disabled={clearMutation.isPending}
+            title="Clear entry"
+          >
+            <Trash2 className="w-5 h-5" />
+          </Button>
+        )}
         <Button
           onClick={() => saveMutation.mutate()}
           disabled={saveMutation.isPending}
-          className="w-full h-12 rounded-2xl font-semibold gap-2 shadow-lg shadow-primary/20"
+          className="flex-1 h-12 rounded-2xl font-semibold gap-2 shadow-lg shadow-primary/20"
         >
           {saveMutation.isPending ? (
             <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
