@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { differenceInDays, format } from "date-fns";
@@ -6,8 +6,15 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, L
 import { AlertTriangle, CheckCircle, Info, TrendingUp } from "lucide-react";
 import { ALL_SYMPTOMS, calculateDayTotal } from "@/lib/symptoms";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import PdfReportButton from "@/components/insights/PdfReportButton";
 
 export default function Insights() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],
     queryFn: () => base44.entities.Cycle.list("-start_date", 50),
@@ -42,7 +49,10 @@ export default function Insights() {
 
   return (
     <div className="space-y-6">
-      <h2 className="font-serif text-2xl font-semibold">Insights & Analysis</h2>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="font-serif text-2xl font-semibold">Insights & Analysis</h2>
+        <PdfReportButton cycles={cycles} entries={entries} analysis={analysis} user={user} />
+      </div>
 
       {/* Diagnostic Flags */}
       <DiagnosticCards analysis={analysis} />
