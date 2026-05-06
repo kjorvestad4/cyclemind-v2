@@ -88,8 +88,13 @@ export default function DailyLog() {
   const totalScore = calculateDayTotal({ ...scores });
   const progress = Math.round((filledCount / ALL_SYMPTOMS.length) * 100);
 
+  const parseLocalDate = (dateStr) => {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  };
+
   const changeDate = (dir) => {
-    const d = dir === "prev" ? subDays(new Date(selectedDate), 1) : addDays(new Date(selectedDate), 1);
+    const d = dir === "prev" ? subDays(parseLocalDate(selectedDate), 1) : addDays(parseLocalDate(selectedDate), 1);
     setSelectedDate(format(d, "yyyy-MM-dd"));
   };
 
@@ -101,7 +106,7 @@ export default function DailyLog() {
           <ChevronLeft className="w-5 h-5" />
         </Button>
         <div className="text-center">
-          <p className="text-lg font-semibold">{format(new Date(selectedDate), "EEEE, MMM d")}</p>
+          <p className="text-lg font-semibold">{format(parseLocalDate(selectedDate), "EEEE, MMM d")}</p>
           {cycleDay && (
             <p className="text-xs text-muted-foreground">Cycle Day {cycleDay}</p>
           )}
