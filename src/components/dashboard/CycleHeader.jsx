@@ -2,13 +2,12 @@ import { format, differenceInDays } from "date-fns";
 import { Moon, Sun, Droplets } from "lucide-react";
 
 export default function CycleHeader({ cycles, cycleLength = 28, lastPeriodDate }) {
-  // Determine the best start date: most recent cycle record OR lastPeriodDate from profile
+  // Only show cycle info when the user has explicitly entered a period date
   const latestCycle = cycles && cycles.length > 0
     ? [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0]
     : null;
 
-  // Use lastPeriodDate if typed, otherwise fall back to most recent saved cycle
-  const resolvedStartDateStr = lastPeriodDate || latestCycle?.start_date || null;
+  const resolvedStartDateStr = lastPeriodDate || null;
 
   if (!resolvedStartDateStr) {
     return (
