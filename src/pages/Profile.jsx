@@ -128,6 +128,10 @@ export default function Profile() {
             <p className="text-[10px] text-muted-foreground">
               Luteal phase is estimated as the last 14 days of your cycle.
             </p>
+            <div className="mt-2 rounded-lg bg-accent/50 border border-accent-foreground/10 px-3 py-2 flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Estimated Day of Ovulation</span>
+              <span className="text-xs font-semibold text-accent-foreground">Day {Math.max(1, cycleLength - 14)}</span>
+            </div>
           </div>
         </CardContent>
       </Card>
