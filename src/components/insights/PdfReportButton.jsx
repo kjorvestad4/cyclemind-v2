@@ -331,7 +331,8 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
                 const val = entry[sym.key];
                 const txt = val ? String(val) : "—";
                 doc.setFont("helvetica", val && val >= 4 ? "bold" : "normal");
-                doc.setTextColor(val && val >= 4 ? ...purple : ...mutedText);
+                const textColor = val && val >= 4 ? purple : mutedText;
+                doc.setTextColor(...textColor);
                 doc.text(txt, margin + labelW + j * scoreW + scoreW / 2, y + 3.8, { align: "center" });
               });
               y += 5.5;
