@@ -2,58 +2,58 @@ export const SYMPTOM_CATEGORIES = [
   {
     label: "Mood & Emotional",
     symptoms: [
-      { key: "s_depressed", label: "Felt depressed, sad, down, or blue" },
-      { key: "s_hopeless", label: "Felt hopeless" },
-      { key: "s_worthless", label: "Felt worthless or guilty" },
-      { key: "s_anxious", label: "Felt anxious, tense, keyed up, or on edge" },
-      { key: "s_mood_swings", label: "Had mood swings (e.g., suddenly felt sad or tearful)" },
-      { key: "s_sensitive", label: "Was more sensitive to rejection or feelings were more easily hurt" },
-      { key: "s_angry", label: "Felt angry, irritable" },
-      { key: "s_conflicts", label: "Had conflicts or problems with people" },
+      { key: "s_depressed", label: "Felt depressed, sad, down, or blue", shortLabel: "Depressed / Sad" },
+      { key: "s_hopeless", label: "Felt hopeless", shortLabel: "Hopeless" },
+      { key: "s_worthless", label: "Felt worthless or guilty", shortLabel: "Worthless / Guilty" },
+      { key: "s_anxious", label: "Felt anxious, tense, keyed up, or on edge", shortLabel: "Anxious / Tense" },
+      { key: "s_mood_swings", label: "Had mood swings (e.g., suddenly felt sad or tearful)", shortLabel: "Mood Swings" },
+      { key: "s_sensitive", label: "Was more sensitive to rejection or feelings were more easily hurt", shortLabel: "Rejection Sensitive" },
+      { key: "s_angry", label: "Felt angry, irritable", shortLabel: "Angry / Irritable" },
+      { key: "s_conflicts", label: "Had conflicts or problems with people", shortLabel: "Conflicts with Others" },
     ]
   },
   {
     label: "Behavioral & Cognitive",
     symptoms: [
-      { key: "s_less_interest", label: "Had less interest in usual activities (e.g., work, school, friends, hobbies)" },
-      { key: "s_concentration", label: "Had difficulty concentrating" },
-      { key: "s_lethargic", label: "Felt lethargic, tired, fatigued, or had a lack of energy" },
-      { key: "s_overwhelmed", label: "Felt overwhelmed or that I could not cope" },
-      { key: "s_out_of_control", label: "Felt out of control" },
+      { key: "s_less_interest", label: "Had less interest in usual activities (e.g., work, school, friends, hobbies)", shortLabel: "Less Interest" },
+      { key: "s_concentration", label: "Had difficulty concentrating", shortLabel: "Brain Fog / Focus" },
+      { key: "s_lethargic", label: "Felt lethargic, tired, fatigued, or had a lack of energy", shortLabel: "Fatigue / Low Energy" },
+      { key: "s_overwhelmed", label: "Felt overwhelmed or that I could not cope", shortLabel: "Overwhelmed" },
+      { key: "s_out_of_control", label: "Felt out of control", shortLabel: "Out of Control" },
     ]
   },
   {
     label: "Appetite & Sleep",
     symptoms: [
-      { key: "s_appetite", label: "Had increased appetite or overate" },
-      { key: "s_cravings", label: "Had cravings for specific foods" },
-      { key: "s_hypersomnia", label: "Slept more, took naps, found it hard to get up when intended" },
-      { key: "s_insomnia", label: "Had trouble getting to sleep or staying asleep" },
+      { key: "s_appetite", label: "Had increased appetite or overate", shortLabel: "Overeating" },
+      { key: "s_cravings", label: "Had cravings for specific foods", shortLabel: "Food Cravings" },
+      { key: "s_hypersomnia", label: "Slept more, took naps, found it hard to get up when intended", shortLabel: "Sleeping Too Much" },
+      { key: "s_insomnia", label: "Had trouble getting to sleep or staying asleep", shortLabel: "Insomnia" },
     ]
   },
   {
     label: "Physical",
     symptoms: [
-      { key: "s_breast_tender", label: "Had breast tenderness" },
-      { key: "s_bloating", label: "Had breast swelling, felt bloated, or had weight gain" },
-      { key: "s_headache", label: "Had headache" },
-      { key: "s_pain", label: "Had joint or muscle pain" },
+      { key: "s_breast_tender", label: "Had breast tenderness", shortLabel: "Breast Tenderness" },
+      { key: "s_bloating", label: "Had breast swelling, felt bloated, or had weight gain", shortLabel: "Bloating" },
+      { key: "s_headache", label: "Had headache", shortLabel: "Headache" },
+      { key: "s_pain", label: "Had joint or muscle pain", shortLabel: "Joint / Muscle Pain" },
     ]
   },
   {
     label: "Functional Impact",
     symptoms: [
-      { key: "s_productivity", label: "At work, school, home, or in daily routine, at least one of the problems noted above caused reduced productivity or inefficiency" },
-      { key: "s_social", label: "At least one of the problems noted above interfered with hobbies or social activities (e.g., avoided or did less)" },
-      { key: "s_relationships", label: "At least one of the problems noted above interfered with relationships with others" },
+      { key: "s_productivity", label: "Reduced productivity or inefficiency at work/home", shortLabel: "Reduced Productivity" },
+      { key: "s_social", label: "Interfered with hobbies or social activities", shortLabel: "Social Withdrawal" },
+      { key: "s_relationships", label: "Interfered with relationships with others", shortLabel: "Relationship Impact" },
     ]
   },
   {
     label: "Additional Items",
     symptoms: [
-      { key: "s_impulsivity", label: "Impulsivity – Felt impulsive or acted on impulses" },
-      { key: "s_decreased_sleep_need", label: "Decreased need for sleep – Had a decreased need for sleep (felt rested on little sleep)" },
-      { key: "s_elevated_mood", label: "Elevated mood – Experienced elevated mood, unusually energetic, or euphoric" },
+      { key: "s_impulsivity", label: "Impulsivity – Felt impulsive or acted on impulses", shortLabel: "Impulsivity" },
+      { key: "s_decreased_sleep_need", label: "Decreased need for sleep (felt rested on little sleep)", shortLabel: "Less Sleep Needed" },
+      { key: "s_elevated_mood", label: "Elevated mood – Experienced elevated mood, unusually energetic, or euphoric", shortLabel: "Elevated / Euphoric Mood" },
     ]
   }
 ];
