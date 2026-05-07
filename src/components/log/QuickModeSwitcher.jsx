@@ -52,51 +52,50 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
     setSaving(true);
     try {
       const today = format(new Date(), "yyyy-MM-dd");
-      const exactLmp = lmp || null;   // exact YYYY-MM-DD from picker or null
+      const exactLmp = lmp || null;   // exact YYYY-MM-DD or null
 
-      console.log(`[CycleMind] FORCE SAVE → LMP="${exactLmp}" (raw from picker)`);
+      console.log(`[CycleMind DEBUG] Saving LMP="${exactLmp}" | mode=${selected} | currentMode=${currentCycleType}`);
 
       if (!latestCycle?.id) {
-        // New cycle case (unchanged)
         await base44.entities.Cycle.create({
-          start_date: exactLmp || today,
           cycle_type: selected,
-          cycle_length: cycleLength || 28,
           last_menstrual_period: exactLmp,
+          start_date: exactLmp || today,
+          cycle_length: cycleLength || 28,
           ovulation_date: ovulationDate || undefined,
         });
       } else {
-        // SAME-MODE UPDATE (this is the critical path)
+        // FORCE FULL UPDATE - always send the date field
         const updatePayload = {
           cycle_type: selected,
-          last_menstrual_period: exactLmp,           // force exact string
-          start_date: exactLmp || today,             // always keep start_date in sync
+          last_menstrual_period: exactLmp,        // <-- this is the critical line
+          start_date: exactLmp || today,
+          cycle_length: cycleLength || 28,
         };
 
-        if (selected === "menstrual" || selected === "perimenopause") {
-          updatePayload.cycle_length = cycleLength || 28;
-        }
         if (selected === "pregnancy") {
           updatePayload.ovulation_date = ovulationDate || undefined;
           if (exactLmp || ovulationDate) {
             const eddData = calculateEDD(ovulationDate, exactLmp);
-            const baseline = ovulationDate || exactLmp;
             updatePayload.estimated_due_date = eddData?.edd;
-            updatePayload.pregnancy_week = getPregnancyWeek(baseline, new Date(today));
+            updatePayload.pregnancy_week = getPregnancyWeek(ovulationDate || exactLmp, new Date(today));
           }
         }
+
         if (selected === "perimenopause" || selected === "menopause") {
           updatePayload.hrt_type = hrtType || undefined;
         }
 
-        console.log(`[CycleMind] Updating existing Cycle ${latestCycle.id} with payload:`, updatePayload);
-        await base44.entities.Cycle.update(latestCycle.id, updatePayload);
+        console.log(`[CycleMind DEBUG] Updating Cycle ${latestCycle.id} with payload:`, updatePayload);
+
+        const result = await base44.entities.Cycle.update(latestCycle.id, updatePayload);
+        console.log(`[CycleMind DEBUG] Update response:`, result);
       }
 
-      // Force refresh everything
-      queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      queryClient.invalidateQueries({ queryKey: ["entries"] });
+      // Force hard refresh
+      await queryClient.invalidateQueries({ queryKey: ["cycles"] });
       await queryClient.refetchQueries({ queryKey: ["cycles"] });
+      await queryClient.refetchQueries({ queryKey: ["entries"] });
 
       const toastMsg = exactLmp 
         ? `LMP saved exactly as ${format(new Date(exactLmp + "T00:00:00"), "MMMM d, yyyy")}` 
@@ -105,8 +104,8 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
 
       onClose();
     } catch (error) {
-      console.error("[CycleMind] Save failed:", error);
-      toast.error("Failed to save — please try Profile → Edit Cycle Details as workaround");
+      console.error("[CycleMind] Save error:", error);
+      toast.error("Save failed. Use Profile → Edit Cycle Details as workaround for now.");
     } finally {
       setSaving(false);
     }
