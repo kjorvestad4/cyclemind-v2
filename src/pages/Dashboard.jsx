@@ -1,35 +1,31 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, addDays } from "date-fns";
-import { PenLine, TrendingUp, Heart, CalendarDays } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { format, differenceInDays } from "date-fns";
+import { PenLine, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
-import CycleHeader from "@/components/dashboard/CycleHeader";
-import CalendarView from "@/components/dashboard/CalendarView";
-import { ALL_SYMPTOMS, calculateDayTotal } from "@/lib/symptoms";
+import { calculateDayTotal, ALL_SYMPTOMS, getCycleDay } from "@/lib/symptoms";
+import ModeBanner from "@/components/dashboard/ModeBanner";
+import ModeContent from "@/components/dashboard/ModeContent";
+import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
+import { StreakWidget, RecentInsightsWidget, NextMilestoneWidget, QuickLinksRow } from "@/components/dashboard/UniversalWidgets";
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
-  const [cycleLength, setCycleLength] = useState(28);
-  const [ovulationDay, setOvulationDay] = useState(14);
-  const [lastPeriodDate, setLastPeriodDate] = useState("");
-  const [lastOvulationDate, setLastOvulationDate] = useState("");
-
+  const [showModeSwitcher, setShowModeSwitcher] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then((u) => {
-      setUser(u);
-      if (u?.cycle_length) setCycleLength(u.cycle_length);
-      if (u?.ovulation_day) setOvulationDay(u.ovulation_day);
-
-    }).catch(() => {});
+    base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
   const { data: cycles = [] } = useQuery({
@@ -42,188 +38,95 @@ export default function Dashboard() {
     queryFn: () => base44.entities.DailyEntry.list("-date", 100),
   });
 
-  const updateProfileMutation = useMutation({
-    mutationFn: async () => {
-      await base44.auth.updateMe({
-        cycle_length: cycleLength,
-        ovulation_day: ovulationDay,
-      });
-    },
-    onSuccess: () => toast.success("Settings saved!"),
-  });
+  const latestCycle = cycles.length > 0
+    ? [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0]
+    : null;
 
-
-
-  const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
-
-  const activePeriodDateStr = lastPeriodDate || null;
-
-  // Ovulation anchor: explicit override, or calculated from activePeriodDate
-  const isOvulationEstimated = !lastOvulationDate && !!activePeriodDateStr;
-  const computedOvulationDate = lastOvulationDate
-    ? lastOvulationDate
-    : activePeriodDateStr
-      ? format(addDays(parseLocalDate(activePeriodDateStr), ovulationDay - 1), "yyyy-MM-dd")
-      : null;
-
-  // Fertility window: 4 days before ovulation through 1 day after
-  const fertilityWindowDates = computedOvulationDate
-    ? Array.from({ length: 6 }, (_, i) =>
-        format(addDays(parseLocalDate(computedOvulationDate), i - 4), "yyyy-MM-dd")
-      )
-    : [];
+  const cycleType = latestCycle?.cycle_type
+    || (latestCycle?.is_pregnancy_mode ? "pregnancy" : latestCycle?.is_menopause_mode ? "menopause" : "menstrual");
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const todayEntry = entries.find((e) => e.date === todayStr);
   const todayTotal = calculateDayTotal(todayEntry);
-  const todayFilledCount = todayEntry
-    ? ALL_SYMPTOMS.filter((s) => todayEntry[s.key] > 0).length
-    : 0;
+
+  const isMenstrual = !["pregnancy", "postpartum", "menopause", "perimenopause"].includes(cycleType);
+  const cycleDay = isMenstrual ? getCycleDay(todayStr, cycles) : null;
+  const cycleLength = latestCycle?.cycle_length || user?.cycle_length || 28;
+
+  const filledCount = todayEntry ? ALL_SYMPTOMS.filter((s) => (todayEntry[s.key] || 0) > 0).length : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 pb-24">
       {/* Greeting */}
       <div>
         <h2 className="font-serif text-2xl font-semibold text-foreground">
           {getGreeting()}{user?.full_name ? `, ${user.full_name.split(" ")[0]}` : ""}
         </h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          You've got this — tracking helps. 💜
-        </p>
+        <p className="text-sm text-muted-foreground mt-0.5">You've got this — tracking helps. 💜</p>
       </div>
 
-      {/* Cycle Status */}
-      <CycleHeader cycles={cycles} cycleLength={cycleLength} lastPeriodDate={activePeriodDateStr} />
+      {/* Mode Banner */}
+      <ModeBanner
+        latestCycle={latestCycle}
+        cycleDay={cycleDay}
+        onSwitchMode={() => setShowModeSwitcher(true)}
+      />
 
-      {/* Quick Log Button */}
+      {showModeSwitcher && (
+        <QuickModeSwitcher
+          currentCycleType={cycleType}
+          latestCycle={latestCycle}
+          onClose={() => {
+            setShowModeSwitcher(false);
+            queryClient.invalidateQueries({ queryKey: ["cycles"] });
+          }}
+        />
+      )}
+
+      {/* Today's Log CTA */}
       <Button
         onClick={() => navigate(`/log?date=${todayStr}`)}
-        className="w-full h-14 rounded-2xl text-base font-semibold gap-3 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
+        className="w-full h-14 rounded-2xl text-base font-semibold gap-3 shadow-lg shadow-primary/20"
       >
-        <PenLine className="w-5 h-5" />
-        {todayEntry ? `Continue Today's Log (${todayFilledCount}/27)` : "Log Today's Symptoms"}
+        {todayEntry ? <Check className="w-5 h-5" /> : <PenLine className="w-5 h-5" />}
+        {todayEntry
+          ? `Update Today's Log · ${filledCount} symptoms rated`
+          : "Log Today's Symptoms"}
       </Button>
 
-      {/* Today's Summary */}
+      {/* Today summary bar */}
       {todayEntry && (
-        <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-2">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Today's Summary</p>
-            <span className="text-lg font-bold text-foreground">{todayTotal}</span>
+        <div className="bg-card rounded-2xl border border-border/50 p-3.5 space-y-2">
+          <div className="flex justify-between text-xs">
+            <span className="text-muted-foreground">Today's severity score</span>
+            <span className="font-bold text-foreground">{todayTotal} / {ALL_SYMPTOMS.length * 6}</span>
           </div>
-          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-yellow-400 to-red-400 transition-all"
-              style={{ width: `${Math.min(100, (todayTotal / (27 * 6)) * 100)}%` }}
+              style={{ width: `${Math.min(100, (todayTotal / (ALL_SYMPTOMS.length * 6)) * 100)}%` }}
             />
           </div>
-          <p className="text-[10px] text-muted-foreground">
-            {todayFilledCount} of 27 symptoms rated • Total score: {todayTotal} / {27 * 6}
-          </p>
         </div>
       )}
 
-      {/* Calendar */}
-      <div className="bg-card rounded-2xl border border-border/50 p-4">
-        <CalendarView
-          entries={entries}
-          cycles={cycles}
-          onDayClick={(date) => navigate(`/log?date=${date}`)}
-          activePeriodDate={activePeriodDateStr}
-          newPeriodDate={null}
-          ovulationDate={computedOvulationDate}
-          ovulationEstimated={isOvulationEstimated}
-          fertilityWindowDates={fertilityWindowDates}
-        />
-      </div>
+      {/* Mode-specific content */}
+      <ModeContent
+        cycleType={cycleType}
+        latestCycle={latestCycle}
+        entries={entries}
+        cycleDay={cycleDay}
+      />
 
-      {/* Cycle Settings */}
-      <Card className="border-border/50">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <CalendarDays className="w-4 h-4 text-primary" />
-            Cycle Settings
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-xs">Cycle Length (days)</Label>
-              <Input
-                type="number"
-                min={20}
-                max={60}
-                value={cycleLength}
-                onChange={(e) => {
-                  const val = parseInt(e.target.value) || 28;
-                  setCycleLength(val);
-                  setOvulationDay(Math.max(1, val - 14));
-                }}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">Ovulation Day</Label>
-              <Input
-                type="number"
-                min={1}
-                max={cycleLength - 1}
-                value={ovulationDay}
-                onChange={(e) => setOvulationDay(parseInt(e.target.value) || 14)}
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs">Date of Last Period</Label>
-                {lastPeriodDate && <button type="button" onClick={() => setLastPeriodDate("")} className="text-[10px] text-muted-foreground hover:text-destructive underline">Clear</button>}
-              </div>
-              <Input type="date" value={lastPeriodDate} onChange={(e) => setLastPeriodDate(e.target.value)} />
-            </div>
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs">Date of Last Ovulation</Label>
-                {lastOvulationDate && <button type="button" onClick={() => setLastOvulationDate("")} className="text-[10px] text-muted-foreground hover:text-destructive underline">Clear</button>}
-              </div>
-              <Input type="date" value={lastOvulationDate} onChange={(e) => setLastOvulationDate(e.target.value)} />
-            </div>
-          </div>
-          <Button variant="outline" size="sm" onClick={() => updateProfileMutation.mutate()} disabled={updateProfileMutation.isPending} className="w-full">
-            Save Settings
-          </Button>
-        </CardContent>
-      </Card>
+      {/* Universal widgets */}
+      <StreakWidget entries={entries} />
+      <RecentInsightsWidget entries={entries} />
+      <NextMilestoneWidget cycleType={cycleType} latestCycle={latestCycle} cycleLength={cycleLength} />
+      <QuickLinksRow />
 
-
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 gap-3">
-        <Link
-          to="/insights"
-          className="bg-card rounded-2xl border border-border/50 p-4 hover:bg-muted/30 transition-colors"
-        >
-          <TrendingUp className="w-5 h-5 text-primary mb-2" />
-          <p className="text-sm font-semibold">Insights</p>
-          <p className="text-[10px] text-muted-foreground mt-0.5">
-            {cycles.length >= 2 ? "View your analysis" : "Log 2 cycles to unlock"}
-          </p>
-        </Link>
-        <Link
-          to="/resources"
-          className="bg-card rounded-2xl border border-border/50 p-4 hover:bg-muted/30 transition-colors"
-        >
-          <Heart className="w-5 h-5 text-accent-foreground mb-2" />
-          <p className="text-sm font-semibold">Resources</p>
-          <p className="text-[10px] text-muted-foreground mt-0.5">Learn about PMDD & PMS</p>
-        </Link>
-      </div>
+      <p className="text-[10px] text-muted-foreground text-center">
+        CycleMind is not a substitute for professional medical advice.
+      </p>
     </div>
   );
-}
-
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 17) return "Good afternoon";
-  return "Good evening";
 }
