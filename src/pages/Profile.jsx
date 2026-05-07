@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
   User, Settings, LogOut, Shield, Trash2, FileDown, Link2,
-  ChevronRight, Moon, Sun, Bell, Heart, Bookmark, CalendarDays, X
+  ChevronRight, Moon, Sun, Bell, Heart, Bookmark, CalendarDays, X, ChevronDown, ChevronUp, Edit
 } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -18,6 +18,7 @@ import {
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import ShareWithDoctor from "@/components/insights/ShareWithDoctor";
 import PdfReportButton from "@/components/insights/PdfReportButton";
+import { getCycleDay } from "@/lib/symptoms";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -50,7 +51,7 @@ function Section({ title, icon: Icon, children, accent }) {
   return (
     <div className={`rounded-2xl border ${accent ? "border-primary/20 bg-primary/3" : "border-border/60 bg-card"} overflow-hidden`}>
       <div className="px-4 py-3.5 border-b border-border/40 flex items-center gap-2">
-        {Icon && <Icon className="w-4 h-4 text-primary" />}
+        {Icon && typeof Icon === "function" && <Icon className="w-4 h-4 text-primary" />}
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       </div>
       <div className="p-4">{children}</div>
@@ -87,6 +88,206 @@ function Toggle({ checked, onChange }) {
     >
       <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${checked ? "translate-x-5" : "translate-x-1"}`} />
     </button>
+  );
+}
+
+// ── CurrentCycleDetails Component ─────────────────────────────────────────
+
+function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLength, setCycleLength, ovulationDay, setOvulationDay, saveSettingsMutation }) {
+  const [expanded, setExpanded] = useState(true);
+
+  if (!latestCycle) {
+    return (
+      <Section title="Current Cycle Details" icon={CalendarDays}>
+        <p className="text-sm text-muted-foreground text-center py-4">No cycle recorded yet. Log a cycle from the Dashboard.</p>
+      </Section>
+    );
+  }
+
+  const isMenstrual = !["pregnancy", "postpartum", "menopause", "perimenopause"].includes(cycleType);
+  const cycleDay = isMenstrual ? getCycleDay(format(new Date(), "yyyy-MM-dd"), cycles) : null;
+
+  // Render mode-specific content
+  const renderContent = () => {
+    if (cycleType === "menstrual") {
+      const cycleDayNum = cycleDay || 1;
+      const cycLen = latestCycle.cycle_length || cycleLength || 28;
+      const phase = cycleDayNum <= 5 ? "Menstrual" : cycleDayNum <= 12 ? "Follicular" : cycleDayNum <= 16 ? "Ovulatory" : "Luteal";
+      
+      // Calculate variability from cycle history
+      const cycleLengths = cycles.filter(c => c.cycle_length).map(c => c.cycle_length);
+      const avgLength = cycleLengths.length > 0 ? Math.round(cycleLengths.reduce((a, b) => a + b, 0) / cycleLengths.length) : cycLen;
+      const variance = cycleLengths.length > 1 ? Math.max(...cycleLengths) - Math.min(...cycleLengths) : 0;
+
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-muted/40 rounded-xl p-3">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Cycle Day</p>
+              <p className="text-2xl font-bold text-foreground mt-1">{cycleDayNum}</p>
+            </div>
+            <div className="bg-muted/40 rounded-xl p-3">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Phase</p>
+              <p className="text-sm font-semibold text-foreground mt-1">{phase}</p>
+            </div>
+            <div className="bg-muted/40 rounded-xl p-3">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Cycle Length</p>
+              <p className="text-lg font-bold text-foreground mt-1">{cycLen}d</p>
+            </div>
+            <div className="bg-muted/40 rounded-xl p-3">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Avg Length</p>
+              <p className="text-lg font-semibold text-foreground mt-1">{avgLength}d{variance > 0 ? ` (±${variance}d)` : ""}</p>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-border/40 space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase">Edit Cycle Settings</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs">Cycle Length</Label>
+                <Input type="number" min={20} max={60} value={cycleLength}
+                  onChange={(e) => { const v = parseInt(e.target.value) || 28; setCycleLength(v); setOvulationDay(Math.max(1, v - 14)); }} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Ovulation Day</Label>
+                <Input type="number" min={1} max={cycleLength - 1} value={ovulationDay}
+                  onChange={(e) => setOvulationDay(parseInt(e.target.value) || 14)} />
+              </div>
+            </div>
+            <Button variant="outline" size="sm" className="w-full" onClick={() => saveSettingsMutation.mutate()} disabled={saveSettingsMutation.isPending}>
+              Save Settings
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    if (cycleType === "perimenopause" || cycleType === "menopause") {
+      const monthsInMode = latestCycle.hrt_start_date 
+        ? Math.floor(differenceInDays(new Date(), new Date(latestCycle.hrt_start_date)) / 30)
+        : Math.floor(differenceInDays(new Date(), new Date(latestCycle.start_date)) / 30);
+      const yearsInMode = Math.floor(monthsInMode / 12);
+
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-muted/40 rounded-xl p-3">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">In {cycleType === "perimenopause" ? "Perimenopause" : "Menopause"}</p>
+              <p className="text-lg font-bold text-foreground mt-1">
+                {yearsInMode > 0 ? `${yearsInMode}y ${monthsInMode % 12}m` : `${monthsInMode}m`}
+              </p>
+            </div>
+            <div className="bg-muted/40 rounded-xl p-3">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">HRT Type</p>
+              <p className="text-sm font-semibold text-foreground mt-1">{latestCycle.hrt_type || "Not set"}</p>
+            </div>
+            {latestCycle.last_menstrual_period && (
+              <div className="bg-muted/40 rounded-xl p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Last Menstrual Period</p>
+                <p className="text-sm font-semibold text-foreground mt-1">{format(new Date(latestCycle.last_menstrual_period), "MMM d, yyyy")}</p>
+              </div>
+            )}
+            <div className="bg-muted/40 rounded-xl p-3">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Mode Started</p>
+              <p className="text-sm font-semibold text-foreground mt-1">{format(new Date(latestCycle.start_date), "MMM d, yyyy")}</p>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-border/40">
+            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => {}}>
+              <Edit className="w-4 h-4" /> Edit HRT / Cycle Details
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    if (cycleType === "pregnancy") {
+      const pregnancyWeek = latestCycle.pregnancy_week
+        || (latestCycle.last_menstrual_period
+          ? Math.floor(differenceInDays(new Date(), new Date(latestCycle.last_menstrual_period)) / 7)
+          : null);
+      const trimester = pregnancyWeek 
+        ? (pregnancyWeek <= 13 ? "First" : pregnancyWeek <= 26 ? "Second" : "Third")
+        : null;
+
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 rounded-xl p-3">
+              <p className="text-[10px] text-pink-600 dark:text-pink-400 uppercase tracking-wider font-semibold">Week</p>
+              <p className="text-2xl font-bold text-pink-700 dark:text-pink-300 mt-1">{pregnancyWeek || "—"}</p>
+            </div>
+            <div className="bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 rounded-xl p-3">
+              <p className="text-[10px] text-pink-600 dark:text-pink-400 uppercase tracking-wider font-semibold">Trimester</p>
+              <p className="text-lg font-semibold text-pink-700 dark:text-pink-300 mt-1">{trimester || "—"}</p>
+            </div>
+            {latestCycle.estimated_due_date && (
+              <div className="bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 rounded-xl p-3">
+                <p className="text-[10px] text-pink-600 dark:text-pink-400 uppercase tracking-wider font-semibold">Due Date</p>
+                <p className="text-sm font-semibold text-pink-700 dark:text-pink-300 mt-1">{format(new Date(latestCycle.estimated_due_date), "MMM d")}</p>
+              </div>
+            )}
+            {latestCycle.last_menstrual_period && (
+              <div className="bg-muted/40 rounded-xl p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">LMP</p>
+                <p className="text-sm font-semibold text-foreground mt-1">{format(new Date(latestCycle.last_menstrual_period), "MMM d, yyyy")}</p>
+              </div>
+            )}
+          </div>
+          <div className="pt-2 border-t border-border/40">
+            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => {}}>
+              <Edit className="w-4 h-4" /> Edit Pregnancy Details
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    if (cycleType === "postpartum") {
+      const ppDay = latestCycle.start_date
+        ? Math.max(1, differenceInDays(new Date(), new Date(latestCycle.start_date)) + 1)
+        : null;
+
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-xl p-3">
+              <p className="text-[10px] text-purple-600 dark:text-purple-400 uppercase tracking-wider font-semibold">Postpartum Day</p>
+              <p className="text-2xl font-bold text-purple-700 dark:text-purple-300 mt-1">{ppDay || "—"}</p>
+            </div>
+            <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-xl p-3">
+              <p className="text-[10px] text-purple-600 dark:text-purple-400 uppercase tracking-wider font-semibold">Delivery Date</p>
+              <p className="text-sm font-semibold text-purple-700 dark:text-purple-300 mt-1">{format(new Date(latestCycle.start_date), "MMM d, yyyy")}</p>
+            </div>
+          </div>
+          <div className="pt-2 border-t border-border/40">
+            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => {}}>
+              <Edit className="w-4 h-4" /> Edit Postpartum Details
+            </Button>
+          </div>
+        </div>
+      );
+    }
+  };
+
+  return (
+    <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-muted/30 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <CalendarDays className="w-4 h-4 text-primary" />
+          <h3 className="text-sm font-semibold text-foreground">Current Cycle Details</h3>
+        </div>
+        {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+      </button>
+
+      {expanded && (
+        <div className="px-4 pb-4 pt-2 border-t border-border/40">
+          {renderContent()}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -189,63 +390,18 @@ export default function Profile() {
         />
       )}
 
-      {/* ── Current Cycle Summary ── */}
-      <Section title="My Current Cycle" icon={CalendarDays}>
-        {latestCycle ? (
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { label: "Mode", value: modeBadge.emoji + " " + (cycleType.charAt(0).toUpperCase() + cycleType.slice(1)) },
-                { label: "Started", value: latestCycle.start_date ? format(new Date(latestCycle.start_date), "MMM d, yyyy") : "—" },
-                cycleType === "pregnancy" && latestCycle.estimated_due_date
-                  ? { label: "Due Date", value: format(new Date(latestCycle.estimated_due_date), "MMM d, yyyy") }
-                  : cycleType === "postpartum" && latestCycle.start_date
-                  ? { label: "Postpartum Day", value: `Day ${Math.max(1, differenceInDays(new Date(), new Date(latestCycle.start_date)) + 1)}` }
-                  : isMenstrual
-                  ? { label: "Cycle Length", value: `${latestCycle.cycle_length || cycleLength} days` }
-                  : { label: "HRT", value: latestCycle.hrt_type || "Not set" },
-                cycleType === "pregnancy" && latestCycle.last_menstrual_period
-                  ? { label: "LMP", value: format(new Date(latestCycle.last_menstrual_period), "MMM d, yyyy") }
-                  : { label: "Entries", value: `${entries.length} total` },
-              ].filter(Boolean).slice(0, 4).map((item) => (
-                <div key={item.label} className="bg-muted/40 rounded-xl p-3">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{item.label}</p>
-                  <p className="text-sm font-semibold text-foreground mt-0.5">{item.value}</p>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setShowEditCycle(!showEditCycle)}
-              className="w-full py-2.5 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
-            >
-              {showEditCycle ? "Hide Cycle Settings" : "Edit Cycle Settings"}
-            </button>
-
-            {showEditCycle && (
-              <div className="space-y-3 pt-1">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">Cycle Length</Label>
-                    <Input type="number" min={20} max={60} value={cycleLength}
-                      onChange={(e) => { const v = parseInt(e.target.value) || 28; setCycleLength(v); setOvulationDay(Math.max(1, v - 14)); }} />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">Ovulation Day</Label>
-                    <Input type="number" min={1} max={cycleLength - 1} value={ovulationDay}
-                      onChange={(e) => setOvulationDay(parseInt(e.target.value) || 14)} />
-                  </div>
-                </div>
-                <Button variant="outline" size="sm" className="w-full" onClick={() => saveSettingsMutation.mutate()} disabled={saveSettingsMutation.isPending}>
-                  Save Settings
-                </Button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground text-center py-4">No cycle recorded yet. Log a cycle from the Dashboard.</p>
-        )}
-      </Section>
+      {/* ── Current Cycle Details (Mode-Aware) ── */}
+      <CurrentCycleDetails
+        latestCycle={latestCycle}
+        cycleType={cycleType}
+        entries={entries}
+        cycles={cycles}
+        cycleLength={cycleLength}
+        setCycleLength={setCycleLength}
+        ovulationDay={ovulationDay}
+        setOvulationDay={setOvulationDay}
+        saveSettingsMutation={saveSettingsMutation}
+      />
 
       {/* ── Quick Actions ── */}
       <Section title="Quick Actions" icon={Settings}>

@@ -17,6 +17,7 @@ import PregnancySymptoms from "@/components/log/PregnancySymptoms";
 import MenopauseSymptoms from "@/components/log/MenopauseSymptoms";
 import PostpartumSymptoms, { PP_SYMPTOM_KEYS } from "@/components/log/PostpartumSymptoms";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
+import CalendarPopup from "@/components/dashboard/CalendarPopup";
 import { SYMPTOM_CATEGORIES, ALL_SYMPTOMS, getCycleDay, calculateDayTotal } from "@/lib/symptoms";
 
 const PREG_SYMPTOM_KEYS = ["p_nausea","p_vomiting","p_fatigue","p_mood_changes","p_sleep_issues","p_back_pain","p_braxton_hicks","p_heartburn","p_swelling","p_breast_changes"];
@@ -89,6 +90,7 @@ export default function DailyLog() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [autoSaveTimer, setAutoSaveTimer] = useState(null);
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],
@@ -263,6 +265,14 @@ export default function DailyLog() {
   const progress = activeKeys.length > 0 ? Math.round((filledCount / activeKeys.length) * 100) : 0;
 
   return (
+    <>
+      <CalendarPopup
+        isOpen={showCalendar}
+        onClose={() => setShowCalendar(false)}
+        entries={entries}
+        cycles={cycles}
+        cycleType={cycleType}
+      />
     <div className="space-y-5 pb-36">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -575,5 +585,6 @@ export default function DailyLog() {
         CycleMind is not a substitute for professional medical advice. Consult your doctor.
       </p>
     </div>
+    </>
   );
 }
