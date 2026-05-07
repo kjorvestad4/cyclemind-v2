@@ -59,25 +59,26 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
       const isModeChange = selected !== currentCycleType;
       
       // Force explicit LMP value (allow null for clearing)
-      const forcedLmp = lmp || null;
-      console.log(`[CycleMind] handleSave - Input LMP value: "${lmp}" → forcedLmp: "${forcedLmp}"`);
-      console.log(`[CycleMind] Force-updating Cycle ${latestCycle?.id}: LMP = ${forcedLmp}`);
+      // Normalize to strict yyyy-MM-dd format (strip any timezone info)
+      const lmpToSave = lmp ? String(lmp).split('T')[0] : null;
+      console.log(`[CycleMind] handleSave - Input LMP: "${lmp}" → normalized: "${lmpToSave}"`);
+      console.log(`[CycleMind] Force-updating Cycle ${latestCycle?.id}: LMP = ${lmpToSave}`);
       
       // Calculate EDD for pregnancy mode (ovulation priority)
       let eddData = null;
       let pregnancyWeek = undefined;
-      if (selected === "pregnancy" && (lmp || ovulationDate)) {
-        eddData = calculateEDD(ovulationDate, lmp);
+      if (selected === "pregnancy" && (lmpToSave || ovulationDate)) {
+        eddData = calculateEDD(ovulationDate, lmpToSave);
         const baselineDate = ovulationDate || lmp;
         pregnancyWeek = getPregnancyWeek(baselineDate, new Date(today));
       }
       
       // Build cycle data with forced LMP field write
       const cycleData = {
-        start_date: selected === "menstrual" || selected === "perimenopause" ? (lmp || today) : (latestCycle?.start_date || today),
+        start_date: selected === "menstrual" || selected === "perimenopause" ? (lmpToSave || today) : (latestCycle?.start_date || today),
         cycle_type: selected,
         cycle_length: selected === "menstrual" ? cycleLength || 28 : undefined,
-        last_menstrual_period: forcedLmp, // FORCE: Always write this field
+        last_menstrual_period: lmpToSave, // FORCE: Always write this field (normalized, no timezone)
         ovulation_date: selected === "pregnancy" ? ovulationDate || undefined : undefined,
         estimated_due_date: selected === "pregnancy" ? eddData?.edd : undefined,
         pregnancy_week: selected === "pregnancy" ? pregnancyWeek : undefined,
@@ -101,7 +102,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
       queryClient.invalidateQueries({ queryKey: ["entries"] });
       
-      const lmpDisplay = forcedLmp ? format(new Date(forcedLmp), "MMM d, yyyy") : "(cleared)";
+      const lmpDisplay = lmpToSave ? format(new Date(lmpToSave), "MMM d, yyyy") : "(cleared)";
       
       if (isModeChange) {
         if (selected === "pregnancy" && eddData) {
