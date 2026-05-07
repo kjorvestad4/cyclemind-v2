@@ -184,7 +184,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                         <div className="flex items-center gap-1.5">
                           <Input 
                             type="date" 
-                            value={lmp || ""} 
+                            value={lmp ? String(lmp).split('T')[0] : ""} 
                             onChange={(e) => {
                               const newVal = e.target.value;
                               console.log(`[CycleMind] LMP input changed to: ${newVal}`);
