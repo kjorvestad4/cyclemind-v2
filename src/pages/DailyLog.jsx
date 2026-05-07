@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, subDays, addDays, differenceInDays } from "date-fns";
-import { ChevronLeft, ChevronRight, Save, Check, Trash2, Mic, ChevronDown, ChevronUp, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, Check, Trash2, Mic, ChevronDown, ChevronUp, Settings, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import MedicationsTaken from "@/components/log/MedicationsTaken";
 import CustomSymptoms from "@/components/log/CustomSymptoms";
 import MoodScales from "@/components/log/MoodScales";
 import EpdsScale from "@/components/log/EpdsScale";
+import OvulationTracking from "@/components/log/OvulationTracking";
 import PregnancySymptoms from "@/components/log/PregnancySymptoms";
 import MenopauseSymptoms from "@/components/log/MenopauseSymptoms";
 import PostpartumSymptoms, { PP_SYMPTOM_KEYS } from "@/components/log/PostpartumSymptoms";
@@ -87,6 +88,9 @@ export default function DailyLog() {
   const [epdsResponses, setEpdsResponses] = useState({});
   const [fetalMovementFelt, setFetalMovementFelt] = useState(false);
   const [fetalMovementCount, setFetalMovementCount] = useState(0);
+  const [ovulationTest, setOvulationTest] = useState("");
+  const [ovulationDate, setOvulationDate] = useState("");
+  const [cervicalMucus, setCervicalMucus] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [autoSaveTimer, setAutoSaveTimer] = useState(null);
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
@@ -158,6 +162,7 @@ export default function DailyLog() {
       setPhq9Score(0); setGad7Score(0); setPhq9Responses({}); setGad7Responses({});
       setEpdsScore(0); setEpdsResponses({});
       setFetalMovementFelt(false); setFetalMovementCount(0);
+      setOvulationTest(""); setOvulationDate(""); setCervicalMucus("");
     }
     setHasUnsavedChanges(false);
   }, [selectedDate, existingEntry?.id]);
@@ -184,6 +189,13 @@ export default function DailyLog() {
     setHasUnsavedChanges(true);
   }, []);
 
+  const handleOvulationChange = useCallback((field, value) => {
+    if (field === "ovulation_test") setOvulationTest(value);
+    else if (field === "ovulation_date") setOvulationDate(value);
+    else if (field === "cervical_mucus") setCervicalMucus(value);
+    setHasUnsavedChanges(true);
+  }, []);
+
   const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
 
   const buildPayload = () => {
@@ -207,6 +219,9 @@ export default function DailyLog() {
       epds_responses: Object.keys(epdsResponses).length ? epdsResponses : undefined,
       fetal_movement_felt: isPregnancy ? fetalMovementFelt : undefined,
       fetal_movement_count: isPregnancy && fetalMovementFelt ? fetalMovementCount : undefined,
+      ovulation_test: (isMenstrual || cycleType === "perimenopause") ? ovulationTest || undefined : undefined,
+      ovulation_date: (isMenstrual || cycleType === "perimenopause") ? ovulationDate || undefined : undefined,
+      cervical_mucus: (isMenstrual || cycleType === "perimenopause") ? cervicalMucus || undefined : undefined,
       // isPostpartum uses pp_* keys (populated below via PP_SYMPTOM_KEYS loop)
     };
     ALL_SYMPTOMS.forEach((s) => { data[s.key] = scores[s.key] || 0; });
@@ -275,11 +290,14 @@ export default function DailyLog() {
       />
     <div className="space-y-5 pb-36">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => changeDate("prev")}>
           <ChevronLeft className="w-5 h-5" />
         </Button>
-        <div className="text-center">
+        <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0" onClick={() => setShowCalendar(true)}>
+          <CalendarIcon className="w-5 h-5 text-primary" />
+        </Button>
+        <div className="text-center flex-1">
           <p className="text-lg font-bold">{format(parseLocalDate(selectedDate), "EEE, MMM d")}</p>
           <div className="flex items-center justify-center gap-2 mt-0.5 flex-wrap">
             {isMenstrual && cycleDay && (
@@ -302,15 +320,15 @@ export default function DailyLog() {
             )}
             {isPostpartum && latestCycle?.start_date && (
               <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold bg-purple-50 text-purple-600 dark:bg-purple-950 dark:text-purple-300">
-                Day {Math.max(1, Math.floor((new Date(selectedDate) - new Date(latestCycle.start_date)) / 86400000) + 1)}
-              </span>
-            )}
-          </div>
-        </div>
-        <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => changeDate("next")}>
-          <ChevronRight className="w-5 h-5" />
-        </Button>
-      </div>
+                    Day {Math.max(1, Math.floor((new Date(selectedDate) - new Date(latestCycle.start_date)) / 86400000) + 1)}
+                  </span>
+                )}
+              </div>
+              </div>
+              <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0" onClick={() => changeDate("next")}>
+              <ChevronRight className="w-5 h-5" />
+              </Button>
+              </div>
 
       {/* Mode Banner */}
       <div className={`rounded-2xl border-2 p-3.5 flex items-center justify-between gap-3 ${
@@ -379,6 +397,12 @@ export default function DailyLog() {
               <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
             </div>
           </Section>
+          <OvulationTracking
+            ovulationTest={ovulationTest}
+            ovulationDate={ovulationDate}
+            cervicalMucus={cervicalMucus}
+            onChange={handleOvulationChange}
+          />
           <MoodScales
             phq9Responses={phq9Responses}
             gad7Responses={gad7Responses}
@@ -492,11 +516,19 @@ export default function DailyLog() {
             onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
           />
           {cycleType === "perimenopause" && (
-            <Section title="Bleeding / Spotting" subtitle="Irregular bleeding is common in perimenopause">
-              <div className="pt-1">
-                <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
-              </div>
-            </Section>
+            <>
+              <Section title="Bleeding / Spotting" subtitle="Irregular bleeding is common in perimenopause">
+                <div className="pt-1">
+                  <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
+                </div>
+              </Section>
+              <OvulationTracking
+                ovulationTest={ovulationTest}
+                ovulationDate={ovulationDate}
+                cervicalMucus={cervicalMucus}
+                onChange={handleOvulationChange}
+              />
+            </>
           )}
 
           {/* Collapsible DRSP for menopause — hidden by default */}

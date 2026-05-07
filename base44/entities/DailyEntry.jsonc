@@ -55,6 +55,25 @@
       ],
       "description": "Menstrual flow: H=heavy, M=medium, L=light/spotting"
     },
+    "ovulation_test": {
+      "type": "string",
+      "enum": [
+        "",
+        "Negative",
+        "Positive",
+        "LH Surge"
+      ],
+      "description": "Ovulation test result (for menstrual/perimenopause modes)"
+    },
+    "ovulation_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Estimated ovulation date"
+    },
+    "cervical_mucus": {
+      "type": "string",
+      "description": "Cervical mucus observation (e.g., 'Thick and tacky', 'Egg-white consistency', 'Dry')"
+    },
     "s_mood_swings": {
       "type": "number",
       "description": "DRSP: Mood swings (1-6)"

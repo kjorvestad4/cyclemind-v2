@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { PenLine, Check } from "lucide-react";
+import { PenLine, Check, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { calculateDayTotal, ALL_SYMPTOMS, getCycleDay } from "@/lib/symptoms";
 import ModeBanner from "@/components/dashboard/ModeBanner";
 import ModeContent from "@/components/dashboard/ModeContent";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
+import CalendarPopup from "@/components/dashboard/CalendarPopup";
 import TodaySeverityCard from "@/components/dashboard/TodaySeverityCard";
 import { StreakWidget, RecentInsightsWidget, NextMilestoneWidget, QuickLinksRow } from "@/components/dashboard/UniversalWidgets";
 
@@ -24,6 +25,7 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -57,12 +59,29 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-4 pb-24">
-      {/* Greeting */}
-      <div>
-        <h2 className="font-serif text-2xl font-semibold text-foreground">
-          {getGreeting()}{user?.full_name ? `, ${user.full_name.split(" ")[0]}` : ""}
-        </h2>
-        <p className="text-sm text-muted-foreground mt-0.5">You've got this — tracking helps. 💜</p>
+      <CalendarPopup
+        isOpen={showCalendar}
+        onClose={() => setShowCalendar(false)}
+        entries={entries}
+        cycles={cycles}
+        cycleType={cycleType}
+      />
+      {/* Greeting with Calendar */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1">
+          <h2 className="font-serif text-2xl font-semibold text-foreground">
+            {getGreeting()}{user?.full_name ? `, ${user.full_name.split(" ")[0]}` : ""}
+          </h2>
+          <p className="text-sm text-muted-foreground mt-0.5">You've got this — tracking helps. 💜</p>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-10 w-10 rounded-full hover:bg-muted shrink-0 mt-1"
+          onClick={() => setShowCalendar(true)}
+        >
+          <CalendarIcon className="w-5 h-5 text-primary" />
+        </Button>
       </div>
 
       {/* Mode Banner */}
