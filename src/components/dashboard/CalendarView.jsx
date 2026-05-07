@@ -28,11 +28,10 @@ export default function CalendarView({ entries, cycles, onDayClick, activePeriod
     entryMap[e.date] = e;
   });
 
-  // Only show cycle start markers when a period date is actively set
-  const cycleStartDates = activePeriodDate
-    ? new Set((cycles || []).map((c) => c.start_date))
-    : new Set();
-  const newPeriodStr = newPeriodDate || null;
+  // Show saved cycle start markers only (always, regardless of activePeriodDate)
+  const cycleStartDates = new Set((cycles || []).map((c) => c.start_date));
+  // newPeriodStr is an unsaved/preview period date not yet in cycles
+  const newPeriodStr = (newPeriodDate && !cycleStartDates.has(newPeriodDate)) ? newPeriodDate : null;
   const ovulationStr = ovulationDate || null;
   const fertilitySet = new Set(fertilityWindowDates);
 
@@ -96,7 +95,7 @@ export default function CalendarView({ entries, cycles, onDayClick, activePeriod
           const inMonth = isSameMonth(d, currentMonth);
           const today = isToday(d);
           const isCycleStart = cycleStartDates.has(dateStr);
-          const isNewPeriod = newPeriodStr === dateStr;
+          const isNewPeriod = newPeriodStr === dateStr; // only true if not already a saved cycle
           const isOvulation = ovulationStr === dateStr;
           const isFertility = fertilitySet.has(dateStr) && !isOvulation;
           const severity = getDaySeverity(dateStr);
