@@ -2,11 +2,13 @@ import { useState } from "react";
 import { ExternalLink, Heart, AlertTriangle, BookOpen, Phone, Baby, Flame, Shield, Bookmark } from "lucide-react";
 import { toast } from "sonner";
 
+// ── Data ──────────────────────────────────────────────────────────────────────
+
 const TABS = [
   { id: "menstrual", short: "Menstrual" },
   { id: "pregnancy", short: "Pregnancy" },
   { id: "menopause", short: "Menopause" },
-  { id: "crisis", short: "Crisis" },
+  { id: "crisis", short: "Crisis 🆘" },
 ];
 
 const CONTENT = {
@@ -78,7 +80,7 @@ const CONTENT = {
         title: "Prenatal Depression & Anxiety",
         tag: "During Pregnancy",
         tagColor: "bg-pink-100 text-pink-700",
-        body: "Depression and anxiety during pregnancy are common and underdiagnosed. Symptoms include persistent sadness, excessive worry, withdrawal, difficulty sleeping even when tired, and intrusive thoughts. Evidence-based treatments including therapy and medication are safe in pregnancy — discuss options with your OB or midwife.",
+        body: "Depression and anxiety during pregnancy are common and underdiagnosed. Evidence-based treatments including therapy and medication are safe in pregnancy — discuss options with your OB or midwife.",
         link: { label: "ACOG Perinatal Mental Health", url: "https://www.acog.org/womens-health/faqs/postpartum-depression" },
       },
       {
@@ -86,14 +88,14 @@ const CONTENT = {
         title: "Safe Medication in Pregnancy & Postpartum",
         tag: "Treatment",
         tagColor: "bg-emerald-100 text-emerald-700",
-        body: "SSRIs (particularly sertraline and fluoxetine) are generally considered compatible with pregnancy and breastfeeding. The risks of untreated depression to the fetus are well-documented and often outweigh medication risks. Your doctor or psychiatrist can help you make an informed, personalised decision.",
+        body: "SSRIs (particularly sertraline and fluoxetine) are generally considered compatible with pregnancy and breastfeeding. The risks of untreated depression to the fetus are well-documented. Your doctor or psychiatrist can help you make an informed, personalised decision.",
       },
       {
         icon: Shield,
         title: "Building Your Support Network",
         tag: "Self-Care",
         tagColor: "bg-secondary text-secondary-foreground",
-        body: "Practical steps: Identify your primary support person before birth. Join a local or online perinatal support group. Ask your midwife about a specialist perinatal mental health referral. Complete the Edinburgh Postnatal Depression Scale (EPDS) at your postnatal check. Track your mood daily in CycleMind.",
+        body: "Identify your primary support person before birth. Join a local or online perinatal support group. Ask your midwife about a specialist perinatal mental health referral. Complete the Edinburgh Postnatal Depression Scale (EPDS) at your postnatal check.",
         link: { label: "Find a PSI Provider", url: "https://www.postpartum.net/get-help/find-a-psi-provider-2/" },
       },
     ],
@@ -106,7 +108,7 @@ const CONTENT = {
         title: "Understanding Perimenopause & Menopause",
         tag: "Core Guide",
         tagColor: "bg-orange-100 text-orange-700",
-        body: "Perimenopause begins years before menopause (average age 51 in the UK/US) and is characterised by irregular cycles, hormonal fluctuations, hot flashes, sleep disruption, and mood changes. Menopause is confirmed after 12 consecutive months without a period.",
+        body: "Perimenopause begins years before menopause (average age 51) and is characterised by irregular cycles, hormonal fluctuations, hot flashes, sleep disruption, and mood changes. Menopause is confirmed after 12 consecutive months without a period.",
         link: { label: "Menopause Society – Patient Resources", url: "https://www.menopause.org/for-women/menopauseflashes" },
       },
       {
@@ -114,7 +116,7 @@ const CONTENT = {
         title: "HRT — The Evidence-Based Decision",
         tag: "Treatment",
         tagColor: "bg-orange-100 text-orange-700",
-        body: "Hormone Replacement Therapy (HRT) is the most effective treatment for vasomotor symptoms (hot flashes, night sweats) and also protects bone density and cardiovascular health when started within 10 years of menopause. Modern transdermal HRT has an excellent safety profile for most women under 60. Discuss with your GP or menopause specialist.",
+        body: "Hormone Replacement Therapy (HRT) is the most effective treatment for vasomotor symptoms. Modern transdermal HRT has an excellent safety profile for most women under 60. Discuss with your GP or menopause specialist.",
         link: { label: "NAMS HRT Decision Tool", url: "https://www.menopause.org/for-women/menopauseflashes/menopause-symptoms-and-treatments/hormone-therapy-is-it-right-for-you-" },
       },
       {
@@ -122,14 +124,14 @@ const CONTENT = {
         title: "Sleep Strategies for Menopause",
         tag: "Self-Care",
         tagColor: "bg-secondary text-secondary-foreground",
-        body: "Sleep disruption affects up to 60% of menopausal women. Evidence-based strategies: Keep bedroom cool (below 18°C/65°F), use moisture-wicking bedding, avoid alcohol within 3 hours of sleep, practice consistent sleep/wake times, and consider CBT-I (Cognitive Behavioural Therapy for Insomnia).",
+        body: "Sleep disruption affects up to 60% of menopausal women. Keep bedroom cool (below 18°C/65°F), use moisture-wicking bedding, avoid alcohol within 3 hours of sleep, and consider CBT-I (Cognitive Behavioural Therapy for Insomnia).",
       },
       {
         icon: AlertTriangle,
         title: "Mood Changes & Menopausal Depression",
         tag: "Mental Health",
         tagColor: "bg-primary/10 text-primary",
-        body: "Oestrogen decline significantly affects serotonin and dopamine pathways, increasing risk of depression and anxiety during the menopausal transition. Many women are misdiagnosed with primary depression when HRT could address root hormonal causes. Track PHQ-9 scores in CycleMind to document patterns over time.",
+        body: "Oestrogen decline significantly affects serotonin and dopamine pathways, increasing risk of depression and anxiety. Many women are misdiagnosed with primary depression when HRT could address root hormonal causes.",
         link: { label: "British Menopause Society", url: "https://thebms.org.uk/publications/tools-for-clinicians/bms-menopause-and-mental-health/" },
       },
       {
@@ -137,7 +139,7 @@ const CONTENT = {
         title: "Tracking Symptoms for Your Appointment",
         tag: "Clinical",
         tagColor: "bg-primary/10 text-primary",
-        body: "Bring your CycleMind data to appointments: hot flash frequency and severity, sleep disruption scores, PHQ-9/GAD-7 trends, and your HRT medication log. Use the 'Doctor Share' feature in Insights to generate a shareable clinical report.",
+        body: "Bring your CycleMind data to appointments: hot flash frequency, sleep scores, PHQ-9/GAD-7 trends, and HRT medication logs. Use the 'Doctor Share' feature in Insights to generate a shareable clinical report.",
       },
     ],
   },
@@ -161,7 +163,7 @@ const CRISIS_LINES = [
 function ArticleCard({ article, saved, onToggleSave }) {
   const Icon = article.icon;
   return (
-    <div className="relative rounded-2xl border border-border/60 bg-card p-4 space-y-2">
+    <div className="rounded-2xl border border-border/60 bg-card p-4 space-y-3 relative">
       <div className="flex items-start gap-3 pr-8">
         <div className="w-8 h-8 rounded-xl bg-muted flex items-center justify-center shrink-0 mt-0.5">
           <Icon className="w-4 h-4 text-primary" />
@@ -187,7 +189,7 @@ function ArticleCard({ article, saved, onToggleSave }) {
         </div>
       </div>
       <button
-        onClick={onToggleSave}
+        onClick={() => onToggleSave(article.title)}
         className={`absolute top-3 right-3 p-1.5 rounded-lg transition-colors ${
           saved ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-primary hover:bg-muted"
         }`}
@@ -210,26 +212,25 @@ function CrisisTab() {
           PMDD, perinatal mood disorders, and menopausal depression can all cause suicidal thoughts. These are symptoms of an illness — not who you are. Help is available and treatment works.
         </p>
       </div>
-      {CRISIS_LINES.map((line) => (
-        <a
-          key={line.name}
-          href={line.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-between rounded-2xl border border-border/60 bg-card p-4 hover:bg-muted/30 transition-colors"
-        >
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-semibold">{line.country}</span>
-              <span className="text-sm font-semibold text-foreground">{line.name}</span>
+      <div className="space-y-3">
+        {CRISIS_LINES.map((line) => (
+          <a
+            key={line.name}
+            href={line.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between rounded-2xl border border-border/60 bg-card p-4 hover:bg-muted/30 transition-colors"
+          >
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-semibold">{line.country}</span>
+                <span className="text-sm font-semibold text-foreground">{line.name}</span>
+              </div>
+              <p className="text-xs font-mono text-primary mt-0.5">{line.contact}</p>
             </div>
-            <p className="text-xs font-mono text-primary mt-0.5">{line.contact}</p>
-          </div>
-          <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0" />
-        </a>
-      ))}
-      <div className="bg-muted/40 rounded-xl p-4 text-center">
-        <p className="text-[10px] text-muted-foreground leading-relaxed">You deserve support. Reaching out is a sign of strength, not weakness.</p>
+            <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0" />
+          </a>
+        ))}
       </div>
     </div>
   );
@@ -242,11 +243,10 @@ export default function Resources() {
   const content = CONTENT[activeTab];
 
   const toggleSave = (title) => {
-    setSaved((prev) => {
-      const next = prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title];
-      toast.success(prev.includes(title) ? "Removed from saved" : "Saved to My Resources");
-      return next;
-    });
+    setSaved((prev) =>
+      prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title]
+    );
+    toast.success(saved.includes(title) ? "Removed from saved" : "Saved!");
   };
 
   return (
@@ -263,7 +263,9 @@ export default function Resources() {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`py-2 rounded-xl text-[11px] font-semibold transition-all ${
-              activeTab === tab.id ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+              activeTab === tab.id
+                ? "bg-card shadow-sm text-foreground"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {tab.short}
@@ -282,7 +284,7 @@ export default function Resources() {
               key={article.title}
               article={article}
               saved={saved.includes(article.title)}
-              onToggleSave={() => toggleSave(article.title)}
+              onToggleSave={toggleSave}
             />
           ))}
         </div>
@@ -291,18 +293,17 @@ export default function Resources() {
       {saved.length > 0 && activeTab !== "crisis" && (
         <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 space-y-2">
           <p className="text-xs font-semibold text-primary flex items-center gap-1.5">
-            <Bookmark className="w-3.5 h-3.5 fill-primary" /> My Saved Resources ({saved.length})
+            <Bookmark className="w-3.5 h-3.5 fill-primary" /> Saved ({saved.length})
           </p>
           {saved.map((title) => (
             <p key={title} className="text-xs text-muted-foreground">• {title}</p>
           ))}
-          <p className="text-[10px] text-muted-foreground italic">Saved items are stored locally on this device.</p>
         </div>
       )}
 
       <div className="bg-muted/40 rounded-xl p-4 text-center">
         <p className="text-[10px] text-muted-foreground leading-relaxed">
-          ⚕️ Content is for informational purposes only. Not a substitute for professional medical advice, diagnosis or treatment.
+          ⚕️ Content is for informational purposes only. Not a substitute for professional medical advice. Always consult your qualified healthcare provider.
         </p>
       </div>
     </div>
