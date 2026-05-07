@@ -56,70 +56,67 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
     try {
       const today = format(new Date(), "yyyy-MM-dd");
       
-      // Normalize LMP to strict yyyy-MM-dd (strip timezone)
-      const lmpToSave = lmp ? String(lmp).split('T')[0] : null;
-      const isModeChange = selected !== currentCycleType;
+      // Extract exact picker value (yyyy-MM-dd format, no timezone conversion)
+      const pickerValue = lmp ? String(lmp).split('T')[0] : null;
+      console.log(`[CycleMind] EXPLICIT SAVE: picker value="${pickerValue}", mode="${selected}"`);
       
-      console.log(`[CycleMind] FORCE SAVE: LMP="${lmpToSave}", Mode="${selected}", ModeChange=${isModeChange}`);
-      
-      // If no cycle exists, create one
+      // Must have active cycle
       if (!latestCycle?.id) {
-        console.log(`[CycleMind] No cycle found, creating new one`);
+        console.log(`[CycleMind] Creating new cycle with LMP=${pickerValue}`);
         await base44.entities.Cycle.create({
-          start_date: lmpToSave || today,
+          start_date: pickerValue || today,
           cycle_type: selected,
           cycle_length: cycleLength || 28,
-          last_menstrual_period: lmpToSave,
+          last_menstrual_period: pickerValue,
           ovulation_date: ovulationDate || undefined,
         });
       } else {
-        // ALWAYS force-update the existing cycle, regardless of mode match
-        const updateData = {
+        // FORCE update existing cycle with exact picker value
+        const updatePayload = {
           cycle_type: selected,
-          last_menstrual_period: lmpToSave,
+          last_menstrual_period: pickerValue, // Exact picker value, no conversion
         };
         
-        // Add mode-specific fields
         if (selected === "menstrual" || selected === "perimenopause") {
-          updateData.cycle_length = cycleLength || 28;
-          updateData.start_date = lmpToSave || today;
+          updatePayload.cycle_length = cycleLength || 28;
+          updatePayload.start_date = pickerValue || today;
         }
         
         if (selected === "pregnancy") {
-          updateData.ovulation_date = ovulationDate || undefined;
-          if (lmpToSave || ovulationDate) {
-            const eddData = calculateEDD(ovulationDate, lmpToSave);
-            const baselineDate = ovulationDate || lmpToSave;
+          updatePayload.ovulation_date = ovulationDate || undefined;
+          if (pickerValue || ovulationDate) {
+            const eddData = calculateEDD(ovulationDate, pickerValue);
+            const baselineDate = ovulationDate || pickerValue;
             const pregnancyWeek = getPregnancyWeek(baselineDate, new Date(today));
-            updateData.estimated_due_date = eddData?.edd;
-            updateData.pregnancy_week = pregnancyWeek;
+            updatePayload.estimated_due_date = eddData?.edd;
+            updatePayload.pregnancy_week = pregnancyWeek;
           }
         }
         
         if (selected === "perimenopause" || selected === "menopause") {
-          updateData.hrt_type = hrtType || undefined;
+          updatePayload.hrt_type = hrtType || undefined;
         }
         
-        console.log(`[CycleMind] FORCE UPDATE Cycle ${latestCycle.id}:`, updateData);
-        await base44.entities.Cycle.update(latestCycle.id, updateData);
+        console.log(`[CycleMind] UPDATE Cycle ${latestCycle.id} with payload:`, updatePayload);
+        await base44.entities.Cycle.update(latestCycle.id, updatePayload);
       }
       
-      // Aggressively refresh ALL caches
+      // Force full refresh of all related queries
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
       queryClient.invalidateQueries({ queryKey: ["entries"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
       await queryClient.refetchQueries({ queryKey: ["cycles"] });
       await queryClient.refetchQueries({ queryKey: ["entries"] });
       
-      // Show exact result
-      const lmpDisplay = lmpToSave ? format(new Date(lmpToSave), "MMM d, yyyy") : "Cleared";
-      toast.success(`LMP saved: ${lmpDisplay}`);
+      // Toast with exact selected value
+      const displayValue = pickerValue ? format(new Date(`${pickerValue}T00:00:00`), "MMM d, yyyy") : "Cleared";
+      toast.success(`LMP updated to ${displayValue}`);
       
-      console.log(`[CycleMind] FORCE SAVE COMPLETE ✓`);
+      console.log(`[CycleMind] EXPLICIT SAVE COMPLETE ✓ - LMP="${pickerValue}" persisted`);
       onClose();
     } catch (error) {
-      console.error("[CycleMind] FORCE SAVE FAILED:", error);
-      toast.error("Failed to save. Try again.");
+      console.error("[CycleMind] EXPLICIT SAVE FAILED:", error);
+      toast.error("Failed to update LMP. Try again.");
     } finally {
       setSaving(false);
     }
@@ -186,11 +183,11 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                             type="date" 
                             min={format(subYears(new Date(), 5), "yyyy-MM-dd")}
                             max={format(addDays(new Date(), 30), "yyyy-MM-dd")}
-                            value={lmp ? String(lmp).split('T')[0] : ""} 
+                            value={String(lmp || "").split('T')[0]}
                             onChange={(e) => {
-                              const newVal = e.target.value;
-                              console.log(`[CycleMind] LMP input changed to: ${newVal}`);
-                              setLmp(newVal);
+                              const pickedValue = e.target.value;
+                              console.log(`[CycleMind] LMP picker changed → value="${pickedValue}"`);
+                              setLmp(pickedValue);
                             }} 
                             className="h-8 text-sm bg-background max-w-[140px]" 
                           />
