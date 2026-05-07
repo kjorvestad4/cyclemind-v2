@@ -15,6 +15,8 @@ import MoodScales from "@/components/log/MoodScales";
 import EpdsScale from "@/components/log/EpdsScale";
 import PregnancySymptoms from "@/components/log/PregnancySymptoms";
 import MenopauseSymptoms from "@/components/log/MenopauseSymptoms";
+import PostpartumSymptoms, { PP_SYMPTOM_KEYS } from "@/components/log/PostpartumSymptoms";
+import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import { SYMPTOM_CATEGORIES, ALL_SYMPTOMS, getCycleDay, calculateDayTotal } from "@/lib/symptoms";
 
 const PREG_SYMPTOM_KEYS = ["p_nausea","p_vomiting","p_fatigue","p_mood_changes","p_sleep_issues","p_back_pain","p_braxton_hicks","p_heartburn","p_swelling","p_breast_changes"];
@@ -86,6 +88,7 @@ export default function DailyLog() {
   const [fetalMovementCount, setFetalMovementCount] = useState(0);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [autoSaveTimer, setAutoSaveTimer] = useState(null);
+  const [showModeSwitcher, setShowModeSwitcher] = useState(false);
 
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],
@@ -107,9 +110,11 @@ export default function DailyLog() {
   const cycleType = latestCycle?.cycle_type
     || (latestCycle?.is_pregnancy_mode ? "pregnancy" : latestCycle?.is_menopause_mode ? "menopause" : "menstrual");
 
-  const isPregnancy = cycleType === "pregnancy" || cycleType === "postpartum";
+  const isPregnancy = cycleType === "pregnancy";
+  const isPostpartum = cycleType === "postpartum";
+  const isPerinatal = isPregnancy || isPostpartum;
   const isMenopause = cycleType === "menopause" || cycleType === "perimenopause";
-  const isMenstrual = !isPregnancy && !isMenopause;
+  const isMenstrual = !isPerinatal && !isMenopause;
 
   const pregnancyWeek = latestCycle?.pregnancy_week
     || (latestCycle?.last_menstrual_period
@@ -121,13 +126,14 @@ export default function DailyLog() {
     ? (cycleDay <= 5 ? "menstrual" : cycleDay <= 13 ? "follicular" : cycleDay === 14 ? "ovulatory" : "luteal")
     : null);
   const phaseInfo = isMenstrual && currentPhase ? PHASE_LABELS[currentPhase] : null;
-  const cycleBadge = CYCLE_TYPE_BADGES[cycleType];
+  const cycleBadge = isPostpartum ? null : CYCLE_TYPE_BADGES[cycleType];
 
   useEffect(() => {
     if (existingEntry) {
       const newScores = {};
       ALL_SYMPTOMS.forEach((s) => { if (existingEntry[s.key]) newScores[s.key] = existingEntry[s.key]; });
       PREG_SYMPTOM_KEYS.forEach((k) => { if (existingEntry[k]) newScores[k] = existingEntry[k]; });
+      PP_SYMPTOM_KEYS.forEach((k) => { if (existingEntry[k]) newScores[k] = existingEntry[k]; });
       MENO_SYMPTOM_KEYS.forEach((k) => { if (existingEntry[k]) newScores[k] = existingEntry[k]; });
       setScores(newScores);
       setFlow(existingEntry.menstrual_flow || "");
@@ -199,9 +205,11 @@ export default function DailyLog() {
       epds_responses: Object.keys(epdsResponses).length ? epdsResponses : undefined,
       fetal_movement_felt: isPregnancy ? fetalMovementFelt : undefined,
       fetal_movement_count: isPregnancy && fetalMovementFelt ? fetalMovementCount : undefined,
+      // isPostpartum uses pp_* keys (populated below via PP_SYMPTOM_KEYS loop)
     };
     ALL_SYMPTOMS.forEach((s) => { data[s.key] = scores[s.key] || 0; });
     PREG_SYMPTOM_KEYS.forEach((k) => { data[k] = scores[k] || 0; });
+    PP_SYMPTOM_KEYS.forEach((k) => { data[k] = scores[k] || 0; });
     MENO_SYMPTOM_KEYS.forEach((k) => { data[k] = scores[k] || 0; });
     return data;
   };
@@ -248,11 +256,11 @@ export default function DailyLog() {
     setSelectedDate(format(d, "yyyy-MM-dd"));
   };
 
-  const activeKeys = isPregnancy ? PREG_SYMPTOM_KEYS : isMenopause ? MENO_SYMPTOM_KEYS : ALL_SYMPTOMS.map(s => s.key);
+  const activeKeys = isPregnancy ? PREG_SYMPTOM_KEYS : isPostpartum ? PP_SYMPTOM_KEYS : isMenopause ? MENO_SYMPTOM_KEYS : ALL_SYMPTOMS.map(s => s.key);
   const filledCount = activeKeys.filter((k) => (scores[k] || 0) > 0).length;
   const totalScore = isMenstrual ? calculateDayTotal({ ...scores }) : activeKeys.reduce((s, k) => s + (scores[k] || 0), 0);
   const maxScore = activeKeys.length * 6;
-  const progress = Math.round((filledCount / activeKeys.length) * 100);
+  const progress = activeKeys.length > 0 ? Math.round((filledCount / activeKeys.length) * 100) : 0;
 
   return (
     <div className="space-y-5 pb-36">
@@ -282,6 +290,11 @@ export default function DailyLog() {
                 Week {pregnancyWeek}{trimester ? ` · ${trimester.charAt(0).toUpperCase() + trimester.slice(1)}` : ""}
               </span>
             )}
+            {isPostpartum && latestCycle?.start_date && (
+              <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold bg-purple-50 text-purple-600 dark:bg-purple-950 dark:text-purple-300">
+                Day {Math.max(1, Math.floor((new Date(selectedDate) - new Date(latestCycle.start_date)) / 86400000) + 1)}
+              </span>
+            )}
           </div>
         </div>
         <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => changeDate("next")}>
@@ -292,33 +305,42 @@ export default function DailyLog() {
       {/* Mode Banner */}
       <div className={`rounded-2xl border-2 p-3.5 flex items-center justify-between gap-3 ${
         isPregnancy ? "border-pink-200 bg-pink-50 dark:border-pink-900 dark:bg-pink-950/30" :
+        isPostpartum ? "border-purple-200 bg-purple-50 dark:border-purple-900 dark:bg-purple-950/30" :
         isMenopause ? "border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950/30" :
         "border-primary/20 bg-primary/5"
       }`}>
         <div>
           <p className="text-sm font-bold text-foreground">
-            {isPregnancy && cycleType === "postpartum" && "🍼 Postpartum Mode"}
-            {isPregnancy && cycleType === "pregnancy" && `🤰 Pregnancy Mode${pregnancyWeek ? ` · Week ${pregnancyWeek}` : ""}`}
+            {isPostpartum && `🍼 Postpartum${latestCycle?.start_date ? ` · Day ${Math.max(1, Math.floor((new Date(selectedDate) - new Date(latestCycle.start_date)) / 86400000) + 1)}` : " Mode"}`}
+            {isPregnancy && `🤰 Pregnancy${pregnancyWeek ? ` · Week ${pregnancyWeek}` : " Mode"}`}
             {isMenopause && cycleType === "perimenopause" && "🌊 Perimenopause Mode"}
             {isMenopause && cycleType === "menopause" && "🔥 Menopause Mode"}
             {isMenstrual && "🌙 Menstrual / PMDD Tracking"}
           </p>
           <p className="text-[11px] text-muted-foreground mt-0.5">
-            {isPregnancy && trimester && trimester !== "postpartum" && `${trimester.charAt(0).toUpperCase() + trimester.slice(1)} trimester · `}
-            {isPregnancy && latestCycle?.estimated_due_date && `Due ${format(new Date(latestCycle.estimated_due_date), "MMM d, yyyy")}`}
+            {isPregnancy && trimester && `${trimester.charAt(0).toUpperCase() + trimester.slice(1)} trimester${latestCycle?.estimated_due_date ? ` · Due ${format(new Date(latestCycle.estimated_due_date), "MMM d, yyyy")}` : ""}`}
+            {isPostpartum && "Track recovery, mood, and postpartum wellbeing"}
             {isMenopause && latestCycle?.hrt_type && `HRT: ${latestCycle.hrt_type}`}
             {isMenstrual && cycleDay && `Cycle day ${cycleDay}${phaseInfo ? ` · ${phaseInfo.label} phase` : ""}`}
-            {!isPregnancy && !isMenopause && !cycleDay && "Log your symptoms below"}
+            {!isPerinatal && !isMenopause && !cycleDay && "Log your symptoms below"}
           </p>
         </div>
         <button
-          onClick={() => navigate("/profile")}
+          onClick={() => setShowModeSwitcher(true)}
           className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all shrink-0"
         >
           <Settings className="w-3.5 h-3.5" />
           Switch Mode
         </button>
       </div>
+
+      {showModeSwitcher && (
+        <QuickModeSwitcher
+          currentCycleType={cycleType}
+          latestCycle={latestCycle}
+          onClose={() => setShowModeSwitcher(false)}
+        />
+      )}
 
       {/* Progress Bar */}
       <div className="bg-card rounded-2xl border border-border/50 p-3 space-y-2">
@@ -360,7 +382,7 @@ export default function DailyLog() {
       {isPregnancy && (
         <>
           <Section
-            title={cycleType === "postpartum" ? "Postpartum Symptoms" : "Pregnancy Symptoms"}
+            title="Pregnancy Symptoms"
             subtitle={trimester ? `${trimester.charAt(0).toUpperCase() + trimester.slice(1)} trimester${pregnancyWeek ? ` · Week ${pregnancyWeek}` : ""}` : undefined}
             defaultOpen={true}
             badge={trimester ? trimester.charAt(0).toUpperCase() + trimester.slice(1) : undefined}
@@ -379,7 +401,7 @@ export default function DailyLog() {
           </Section>
           <EpdsScale
             responses={epdsResponses}
-            isPostpartum={cycleType === "postpartum"}
+            isPostpartum={false}
             onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); }}
           />
           <MoodScales
@@ -394,11 +416,41 @@ export default function DailyLog() {
               <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
             </div>
           </Section>
-
-          {/* Collapsible DRSP for pregnancy — hidden by default */}
           <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — track emotional wellbeing alongside pregnancy symptoms">
             <div className="pt-2 space-y-2">
               <p className="text-xs text-muted-foreground">Prenatal mood tracking can be valuable for your care team. Rate 1–6 if relevant.</p>
+              <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
+            </div>
+          </Section>
+        </>
+      )}
+
+      {/* POSTPARTUM MODE */}
+      {isPostpartum && (
+        <>
+          <Section title="Postpartum Symptoms" subtitle="Rate physical recovery and emotional wellbeing" defaultOpen={true} badge="Postpartum">
+            <div className="pt-2">
+              <PostpartumSymptoms
+                scores={scores}
+                onChange={handleScoreChange}
+                postpartumDay={latestCycle?.start_date ? Math.max(1, Math.floor((new Date(selectedDate) - new Date(latestCycle.start_date)) / 86400000) + 1) : null}
+              />
+            </div>
+          </Section>
+          <EpdsScale
+            responses={epdsResponses}
+            isPostpartum={true}
+            onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); }}
+          />
+          <MoodScales
+            phq9Responses={phq9Responses}
+            gad7Responses={gad7Responses}
+            hidePhq9={true}
+            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
+            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+          />
+          <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — classic mood/symptom grid for comparison">
+            <div className="pt-2">
               <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
             </div>
           </Section>
@@ -465,6 +517,8 @@ export default function DailyLog() {
             placeholder={
               isPregnancy
                 ? "How are you feeling today? Any movements, symptoms, or thoughts to remember..."
+                : isPostpartum
+                ? "How are you and baby doing today? Note recovery, feeding, sleep, and emotions..."
                 : isMenopause
                 ? "How was today? Note any hot flash triggers, sleep quality, or mood observations..."
                 : "How are you feeling today? Any patterns, triggers, or observations..."

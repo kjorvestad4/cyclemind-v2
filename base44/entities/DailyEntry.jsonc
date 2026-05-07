@@ -25,7 +25,7 @@
         "menopause"
       ],
       "default": "menstrual",
-      "description": "Lifecycle context at time of this entry \u2014 controls which symptom sets are shown"
+      "description": "Lifecycle context at time of this entry"
     },
     "trimester": {
       "type": "string",
@@ -35,11 +35,11 @@
         "third",
         "postpartum"
       ],
-      "description": "Pregnancy trimester \u2014 auto-set from pregnancy_week, or manually overridden"
+      "description": "Pregnancy trimester"
     },
     "pregnancy_week": {
       "type": "number",
-      "description": "Gestational week at time of entry (auto-populated from Cycle)"
+      "description": "Gestational week at time of entry"
     },
     "bleeding_intensity": {
       "type": "number",
@@ -238,6 +238,54 @@
     "fetal_movement_count": {
       "type": "number",
       "description": "Pregnancy: Approximate fetal kick count today"
+    },
+    "pp_lochiaBleeding": {
+      "type": "number",
+      "description": "Postpartum: Lochia / vaginal bleeding (1-6)"
+    },
+    "pp_perinealPain": {
+      "type": "number",
+      "description": "Postpartum: Perineal pain / soreness (1-6)"
+    },
+    "pp_incisionPain": {
+      "type": "number",
+      "description": "Postpartum: C-section incision pain (1-6)"
+    },
+    "pp_breastEngorgement": {
+      "type": "number",
+      "description": "Postpartum: Breast engorgement / fullness (1-6)"
+    },
+    "pp_mastitisSymptoms": {
+      "type": "number",
+      "description": "Postpartum: Mastitis symptoms \u2014 redness, heat, pain (1-6)"
+    },
+    "pp_urinaryIncontinence": {
+      "type": "number",
+      "description": "Postpartum: Urinary leakage / incontinence (1-6)"
+    },
+    "pp_constipation": {
+      "type": "number",
+      "description": "Postpartum: Constipation / bowel difficulties (1-6)"
+    },
+    "pp_fatigue": {
+      "type": "number",
+      "description": "Postpartum: Extreme fatigue / exhaustion (1-6)"
+    },
+    "pp_sleepWithBaby": {
+      "type": "number",
+      "description": "Postpartum: Sleep disruption from baby care (1-6)"
+    },
+    "pp_bondingDifficulties": {
+      "type": "number",
+      "description": "Postpartum: Difficulty bonding with baby (1-6)"
+    },
+    "pp_anxietyAboutBaby": {
+      "type": "number",
+      "description": "Postpartum: Anxiety / worry about baby (1-6)"
+    },
+    "pp_moodChanges": {
+      "type": "number",
+      "description": "Postpartum: Mood changes / emotional lability (1-6)"
     },
     "m_hot_flashes": {
       "type": "number",
