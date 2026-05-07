@@ -117,7 +117,7 @@ export default function QuickLogButtons({
     ovulationMutation.mutate();
   };
 
-  if (!["menstrual", "perimenopause"].includes(cycleType)) return null;
+  if (!["menstrual", "perimenopause", "postpartum"].includes(cycleType)) return null;
 
   return (
     <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl border-2 border-primary/20 p-4 space-y-3">
