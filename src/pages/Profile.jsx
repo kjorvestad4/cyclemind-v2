@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { User, CalendarDays, LogOut, Shield, Trash2 } from "lucide-react";
+import { User, CalendarDays, LogOut, Shield, Trash2, Layers } from "lucide-react";
+import ModeSwitcher from "@/components/profile/ModeSwitcher";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,6 +83,29 @@ export default function Profile() {
         <CardContent className="space-y-1">
           <p className="text-sm font-medium">{user?.full_name || "User"}</p>
           <p className="text-xs text-muted-foreground">{user?.email}</p>
+        </CardContent>
+      </Card>
+
+      {/* Mode Switcher */}
+      <Card className="border-primary/20 bg-primary/3">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <Layers className="w-4 h-4 text-primary" />
+            Tracking Mode
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ModeSwitcher
+            currentCycleType={
+              cycles.length > 0
+                ? ([...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0]?.cycle_type
+                  || ([...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0]?.is_pregnancy_mode ? "pregnancy"
+                  : [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0]?.is_menopause_mode ? "menopause"
+                  : "menstrual"))
+                : "menstrual"
+            }
+            latestCycle={cycles.length > 0 ? [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0] : null}
+          />
         </CardContent>
       </Card>
 
