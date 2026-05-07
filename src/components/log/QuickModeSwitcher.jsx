@@ -184,6 +184,8 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                         <div className="flex items-center gap-1.5">
                           <Input 
                             type="date" 
+                            min="1900-01-01"
+                            max="2100-12-31"
                             value={lmp ? String(lmp).split('T')[0] : ""} 
                             onChange={(e) => {
                               const newVal = e.target.value;
