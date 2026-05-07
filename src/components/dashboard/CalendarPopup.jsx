@@ -135,7 +135,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
         {/* Calendar Grid */}
         <div className="space-y-2">
           {/* Weekday headers */}
-          <div className="grid grid-cols-7 gap-1 mb-2">
+          <div className="grid grid-cols-7 gap-2 mb-2">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
               <div key={d} className="text-center text-[10px] font-semibold text-muted-foreground uppercase">
                 {d}
@@ -144,7 +144,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
           </div>
 
           {/* Days grid */}
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-2">
             {days.map((day, idx) => {
               if (!day) return <div key={idx} className="aspect-square" />;
 
@@ -158,14 +158,14 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
               return (
                 <div key={idx} className="relative group">
                   <button
-                    onClick={() => window.location.href = `/log?date=${dateStr}`}
-                    className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-medium transition-all active:scale-95 cursor-pointer relative overflow-hidden ${
-                      severityColor || "bg-card border border-border hover:border-primary"
-                    }`}
-                    title={`${dateStr}${severity ? ` · Severity ${Math.round(severity)}%` : ""}`}
-                  >
-                    <span className="text-[10px] z-10 font-semibold">{day}</span>
-                    {phaseEmoji && <span className="text-[10px] leading-none z-10">{phaseEmoji}</span>}
+                     onClick={() => window.location.href = `/log?date=${dateStr}`}
+                     className={`aspect-square rounded-lg flex flex-col items-center justify-center gap-0.5 text-xs font-medium transition-all active:scale-95 cursor-pointer relative overflow-hidden ${
+                       severityColor || "bg-card border border-border hover:border-primary"
+                     }`}
+                     title={`${dateStr}${severity ? ` · Severity ${Math.round(severity)}%` : ""}`}
+                   >
+                     <span className="text-xs z-10 font-bold leading-none">{day}</span>
+                     {phaseEmoji && <span className="text-[11px] z-10">{phaseEmoji}</span>}
 
                     {/* Rich markers overlay */}
                     {entry && (
