@@ -31,8 +31,8 @@ const MODE_CONTENT = {
 
 export default function OnboardingStep4({
   selectedMode,
-  onComplete,
-  onSkip,
+  onLogToday,
+  onSkipToDashboard,
   saving,
 }) {
   const content = MODE_CONTENT[selectedMode];
@@ -68,7 +68,7 @@ export default function OnboardingStep4({
 
       <div className="w-full space-y-2">
         <Button
-          onClick={onComplete}
+          onClick={onLogToday}
           disabled={saving}
           className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
         >
@@ -85,11 +85,11 @@ export default function OnboardingStep4({
           )}
         </Button>
         <button
-          onClick={onSkip}
+          onClick={onSkipToDashboard}
           disabled={saving}
           className="w-full py-3 rounded-2xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
         >
-          Go to Dashboard
+          Skip to Dashboard
         </button>
       </div>
     </div>

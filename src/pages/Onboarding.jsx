@@ -35,7 +35,7 @@ export default function Onboarding() {
     }
   };
 
-  const handleComplete = async () => {
+  const handleComplete = async (destination = "log") => {
     setSaving(true);
     try {
       // Build cycle payload based on selected mode
@@ -60,19 +60,24 @@ export default function Onboarding() {
       // Create the cycle
       await base44.entities.Cycle.create(cyclePayload);
 
-      // Update user profile
+      // Update user profile with onboarding flag
       await base44.auth.updateMe({
         has_completed_onboarding: true,
         notification_time: reminderTime,
         unit_system: unitSystem,
       });
 
-      toast.success("Welcome to CycleMind!");
-      navigate("/log");
+      toast.success("Onboarding complete! Welcome to CycleMind");
+      
+      // Navigate to the chosen destination
+      if (destination === "log") {
+        navigate("/log");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       console.error("Onboarding error:", error);
       toast.error("Setup failed — please try again");
-    } finally {
       setSaving(false);
     }
   };
@@ -131,8 +136,8 @@ export default function Onboarding() {
           {currentStep === 4 && (
             <OnboardingStep4
               selectedMode={selectedMode}
-              onComplete={handleComplete}
-              onSkip={() => navigate("/")}
+              onLogToday={() => handleComplete("log")}
+              onSkipToDashboard={() => handleComplete("dashboard")}
               saving={saving}
             />
           )}
