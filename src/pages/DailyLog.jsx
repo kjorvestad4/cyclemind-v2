@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, subDays, addDays } from "date-fns";
+import { format, subDays, addDays, differenceInDays } from "date-fns";
 import { ChevronLeft, ChevronRight, Save, Check, Trash2, Mic, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +12,12 @@ import BleedingPicker from "@/components/log/BleedingPicker";
 import MedicationsTaken from "@/components/log/MedicationsTaken";
 import CustomSymptoms from "@/components/log/CustomSymptoms";
 import MoodScales from "@/components/log/MoodScales";
+import PregnancySymptoms from "@/components/log/PregnancySymptoms";
+import MenopauseSymptoms from "@/components/log/MenopauseSymptoms";
 import { SYMPTOM_CATEGORIES, ALL_SYMPTOMS, getCycleDay, calculateDayTotal } from "@/lib/symptoms";
+
+const PREG_SYMPTOM_KEYS = ["p_nausea","p_vomiting","p_fatigue","p_mood_changes","p_sleep_issues","p_back_pain","p_braxton_hicks","p_heartburn","p_swelling","p_breast_changes"];
+const MENO_SYMPTOM_KEYS = ["m_hot_flashes","m_night_sweats","m_vaginal_dryness","m_mood_swings","m_brain_fog","m_joint_pain","m_sleep_disturbance","m_fatigue","m_anxiety","m_depression","m_libido_changes","m_urinary_symptoms"];
 
 const PHASE_LABELS = {
   menstrual: { label: "Menstrual", color: "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300" },
@@ -21,7 +26,21 @@ const PHASE_LABELS = {
   luteal: { label: "Luteal", color: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300" },
 };
 
-function Section({ title, children, defaultOpen = false }) {
+const CYCLE_TYPE_BADGES = {
+  pregnancy: { label: "🤰 Pregnancy", color: "bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300" },
+  postpartum: { label: "🍼 Postpartum", color: "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300" },
+  perimenopause: { label: "🌊 Perimenopause", color: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300" },
+  menopause: { label: "🔥 Menopause", color: "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300" },
+};
+
+function getTrimester(week) {
+  if (!week) return null;
+  if (week <= 12) return "first";
+  if (week <= 27) return "second";
+  return "third";
+}
+
+function Section({ title, subtitle, children, defaultOpen = false, badge }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
@@ -29,8 +48,14 @@ function Section({ title, children, defaultOpen = false }) {
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-muted/30 transition-colors"
       >
-        <span className="text-sm font-semibold">{title}</span>
-        {open ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+        <div className="text-left">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold">{title}</span>
+            {badge && <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">{badge}</span>}
+          </div>
+          {subtitle && <p className="text-[11px] text-muted-foreground mt-0.5">{subtitle}</p>}
+        </div>
+        {open ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
       </button>
       {open && <div className="px-4 pb-4">{children}</div>}
     </div>
@@ -54,6 +79,8 @@ export default function DailyLog() {
   const [gad7Score, setGad7Score] = useState(0);
   const [phq9Responses, setPhq9Responses] = useState({});
   const [gad7Responses, setGad7Responses] = useState({});
+  const [fetalMovementFelt, setFetalMovementFelt] = useState(false);
+  const [fetalMovementCount, setFetalMovementCount] = useState(0);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const { data: cycles = [] } = useQuery({
@@ -72,17 +99,32 @@ export default function DailyLog() {
   const latestCycle = cycles.length > 0
     ? [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0]
     : null;
+
+  const cycleType = latestCycle?.cycle_type
+    || (latestCycle?.is_pregnancy_mode ? "pregnancy" : latestCycle?.is_menopause_mode ? "menopause" : "menstrual");
+
+  const isPregnancy = cycleType === "pregnancy" || cycleType === "postpartum";
+  const isMenopause = cycleType === "menopause" || cycleType === "perimenopause";
+  const isMenstrual = !isPregnancy && !isMenopause;
+
+  const pregnancyWeek = latestCycle?.pregnancy_week
+    || (latestCycle?.last_menstrual_period
+      ? Math.floor(differenceInDays(new Date(selectedDate), new Date(latestCycle.last_menstrual_period)) / 7)
+      : null);
+  const trimester = cycleType === "postpartum" ? "postpartum" : getTrimester(pregnancyWeek);
+
   const currentPhase = latestCycle?.phase || (cycleDay
     ? (cycleDay <= 5 ? "menstrual" : cycleDay <= 13 ? "follicular" : cycleDay === 14 ? "ovulatory" : "luteal")
     : null);
-  const phaseInfo = currentPhase ? PHASE_LABELS[currentPhase] : null;
+  const phaseInfo = isMenstrual && currentPhase ? PHASE_LABELS[currentPhase] : null;
+  const cycleBadge = CYCLE_TYPE_BADGES[cycleType];
 
   useEffect(() => {
     if (existingEntry) {
       const newScores = {};
-      ALL_SYMPTOMS.forEach((s) => {
-        if (existingEntry[s.key]) newScores[s.key] = existingEntry[s.key];
-      });
+      ALL_SYMPTOMS.forEach((s) => { if (existingEntry[s.key]) newScores[s.key] = existingEntry[s.key]; });
+      PREG_SYMPTOM_KEYS.forEach((k) => { if (existingEntry[k]) newScores[k] = existingEntry[k]; });
+      MENO_SYMPTOM_KEYS.forEach((k) => { if (existingEntry[k]) newScores[k] = existingEntry[k]; });
       setScores(newScores);
       setFlow(existingEntry.menstrual_flow || "");
       setBleedingIntensity(existingEntry.bleeding_intensity ?? null);
@@ -93,17 +135,14 @@ export default function DailyLog() {
       setGad7Score(existingEntry.gad7_score || 0);
       setPhq9Responses(existingEntry.phq9_responses || {});
       setGad7Responses(existingEntry.gad7_responses || {});
+      setFetalMovementFelt(existingEntry.fetal_movement_felt || false);
+      setFetalMovementCount(existingEntry.fetal_movement_count || 0);
     } else {
       setScores({});
-      setFlow("");
-      setBleedingIntensity(null);
-      setJournalEntry("");
-      setMedications([]);
-      setCustomSymptoms([]);
-      setPhq9Score(0);
-      setGad7Score(0);
-      setPhq9Responses({});
-      setGad7Responses({});
+      setFlow(""); setBleedingIntensity(null); setJournalEntry("");
+      setMedications([]); setCustomSymptoms([]);
+      setPhq9Score(0); setGad7Score(0); setPhq9Responses({}); setGad7Responses({});
+      setFetalMovementFelt(false); setFetalMovementCount(0);
     }
     setHasUnsavedChanges(false);
   }, [selectedDate, existingEntry?.id]);
@@ -113,12 +152,22 @@ export default function DailyLog() {
     setHasUnsavedChanges(true);
   }, []);
 
+  const handleFetalChange = useCallback((field, value) => {
+    if (field === "felt") setFetalMovementFelt(value);
+    else setFetalMovementCount(value);
+    setHasUnsavedChanges(true);
+  }, []);
+
   const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
 
   const buildPayload = () => {
     const data = {
       date: selectedDate,
+      cycle_id: latestCycle?.id || undefined,
       cycle_day: cycleDay || undefined,
+      cycle_type: cycleType,
+      trimester: trimester || undefined,
+      pregnancy_week: pregnancyWeek || undefined,
       menstrual_flow: flow || undefined,
       bleeding_intensity: bleedingIntensity ?? undefined,
       journal_entry: journalEntry || undefined,
@@ -128,19 +177,20 @@ export default function DailyLog() {
       phq9_responses: Object.keys(phq9Responses).length ? phq9Responses : undefined,
       gad7_score: gad7Score || undefined,
       gad7_responses: Object.keys(gad7Responses).length ? gad7Responses : undefined,
+      fetal_movement_felt: isPregnancy ? fetalMovementFelt : undefined,
+      fetal_movement_count: isPregnancy && fetalMovementFelt ? fetalMovementCount : undefined,
     };
     ALL_SYMPTOMS.forEach((s) => { data[s.key] = scores[s.key] || 0; });
+    PREG_SYMPTOM_KEYS.forEach((k) => { data[k] = scores[k] || 0; });
+    MENO_SYMPTOM_KEYS.forEach((k) => { data[k] = scores[k] || 0; });
     return data;
   };
 
   const saveMutation = useMutation({
     mutationFn: async () => {
       const data = buildPayload();
-      if (existingEntry) {
-        await base44.entities.DailyEntry.update(existingEntry.id, data);
-      } else {
-        await base44.entities.DailyEntry.create(data);
-      }
+      if (existingEntry) await base44.entities.DailyEntry.update(existingEntry.id, data);
+      else await base44.entities.DailyEntry.create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["entries"] });
@@ -152,18 +202,14 @@ export default function DailyLog() {
   const saveTomorrowMutation = useMutation({
     mutationFn: async () => {
       const data = buildPayload();
-      if (existingEntry) {
-        await base44.entities.DailyEntry.update(existingEntry.id, data);
-      } else {
-        await base44.entities.DailyEntry.create(data);
-      }
+      if (existingEntry) await base44.entities.DailyEntry.update(existingEntry.id, data);
+      else await base44.entities.DailyEntry.create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["entries"] });
       setHasUnsavedChanges(false);
       toast.success("Saved! See you tomorrow 🌙");
-      const tomorrow = format(addDays(parseLocalDate(selectedDate), 1), "yyyy-MM-dd");
-      setSelectedDate(tomorrow);
+      setSelectedDate(format(addDays(parseLocalDate(selectedDate), 1), "yyyy-MM-dd"));
     },
   });
 
@@ -182,9 +228,11 @@ export default function DailyLog() {
     setSelectedDate(format(d, "yyyy-MM-dd"));
   };
 
-  const filledCount = ALL_SYMPTOMS.filter((s) => scores[s.key] > 0).length;
-  const totalScore = calculateDayTotal({ ...scores });
-  const progress = Math.round((filledCount / ALL_SYMPTOMS.length) * 100);
+  const activeKeys = isPregnancy ? PREG_SYMPTOM_KEYS : isMenopause ? MENO_SYMPTOM_KEYS : ALL_SYMPTOMS.map(s => s.key);
+  const filledCount = activeKeys.filter((k) => (scores[k] || 0) > 0).length;
+  const totalScore = isMenstrual ? calculateDayTotal({ ...scores }) : activeKeys.reduce((s, k) => s + (scores[k] || 0), 0);
+  const maxScore = activeKeys.length * 6;
+  const progress = Math.round((filledCount / activeKeys.length) * 100);
 
   return (
     <div className="space-y-5 pb-36">
@@ -196,17 +244,23 @@ export default function DailyLog() {
         <div className="text-center">
           <p className="text-lg font-bold">{format(parseLocalDate(selectedDate), "EEE, MMM d")}</p>
           <div className="flex items-center justify-center gap-2 mt-0.5 flex-wrap">
-            {cycleDay && <span className="text-xs text-muted-foreground font-medium">Cycle Day {cycleDay}</span>}
+            {isMenstrual && cycleDay && (
+              <span className="text-xs text-muted-foreground font-medium">Cycle Day {cycleDay}</span>
+            )}
             {phaseInfo && (
               <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${phaseInfo.color}`}>
                 {phaseInfo.label}
               </span>
             )}
-            {latestCycle?.is_pregnancy_mode && (
-              <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold bg-pink-100 text-pink-700">🤰 Pregnancy</span>
+            {cycleBadge && (
+              <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${cycleBadge.color}`}>
+                {cycleBadge.label}
+              </span>
             )}
-            {latestCycle?.is_menopause_mode && (
-              <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold bg-orange-100 text-orange-700">🔥 Menopause</span>
+            {isPregnancy && pregnancyWeek && (
+              <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold bg-pink-50 text-pink-600 dark:bg-pink-950 dark:text-pink-300">
+                Week {pregnancyWeek}{trimester ? ` · ${trimester.charAt(0).toUpperCase() + trimester.slice(1)}` : ""}
+              </span>
             )}
           </div>
         </div>
@@ -218,8 +272,8 @@ export default function DailyLog() {
       {/* Progress Bar */}
       <div className="bg-card rounded-2xl border border-border/50 p-3 space-y-2">
         <div className="flex justify-between text-xs">
-          <span className="text-muted-foreground">{filledCount}/{ALL_SYMPTOMS.length} symptoms rated</span>
-          <span className="font-bold text-foreground">Score: {totalScore}/{ALL_SYMPTOMS.length * 6}</span>
+          <span className="text-muted-foreground">{filledCount}/{activeKeys.length} symptoms rated</span>
+          <span className="font-bold text-foreground">Score: {totalScore}/{maxScore}</span>
         </div>
         <div className="h-2.5 bg-muted rounded-full overflow-hidden">
           <div
@@ -230,46 +284,119 @@ export default function DailyLog() {
         <p className="text-[10px] text-muted-foreground italic text-center">Rate how you felt today — be honest, there are no wrong answers.</p>
       </div>
 
-      {/* Symptoms */}
-      <div className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-1">DRSP Symptoms · 1 = Not at all · 6 = Extreme</p>
-        <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
-      </div>
+      {/* MENSTRUAL MODE */}
+      {isMenstrual && (
+        <>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-1">DRSP Symptoms · 1 = Not at all · 6 = Extreme</p>
+            <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
+          </div>
+          <Section title="Bleeding & Flow" defaultOpen={true}>
+            <div className="pt-1">
+              <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
+            </div>
+          </Section>
+          <MoodScales
+            phq9Responses={phq9Responses}
+            gad7Responses={gad7Responses}
+            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
+            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+          />
+        </>
+      )}
 
-      {/* Bleeding */}
-      <Section title="Bleeding & Flow" defaultOpen={true}>
-        <div className="pt-1">
-          <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
-        </div>
-      </Section>
+      {/* PREGNANCY MODE */}
+      {isPregnancy && (
+        <>
+          <Section
+            title="Pregnancy Symptoms"
+            subtitle={trimester ? `${trimester.charAt(0).toUpperCase() + trimester.slice(1)} trimester${pregnancyWeek ? ` · Week ${pregnancyWeek}` : ""}` : undefined}
+            defaultOpen={true}
+            badge={trimester ? trimester.charAt(0).toUpperCase() + trimester.slice(1) : undefined}
+          >
+            <div className="pt-2">
+              <PregnancySymptoms
+                scores={scores}
+                onChange={handleScoreChange}
+                trimester={trimester}
+                pregnancyWeek={pregnancyWeek}
+                fetalMovementFelt={fetalMovementFelt}
+                fetalMovementCount={fetalMovementCount}
+                onFetalChange={handleFetalChange}
+              />
+            </div>
+          </Section>
+          <MoodScales
+            phq9Responses={phq9Responses}
+            gad7Responses={gad7Responses}
+            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
+            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+          />
+          <Section title="Spotting / Bleeding" subtitle="Note any spotting — always inform your midwife if unexpected">
+            <div className="pt-1">
+              <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
+            </div>
+          </Section>
+        </>
+      )}
 
-      {/* Mood Scales */}
-      <MoodScales
-        phq9Responses={phq9Responses}
-        gad7Responses={gad7Responses}
-        onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
-        onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
-      />
+      {/* MENOPAUSE MODE */}
+      {isMenopause && (
+        <>
+          <Section
+            title={cycleType === "perimenopause" ? "Perimenopause Symptoms" : "Menopause Symptoms"}
+            subtitle="Track hot flashes, mood, sleep and more"
+            defaultOpen={true}
+            badge={cycleType === "perimenopause" ? "Peri" : "Meno"}
+          >
+            <div className="pt-2">
+              <MenopauseSymptoms
+                scores={scores}
+                onChange={handleScoreChange}
+                hrtType={latestCycle?.hrt_type}
+                cycleType={cycleType}
+              />
+            </div>
+          </Section>
+          <MoodScales
+            phq9Responses={phq9Responses}
+            gad7Responses={gad7Responses}
+            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
+            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+          />
+          {cycleType === "perimenopause" && (
+            <Section title="Bleeding / Spotting" subtitle="Irregular bleeding is common in perimenopause">
+              <div className="pt-1">
+                <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
+              </div>
+            </Section>
+          )}
+        </>
+      )}
 
-      {/* Medications */}
+      {/* SHARED SECTIONS */}
       <Section title="Medications Taken Today">
         <div className="pt-1">
           <MedicationsTaken value={medications} onChange={(v) => { setMedications(v); setHasUnsavedChanges(true); }} />
         </div>
       </Section>
 
-      {/* Custom Symptoms */}
       <Section title="Custom Symptoms">
         <div className="pt-1">
           <CustomSymptoms value={customSymptoms} onChange={(v) => { setCustomSymptoms(v); setHasUnsavedChanges(true); }} />
         </div>
       </Section>
 
-      {/* Journal */}
       <Section title="Journal Entry">
         <div className="pt-1 space-y-3">
           <Textarea
-            placeholder="How are you feeling today? Any patterns, triggers, or observations..."
+            placeholder={
+              isPregnancy
+                ? "How are you feeling today? Any movements, symptoms, or thoughts to remember..."
+                : isMenopause
+                ? "How was today? Note any hot flash triggers, sleep quality, or mood observations..."
+                : "How are you feeling today? Any patterns, triggers, or observations..."
+            }
             value={journalEntry}
             onChange={(e) => { setJournalEntry(e.target.value); setHasUnsavedChanges(true); }}
             className="min-h-[120px] resize-none text-sm"
