@@ -61,7 +61,7 @@ export default function Dashboard() {
   const filledCount = todayEntry ? ALL_SYMPTOMS.filter((s) => (todayEntry[s.key] || 0) > 0).length : 0;
 
   return (
-    <div className="space-y-5 pb-24">
+    <div className="space-y-5 pb-40">
       <CalendarPopup
         isOpen={showCalendar}
         onClose={() => setShowCalendar(false)}
