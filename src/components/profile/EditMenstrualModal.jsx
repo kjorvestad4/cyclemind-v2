@@ -22,7 +22,8 @@ export default function EditMenstrualModal({ cycle, onClose, onSuccess }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      toast.success("Cycle details updated 🌙");
+      queryClient.invalidateQueries({ queryKey: ["entries"] });
+      toast.success("Cycle details updated successfully");
       onSuccess?.();
       onClose();
     },
