@@ -12,7 +12,7 @@ import DoctorShareView from '@/pages/DoctorShareView';
 import Dashboard from '@/pages/Dashboard';
 import DailyLog from '@/pages/DailyLog';
 import Insights from '@/pages/Insights';
-import Resources from '@/pages/Resources.jsx';
+import Resources from '@/pages/Resources';
 import Profile from '@/pages/Profile';
 
 const pageVariants = {
