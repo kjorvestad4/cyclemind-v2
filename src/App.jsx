@@ -101,19 +101,26 @@ const AuthenticatedApp = () => {
       }
 
       try {
-        // Check 1: User profile flag
-        if (!user.has_completed_onboarding) {
+        // Check 1: User's onboarded flag (primary source of truth)
+        if (!user.onboarded && !user.has_completed_onboarding) {
           setNeedsOnboarding(true);
           setCheckingOnboarding(false);
           return;
         }
 
-        // Check 2: Verify at least one active Cycle record exists
-        const cycles = await base44.entities.Cycle.filter({ created_by: user.email });
-        if (!cycles || cycles.length === 0) {
-          // No cycle records exist - treat as new user
-          setNeedsOnboarding(true);
+        // Check 2: Verify active cycle exists (safety check)
+        if (!user.active_cycle_id) {
+          const cycles = await base44.entities.Cycle.filter({ created_by: user.email });
+          if (!cycles || cycles.length === 0) {
+            // No cycles and no active_cycle_id - force onboarding
+            setNeedsOnboarding(true);
+            setCheckingOnboarding(false);
+            return;
+          }
         }
+        
+        // All checks passed - user is fully onboarded
+        setNeedsOnboarding(false);
       } catch (error) {
         console.warn("Onboarding check error:", error);
         // On error, default to safe state (show onboarding)

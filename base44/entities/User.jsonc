@@ -9,16 +9,25 @@
         "user"
       ],
       "default": "user",
-      "description": "User role in the app"
+      "description": "User's role in the app"
+    },
+    "onboarded": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has completed onboarding"
     },
     "has_completed_onboarding": {
       "type": "boolean",
       "default": false,
-      "description": "Whether the user has completed the initial onboarding flow"
+      "description": "Legacy field - prefer 'onboarded'"
+    },
+    "active_cycle_id": {
+      "type": "string",
+      "description": "ID of the user's current/active Cycle"
     },
     "notification_time": {
       "type": "string",
-      "description": "Preferred daily reminder time (HH:MM format)"
+      "description": "Daily reminder time (HH:MM format)"
     },
     "unit_system": {
       "type": "string",
@@ -27,7 +36,7 @@
         "metric"
       ],
       "default": "imperial",
-      "description": "Preferred unit system (lbs/kg, inches/cm)"
+      "description": "Preferred unit system (imperial or metric)"
     }
   }
 }

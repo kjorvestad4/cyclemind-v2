@@ -57,12 +57,14 @@ export default function Onboarding() {
         cyclePayload.start_date = birthDate || today;
       }
 
-      // 1. Create the cycle (must happen first)
-      await base44.entities.Cycle.create(cyclePayload);
-
-      // 2. Update user profile with onboarding flag
+      // 1. Create the Cycle record first
+      const newCycle = await base44.entities.Cycle.create(cyclePayload);
+      
+      // 2. Update user profile with onboarding complete flag and active cycle ID
       await base44.auth.updateMe({
+        onboarded: true,
         has_completed_onboarding: true,
+        active_cycle_id: newCycle.id,
         notification_time: reminderTime,
         unit_system: unitSystem,
       });
@@ -70,7 +72,7 @@ export default function Onboarding() {
       // 3. Show success toast
       toast.success("Welcome to CycleMind! Onboarding complete.");
       
-      // 4. Force strong navigation to clear onboarding state completely
+      // 4. Hard navigation to clear all state and force reload
       if (destination === "log") {
         window.location.href = "/log";
       } else {
