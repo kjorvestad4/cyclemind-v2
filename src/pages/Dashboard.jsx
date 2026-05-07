@@ -33,12 +33,18 @@ export default function Dashboard() {
 
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],
-    queryFn: () => base44.entities.Cycle.list("-start_date", 50),
+    queryFn: async () => {
+      const user = await base44.auth.me();
+      return base44.entities.Cycle.filter({ created_by: user.email }, "-start_date", 50);
+    },
   });
 
   const { data: entries = [] } = useQuery({
     queryKey: ["entries"],
-    queryFn: () => base44.entities.DailyEntry.list("-date", 100),
+    queryFn: async () => {
+      const user = await base44.auth.me();
+      return base44.entities.DailyEntry.filter({ created_by: user.email }, "-date", 100);
+    },
   });
 
   const latestCycle = cycles.length > 0
