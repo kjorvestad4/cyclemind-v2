@@ -52,9 +52,9 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
     setSaving(true);
     try {
       const today = format(new Date(), "yyyy-MM-dd");
-      const exactLmp = lmp || null;   // exact YYYY-MM-DD or null
+      const exactLmp = lmp || null;
 
-      console.log(`[CycleMind DEBUG] Saving LMP="${exactLmp}" | mode=${selected} | currentMode=${currentCycleType}`);
+      console.log(`[CycleMind] RAW STRING SAVE → LMP="${exactLmp}" | mode=${selected}`);
 
       if (!latestCycle?.id) {
         await base44.entities.Cycle.create({
@@ -65,47 +65,38 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
           ovulation_date: ovulationDate || undefined,
         });
       } else {
-        // FORCE FULL UPDATE - always send the date field
         const updatePayload = {
           cycle_type: selected,
-          last_menstrual_period: exactLmp,        // <-- this is the critical line
-          start_date: exactLmp || today,
+          last_menstrual_period: exactLmp,   // raw YYYY-MM-DD string only
+          start_date: exactLmp || today,     // raw YYYY-MM-DD string only
           cycle_length: cycleLength || 28,
         };
 
         if (selected === "pregnancy") {
           updatePayload.ovulation_date = ovulationDate || undefined;
-          if (exactLmp || ovulationDate) {
-            const eddData = calculateEDD(ovulationDate, exactLmp);
-            updatePayload.estimated_due_date = eddData?.edd;
-            updatePayload.pregnancy_week = getPregnancyWeek(ovulationDate || exactLmp, new Date(today));
-          }
         }
-
         if (selected === "perimenopause" || selected === "menopause") {
           updatePayload.hrt_type = hrtType || undefined;
         }
 
-        console.log(`[CycleMind DEBUG] Updating Cycle ${latestCycle.id} with payload:`, updatePayload);
-
-        const result = await base44.entities.Cycle.update(latestCycle.id, updatePayload);
-        console.log(`[CycleMind DEBUG] Update response:`, result);
+        console.log(`[CycleMind] Updating Cycle ${latestCycle.id} with RAW payload:`, updatePayload);
+        await base44.entities.Cycle.update(latestCycle.id, updatePayload);
       }
 
-      // Force hard refresh
+      // Force refresh
       await queryClient.invalidateQueries({ queryKey: ["cycles"] });
       await queryClient.refetchQueries({ queryKey: ["cycles"] });
       await queryClient.refetchQueries({ queryKey: ["entries"] });
 
       const toastMsg = exactLmp 
-        ? `LMP saved exactly as ${format(new Date(exactLmp + "T00:00:00"), "MMMM d, yyyy")}` 
+        ? `LMP saved exactly as ${exactLmp}` 
         : "LMP cleared successfully";
       toast.success(toastMsg);
 
       onClose();
     } catch (error) {
       console.error("[CycleMind] Save error:", error);
-      toast.error("Save failed. Use Profile → Edit Cycle Details as workaround for now.");
+      toast.error("Save failed — use Profile → Edit Cycle Details for now");
     } finally {
       setSaving(false);
     }
