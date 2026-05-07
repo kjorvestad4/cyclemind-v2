@@ -1,11 +1,33 @@
 import { useState } from "react";
 import { format, getDaysInMonth, startOfMonth, getDay } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Droplet, Heart, Sparkles, Baby, AlertCircle, Info } from "lucide-react";
 import { calculateDayTotal } from "@/lib/symptoms";
+import { base44 } from "@/api/base44Client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleType }) {
   const [viewMonth, setViewMonth] = useState(new Date());
+  const [selectedDateInfo, setSelectedDateInfo] = useState(null);
+  const queryClient = useQueryClient();
+
+  // Quick logging mutation - must be at top level
+  const quickLogMutation = useMutation({
+    mutationFn: async ({ dateStr, field, value }) => {
+      const entry = entryMap[dateStr];
+      const data = { [field]: value };
+      if (entry?.id) {
+        await base44.entities.DailyEntry.update(entry.id, data);
+      } else {
+        await base44.entities.DailyEntry.create({ date: dateStr, ...data });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["entries"] });
+      toast.success("Updated!");
+    },
+  });
 
   if (!isOpen) return null;
 
@@ -68,6 +90,17 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
     return "🌊"; // Luteal
   };
 
+  // Extract key data from entry for rich markers
+  const getEntryMarkers = (entry) => {
+    if (!entry) return { bleedingIntensity: 0, hasOvulation: false, hasIntimacy: false };
+    return {
+      bleedingIntensity: entry.bleeding_intensity || 0,
+      hasOvulation: !!(entry.ovulation_test === "LH Surge" || entry.ovulation_test === "Positive" || entry.ovulation_date),
+      hasIntimacy: !!entry.intimacy_logged, // Assumes intimacy field exists
+      moodLevel: !!(entry.s_mood_swings > 4 || entry.s_anxious > 4 || entry.s_depressed > 4),
+    };
+  };
+
   const days = [];
   for (let i = 0; i < firstDay; i++) days.push(null);
   for (let i = 1; i <= daysInMonth; i++) days.push(i);
@@ -117,27 +150,176 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
 
               const dateStr = format(new Date(currentYear, currentMonth, day), "yyyy-MM-dd");
               const severity = getSeverity(dateStr);
+              const entry = entryMap[dateStr];
+              const markers = getEntryMarkers(entry);
               const phaseEmoji = getPhaseColor(dateStr);
               const severityColor = getSeverityColor(severity);
 
               return (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    window.location.href = `/log?date=${dateStr}`;
-                  }}
-                  className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-medium transition-all active:scale-95 cursor-pointer ${
-                    severityColor || "bg-card border border-border hover:border-primary"
-                  }`}
-                  title={`${dateStr}${severity ? ` · Severity ${Math.round(severity)}%` : ""}`}
-                >
-                  <span className="text-[10px]">{day}</span>
-                  {phaseEmoji && <span className="text-xs leading-none">{phaseEmoji}</span>}
-                </button>
+                <div key={idx} className="relative group">
+                  <button
+                    onClick={() => window.location.href = `/log?date=${dateStr}`}
+                    className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-medium transition-all active:scale-95 cursor-pointer relative overflow-hidden ${
+                      severityColor || "bg-card border border-border hover:border-primary"
+                    }`}
+                    title={`${dateStr}${severity ? ` · Severity ${Math.round(severity)}%` : ""}`}
+                  >
+                    <span className="text-[10px] z-10 font-semibold">{day}</span>
+                    {phaseEmoji && <span className="text-[10px] leading-none z-10">{phaseEmoji}</span>}
+
+                    {/* Rich markers overlay */}
+                    {entry && (
+                      <div className="absolute bottom-0.5 left-0 right-0 flex items-center justify-center gap-0.5 z-20">
+                        {markers.bleedingIntensity > 0 && (
+                          <Droplet className={`h-2 w-2 fill-red-500 text-red-500 ${markers.bleedingIntensity > 3 ? "h-3 w-3" : ""}`} />
+                        )}
+                        {markers.hasOvulation && (
+                          <Sparkles className="h-2 w-2 text-amber-400" />
+                        )}
+                        {markers.hasIntimacy && (
+                          <Heart className="h-2 w-2 text-pink-500 fill-pink-500" />
+                        )}
+                        {markers.moodLevel && severity > 50 && (
+                          <AlertCircle className="h-2 w-2 text-orange-500" />
+                        )}
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Info button */}
+                  {entry && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedDateInfo({ dateStr, entry, markers });
+                      }}
+                      className="absolute top-0.5 right-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-30 bg-primary rounded-full p-0.5"
+                    >
+                      <Info className="h-2.5 w-2.5 text-primary-foreground" />
+                    </button>
+                  )}
+                </div>
               );
             })}
           </div>
         </div>
+
+        {/* Day Summary Popup */}
+        {selectedDateInfo && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={() => setSelectedDateInfo(null)}>
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+            <div
+              className="relative bg-background rounded-2xl border border-border shadow-xl p-4 max-w-xs w-full space-y-3"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between">
+                <h4 className="font-serif text-base font-semibold">
+                  {format(new Date(selectedDateInfo.dateStr), "EEE, MMM d")}
+                </h4>
+                <button
+                  onClick={() => setSelectedDateInfo(null)}
+                  className="h-8 w-8 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="space-y-2 text-sm">
+                {/* Score */}
+                {getSeverity(selectedDateInfo.dateStr) && (
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+                    <span className="text-muted-foreground">Overall Severity</span>
+                    <span className="font-bold text-primary">{Math.round(getSeverity(selectedDateInfo.dateStr))}%</span>
+                  </div>
+                )}
+
+                {/* Key symptoms */}
+                {selectedDateInfo.entry && (
+                  <>
+                    {selectedDateInfo.entry.menstrual_flow && (
+                      <div className="flex items-center gap-2 text-xs">
+                        <Droplet className="h-3 w-3 text-red-500" />
+                        <span>Flow: {selectedDateInfo.entry.menstrual_flow === "H" ? "Heavy" : selectedDateInfo.entry.menstrual_flow === "M" ? "Medium" : "Light"}</span>
+                      </div>
+                    )}
+                    {selectedDateInfo.markers.hasOvulation && (
+                      <div className="flex items-center gap-2 text-xs">
+                        <Sparkles className="h-3 w-3 text-amber-400" />
+                        <span>Ovulation detected</span>
+                      </div>
+                    )}
+                    {selectedDateInfo.entry.epds_score > 0 && (
+                      <div className="flex items-center gap-2 text-xs">
+                        <AlertCircle className="h-3 w-3 text-orange-500" />
+                        <span>EPDS: {selectedDateInfo.entry.epds_score}</span>
+                      </div>
+                    )}
+                    {selectedDateInfo.entry.journal_entry && (
+                      <div className="text-xs p-2 rounded bg-muted italic text-muted-foreground line-clamp-2">
+                        "{selectedDateInfo.entry.journal_entry}"
+                      </div>
+                    )}
+                  </>
+                )}
+
+                <Button
+                  onClick={() => {
+                    window.location.href = `/log?date=${selectedDateInfo.dateStr}`;
+                    setSelectedDateInfo(null);
+                  }}
+                  className="w-full h-9 text-xs gap-1"
+                >
+                  Edit Entry →
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Quick logging buttons - Menstrual/Perimenopause modes */}
+        {["menstrual", "perimenopause"].includes(cycleType) && (
+          <div className="bg-muted/40 rounded-xl p-3 space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase">Quick Log (Today)</p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const today = format(new Date(), "yyyy-MM-dd");
+                  quickLogMutation.mutate({ dateStr: today, field: "bleeding_intensity", value: 2 });
+                }}
+                disabled={quickLogMutation.isPending}
+                className="flex-1 gap-1 text-xs h-9"
+              >
+                <Droplet className="h-3 w-3" /> Log Bleeding
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const today = format(new Date(), "yyyy-MM-dd");
+                  quickLogMutation.mutate({ dateStr: today, field: "ovulation_test", value: "LH Surge" });
+                }}
+                disabled={quickLogMutation.isPending}
+                className="flex-1 gap-1 text-xs h-9"
+              >
+                <Sparkles className="h-3 w-3" /> Ovulation
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const today = format(new Date(), "yyyy-MM-dd");
+                  quickLogMutation.mutate({ dateStr: today, field: "intimacy_logged", value: true });
+                }}
+                disabled={quickLogMutation.isPending}
+                className="flex-1 gap-1 text-xs h-9"
+              >
+                <Heart className="h-3 w-3" /> Intimacy
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Legend */}
         <div className="bg-muted/40 rounded-xl p-3 space-y-2 text-[10px]">
@@ -160,6 +342,26 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
               <span>Severe</span>
             </div>
           </div>
+
+          {/* Marker icons legend */}
+          <div className="pt-2 border-t border-border/40 space-y-1">
+            <p className="font-semibold text-foreground">Markers:</p>
+            <div className="grid grid-cols-2 gap-1 text-[9px]">
+              <div className="flex items-center gap-1.5">
+                <Droplet className="h-2.5 w-2.5 text-red-500 fill-red-500" /> Bleeding
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="h-2.5 w-2.5 text-amber-400" /> Ovulation
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Heart className="h-2.5 w-2.5 text-pink-500 fill-pink-500" /> Intimacy
+              </div>
+              <div className="flex items-center gap-1.5">
+                <AlertCircle className="h-2.5 w-2.5 text-orange-500" /> Mood/Anxiety
+              </div>
+            </div>
+          </div>
+
           {cycleType === "menstrual" && (
             <div className="pt-2 border-t border-border/40 space-y-1">
               <p className="font-semibold text-foreground">Cycle Phase:</p>
