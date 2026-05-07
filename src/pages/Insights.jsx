@@ -34,7 +34,11 @@ export default function Insights() {
 
   // Guard: if not onboarded, redirect to onboarding
   useEffect(() => {
-    if (user && !user.onboarded && !user.has_completed_onboarding) {
+    if (!user) return;
+    
+    const isOnboarded = user.onboarded === true;
+    if (!isOnboarded) {
+      console.log("[Insights Guard] Redirecting to onboarding - onboarded:", isOnboarded);
       navigate("/onboarding", { replace: true });
     }
   }, [user, navigate]);

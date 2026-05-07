@@ -57,29 +57,31 @@ export default function Onboarding() {
         cyclePayload.start_date = birthDate || today;
       }
 
-      // 1. Create the Cycle record first
+      // STEP 1: Create the Cycle record FIRST
       const newCycle = await base44.entities.Cycle.create(cyclePayload);
+      console.log("[Onboarding] Cycle created:", newCycle.id);
       
-      // 2. Update user profile with onboarding complete flag and active cycle ID
+      // STEP 2: Immediately set onboarded=true and store active_cycle_id
       await base44.auth.updateMe({
         onboarded: true,
-        has_completed_onboarding: true,
         active_cycle_id: newCycle.id,
         notification_time: reminderTime,
         unit_system: unitSystem,
       });
+      console.log("[Onboarding] User profile updated, onboarded=true");
 
-      // 3. Show success toast
-      toast.success("Welcome to CycleMind! Onboarding complete.");
+      // STEP 3: Show success toast
+      toast.success("Onboarding complete! Welcome to CycleMind");
       
-      // 4. Hard navigation to clear all state and force reload
-      if (destination === "log") {
-        window.location.href = "/log";
-      } else {
-        window.location.href = "/";
-      }
+      // STEP 4: Force HARD navigation (full page reload) to clear React state completely
+      // This ensures the guard checks run with fresh user data
+      const targetUrl = destination === "log" ? "/log" : "/";
+      console.log("[Onboarding] Navigating to", targetUrl);
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 500);
     } catch (error) {
-      console.error("Onboarding error:", error);
+      console.error("[Onboarding] Error:", error);
       toast.error("Setup failed — please try again");
       setSaving(false);
     }

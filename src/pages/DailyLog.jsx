@@ -84,7 +84,11 @@ export default function DailyLog() {
 
   // Guard: if not onboarded, redirect to onboarding
   useEffect(() => {
-    if (user && !user.onboarded && !user.has_completed_onboarding) {
+    if (!user) return;
+    
+    const isOnboarded = user.onboarded === true;
+    if (!isOnboarded) {
+      console.log("[DailyLog Guard] Redirecting to onboarding - onboarded:", isOnboarded);
       navigate("/onboarding", { replace: true });
     }
   }, [user, navigate]);

@@ -30,10 +30,16 @@ export default function Dashboard() {
 
   // Guard: if not onboarded, redirect to onboarding
   useEffect(() => {
-    if (user && !user.onboarded && !user.has_completed_onboarding) {
+    if (!user) return;
+    
+    const isOnboarded = user.onboarded === true;
+    const hasCycle = user.active_cycle_id || (cycles && cycles.length > 0);
+    
+    if (!isOnboarded || !hasCycle) {
+      console.log("[Dashboard Guard] Redirecting to onboarding - onboarded:", isOnboarded, "hasCycle:", hasCycle);
       navigate("/onboarding", { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, cycles, navigate]);
 
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],

@@ -95,35 +95,44 @@ const AuthenticatedApp = () => {
   useEffect(() => {
     const checkOnboardingStatus = async () => {
       if (!user) {
+        console.log("[Guard] No user, showing onboarding");
         setNeedsOnboarding(true);
         setCheckingOnboarding(false);
         return;
       }
 
       try {
-        // Check 1: User's onboarded flag (primary source of truth)
-        if (!user.onboarded && !user.has_completed_onboarding) {
+        // Primary check: onboarded flag must be true
+        const isOnboarded = user.onboarded === true;
+        console.log("[Guard] User.onboarded =", user.onboarded);
+        
+        if (!isOnboarded) {
+          console.log("[Guard] User not onboarded, showing onboarding");
           setNeedsOnboarding(true);
           setCheckingOnboarding(false);
           return;
         }
 
-        // Check 2: Verify active cycle exists (safety check)
+        // Secondary check: active_cycle_id must be set
         if (!user.active_cycle_id) {
+          console.log("[Guard] No active_cycle_id, checking database...");
           const cycles = await base44.entities.Cycle.filter({ created_by: user.email });
           if (!cycles || cycles.length === 0) {
-            // No cycles and no active_cycle_id - force onboarding
+            console.log("[Guard] No cycles found, showing onboarding");
             setNeedsOnboarding(true);
             setCheckingOnboarding(false);
             return;
           }
+          console.log("[Guard] Cycles exist, allowing access");
+        } else {
+          console.log("[Guard] active_cycle_id exists:", user.active_cycle_id);
         }
         
-        // All checks passed - user is fully onboarded
+        // Both checks passed - user is fully onboarded
+        console.log("[Guard] User fully onboarded, allowing access");
         setNeedsOnboarding(false);
       } catch (error) {
-        console.warn("Onboarding check error:", error);
-        // On error, default to safe state (show onboarding)
+        console.warn("[Guard] Error during check:", error);
         setNeedsOnboarding(true);
       } finally {
         setCheckingOnboarding(false);
