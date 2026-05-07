@@ -29,6 +29,59 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
     },
   });
 
+  // Toggleable quick log mutations - must be at top level before conditional return
+  const toggleBleedingMutation = useMutation({
+    mutationFn: async (dateStr) => {
+      const entry = entries.find((e) => e.date === dateStr);
+      const currentIntensity = entry?.bleeding_intensity || 0;
+      const newIntensity = currentIntensity > 0 ? 0 : 2;
+      const data = { bleeding_intensity: newIntensity };
+      if (entry?.id) {
+        await base44.entities.DailyEntry.update(entry.id, data);
+      } else {
+        await base44.entities.DailyEntry.create({ date: dateStr, ...data });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["entries"] });
+    },
+  });
+
+  const toggleOvulationMutation = useMutation({
+    mutationFn: async (dateStr) => {
+      const entry = entries.find((e) => e.date === dateStr);
+      const hasOvulation = !!(entry?.ovulation_test === "LH Surge" || entry?.ovulation_test === "Positive");
+      const data = {
+        ovulation_test: hasOvulation ? "" : "LH Surge",
+        ovulation_date: hasOvulation ? "" : dateStr,
+      };
+      if (entry?.id) {
+        await base44.entities.DailyEntry.update(entry.id, data);
+      } else {
+        await base44.entities.DailyEntry.create({ date: dateStr, ...data });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["entries"] });
+    },
+  });
+
+  const toggleIntimacyMutation = useMutation({
+    mutationFn: async (dateStr) => {
+      const entry = entries.find((e) => e.date === dateStr);
+      const hasIntimacy = !!entry?.intimacy_logged;
+      const data = { intimacy_logged: !hasIntimacy };
+      if (entry?.id) {
+        await base44.entities.DailyEntry.update(entry.id, data);
+      } else {
+        await base44.entities.DailyEntry.create({ date: dateStr, ...data });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["entries"] });
+    },
+  });
+
   if (!isOpen) return null;
 
   const now = new Date();
@@ -96,10 +149,12 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
     return {
       bleedingIntensity: entry.bleeding_intensity || 0,
       hasOvulation: !!(entry.ovulation_test === "LH Surge" || entry.ovulation_test === "Positive" || entry.ovulation_date),
-      hasIntimacy: !!entry.intimacy_logged, // Assumes intimacy field exists
+      hasIntimacy: !!entry.intimacy_logged,
       moodLevel: !!(entry.s_mood_swings > 4 || entry.s_anxious > 4 || entry.s_depressed > 4),
     };
   };
+
+
 
   const days = [];
   for (let i = 0; i < firstDay; i++) days.push(null);
@@ -262,64 +317,66 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                   </>
                 )}
 
-                <Button
-                  onClick={() => {
-                    window.location.href = `/log?date=${selectedDateInfo.dateStr}`;
-                    setSelectedDateInfo(null);
-                  }}
-                  className="w-full h-9 text-xs gap-1"
-                >
-                  Edit Entry →
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+                {/* Quick toggle buttons */}
+                {["menstrual", "perimenopause"].includes(cycleType) && (
+                  <div className="flex gap-1.5 pt-2 border-t border-border/40">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        toggleBleedingMutation.mutate(selectedDateInfo.dateStr);
+                        setSelectedDateInfo(null);
+                      }}
+                      disabled={toggleBleedingMutation.isPending}
+                      className="flex-1 h-8 gap-1.5 text-xs"
+                    >
+                      <Droplet className="h-3 w-3" />
+                      {selectedDateInfo.markers.bleedingIntensity > 0 ? "Remove" : "Add"} Bleeding
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        toggleOvulationMutation.mutate(selectedDateInfo.dateStr);
+                        setSelectedDateInfo(null);
+                      }}
+                      disabled={toggleOvulationMutation.isPending}
+                      className="flex-1 h-8 gap-1.5 text-xs"
+                    >
+                      <Sparkles className="h-3 w-3" />
+                      {selectedDateInfo.markers.hasOvulation ? "Remove" : "Add"} Ovulation
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        toggleIntimacyMutation.mutate(selectedDateInfo.dateStr);
+                        setSelectedDateInfo(null);
+                      }}
+                      disabled={toggleIntimacyMutation.isPending}
+                      className="flex-1 h-8 gap-1.5 text-xs"
+                    >
+                      <Heart className="h-3 w-3" />
+                      {selectedDateInfo.markers.hasIntimacy ? "Remove" : "Add"} Intimacy
+                    </Button>
+                  </div>
+                )}
 
-        {/* Quick logging buttons - Menstrual/Perimenopause modes */}
-        {["menstrual", "perimenopause"].includes(cycleType) && (
-          <div className="bg-muted/40 rounded-xl p-3 space-y-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase">Quick Log (Today)</p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const today = format(new Date(), "yyyy-MM-dd");
-                  quickLogMutation.mutate({ dateStr: today, field: "bleeding_intensity", value: 2 });
-                }}
-                disabled={quickLogMutation.isPending}
-                className="flex-1 gap-1 text-xs h-9"
-              >
-                <Droplet className="h-3 w-3" /> Log Bleeding
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const today = format(new Date(), "yyyy-MM-dd");
-                  quickLogMutation.mutate({ dateStr: today, field: "ovulation_test", value: "LH Surge" });
-                }}
-                disabled={quickLogMutation.isPending}
-                className="flex-1 gap-1 text-xs h-9"
-              >
-                <Sparkles className="h-3 w-3" /> Ovulation
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const today = format(new Date(), "yyyy-MM-dd");
-                  quickLogMutation.mutate({ dateStr: today, field: "intimacy_logged", value: true });
-                }}
-                disabled={quickLogMutation.isPending}
-                className="flex-1 gap-1 text-xs h-9"
-              >
-                <Heart className="h-3 w-3" /> Intimacy
-              </Button>
-            </div>
-          </div>
-        )}
+                <Button
+                   onClick={() => {
+                     window.location.href = `/log?date=${selectedDateInfo.dateStr}`;
+                     setSelectedDateInfo(null);
+                   }}
+                   className="w-full h-9 text-xs gap-1 mt-2"
+                 >
+                   Edit Entry →
+                 </Button>
+                </div>
+                </div>
+                </div>
+                )}
+
+
 
         {/* Legend */}
         <div className="bg-muted/40 rounded-xl p-3 space-y-2 text-[10px]">

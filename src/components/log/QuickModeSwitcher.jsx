@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Check, Loader2, X } from "lucide-react";
+import { calculateEDD, getPregnancyWeek } from "@/lib/eddCalculation";
 
 const MODES = [
   { id: "menstrual", emoji: "🌙", label: "Menstrual / PMDD", color: "border-primary/40 bg-primary/5", activeColor: "border-primary bg-primary/10", fields: ["lmp", "cycle_length"] },
@@ -28,27 +29,25 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
 
   const selectedMode = MODES.find((m) => m.id === selected);
 
-  const calculateEDD = (lmpDate) => {
-    // EDD = LMP + 280 days (40 weeks per Naegele's rule)
-    const lmpObj = new Date(lmpDate);
-    const eddObj = new Date(lmpObj.getTime() + 280 * 24 * 60 * 60 * 1000);
-    return format(eddObj, "yyyy-MM-dd");
-  };
-
   const handleSave = async () => {
     setSaving(true);
     try {
       const today = format(new Date(), "yyyy-MM-dd");
-      const lmpForCalc = selected === "pregnancy" ? (lmp || today) : undefined;
-      const calculatedEdd = lmpForCalc ? calculateEDD(lmpForCalc) : undefined;
-      const pregnancyWeek = lmpForCalc ? Math.floor((new Date(today).getTime() - new Date(lmpForCalc).getTime()) / (7 * 24 * 60 * 60 * 1000)) : undefined;
+      
+      // Calculate EDD for pregnancy mode (prioritizes ovulation if available, falls back to LMP)
+      let eddData = null;
+      let pregnancyWeek = undefined;
+      if (selected === "pregnancy" && lmp) {
+        eddData = calculateEDD(undefined, lmp); // Pass undefined for ovulation (not set in mode switcher)
+        pregnancyWeek = getPregnancyWeek(lmp, new Date(today));
+      }
       
       const cycleData = {
         start_date: selected === "menstrual" || selected === "perimenopause" ? (lmp || today) : (latestCycle?.start_date || today),
         cycle_type: selected,
         cycle_length: selected === "menstrual" ? cycleLength || 28 : undefined,
         last_menstrual_period: (selected === "pregnancy" || selected === "menopause" || selected === "perimenopause") ? lmp || undefined : undefined,
-        estimated_due_date: selected === "pregnancy" ? calculatedEdd : undefined,
+        estimated_due_date: selected === "pregnancy" ? eddData?.edd : undefined,
         pregnancy_week: selected === "pregnancy" ? pregnancyWeek : undefined,
         hrt_type: (selected === "perimenopause" || selected === "menopause") ? hrtType || undefined : undefined,
         is_pregnancy_mode: selected === "pregnancy" || selected === "postpartum",
@@ -60,8 +59,8 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
         await base44.entities.Cycle.create(cycleData);
       }
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      if (selected === "pregnancy" && calculatedEdd) {
-        toast.success(`🤰 Pregnancy mode on! EDD: ${format(new Date(calculatedEdd), "MMM d, yyyy")}`);
+      if (selected === "pregnancy" && eddData) {
+        toast.success(`🤰 Pregnancy mode on! EDD: ${format(new Date(eddData.edd), "MMM d, yyyy")} (${eddData.method === "ovulation" ? "from ovulation" : "from LMP"})`);
       } else {
         toast.success(`Switched to ${selectedMode.label} 💜`);
       }

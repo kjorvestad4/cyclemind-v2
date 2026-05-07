@@ -19,8 +19,10 @@ import MenopauseSymptoms from "@/components/log/MenopauseSymptoms";
 import PostpartumSymptoms, { PP_SYMPTOM_KEYS } from "@/components/log/PostpartumSymptoms";
 import VitalsTracking from "@/components/log/VitalsTracking";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
+import QuickLogButtons from "@/components/log/QuickLogButtons";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
 import { SYMPTOM_CATEGORIES, ALL_SYMPTOMS, getCycleDay, calculateDayTotal } from "@/lib/symptoms";
+import { calculateEDD } from "@/lib/eddCalculation";
 
 const PREG_SYMPTOM_KEYS = ["p_nausea","p_vomiting","p_fatigue","p_mood_changes","p_sleep_issues","p_back_pain","p_braxton_hicks","p_heartburn","p_swelling","p_breast_changes"];
 const MENO_SYMPTOM_KEYS = ["m_hot_flashes","m_night_sweats","m_vaginal_dryness","m_mood_swings","m_brain_fog","m_joint_pain","m_sleep_disturbance","m_fatigue","m_anxiety","m_depression","m_libido_changes","m_urinary_symptoms"];
@@ -92,6 +94,7 @@ export default function DailyLog() {
   const [ovulationTest, setOvulationTest] = useState("");
   const [ovulationDate, setOvulationDate] = useState("");
   const [cervicalMucus, setCervicalMucus] = useState("");
+  const [intimacyLogged, setIntimacyLogged] = useState(false);
   const [vitals, setVitals] = useState({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [autoSaveTimer, setAutoSaveTimer] = useState(null);
@@ -157,6 +160,7 @@ export default function DailyLog() {
       setEpdsResponses(existingEntry.epds_responses || {});
       setFetalMovementFelt(existingEntry.fetal_movement_felt || false);
       setFetalMovementCount(existingEntry.fetal_movement_count || 0);
+      setIntimacyLogged(existingEntry.intimacy_logged || false);
       setVitals({
         heart_rate: existingEntry.heart_rate || "",
         systolic_bp: existingEntry.systolic_bp || "",
@@ -173,6 +177,7 @@ export default function DailyLog() {
       setEpdsScore(0); setEpdsResponses({});
       setFetalMovementFelt(false); setFetalMovementCount(0);
       setOvulationTest(""); setOvulationDate(""); setCervicalMucus("");
+      setIntimacyLogged(false);
       setVitals({});
     }
     setHasUnsavedChanges(false);
@@ -207,6 +212,30 @@ export default function DailyLog() {
     setHasUnsavedChanges(true);
   }, []);
 
+  // Quick log toggle handlers
+  const handleBleedingToggle = useCallback(async () => {
+    const newIntensity = (bleedingIntensity || 0) > 0 ? 0 : 2;
+    setBleedingIntensity(newIntensity);
+    setHasUnsavedChanges(true);
+    await saveMutation.mutateAsync({ ...buildPayload(), bleeding_intensity: newIntensity });
+  }, [bleedingIntensity]);
+
+  const handleIntimacyToggle = useCallback(async () => {
+    const newValue = !existingEntry?.intimacy_logged;
+    setHasUnsavedChanges(true);
+    await saveMutation.mutateAsync({ ...buildPayload(), intimacy_logged: newValue });
+  }, [existingEntry?.intimacy_logged]);
+
+  const handleOvulationToggle = useCallback(async () => {
+    const hasOvulation = ovulationTest === "LH Surge" || ovulationTest === "Positive";
+    const newTest = hasOvulation ? "" : "LH Surge";
+    const newDate = hasOvulation ? "" : selectedDate;
+    setOvulationTest(newTest);
+    setOvulationDate(newDate);
+    setHasUnsavedChanges(true);
+    await saveMutation.mutateAsync({ ...buildPayload(), ovulation_test: newTest, ovulation_date: newDate });
+  }, [ovulationTest, selectedDate]);
+
   const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
 
   const buildPayload = () => {
@@ -233,6 +262,7 @@ export default function DailyLog() {
       ovulation_test: (isMenstrual || cycleType === "perimenopause") ? ovulationTest || undefined : undefined,
       ovulation_date: (isMenstrual || cycleType === "perimenopause") ? ovulationDate || undefined : undefined,
       cervical_mucus: (isMenstrual || cycleType === "perimenopause") ? cervicalMucus || undefined : undefined,
+      intimacy_logged: (isMenstrual || cycleType === "perimenopause") ? intimacyLogged : undefined,
       heart_rate: vitals.heart_rate || undefined,
       systolic_bp: vitals.systolic_bp || undefined,
       diastolic_bp: vitals.diastolic_bp || undefined,
@@ -386,6 +416,17 @@ export default function DailyLog() {
           onClose={() => setShowModeSwitcher(false)}
         />
       )}
+
+      {/* Quick Log Buttons */}
+      <QuickLogButtons
+        selectedDate={selectedDate}
+        existingEntry={existingEntry}
+        onBleedingToggle={handleBleedingToggle}
+        onIntimacyToggle={handleIntimacyToggle}
+        onOvulationToggle={handleOvulationToggle}
+        isPending={saveMutation.isPending}
+        cycleType={cycleType}
+      />
 
       {/* Progress Bar */}
       <div className="bg-card rounded-2xl border border-border/50 p-3 space-y-2">

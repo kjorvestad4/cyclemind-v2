@@ -74,6 +74,11 @@
       "type": "string",
       "description": "Cervical mucus observation (e.g., 'Thick and tacky', 'Egg-white consistency', 'Dry')"
     },
+    "intimacy_logged": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether intimacy / sexual activity was logged for this day"
+    },
     "s_mood_swings": {
       "type": "number",
       "description": "DRSP: Mood swings (1-6)"
