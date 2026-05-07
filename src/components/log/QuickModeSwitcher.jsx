@@ -47,6 +47,10 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
       const today = format(new Date(), "yyyy-MM-dd");
       const isModeChange = selected !== currentCycleType;
       
+      // Force explicit LMP value (allow null for clearing)
+      const forcedLmp = lmp || null;
+      console.log(`[CycleMind] Force-updating Cycle ${latestCycle?.id}: LMP = ${forcedLmp}`);
+      
       // Calculate EDD for pregnancy mode (ovulation priority)
       let eddData = null;
       let pregnancyWeek = undefined;
@@ -56,11 +60,12 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
         pregnancyWeek = getPregnancyWeek(baselineDate, new Date(today));
       }
       
+      // Build cycle data with forced LMP field write
       const cycleData = {
         start_date: selected === "menstrual" || selected === "perimenopause" ? (lmp || today) : (latestCycle?.start_date || today),
         cycle_type: selected,
         cycle_length: selected === "menstrual" ? cycleLength || 28 : undefined,
-        last_menstrual_period: (selected === "pregnancy" || selected === "menopause" || selected === "perimenopause" || selected === "menstrual") ? lmp || null : undefined,
+        last_menstrual_period: forcedLmp, // FORCE: Always write this field
         ovulation_date: selected === "pregnancy" ? ovulationDate || undefined : undefined,
         estimated_due_date: selected === "pregnancy" ? eddData?.edd : undefined,
         pregnancy_week: selected === "pregnancy" ? pregnancyWeek : undefined,
@@ -68,13 +73,21 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
         is_pregnancy_mode: selected === "pregnancy" || selected === "postpartum",
         is_menopause_mode: selected === "menopause" || selected === "perimenopause",
       };
+      
+      // ALWAYS update the active cycle (no early returns)
       if (latestCycle?.id) {
+        console.log(`[CycleMind] Updating existing Cycle ${latestCycle.id}:`, cycleData);
         await base44.entities.Cycle.update(latestCycle.id, cycleData);
       } else {
+        console.log(`[CycleMind] Creating new Cycle:`, cycleData);
         await base44.entities.Cycle.create(cycleData);
       }
+      
+      // Force refresh all relevant caches
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
       queryClient.invalidateQueries({ queryKey: ["entries"] });
+      
+      const lmpDisplay = forcedLmp ? format(new Date(forcedLmp), "MMM d, yyyy") : "(cleared)";
       
       if (isModeChange) {
         if (selected === "pregnancy" && eddData) {
@@ -83,12 +96,14 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
           toast.success(`Switched to ${selectedMode.label} 💜`);
         }
       } else {
-        // Same mode update
-        const lmpDisplay = lmp ? format(new Date(lmp), "MMM d, yyyy") : "(cleared)";
-        toast.success(`Saved LMP: ${lmpDisplay} ✓`);
+        // Same mode — force-updated fields
+        console.log(`[CycleMind] Force-updated LMP to ${lmpDisplay}`);
+        toast.success(`Force-updated LMP to ${lmpDisplay} ✓`);
       }
+      
       onClose();
-    } catch {
+    } catch (error) {
+      console.error("[CycleMind] Save failed:", error);
       toast.error("Failed to update cycle. Try again.");
     } finally {
       setSaving(false);
