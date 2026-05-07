@@ -5,7 +5,7 @@
     "start_date": {
       "type": "string",
       "format": "date",
-      "description": "First day of menstrual period"
+      "description": "First day of menstrual period (required)"
     },
     "end_date": {
       "type": "string",
@@ -14,7 +14,7 @@
     },
     "cycle_length": {
       "type": "number",
-      "description": "Length of this cycle in days (filled when next cycle starts)"
+      "description": "Average length of this cycle in days"
     },
     "phase": {
       "type": "string",
@@ -28,11 +28,21 @@
     },
     "notes": {
       "type": "string",
-      "description": "Optional notes for this cycle"
+      "description": "Long-form notes for this cycle"
     },
     "user_id": {
       "type": "string",
       "description": "ID of the user this cycle belongs to"
+    },
+    "is_pregnancy_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this cycle is tracked in pregnancy mode"
+    },
+    "is_menopause_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this cycle is tracked in menopause mode"
     }
   },
   "required": [

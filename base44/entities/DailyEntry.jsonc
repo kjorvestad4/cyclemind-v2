@@ -5,119 +5,155 @@
     "date": {
       "type": "string",
       "format": "date",
-      "description": "Date of this entry"
+      "description": "Date of this entry (required)"
+    },
+    "cycle_id": {
+      "type": "string",
+      "description": "Reference to associated Cycle record"
     },
     "cycle_day": {
       "type": "number",
-      "description": "Day number within the current cycle"
+      "description": "Day number within the current cycle (1-35+)"
     },
-    "s_depressed": {
+    "bleeding_intensity": {
       "type": "number",
-      "description": "Felt depressed, sad, down, or blue (1-6)"
-    },
-    "s_hopeless": {
-      "type": "number",
-      "description": "Felt hopeless (1-6)"
-    },
-    "s_worthless": {
-      "type": "number",
-      "description": "Felt worthless or guilty (1-6)"
-    },
-    "s_anxious": {
-      "type": "number",
-      "description": "Felt anxious, tense, keyed up, or on edge (1-6)"
+      "description": "Bleeding intensity: 0=none, 1=spotting, 2=light, 3=medium, 4=heavy"
     },
     "s_mood_swings": {
       "type": "number",
-      "description": "Had mood swings (1-6)"
+      "description": "DRSP: Mood swings (1-6)"
     },
-    "s_sensitive": {
+    "s_irritability": {
       "type": "number",
-      "description": "Was more sensitive to rejection (1-6)"
+      "description": "DRSP: Irritability / anger (1-6)"
     },
-    "s_angry": {
+    "s_anxiety": {
       "type": "number",
-      "description": "Felt angry, irritable (1-6)"
+      "description": "DRSP: Anxiety / tension (1-6)"
     },
-    "s_conflicts": {
+    "s_depression": {
       "type": "number",
-      "description": "Had conflicts or problems with people (1-6)"
-    },
-    "s_less_interest": {
-      "type": "number",
-      "description": "Had less interest in usual activities (1-6)"
-    },
-    "s_concentration": {
-      "type": "number",
-      "description": "Had difficulty concentrating (1-6)"
-    },
-    "s_lethargic": {
-      "type": "number",
-      "description": "Felt lethargic, tired, fatigued (1-6)"
-    },
-    "s_appetite": {
-      "type": "number",
-      "description": "Had increased appetite or overate (1-6)"
-    },
-    "s_cravings": {
-      "type": "number",
-      "description": "Had cravings for specific foods (1-6)"
-    },
-    "s_hypersomnia": {
-      "type": "number",
-      "description": "Slept more, took naps (1-6)"
-    },
-    "s_insomnia": {
-      "type": "number",
-      "description": "Had trouble getting to sleep or staying asleep (1-6)"
+      "description": "DRSP: Depression / sadness (1-6)"
     },
     "s_overwhelmed": {
       "type": "number",
-      "description": "Felt overwhelmed or could not cope (1-6)"
+      "description": "DRSP: Feeling overwhelmed (1-6)"
     },
-    "s_out_of_control": {
+    "s_less_interest": {
       "type": "number",
-      "description": "Felt out of control (1-6)"
+      "description": "DRSP: Reduced interest in activities (1-6)"
+    },
+    "s_concentration": {
+      "type": "number",
+      "description": "DRSP: Difficulty concentrating (1-6)"
+    },
+    "s_lethargic": {
+      "type": "number",
+      "description": "DRSP: Fatigue / lethargy (1-6)"
+    },
+    "s_appetite": {
+      "type": "number",
+      "description": "DRSP: Appetite changes / overeating (1-6)"
+    },
+    "s_hypersomnia": {
+      "type": "number",
+      "description": "DRSP: Sleeping more / hypersomnia (1-6)"
+    },
+    "s_insomnia": {
+      "type": "number",
+      "description": "DRSP: Trouble sleeping / insomnia (1-6)"
     },
     "s_breast_tender": {
       "type": "number",
-      "description": "Had breast tenderness (1-6)"
+      "description": "DRSP: Breast tenderness (1-6)"
     },
     "s_bloating": {
       "type": "number",
-      "description": "Had breast swelling, bloating, weight gain (1-6)"
+      "description": "DRSP: Bloating / weight gain (1-6)"
     },
     "s_headache": {
       "type": "number",
-      "description": "Had headache (1-6)"
+      "description": "DRSP: Headaches (1-6)"
     },
     "s_pain": {
       "type": "number",
-      "description": "Had joint or muscle pain (1-6)"
+      "description": "DRSP: Joint or muscle pain (1-6)"
+    },
+    "s_skin_problems": {
+      "type": "number",
+      "description": "DRSP: Skin problems / acne (1-6)"
+    },
+    "s_weight_gain": {
+      "type": "number",
+      "description": "DRSP: Perceived weight gain (1-6)"
+    },
+    "s_cramping": {
+      "type": "number",
+      "description": "DRSP: Cramping (1-6)"
+    },
+    "s_other_physical": {
+      "type": "number",
+      "description": "DRSP: Other physical symptoms (1-6)"
+    },
+    "s_depressed": {
+      "type": "number",
+      "description": "DRSP: Felt depressed, sad, down, or blue (1-6)"
+    },
+    "s_hopeless": {
+      "type": "number",
+      "description": "DRSP: Felt hopeless (1-6)"
+    },
+    "s_worthless": {
+      "type": "number",
+      "description": "DRSP: Felt worthless or guilty (1-6)"
+    },
+    "s_anxious": {
+      "type": "number",
+      "description": "DRSP: Felt anxious, tense, keyed up (1-6)"
+    },
+    "s_sensitive": {
+      "type": "number",
+      "description": "DRSP: More sensitive to rejection (1-6)"
+    },
+    "s_angry": {
+      "type": "number",
+      "description": "DRSP: Felt angry, irritable (1-6)"
+    },
+    "s_conflicts": {
+      "type": "number",
+      "description": "DRSP: Conflicts with others (1-6)"
+    },
+    "s_cravings": {
+      "type": "number",
+      "description": "DRSP: Food cravings (1-6)"
+    },
+    "s_out_of_control": {
+      "type": "number",
+      "description": "DRSP: Felt out of control (1-6)"
     },
     "s_productivity": {
       "type": "number",
-      "description": "Reduced productivity or inefficiency (1-6)"
+      "description": "DRSP: Reduced productivity (1-6)"
     },
     "s_social": {
       "type": "number",
-      "description": "Interfered with hobbies or social activities (1-6)"
+      "description": "DRSP: Interference with social activities (1-6)"
     },
     "s_relationships": {
       "type": "number",
-      "description": "Interfered with relationships (1-6)"
+      "description": "DRSP: Interference with relationships (1-6)"
     },
     "s_impulsivity": {
       "type": "number",
-      "description": "Felt impulsive or acted on impulses (1-6)"
+      "description": "DRSP: Felt impulsive (1-6)"
     },
     "s_decreased_sleep_need": {
       "type": "number",
-      "description": "Decreased need for sleep (1-6)"
+      "description": "DRSP: Decreased need for sleep (1-6)"
     },
     "s_elevated_mood": {
       "type": "number",
-      "description": "Elevated mood, unusually energetic (1-6)"
+      "description": "DRSP: Elevated mood / unusually energetic (1-6)"
     },
     "menstrual_flow": {
       "type": "string",
@@ -128,6 +164,44 @@
         "L"
       ],
       "description": "Menstrual flow: H=heavy, M=medium, L=light/spotting"
+    },
+    "phq9_score": {
+      "type": "number",
+      "description": "PHQ-9 depression screening score (0-27)"
+    },
+    "gad7_score": {
+      "type": "number",
+      "description": "GAD-7 anxiety screening score (0-21)"
+    },
+    "medications_taken": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of medications taken today"
+    },
+    "journal_entry": {
+      "type": "string",
+      "description": "Long-form journal / daily notes"
+    },
+    "voice_note_url": {
+      "type": "string",
+      "description": "URL to an audio voice note recording"
+    },
+    "custom_symptoms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "User-defined custom symptoms with severity (1-6)"
     },
     "notes": {
       "type": "string",
