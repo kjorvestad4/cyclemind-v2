@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { format } from "date-fns";
@@ -28,6 +28,17 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
   const [saving, setSaving] = useState(false);
 
   const selectedMode = MODES.find((m) => m.id === selected);
+
+  // Sync state when latestCycle prop updates
+  useEffect(() => {
+    if (latestCycle) {
+      setLmp(latestCycle.last_menstrual_period || "");
+      setOvulationDate(latestCycle.ovulation_date || "");
+      setCycleLength(latestCycle.cycle_length || 28);
+      setHrtType(latestCycle.hrt_type || "");
+      console.log(`[CycleMind] QuickModeSwitcher synced from latestCycle:`, latestCycle);
+    }
+  }, [latestCycle?.id]);
 
   // Live EDD calculation for pregnancy mode (ovulation priority)
   const pregnancyCalcs = useMemo(() => {
