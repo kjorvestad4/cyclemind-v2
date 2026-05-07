@@ -60,6 +60,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
       
       // Force explicit LMP value (allow null for clearing)
       const forcedLmp = lmp || null;
+      console.log(`[CycleMind] handleSave - Input LMP value: "${lmp}" → forcedLmp: "${forcedLmp}"`);
       console.log(`[CycleMind] Force-updating Cycle ${latestCycle?.id}: LMP = ${forcedLmp}`);
       
       // Calculate EDD for pregnancy mode (ovulation priority)
@@ -88,10 +89,12 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
       // ALWAYS update the active cycle (no early returns)
       if (latestCycle?.id) {
         console.log(`[CycleMind] Updating existing Cycle ${latestCycle.id}:`, cycleData);
-        await base44.entities.Cycle.update(latestCycle.id, cycleData);
+        const result = await base44.entities.Cycle.update(latestCycle.id, cycleData);
+        console.log(`[CycleMind] Update result - returned LMP: "${result?.last_menstrual_period}"`, result);
       } else {
         console.log(`[CycleMind] Creating new Cycle:`, cycleData);
-        await base44.entities.Cycle.create(cycleData);
+        const result = await base44.entities.Cycle.create(cycleData);
+        console.log(`[CycleMind] Create result - returned LMP: "${result?.last_menstrual_period}"`, result);
       }
       
       // Force refresh all relevant caches
