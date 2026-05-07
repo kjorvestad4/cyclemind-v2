@@ -29,17 +29,15 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
 
   const selectedMode = MODES.find((m) => m.id === selected);
 
-  // Sync state when latestCycle prop updates (skip during save to preserve user input)
-  const isSaving = saving;
+  // Sync state when modal opens with latestCycle data
   useEffect(() => {
-    if (latestCycle && !isSaving) {
+    if (latestCycle) {
       setLmp(latestCycle.last_menstrual_period || "");
       setOvulationDate(latestCycle.ovulation_date || "");
       setCycleLength(latestCycle.cycle_length || 28);
       setHrtType(latestCycle.hrt_type || "");
-      console.log(`[CycleMind] QuickModeSwitcher synced from latestCycle:`, latestCycle);
     }
-  }, [latestCycle?.id, isSaving]);
+  }, [latestCycle?.id]);
 
   // Live EDD calculation for pregnancy mode (ovulation priority)
   const pregnancyCalcs = useMemo(() => {
@@ -57,72 +55,71 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
     setSaving(true);
     try {
       const today = format(new Date(), "yyyy-MM-dd");
+      
+      // Normalize LMP to strict yyyy-MM-dd (strip timezone)
+      const lmpToSave = lmp ? String(lmp).split('T')[0] : null;
       const isModeChange = selected !== currentCycleType;
       
-      // Force explicit LMP value (allow null for clearing)
-      // Normalize to strict yyyy-MM-dd format (strip any timezone info)
-      const lmpToSave = lmp ? String(lmp).split('T')[0] : null;
-      console.log(`[CycleMind] handleSave - Input LMP: "${lmp}" → normalized: "${lmpToSave}"`);
-      console.log(`[CycleMind] Force-updating Cycle ${latestCycle?.id}: LMP = ${lmpToSave}`);
+      console.log(`[CycleMind] FORCE SAVE: LMP="${lmpToSave}", Mode="${selected}", ModeChange=${isModeChange}`);
       
-      // Calculate EDD for pregnancy mode (ovulation priority)
-      let eddData = null;
-      let pregnancyWeek = undefined;
-      if (selected === "pregnancy" && (lmpToSave || ovulationDate)) {
-        eddData = calculateEDD(ovulationDate, lmpToSave);
-        const baselineDate = ovulationDate || lmp;
-        pregnancyWeek = getPregnancyWeek(baselineDate, new Date(today));
-      }
-      
-      // Build cycle data with forced LMP field write
-      const cycleData = {
-        start_date: selected === "menstrual" || selected === "perimenopause" ? (lmpToSave || today) : (latestCycle?.start_date || today),
-        cycle_type: selected,
-        cycle_length: selected === "menstrual" ? cycleLength || 28 : undefined,
-        last_menstrual_period: lmpToSave, // FORCE: Always write this field (normalized, no timezone)
-        ovulation_date: selected === "pregnancy" ? ovulationDate || undefined : undefined,
-        estimated_due_date: selected === "pregnancy" ? eddData?.edd : undefined,
-        pregnancy_week: selected === "pregnancy" ? pregnancyWeek : undefined,
-        hrt_type: (selected === "perimenopause" || selected === "menopause") ? hrtType || undefined : undefined,
-        is_pregnancy_mode: selected === "pregnancy" || selected === "postpartum",
-        is_menopause_mode: selected === "menopause" || selected === "perimenopause",
-      };
-      
-      // ALWAYS update the active cycle (no early returns)
-      if (latestCycle?.id) {
-        console.log(`[CycleMind] Updating existing Cycle ${latestCycle.id}:`, cycleData);
-        const result = await base44.entities.Cycle.update(latestCycle.id, cycleData);
-        console.log(`[CycleMind] Update result - returned LMP: "${result?.last_menstrual_period}"`, result);
+      // If no cycle exists, create one
+      if (!latestCycle?.id) {
+        console.log(`[CycleMind] No cycle found, creating new one`);
+        await base44.entities.Cycle.create({
+          start_date: lmpToSave || today,
+          cycle_type: selected,
+          cycle_length: cycleLength || 28,
+          last_menstrual_period: lmpToSave,
+          ovulation_date: ovulationDate || undefined,
+        });
       } else {
-        console.log(`[CycleMind] Creating new Cycle:`, cycleData);
-        const result = await base44.entities.Cycle.create(cycleData);
-        console.log(`[CycleMind] Create result - returned LMP: "${result?.last_menstrual_period}"`, result);
+        // ALWAYS force-update the existing cycle, regardless of mode match
+        const updateData = {
+          cycle_type: selected,
+          last_menstrual_period: lmpToSave,
+        };
+        
+        // Add mode-specific fields
+        if (selected === "menstrual" || selected === "perimenopause") {
+          updateData.cycle_length = cycleLength || 28;
+          updateData.start_date = lmpToSave || today;
+        }
+        
+        if (selected === "pregnancy") {
+          updateData.ovulation_date = ovulationDate || undefined;
+          if (lmpToSave || ovulationDate) {
+            const eddData = calculateEDD(ovulationDate, lmpToSave);
+            const baselineDate = ovulationDate || lmpToSave;
+            const pregnancyWeek = getPregnancyWeek(baselineDate, new Date(today));
+            updateData.estimated_due_date = eddData?.edd;
+            updateData.pregnancy_week = pregnancyWeek;
+          }
+        }
+        
+        if (selected === "perimenopause" || selected === "menopause") {
+          updateData.hrt_type = hrtType || undefined;
+        }
+        
+        console.log(`[CycleMind] FORCE UPDATE Cycle ${latestCycle.id}:`, updateData);
+        await base44.entities.Cycle.update(latestCycle.id, updateData);
       }
       
-      // Force refresh ALL relevant caches to persist changes across entire app
+      // Aggressively refresh ALL caches
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
       queryClient.invalidateQueries({ queryKey: ["entries"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
       await queryClient.refetchQueries({ queryKey: ["cycles"] });
+      await queryClient.refetchQueries({ queryKey: ["entries"] });
       
-      const lmpDisplay = lmpToSave ? format(new Date(lmpToSave), "MMM d, yyyy") : "(cleared)";
+      // Show exact result
+      const lmpDisplay = lmpToSave ? format(new Date(lmpToSave), "MMM d, yyyy") : "Cleared";
+      toast.success(`LMP saved: ${lmpDisplay}`);
       
-      if (isModeChange) {
-        if (selected === "pregnancy" && eddData) {
-          toast.success(`🤰 Switched to Pregnancy! EDD: ${format(new Date(eddData.edd), "MMM d, yyyy")}`);
-        } else {
-          toast.success(`Switched to ${selectedMode.label} 💜`);
-        }
-      } else {
-        // Same mode — force-updated fields
-        console.log(`[CycleMind] Force-updated LMP to ${lmpDisplay}`);
-        toast.success(`Force-updated LMP to ${lmpDisplay} ✓`);
-      }
-      
+      console.log(`[CycleMind] FORCE SAVE COMPLETE ✓`);
       onClose();
     } catch (error) {
-      console.error("[CycleMind] Save failed:", error);
-      toast.error("Failed to update cycle. Try again.");
+      console.error("[CycleMind] FORCE SAVE FAILED:", error);
+      toast.error("Failed to save. Try again.");
     } finally {
       setSaving(false);
     }
