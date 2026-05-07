@@ -77,8 +77,8 @@ const AnimatedOutlet = () => {
 };
 
 const AuthenticatedApp = () => {
-  const navigate = useNavigate();
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin, user } = useAuth();
+  const location = useLocation();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -100,10 +100,9 @@ const AuthenticatedApp = () => {
     }
   }
 
-  // Redirect to onboarding if user hasn't completed it
-  if (user && !user.has_completed_onboarding) {
-    navigate('/onboarding', { replace: true });
-    return null;
+  // Show onboarding instead of dashboard if user hasn't completed it
+  if (user && !user.has_completed_onboarding && !location.pathname.startsWith('/onboarding')) {
+    return <Onboarding />;
   }
 
   return <AnimatedOutlet />;
@@ -115,7 +114,6 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <Routes>
-            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="*" element={<AuthenticatedApp />} />
           </Routes>
         </Router>
