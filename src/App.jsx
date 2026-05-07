@@ -2,10 +2,12 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { AnimatePresence, motion } from 'framer-motion';
+import { base44 } from '@/api/base44Client';
 
 import AppLayout from '@/components/layout/AppLayout';
 import DoctorShareView from '@/pages/DoctorShareView';
@@ -80,8 +82,44 @@ const AnimatedOutlet = () => {
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin, user } = useAuth();
   const location = useLocation();
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
-  if (isLoadingPublicSettings || isLoadingAuth) {
+  // Check if user needs onboarding on mount and when user changes
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      if (!user) {
+        setCheckingOnboarding(false);
+        return;
+      }
+
+      try {
+        // Check 1: User profile flag
+        if (!user.has_completed_onboarding) {
+          setNeedsOnboarding(true);
+          setCheckingOnboarding(false);
+          return;
+        }
+
+        // Check 2: Verify at least one active Cycle record exists
+        const cycles = await base44.entities.Cycle.list();
+        if (!cycles || cycles.length === 0) {
+          // No cycle records exist - treat as new user
+          setNeedsOnboarding(true);
+        }
+      } catch (error) {
+        console.warn("Onboarding check error:", error);
+        // On error, default to safe state (show onboarding)
+        setNeedsOnboarding(true);
+      } finally {
+        setCheckingOnboarding(false);
+      }
+    };
+
+    checkOnboardingStatus();
+  }, [user]);
+
+  if (isLoadingPublicSettings || isLoadingAuth || checkingOnboarding) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="text-center space-y-3">
@@ -101,8 +139,8 @@ const AuthenticatedApp = () => {
     }
   }
 
-  // Show onboarding instead of dashboard if user hasn't completed it
-  if (user && !user.has_completed_onboarding && !location.pathname.startsWith('/onboarding')) {
+  // Force onboarding if user needs it and isn't already on the onboarding page
+  if (needsOnboarding && !location.pathname.startsWith('/onboarding')) {
     return <Onboarding />;
   }
 
