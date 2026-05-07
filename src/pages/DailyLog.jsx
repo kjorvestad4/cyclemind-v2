@@ -389,7 +389,7 @@ export default function DailyLog() {
             onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
             onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
           />
-          <Section title="Spotting / Bleeding" subtitle="Note any spotting — always inform your midwife if unexpected">
+          <Section title="Spotting / Bleeding" subtitle="Note any spotting — always inform your healthcare provider if unexpected">
             <div className="pt-1">
               <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
             </div>
