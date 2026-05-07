@@ -102,7 +102,7 @@ const AuthenticatedApp = () => {
         }
 
         // Check 2: Verify at least one active Cycle record exists
-        const cycles = await base44.entities.Cycle.list();
+        const cycles = await base44.entities.Cycle.filter({ created_by: user.email });
         if (!cycles || cycles.length === 0) {
           // No cycle records exist - treat as new user
           setNeedsOnboarding(true);
