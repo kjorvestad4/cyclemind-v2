@@ -144,7 +144,7 @@ export default function Onboarding() {
         </div>
 
         {/* Footer buttons */}
-        <div className="border-t border-border/40 p-5 space-y-2 bg-card">
+        <div className="border-t border-border/40 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] space-y-2 bg-card">
           {currentStep > 1 && (
             <Button
               variant="ghost"
