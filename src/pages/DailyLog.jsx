@@ -212,30 +212,6 @@ export default function DailyLog() {
     setHasUnsavedChanges(true);
   }, []);
 
-  // Quick log toggle handlers
-  const handleBleedingToggle = useCallback(async () => {
-    const newIntensity = (bleedingIntensity || 0) > 0 ? 0 : 2;
-    setBleedingIntensity(newIntensity);
-    setHasUnsavedChanges(true);
-    await saveMutation.mutateAsync({ ...buildPayload(), bleeding_intensity: newIntensity });
-  }, [bleedingIntensity]);
-
-  const handleIntimacyToggle = useCallback(async () => {
-    const newValue = !existingEntry?.intimacy_logged;
-    setHasUnsavedChanges(true);
-    await saveMutation.mutateAsync({ ...buildPayload(), intimacy_logged: newValue });
-  }, [existingEntry?.intimacy_logged]);
-
-  const handleOvulationToggle = useCallback(async () => {
-    const hasOvulation = ovulationTest === "LH Surge" || ovulationTest === "Positive";
-    const newTest = hasOvulation ? "" : "LH Surge";
-    const newDate = hasOvulation ? "" : selectedDate;
-    setOvulationTest(newTest);
-    setOvulationDate(newDate);
-    setHasUnsavedChanges(true);
-    await saveMutation.mutateAsync({ ...buildPayload(), ovulation_test: newTest, ovulation_date: newDate });
-  }, [ovulationTest, selectedDate]);
-
   const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
 
   const buildPayload = () => {
@@ -421,10 +397,6 @@ export default function DailyLog() {
       <QuickLogButtons
         selectedDate={selectedDate}
         existingEntry={existingEntry}
-        onBleedingToggle={handleBleedingToggle}
-        onIntimacyToggle={handleIntimacyToggle}
-        onOvulationToggle={handleOvulationToggle}
-        isPending={saveMutation.isPending}
         cycleType={cycleType}
       />
 
