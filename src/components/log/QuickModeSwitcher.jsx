@@ -20,26 +20,21 @@ const MODES = [
 export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClose }) {
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState(currentCycleType || "menstrual");
-  const [lmp, setLmp] = useState(() => latestCycle?.last_menstrual_period || "");
-  const [ovulationDate, setOvulationDate] = useState(() => latestCycle?.ovulation_date || "");
+  // Initialize with exact ISO string (YYYY-MM-DD), no conversion or defaulting
+  const [lmp, setLmp] = useState(() => {
+    const raw = latestCycle?.last_menstrual_period;
+    return raw ? String(raw).split('T')[0] : "";
+  });
+  const [ovulationDate, setOvulationDate] = useState(() => {
+    const raw = latestCycle?.ovulation_date;
+    return raw ? String(raw).split('T')[0] : "";
+  });
   const [cycleLength, setCycleLength] = useState(() => latestCycle?.cycle_length || 28);
   const [birthDate, setBirthDate] = useState("");
   const [hrtType, setHrtType] = useState(() => latestCycle?.hrt_type || "");
   const [saving, setSaving] = useState(false);
 
   const selectedMode = MODES.find((m) => m.id === selected);
-
-  // Sync state when modal opens with latestCycle data (full ISO strings, no conversion)
-  useEffect(() => {
-    if (latestCycle) {
-      // Store exact ISO string from database (e.g. "2025-04-15")
-      setLmp(latestCycle.last_menstrual_period ? String(latestCycle.last_menstrual_period).split('T')[0] : "");
-      setOvulationDate(latestCycle.ovulation_date ? String(latestCycle.ovulation_date).split('T')[0] : "");
-      setCycleLength(latestCycle.cycle_length || 28);
-      setHrtType(latestCycle.hrt_type || "");
-      console.log(`[CycleMind] Initialized LMP to exact value: "${latestCycle.last_menstrual_period}"`);
-    }
-  }, [latestCycle?.id]);
 
   // Live EDD calculation for pregnancy mode (ovulation priority)
   const pregnancyCalcs = useMemo(() => {
@@ -130,7 +125,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
 
   const handleClearLmp = () => {
     setLmp("");
-    toast.info("LMP cleared — ready to save");
+    console.log(`[CycleMind] LMP cleared by user`);
   };
 
   return (
