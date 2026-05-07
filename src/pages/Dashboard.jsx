@@ -14,10 +14,7 @@ import TodaySeverityCard from "@/components/dashboard/TodaySeverityCard";
 import { StreakWidget, RecentInsightsWidget, NextMilestoneWidget, QuickLinksRow } from "@/components/dashboard/UniversalWidgets";
 
 function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  return "Good evening";
+  return "Hello";
 }
 
 export default function Dashboard() {
