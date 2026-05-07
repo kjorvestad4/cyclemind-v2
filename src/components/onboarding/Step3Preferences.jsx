@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Clock, Ruler, Lock } from "lucide-react";
 
 export default function Step3Preferences({ formData, onUpdate }) {
   const handleInputChange = (field, value) => {
@@ -9,57 +9,60 @@ export default function Step3Preferences({ formData, onUpdate }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 flex flex-col h-full">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-serif font-bold">Your preferences</h2>
-        <p className="text-muted-foreground">Customize your CycleMind experience</p>
+        <h2 className="text-3xl font-serif font-bold">Your preferences</h2>
+        <p className="text-sm text-muted-foreground">Personalize for your needs</p>
       </div>
 
-      <div className="space-y-4">
-        {/* Notification Time */}
-        <div className="space-y-3">
-          <Label className="text-sm font-semibold">Daily reminder time</Label>
+      <div className="space-y-5 flex-1">
+        {/* Daily Reminder */}
+        <div className="space-y-2.5">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-muted-foreground" />
+            <Label className="text-sm font-semibold">Daily reminder time</Label>
+          </div>
           <Input
             type="time"
             value={formData.notification_time || "09:00"}
             onChange={(e) => handleInputChange("notification_time", e.target.value)}
-            className="h-12"
+            className="h-12 text-base"
           />
-          <p className="text-xs text-muted-foreground">When would you like your daily log reminder?</p>
+          <p className="text-xs text-muted-foreground">Get a gentle nudge to log your day</p>
         </div>
 
-        {/* Unit System */}
+        {/* Units */}
         <div className="space-y-3">
-          <Label className="text-sm font-semibold">Measurement units</Label>
+          <div className="flex items-center gap-2">
+            <Ruler className="w-4 h-4 text-muted-foreground" />
+            <Label className="text-sm font-semibold">Measurement units</Label>
+          </div>
           <RadioGroup value={formData.unit_system || "imperial"} onValueChange={(v) => handleInputChange("unit_system", v)}>
-            <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50">
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 cursor-pointer">
               <RadioGroupItem value="imperial" id="imperial" />
-              <Label htmlFor="imperial" className="flex-1 text-sm cursor-pointer">Imperial (lbs, inches)</Label>
+              <Label htmlFor="imperial" className="flex-1 text-sm cursor-pointer font-medium">Imperial (lbs, inches)</Label>
             </div>
-            <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50">
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 cursor-pointer">
               <RadioGroupItem value="metric" id="metric" />
-              <Label htmlFor="metric" className="flex-1 text-sm cursor-pointer">Metric (kg, cm)</Label>
+              <Label htmlFor="metric" className="flex-1 text-sm cursor-pointer font-medium">Metric (kg, cm)</Label>
             </div>
           </RadioGroup>
         </div>
 
-        {/* Privacy & Consent */}
-        <div className="space-y-3 bg-muted/40 p-4 rounded-xl">
-          <Label className="text-sm font-semibold">Privacy & Reports</Label>
-          <div className="flex items-start gap-3">
-            <Checkbox
-              id="consent-export"
-              checked={formData.consent_export || false}
-              onCheckedChange={(checked) => handleInputChange("consent_export", checked)}
-              className="mt-1"
-            />
-            <Label htmlFor="consent-export" className="text-xs cursor-pointer leading-relaxed">
-              Allow me to export my health data (PHQ-9, GAD-7, EPDS scores) as a PDF for my healthcare provider
-            </Label>
+        {/* Privacy & Data */}
+        <div className="space-y-3 rounded-2xl border border-border/50 bg-muted/30 p-4">
+          <div className="flex items-center gap-2">
+            <Lock className="w-4 h-4 text-muted-foreground" />
+            <Label className="text-sm font-semibold">Your data, your privacy</Label>
           </div>
-          <p className="text-[10px] text-muted-foreground italic">Your data is always private. You control what gets shared.</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Your data stays yours. You can export everything anytime — including PHQ-9, GAD-7, and EPDS scores — to share securely with your doctor.
+          </p>
+          <p className="text-[10px] text-muted-foreground italic">No ads. No selling. No surprises.</p>
         </div>
       </div>
+
+      <p className="text-xs text-muted-foreground text-center italic">You can change these settings anytime in your profile.</p>
     </div>
   );
 }

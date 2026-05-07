@@ -69,6 +69,7 @@ const AnimatedOutlet = () => {
             }
           />
         </Route>
+        <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/share/:token" element={<DoctorShareView />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>

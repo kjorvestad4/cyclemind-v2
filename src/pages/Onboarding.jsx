@@ -108,13 +108,13 @@ export default function Onboarding() {
     }
   };
 
-  const handleStartLogging = () => {
-    completeMutation.mutate();
+  const handleStartLogging = async () => {
+    await completeMutation.mutateAsync();
     navigate(`/log?date=${format(new Date(), "yyyy-MM-dd")}`);
   };
 
-  const handleSkipFirstLog = () => {
-    completeMutation.mutate();
+  const handleSkipFirstLog = async () => {
+    await completeMutation.mutateAsync();
   };
 
   const isLastStep = currentStep === STEPS.length;
@@ -122,71 +122,87 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
-        {/* Progress Indicator */}
+        {/* Progress Bar */}
         <div className="mb-8 space-y-2">
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             {STEPS.map((step) => (
               <div
                 key={step.id}
-                className={`flex-1 h-1.5 rounded-full transition-all ${
-                  step.id <= currentStep ? "bg-primary" : "bg-border"
+                className={`flex-1 h-2 rounded-full transition-all ${
+                  step.id <= currentStep ? "bg-primary" : "bg-border/40"
                 }`}
               />
             ))}
           </div>
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-muted-foreground">Step {currentStep} of {STEPS.length}</span>
-            <span className="text-muted-foreground font-medium">{STEPS[currentStep - 1].title}</span>
+          <div className="flex justify-between items-center text-xs px-0.5">
+            <span className="text-muted-foreground font-medium">Step {currentStep} of {STEPS.length}</span>
+            <span className="text-muted-foreground">{STEPS[currentStep - 1].title}</span>
           </div>
         </div>
 
         {/* Content Card */}
-        <div className="bg-card rounded-3xl border border-border shadow-xl p-8 min-h-[420px] flex flex-col">
-          {currentStep === 1 && (
-            <Step1ModeSelection selectedMode={selectedMode} onSelect={handleModeSelect} />
-          )}
+        <div className="bg-card rounded-3xl border border-border shadow-xl p-7 min-h-[480px] max-h-[80vh] flex flex-col overflow-hidden">
+          <div className="flex-1 overflow-y-auto">
+            {currentStep === 1 && (
+              <Step1ModeSelection selectedMode={selectedMode} onSelect={handleModeSelect} />
+            )}
 
-          {currentStep === 2 && selectedMode && (
-            <Step2CycleSetup selectedMode={selectedMode} formData={formData} onUpdate={setFormData} />
-          )}
+            {currentStep === 2 && selectedMode && (
+              <Step2CycleSetup selectedMode={selectedMode} formData={formData} onUpdate={setFormData} />
+            )}
 
-          {currentStep === 3 && (
-            <Step3Preferences formData={formData} onUpdate={setFormData} />
-          )}
+            {currentStep === 3 && (
+              <Step3Preferences formData={formData} onUpdate={setFormData} />
+            )}
 
-          {currentStep === 4 && selectedMode && (
-            <Step4FirstLog
-              selectedMode={selectedMode}
-              onSkip={handleSkipFirstLog}
-              onStart={handleStartLogging}
-            />
-          )}
+            {currentStep === 4 && selectedMode && (
+              <Step4FirstLog
+                selectedMode={selectedMode}
+                onSkip={handleSkipFirstLog}
+                onStart={handleStartLogging}
+              />
+            )}
+          </div>
 
           {/* Navigation Buttons */}
           {currentStep < 4 && (
-            <div className="mt-auto flex gap-2 pt-6 border-t border-border">
+            <div className="mt-6 pt-6 border-t border-border flex gap-2">
               <Button
                 variant="outline"
                 size="icon"
                 onClick={handleBack}
                 disabled={currentStep === 1}
-                className="h-12 w-12 rounded-xl"
+                className="h-12 w-12 rounded-xl shrink-0"
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>
               <Button
                 onClick={handleNext}
-                disabled={completeMutation.isPending}
+                disabled={completeMutation.isPending || (currentStep === 1 && !selectedMode)}
                 className="flex-1 h-12 rounded-xl font-semibold text-base gap-2"
               >
                 {completeMutation.isPending && <Loader2 className="w-5 h-5 animate-spin" />}
-                {isLastStep ? "Complete" : "Next"}
+                Next
               </Button>
+            </div>
+          )}
+
+          {currentStep === 4 && (
+            <div className="mt-6 pt-6 border-t border-border flex gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleBack}
+                className="h-12 w-12 rounded-xl shrink-0"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
+              <div className="flex-1" />
             </div>
           )}
         </div>
 
-        {/* Skip Onboarding Option */}
+        {/* Skip Option - only on steps 1-3 */}
         {currentStep < 4 && (
           <button
             onClick={() => {
@@ -195,7 +211,7 @@ export default function Onboarding() {
             className="w-full mt-4 text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
             disabled={completeMutation.isPending}
           >
-            Skip for now
+            Skip setup
           </button>
         )}
       </div>
