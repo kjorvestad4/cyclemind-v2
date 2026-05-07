@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { format } from "date-fns";
+import { format, subYears, addDays } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -98,9 +98,11 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
         console.log(`[CycleMind] Create result - returned LMP: "${result?.last_menstrual_period}"`, result);
       }
       
-      // Force refresh all relevant caches
+      // Force refresh ALL relevant caches to persist changes across entire app
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
       queryClient.invalidateQueries({ queryKey: ["entries"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      await queryClient.refetchQueries({ queryKey: ["cycles"] });
       
       const lmpDisplay = lmpToSave ? format(new Date(lmpToSave), "MMM d, yyyy") : "(cleared)";
       
@@ -184,8 +186,8 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                         <div className="flex items-center gap-1.5">
                           <Input 
                             type="date" 
-                            min="1900-01-01"
-                            max="2100-12-31"
+                            min={format(subYears(new Date(), 5), "yyyy-MM-dd")}
+                            max={format(addDays(new Date(), 30), "yyyy-MM-dd")}
                             value={lmp ? String(lmp).split('T')[0] : ""} 
                             onChange={(e) => {
                               const newVal = e.target.value;
