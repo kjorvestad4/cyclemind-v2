@@ -119,29 +119,29 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                 </div>
 
                 {isActive && mode.fields.length > 0 && (
-                  <div className="mt-3 space-y-2 border-t border-border/40 pt-3" onClick={(e) => e.stopPropagation()}>
+                  <div className="mt-2.5 space-y-1.5 border-t border-border/40 pt-2.5" onClick={(e) => e.stopPropagation()}>
                     {mode.fields.includes("lmp") && (
-                      <div className="space-y-1">
+                      <div className="space-y-0.5">
                         <Label className="text-xs">Last Menstrual Period (LMP)</Label>
-                        <Input type="date" value={lmp} onChange={(e) => setLmp(e.target.value)} className="h-9 bg-background" />
+                        <Input type="date" value={lmp} onChange={(e) => setLmp(e.target.value)} className="h-8 text-sm bg-background" />
                       </div>
                     )}
                     {mode.fields.includes("cycle_length") && (
-                       <div className="space-y-1">
+                       <div className="space-y-0.5">
                          <Label className="text-xs">Average Cycle Length (days)</Label>
-                         <Input type="number" min={20} max={60} value={cycleLength} onChange={(e) => setCycleLength(parseInt(e.target.value) || 28)} className="h-9 bg-background" />
+                         <Input type="number" min={20} max={60} value={cycleLength} onChange={(e) => setCycleLength(parseInt(e.target.value) || 28)} className="h-8 text-sm bg-background" />
                        </div>
                      )}
                      {mode.fields.includes("birth_date") && (
-                      <div className="space-y-1">
+                      <div className="space-y-0.5">
                         <Label className="text-xs">Birth / Delivery Date</Label>
-                        <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="h-9 bg-background" />
+                        <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="h-8 text-sm bg-background" />
                       </div>
                     )}
                     {mode.fields.includes("hrt_type") && (
-                      <div className="space-y-1">
+                      <div className="space-y-0.5">
                         <Label className="text-xs">HRT Type (optional)</Label>
-                        <Input placeholder="e.g. Estrogen patch…" value={hrtType} onChange={(e) => setHrtType(e.target.value)} className="h-9 bg-background" />
+                        <Input placeholder="e.g. Estrogen patch…" value={hrtType} onChange={(e) => setHrtType(e.target.value)} className="h-8 text-sm bg-background" />
                       </div>
                     )}
                   </div>
