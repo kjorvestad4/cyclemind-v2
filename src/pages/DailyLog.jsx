@@ -76,6 +76,18 @@ export default function DailyLog() {
   const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
   const initialDate = urlParams.get("date") || format(new Date(), "yyyy-MM-dd");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  // Guard: if not onboarded, redirect to onboarding
+  useEffect(() => {
+    if (user && !user.has_completed_onboarding) {
+      navigate("/onboarding", { replace: true });
+    }
+  }, [user, navigate]);
 
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [scores, setScores] = useState({});

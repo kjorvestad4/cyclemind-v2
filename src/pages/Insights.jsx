@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { differenceInDays, format } from "date-fns";
@@ -23,12 +24,20 @@ const CHART_TOOLTIP_STYLE = {
 };
 
 export default function Insights() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [selectedCycles, setSelectedCycles] = useState(3);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
+
+  // Guard: if not onboarded, redirect to onboarding
+  useEffect(() => {
+    if (user && !user.has_completed_onboarding) {
+      navigate("/onboarding", { replace: true });
+    }
+  }, [user, navigate]);
 
   const { data: allCycles = [] } = useQuery({
     queryKey: ["cycles"],

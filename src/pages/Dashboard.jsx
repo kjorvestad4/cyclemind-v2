@@ -28,6 +28,13 @@ export default function Dashboard() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
+  // Guard: if not onboarded, redirect to onboarding
+  useEffect(() => {
+    if (user && !user.has_completed_onboarding) {
+      navigate("/onboarding", { replace: true });
+    }
+  }, [user, navigate]);
+
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],
     queryFn: async () => {
