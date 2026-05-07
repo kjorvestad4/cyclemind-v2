@@ -19,6 +19,10 @@ import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import ShareWithDoctor from "@/components/insights/ShareWithDoctor";
 import PdfReportButton from "@/components/insights/PdfReportButton";
 import EDDDisplay from "@/components/pregnancy/EDDDisplay";
+import EditPregnancyModal from "@/components/profile/EditPregnancyModal";
+import EditMenstrualModal from "@/components/profile/EditMenstrualModal";
+import EditMenopauseModal from "@/components/profile/EditMenopauseModal";
+import EditPostpartumModal from "@/components/profile/EditPostpartumModal";
 import { getCycleDay } from "@/lib/symptoms";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -94,7 +98,7 @@ function Toggle({ checked, onChange }) {
 
 // ── CurrentCycleDetails Component ─────────────────────────────────────────
 
-function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLength, setCycleLength, ovulationDay, setOvulationDay, saveSettingsMutation }) {
+function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLength, setCycleLength, ovulationDay, setOvulationDay, saveSettingsMutation, onEditClick }) {
   const [expanded, setExpanded] = useState(true);
 
   if (!latestCycle) {
@@ -154,8 +158,11 @@ function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLen
                   onChange={(e) => setOvulationDay(parseInt(e.target.value) || 14)} />
               </div>
             </div>
-            <Button variant="outline" size="sm" className="w-full" onClick={() => saveSettingsMutation.mutate()} disabled={saveSettingsMutation.isPending}>
+            <Button variant="outline" size="sm" className="w-full gap-2 mb-2" onClick={() => saveSettingsMutation.mutate()} disabled={saveSettingsMutation.isPending}>
               Save Settings
+            </Button>
+            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => onEditClick("menstrual")}>
+              <Edit className="w-4 h-4" /> Edit Full Cycle Details
             </Button>
           </div>
         </div>
@@ -193,7 +200,7 @@ function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLen
             </div>
           </div>
           <div className="pt-2 border-t border-border/40">
-            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => {}}>
+            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => onEditClick("menopause")}>
               <Edit className="w-4 h-4" /> Edit HRT / Cycle Details
             </Button>
           </div>
@@ -219,7 +226,7 @@ function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLen
              pregnancyWeek={pregnancyWeek}
            />
            <div className="pt-2 border-t border-border/40">
-             <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => {}}>
+             <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => onEditClick("pregnancy")}>
                <Edit className="w-4 h-4" /> Edit Pregnancy Details
              </Button>
            </div>
@@ -245,7 +252,7 @@ function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLen
             </div>
           </div>
           <div className="pt-2 border-t border-border/40">
-            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => {}}>
+            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => onEditClick("postpartum")}>
               <Edit className="w-4 h-4" /> Edit Postpartum Details
             </Button>
           </div>
@@ -283,7 +290,7 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
   const [showSharePanel, setShowSharePanel] = useState(false);
-  const [showEditCycle, setShowEditCycle] = useState(false);
+  const [editMode, setEditMode] = useState(null); // 'pregnancy', 'menstrual', 'menopause', 'postpartum'
   const [cycleLength, setCycleLength] = useState(28);
   const [ovulationDay, setOvulationDay] = useState(14);
   const [notifDaily, setNotifDaily] = useState(true);
@@ -386,6 +393,7 @@ export default function Profile() {
         ovulationDay={ovulationDay}
         setOvulationDay={setOvulationDay}
         saveSettingsMutation={saveSettingsMutation}
+        onEditClick={(mode) => setEditMode(mode)}
       />
 
       {/* ── Quick Actions ── */}
@@ -561,6 +569,37 @@ export default function Profile() {
         <p className="text-[10px] text-muted-foreground">v1.0 · Based on DRSP (Endicott, Nee & Harrison, 2006)</p>
         <p className="text-[10px] text-muted-foreground">⚕️ Not a substitute for professional medical advice</p>
       </div>
+
+      {/* ── Edit Modals ── */}
+      {editMode === "pregnancy" && latestCycle && (
+        <EditPregnancyModal
+          cycle={latestCycle}
+          onClose={() => setEditMode(null)}
+          onSuccess={() => setEditMode(null)}
+        />
+      )}
+      {editMode === "menstrual" && latestCycle && (
+        <EditMenstrualModal
+          cycle={latestCycle}
+          onClose={() => setEditMode(null)}
+          onSuccess={() => setEditMode(null)}
+        />
+      )}
+      {editMode === "menopause" && latestCycle && (
+        <EditMenopauseModal
+          cycle={latestCycle}
+          cycleType={cycleType}
+          onClose={() => setEditMode(null)}
+          onSuccess={() => setEditMode(null)}
+        />
+      )}
+      {editMode === "postpartum" && latestCycle && (
+        <EditPostpartumModal
+          cycle={latestCycle}
+          onClose={() => setEditMode(null)}
+          onSuccess={() => setEditMode(null)}
+        />
+      )}
     </div>
   );
 }
