@@ -1,6 +1,3 @@
-import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
-
 const SEVERITY_LABELS = ["", "Not at all", "Minimal", "Mild", "Moderate", "Severe", "Extreme"];
 const SEVERITY_BG = [
   "",
@@ -39,48 +36,24 @@ function SymptomCard({ symptom, value, onChange }) {
 }
 
 export default function SymptomGrid({ categories, scores, onChange }) {
-  const [showAll, setShowAll] = useState(false);
-
-  // Primary symptoms shown by default (most clinically relevant)
-  const PRIMARY_KEYS = new Set([
-    "s_depressed", "s_anxious", "s_mood_swings", "s_angry", "s_hopeless",
-    "s_lethargic", "s_overwhelmed", "s_concentration", "s_less_interest",
-    "s_appetite", "s_insomnia", "s_breast_tender", "s_bloating", "s_headache", "s_pain"
-  ]);
-
   return (
     <div className="space-y-5">
-      {categories.map((cat) => {
-        const visibleSymptoms = showAll
-          ? cat.symptoms
-          : cat.symptoms.filter((s) => PRIMARY_KEYS.has(s.key));
-        if (visibleSymptoms.length === 0) return null;
-
-        return (
-          <div key={cat.label} className="space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{cat.label}</span>
-              <div className="flex-1 h-px bg-border" />
-              <span className="text-xs text-muted-foreground">
-                {cat.symptoms.filter((s) => scores[s.key] > 0).length}/{cat.symptoms.length}
-              </span>
-            </div>
-            <div className="grid grid-cols-1 gap-3">
-              {visibleSymptoms.map((s) => (
-                <SymptomCard key={s.key} symptom={s} value={scores[s.key] || 0} onChange={onChange} />
-              ))}
-            </div>
+      {categories.map((cat) => (
+        <div key={cat.label} className="space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{cat.label}</span>
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-muted-foreground">
+              {cat.symptoms.filter((s) => scores[s.key] > 0).length}/{cat.symptoms.length}
+            </span>
           </div>
-        );
-      })}
-
-      <button
-        onClick={() => setShowAll(!showAll)}
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border-2 border-dashed border-border text-sm text-muted-foreground hover:bg-muted/50 transition-colors"
-      >
-        {showAll ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        {showAll ? "Show fewer symptoms" : "Show all 33 symptoms"}
-      </button>
+          <div className="grid grid-cols-1 gap-3">
+            {cat.symptoms.map((s) => (
+              <SymptomCard key={s.key} symptom={s} value={scores[s.key] || 0} onChange={onChange} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

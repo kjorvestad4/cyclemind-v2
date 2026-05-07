@@ -167,18 +167,26 @@
     },
     "phq9_score": {
       "type": "number",
-      "description": "PHQ-9 depression screening score (0-27)"
+      "description": "PHQ-9 depression screening total score (0-27)"
+    },
+    "phq9_responses": {
+      "type": "object",
+      "description": "Individual PHQ-9 question responses (keys: q1-q9, values: 0-3)"
     },
     "gad7_score": {
       "type": "number",
-      "description": "GAD-7 anxiety screening score (0-21)"
+      "description": "GAD-7 anxiety screening total score (0-21)"
+    },
+    "gad7_responses": {
+      "type": "object",
+      "description": "Individual GAD-7 question responses (keys: q1-q7, values: 0-3)"
     },
     "medications_taken": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "List of medications taken today"
+      "description": "Medications taken today. Suggested: Antidepressants (SSRI/SNRI), Hormonal Birth Control, HRT, NSAIDs/Pain Relief, Calcium/Vitamin B6, Other Supplement, Custom"
     },
     "journal_entry": {
       "type": "string",

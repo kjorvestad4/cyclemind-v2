@@ -11,7 +11,7 @@ import SymptomGrid from "@/components/log/SymptomGrid";
 import BleedingPicker from "@/components/log/BleedingPicker";
 import MedicationsTaken from "@/components/log/MedicationsTaken";
 import CustomSymptoms from "@/components/log/CustomSymptoms";
-import QuickScreening from "@/components/log/QuickScreening";
+import MoodScales from "@/components/log/MoodScales";
 import { SYMPTOM_CATEGORIES, ALL_SYMPTOMS, getCycleDay, calculateDayTotal } from "@/lib/symptoms";
 
 const PHASE_LABELS = {
@@ -52,6 +52,8 @@ export default function DailyLog() {
   const [customSymptoms, setCustomSymptoms] = useState([]);
   const [phq9Score, setPhq9Score] = useState(0);
   const [gad7Score, setGad7Score] = useState(0);
+  const [phq9Responses, setPhq9Responses] = useState({});
+  const [gad7Responses, setGad7Responses] = useState({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const { data: cycles = [] } = useQuery({
@@ -89,6 +91,8 @@ export default function DailyLog() {
       setCustomSymptoms(existingEntry.custom_symptoms || []);
       setPhq9Score(existingEntry.phq9_score || 0);
       setGad7Score(existingEntry.gad7_score || 0);
+      setPhq9Responses(existingEntry.phq9_responses || {});
+      setGad7Responses(existingEntry.gad7_responses || {});
     } else {
       setScores({});
       setFlow("");
@@ -98,6 +102,8 @@ export default function DailyLog() {
       setCustomSymptoms([]);
       setPhq9Score(0);
       setGad7Score(0);
+      setPhq9Responses({});
+      setGad7Responses({});
     }
     setHasUnsavedChanges(false);
   }, [selectedDate, existingEntry?.id]);
@@ -119,7 +125,9 @@ export default function DailyLog() {
       medications_taken: medications.length ? medications : undefined,
       custom_symptoms: customSymptoms.length ? customSymptoms : undefined,
       phq9_score: phq9Score || undefined,
+      phq9_responses: Object.keys(phq9Responses).length ? phq9Responses : undefined,
       gad7_score: gad7Score || undefined,
+      gad7_responses: Object.keys(gad7Responses).length ? gad7Responses : undefined,
     };
     ALL_SYMPTOMS.forEach((s) => { data[s.key] = scores[s.key] || 0; });
     return data;
@@ -235,12 +243,12 @@ export default function DailyLog() {
         </div>
       </Section>
 
-      {/* Mental Health Screening */}
-      <QuickScreening
-        phq9Score={phq9Score}
-        gad7Score={gad7Score}
-        onPHQ9Change={(v) => { setPhq9Score(v); setHasUnsavedChanges(true); }}
-        onGAD7Change={(v) => { setGad7Score(v); setHasUnsavedChanges(true); }}
+      {/* Mood Scales */}
+      <MoodScales
+        phq9Responses={phq9Responses}
+        gad7Responses={gad7Responses}
+        onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
+        onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
       />
 
       {/* Medications */}
