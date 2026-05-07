@@ -1,103 +1,30 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { ChevronLeft, Loader2 } from "lucide-react";
-import Step1ModeSelection from "@/components/onboarding/Step1ModeSelection";
-import Step2CycleSetup from "@/components/onboarding/Step2CycleSetup";
-import Step3Preferences from "@/components/onboarding/Step3Preferences";
-import Step4FirstLog from "@/components/onboarding/Step4FirstLog";
-import { calculateEDD, getPregnancyWeek } from "@/lib/eddCalculation";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-
-const STEPS = [
-  { id: 1, title: "Mode Selection" },
-  { id: 2, title: "Cycle Setup" },
-  { id: 3, title: "Preferences" },
-  { id: 4, title: "First Log" },
-];
+import { toast } from "sonner";
+import { ChevronLeft, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import OnboardingStep1 from "@/components/onboarding/OnboardingStep1";
+import OnboardingStep2 from "@/components/onboarding/OnboardingStep2";
+import OnboardingStep3 from "@/components/onboarding/OnboardingStep3";
+import OnboardingStep4 from "@/components/onboarding/OnboardingStep4";
 
 export default function Onboarding() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedMode, setSelectedMode] = useState(null);
-  const [formData, setFormData] = useState({
-    lmp: "",
-    cycle_length: 28,
-    ovulation_date: "",
-    birth_date: "",
-    hrt_type: "",
-    track_ovulation: "yes",
-    notification_time: "09:00",
-    unit_system: "imperial",
-    consent_export: false,
-  });
-
-  const completeMutation = useMutation({
-    mutationFn: async () => {
-      const user = await base44.auth.me();
-
-      // Build cycle data
-      const today = format(new Date(), "yyyy-MM-dd");
-      let cycleData = {
-        start_date: today,
-        cycle_type: selectedMode,
-      };
-
-      // Add mode-specific fields
-      if (["menstrual", "perimenopause", "pregnancy", "menopause"].includes(selectedMode) && formData.lmp) {
-        cycleData.last_menstrual_period = formData.lmp;
-      }
-
-      if (["menstrual", "perimenopause"].includes(selectedMode)) {
-        cycleData.cycle_length = formData.cycle_length || 28;
-      }
-
-      if (selectedMode === "pregnancy" && formData.lmp) {
-        const eddData = calculateEDD(formData.ovulation_date ? new Date(formData.ovulation_date) : undefined, formData.lmp);
-        cycleData.estimated_due_date = eddData.edd;
-        cycleData.pregnancy_week = getPregnancyWeek(formData.lmp, new Date(today));
-      }
-
-      if (selectedMode === "postpartum" && formData.birth_date) {
-        cycleData.start_date = formData.birth_date;
-      }
-
-      if (["menopause", "perimenopause"].includes(selectedMode) && formData.hrt_type) {
-        cycleData.hrt_type = formData.hrt_type;
-      }
-
-      // Create cycle
-      await base44.entities.Cycle.create(cycleData);
-
-      // Update user with onboarding status and preferences
-      await base44.auth.updateMe({
-        has_completed_onboarding: true,
-        notification_time: formData.notification_time,
-        unit_system: formData.unit_system,
-      });
-    },
-    onSuccess: () => {
-      toast.success("Welcome to CycleMind! 💜");
-      navigate("/");
-    },
-    onError: () => {
-      toast.error("Failed to complete onboarding. Please try again.");
-    },
-  });
-
-  const handleModeSelect = (mode) => {
-    setSelectedMode(mode);
-  };
+  const [selectedMode, setSelectedMode] = useState("pregnancy");
+  const [lmp, setLmp] = useState("");
+  const [ovulationDate, setOvulationDate] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [cycleLength, setCycleLength] = useState(28);
+  const [hrtType, setHrtType] = useState("");
+  const [reminderTime, setReminderTime] = useState("19:00");
+  const [unitSystem, setUnitSystem] = useState("imperial");
+  const [saving, setSaving] = useState(false);
 
   const handleNext = () => {
-    if (currentStep === 1 && !selectedMode) {
-      toast.error("Please select a tracking mode");
-      return;
-    }
-    if (currentStep < STEPS.length) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -108,112 +35,142 @@ export default function Onboarding() {
     }
   };
 
-  const handleStartLogging = async () => {
-    await completeMutation.mutateAsync();
-    navigate(`/log?date=${format(new Date(), "yyyy-MM-dd")}`);
+  const handleComplete = async () => {
+    setSaving(true);
+    try {
+      // Build cycle payload based on selected mode
+      const today = format(new Date(), "yyyy-MM-dd");
+      const cyclePayload = {
+        cycle_type: selectedMode,
+        start_date: lmp || birthDate || today,
+        last_menstrual_period: lmp || null,
+        cycle_length: cycleLength || 28,
+      };
+
+      if (selectedMode === "pregnancy") {
+        cyclePayload.ovulation_date = ovulationDate || null;
+      }
+      if (selectedMode === "perimenopause" || selectedMode === "menopause") {
+        cyclePayload.hrt_type = hrtType || null;
+      }
+      if (selectedMode === "postpartum") {
+        cyclePayload.start_date = birthDate || today;
+      }
+
+      // Create the cycle
+      await base44.entities.Cycle.create(cyclePayload);
+
+      // Update user profile
+      await base44.auth.updateMe({
+        has_completed_onboarding: true,
+        notification_time: reminderTime,
+        unit_system: unitSystem,
+      });
+
+      toast.success("Welcome to CycleMind!");
+      navigate("/");
+    } catch (error) {
+      console.error("Onboarding error:", error);
+      toast.error("Setup failed — please try again");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleSkipFirstLog = async () => {
-    await completeMutation.mutateAsync();
-  };
-
-  const isLastStep = currentStep === STEPS.length;
+  const progress = (currentStep / 4) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg">
-        {/* Progress Bar */}
-        <div className="mb-8 space-y-2">
-          <div className="flex gap-1.5">
-            {STEPS.map((step) => (
-              <div
-                key={step.id}
-                className={`flex-1 h-2 rounded-full transition-all ${
-                  step.id <= currentStep ? "bg-primary" : "bg-border/40"
-                }`}
-              />
-            ))}
-          </div>
-          <div className="flex justify-between items-center text-xs px-0.5">
-            <span className="text-muted-foreground font-medium">Step {currentStep} of {STEPS.length}</span>
-            <span className="text-muted-foreground">{STEPS[currentStep - 1].title}</span>
-          </div>
-        </div>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Progress bar */}
+      <div className="h-1 bg-muted">
+        <div
+          className="h-full bg-primary transition-all duration-300"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
 
-        {/* Content Card */}
-        <div className="bg-card rounded-3xl border border-border shadow-xl p-7 min-h-[480px] max-h-[80vh] flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto">
-            {currentStep === 1 && (
-              <Step1ModeSelection selectedMode={selectedMode} onSelect={handleModeSelect} />
-            )}
+      {/* Main content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-5 flex flex-col">
+          {currentStep === 1 && (
+            <OnboardingStep1
+              selectedMode={selectedMode}
+              onSelect={setSelectedMode}
+              onNext={handleNext}
+              onSkip={() => navigate("/")}
+            />
+          )}
 
-            {currentStep === 2 && selectedMode && (
-              <Step2CycleSetup selectedMode={selectedMode} formData={formData} onUpdate={setFormData} />
-            )}
+          {currentStep === 2 && (
+            <OnboardingStep2
+              selectedMode={selectedMode}
+              lmp={lmp}
+              setLmp={setLmp}
+              ovulationDate={ovulationDate}
+              setOvulationDate={setOvulationDate}
+              birthDate={birthDate}
+              setBirthDate={setBirthDate}
+              cycleLength={cycleLength}
+              setCycleLength={setCycleLength}
+              hrtType={hrtType}
+              setHrtType={setHrtType}
+              onNext={handleNext}
+            />
+          )}
 
-            {currentStep === 3 && (
-              <Step3Preferences formData={formData} onUpdate={setFormData} />
-            )}
-
-            {currentStep === 4 && selectedMode && (
-              <Step4FirstLog
-                selectedMode={selectedMode}
-                onSkip={handleSkipFirstLog}
-                onStart={handleStartLogging}
-              />
-            )}
-          </div>
-
-          {/* Navigation Buttons */}
-          {currentStep < 4 && (
-            <div className="mt-6 pt-6 border-t border-border flex gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleBack}
-                disabled={currentStep === 1}
-                className="h-12 w-12 rounded-xl shrink-0"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </Button>
-              <Button
-                onClick={handleNext}
-                disabled={completeMutation.isPending || (currentStep === 1 && !selectedMode)}
-                className="flex-1 h-12 rounded-xl font-semibold text-base gap-2"
-              >
-                {completeMutation.isPending && <Loader2 className="w-5 h-5 animate-spin" />}
-                Next
-              </Button>
-            </div>
+          {currentStep === 3 && (
+            <OnboardingStep3
+              reminderTime={reminderTime}
+              setReminderTime={setReminderTime}
+              unitSystem={unitSystem}
+              setUnitSystem={setUnitSystem}
+              onNext={handleNext}
+            />
           )}
 
           {currentStep === 4 && (
-            <div className="mt-6 pt-6 border-t border-border flex gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleBack}
-                className="h-12 w-12 rounded-xl shrink-0"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </Button>
-              <div className="flex-1" />
-            </div>
+            <OnboardingStep4
+              selectedMode={selectedMode}
+              onComplete={handleComplete}
+              onSkip={() => navigate("/")}
+              saving={saving}
+            />
           )}
         </div>
 
-        {/* Skip Option - only on steps 1-3 */}
-        {currentStep < 4 && (
-          <button
-            onClick={() => {
-              completeMutation.mutate();
-            }}
-            className="w-full mt-4 text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
-            disabled={completeMutation.isPending}
-          >
-            Skip setup
-          </button>
-        )}
+        {/* Footer buttons */}
+        <div className="border-t border-border/40 p-5 space-y-2 bg-card">
+          {currentStep > 1 && (
+            <Button
+              variant="ghost"
+              onClick={handleBack}
+              className="w-full gap-2"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back
+            </Button>
+          )}
+          {currentStep < 4 && (
+            <Button
+              onClick={handleNext}
+              className="w-full h-12 rounded-2xl font-semibold text-base"
+            >
+              Continue
+            </Button>
+          )}
+          {currentStep === 4 && (
+            <Button
+              onClick={handleComplete}
+              disabled={saving}
+              className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
+            >
+              {saving ? "Setting up..." : <>
+                <Check className="w-5 h-5" />
+                Get Started
+              </>}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
