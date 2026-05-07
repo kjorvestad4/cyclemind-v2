@@ -24,8 +24,14 @@ const pageVariants = {
   exit: { opacity: 0, x: -24 },
 };
 
-const AnimatedOutlet = () => {
+const AnimatedOutlet = ({ needsOnboarding }) => {
   const location = useLocation();
+  
+  // If user needs onboarding and isn't on onboarding/share pages, show onboarding
+  if (needsOnboarding && !location.pathname.startsWith('/onboarding') && !location.pathname.startsWith('/share')) {
+    return <Onboarding />;
+  }
+  
   return (
     <AnimatePresence mode="wait" initial={false} key={location.pathname}>
       <Routes location={location}>
@@ -139,12 +145,7 @@ const AuthenticatedApp = () => {
     }
   }
 
-  // Force onboarding if user needs it and isn't already on the onboarding page
-  if (needsOnboarding && !location.pathname.startsWith('/onboarding')) {
-    return <Onboarding />;
-  }
-
-  return <AnimatedOutlet />;
+  return <AnimatedOutlet needsOnboarding={needsOnboarding} />;
 };
 
 function App() {
