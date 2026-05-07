@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { format } from "date-fns";
@@ -28,6 +28,15 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
   const [saving, setSaving] = useState(false);
 
   const selectedMode = MODES.find((m) => m.id === selected);
+
+  // Live EDD calculation for pregnancy mode
+  const pregnancyCalcs = useMemo(() => {
+    if (selected !== "pregnancy" || !lmp) return null;
+    const eddData = calculateEDD(undefined, lmp);
+    const week = getPregnancyWeek(lmp, new Date(format(new Date(), "yyyy-MM-dd")));
+    const trimester = week <= 13 ? "First" : week <= 26 ? "Second" : "Third";
+    return { eddData, week, trimester };
+  }, [selected, lmp]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -119,29 +128,45 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                 </div>
 
                 {isActive && mode.fields.length > 0 && (
-                  <div className="mt-2.5 space-y-1.5 border-t border-border/40 pt-2.5" onClick={(e) => e.stopPropagation()}>
+                  <div className="mt-2 space-y-1 border-t border-border/40 pt-2" onClick={(e) => e.stopPropagation()}>
                     {mode.fields.includes("lmp") && (
                       <div className="space-y-0.5">
-                        <Label className="text-xs">Last Menstrual Period (LMP)</Label>
+                        <Label className="text-xs font-medium">Last Menstrual Period</Label>
                         <Input type="date" value={lmp} onChange={(e) => setLmp(e.target.value)} className="h-8 text-sm bg-background" />
                       </div>
                     )}
                     {mode.fields.includes("cycle_length") && (
                        <div className="space-y-0.5">
-                         <Label className="text-xs">Average Cycle Length (days)</Label>
+                         <Label className="text-xs font-medium">Cycle Length (days)</Label>
                          <Input type="number" min={20} max={60} value={cycleLength} onChange={(e) => setCycleLength(parseInt(e.target.value) || 28)} className="h-8 text-sm bg-background" />
                        </div>
                      )}
                      {mode.fields.includes("birth_date") && (
                       <div className="space-y-0.5">
-                        <Label className="text-xs">Birth / Delivery Date</Label>
+                        <Label className="text-xs font-medium">Birth / Delivery Date</Label>
                         <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="h-8 text-sm bg-background" />
                       </div>
                     )}
                     {mode.fields.includes("hrt_type") && (
                       <div className="space-y-0.5">
-                        <Label className="text-xs">HRT Type (optional)</Label>
+                        <Label className="text-xs font-medium">HRT Type (optional)</Label>
                         <Input placeholder="e.g. Estrogen patch…" value={hrtType} onChange={(e) => setHrtType(e.target.value)} className="h-8 text-sm bg-background" />
+                      </div>
+                    )}
+
+                    {/* Live EDD Display for Pregnancy */}
+                    {selected === "pregnancy" && pregnancyCalcs && (
+                      <div className="mt-1.5 pt-1.5 border-t border-border/30 space-y-1">
+                        <div className="text-xs font-medium text-foreground">Estimated Due Date</div>
+                        <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-2 space-y-0.5">
+                          <p className="text-sm font-bold text-pink-700 dark:text-pink-300">
+                            {format(new Date(pregnancyCalcs.eddData.edd), "MMM d, yyyy")}
+                          </p>
+                          <p className="text-[11px] text-pink-600 dark:text-pink-400">
+                            Week {pregnancyCalcs.week} · {pregnancyCalcs.trimester} trimester
+                          </p>
+                          <p className="text-[10px] text-pink-500">({pregnancyCalcs.eddData.method === "ovulation" ? "from ovulation" : "from LMP"})</p>
+                        </div>
                       </div>
                     )}
                   </div>

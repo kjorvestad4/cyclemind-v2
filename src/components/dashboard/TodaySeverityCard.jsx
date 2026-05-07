@@ -134,27 +134,31 @@ export default function TodaySeverityCard({ entries, cycleType }) {
   return (
     <button
       onClick={() => navigate(`/log?date=${todayStr}`)}
-      className="w-full text-left bg-card rounded-2xl border border-border/60 p-4 hover:bg-muted/20 active:scale-[0.99] transition-all group"
+      className="w-full text-left bg-card rounded-2xl border border-border/50 p-5 hover:border-primary/30 hover:shadow-md active:scale-[0.99] transition-all group shadow-sm"
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-4">
         {/* Score block */}
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
             {label || "Today's Score"}
           </p>
 
           {hasData ? (
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="text-4xl font-bold text-foreground">{score}</span>
-              <span className="text-sm text-muted-foreground">{unit}</span>
-              {severity && (
-                <span className={`text-sm font-semibold ${severity.color}`}>• {severity.label}</span>
-              )}
+            <div className="space-y-1">
+              <div className="flex items-baseline gap-3">
+                <span className="text-5xl font-bold text-foreground">{score}</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs text-muted-foreground font-medium">{unit}</span>
+                  {severity && (
+                    <span className={`text-xs font-semibold ${severity.color}`}>{severity.label}</span>
+                  )}
+                </div>
+              </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2.5 mt-1">
               <PenLine className="w-5 h-5 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Not logged yet — tap to log</span>
+              <span className="text-sm text-muted-foreground font-medium">Not logged yet</span>
             </div>
           )}
 

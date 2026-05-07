@@ -58,7 +58,7 @@ export default function Dashboard() {
   const filledCount = todayEntry ? ALL_SYMPTOMS.filter((s) => (todayEntry[s.key] || 0) > 0).length : 0;
 
   return (
-    <div className="space-y-4 pb-24">
+    <div className="space-y-5 pb-24">
       <CalendarPopup
         isOpen={showCalendar}
         onClose={() => setShowCalendar(false)}
@@ -67,17 +67,17 @@ export default function Dashboard() {
         cycleType={cycleType}
       />
       {/* Greeting with Calendar */}
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-3 pt-1">
         <div className="flex-1">
           <h2 className="font-serif text-2xl font-semibold text-foreground">
             {getGreeting()}{user?.full_name ? `, ${user.full_name.split(" ")[0]}` : ""}
           </h2>
-          <p className="text-sm text-muted-foreground mt-0.5">You've got this — tracking helps. 💜</p>
+          <p className="text-sm text-muted-foreground mt-1">You've got this — tracking helps. 💜</p>
         </div>
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 rounded-full hover:bg-muted shrink-0 mt-1"
+          className="h-11 w-11 rounded-xl hover:bg-muted shrink-0 mt-1"
           onClick={() => setShowCalendar(true)}
         >
           <CalendarIcon className="w-5 h-5 text-primary" />
@@ -106,16 +106,16 @@ export default function Dashboard() {
       <TodaySeverityCard entries={entries} cycleType={cycleType} />
 
       {/* Secondary log button */}
-      <Button
-        onClick={() => navigate(`/log?date=${todayStr}`)}
-        variant={todayEntry ? "outline" : "default"}
-        className={`w-full h-12 rounded-2xl text-sm font-semibold gap-2 ${!todayEntry ? "shadow-lg shadow-primary/20" : ""}`}
-      >
-        {todayEntry ? <Check className="w-4 h-4" /> : <PenLine className="w-4 h-4" />}
-        {todayEntry
-          ? `Update Log · ${filledCount} symptoms rated`
-          : "Log Today's Symptoms"}
-      </Button>
+      {todayEntry && (
+        <Button
+          onClick={() => navigate(`/log?date=${todayStr}`)}
+          variant="outline"
+          className="w-full h-11 rounded-2xl text-sm font-medium gap-2"
+        >
+          <Check className="w-4 h-4" />
+          Update Log · {filledCount} symptoms rated
+        </Button>
+      )}
 
       {/* Mode-specific content */}
       <ModeContent
