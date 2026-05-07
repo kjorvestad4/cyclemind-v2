@@ -1,0 +1,53 @@
+{
+  "name": "DoctorShare",
+  "type": "object",
+  "properties": {
+    "share_token": {
+      "type": "string",
+      "description": "Unique token used in the shareable link"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO datetime when this share link expires (30 days from creation)"
+    },
+    "include_journal": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether journal/notes entries are included in the shared view"
+    },
+    "include_medications": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether medication logs are included"
+    },
+    "include_screening": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether PHQ-9 and GAD-7 scores are included"
+    },
+    "anonymized": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the share is anonymized (hides name/email)"
+    },
+    "access_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many times this link has been accessed"
+    },
+    "label": {
+      "type": "string",
+      "description": "Optional label e.g. 'Dr. Smith appointment May 2026'"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the link is still active (can be revoked)"
+    }
+  },
+  "required": [
+    "share_token",
+    "expires_at"
+  ]
+}

@@ -8,6 +8,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import AppLayout from '@/components/layout/AppLayout';
+import DoctorShareView from '@/pages/DoctorShareView';
 import Dashboard from '@/pages/Dashboard';
 import DailyLog from '@/pages/DailyLog';
 import Insights from '@/pages/Insights';
@@ -67,6 +68,7 @@ const AnimatedOutlet = () => {
             }
           />
         </Route>
+        <Route path="/share/:token" element={<DoctorShareView />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </AnimatePresence>

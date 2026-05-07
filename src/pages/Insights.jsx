@@ -10,6 +10,7 @@ import { AlertTriangle, CheckCircle, Info, TrendingUp, Activity, Brain, Heart } 
 import { ALL_SYMPTOMS, SYMPTOM_CATEGORIES, calculateDayTotal } from "@/lib/symptoms";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PdfReportButton from "@/components/insights/PdfReportButton";
+import ShareWithDoctor from "@/components/insights/ShareWithDoctor";
 
 const CHART_TOOLTIP_STYLE = {
   contentStyle: {
@@ -275,6 +276,15 @@ export default function Insights() {
           </CardHeader>
           <CardContent>
             <SymptomHeatmap data={heatmapData} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* SHARE WITH DOCTOR */}
+      {hasData && (
+        <Card className="border-primary/20 bg-primary/3">
+          <CardContent className="pt-5 pb-5">
+            <ShareWithDoctor cycles={cycles} entries={entries} analysis={analysis} />
           </CardContent>
         </Card>
       )}
