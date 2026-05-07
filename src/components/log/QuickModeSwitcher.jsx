@@ -29,13 +29,15 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
 
   const selectedMode = MODES.find((m) => m.id === selected);
 
-  // Sync state when modal opens with latestCycle data
+  // Sync state when modal opens with latestCycle data (full ISO strings, no conversion)
   useEffect(() => {
     if (latestCycle) {
-      setLmp(latestCycle.last_menstrual_period || "");
-      setOvulationDate(latestCycle.ovulation_date || "");
+      // Store exact ISO string from database (e.g. "2025-04-15")
+      setLmp(latestCycle.last_menstrual_period ? String(latestCycle.last_menstrual_period).split('T')[0] : "");
+      setOvulationDate(latestCycle.ovulation_date ? String(latestCycle.ovulation_date).split('T')[0] : "");
       setCycleLength(latestCycle.cycle_length || 28);
       setHrtType(latestCycle.hrt_type || "");
+      console.log(`[CycleMind] Initialized LMP to exact value: "${latestCycle.last_menstrual_period}"`);
     }
   }, [latestCycle?.id]);
 
@@ -56,37 +58,39 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
     try {
       const today = format(new Date(), "yyyy-MM-dd");
       
-      // Extract exact picker value (yyyy-MM-dd format, no timezone conversion)
-      const pickerValue = lmp ? String(lmp).split('T')[0] : null;
-      console.log(`[CycleMind] EXPLICIT SAVE: picker value="${pickerValue}", mode="${selected}"`);
+      // Use exact ISO string from picker (YYYY-MM-DD), zero conversion
+      const exactIsoString = lmp || null;
+      const [year, month, day] = exactIsoString ? exactIsoString.split('-') : [null, null, null];
+      
+      console.log(`[CycleMind] FORCE EXACT SAVE: ISO="${exactIsoString}" (day=${day}, month=${month}, year=${year}), mode="${selected}"`);
       
       // Must have active cycle
       if (!latestCycle?.id) {
-        console.log(`[CycleMind] Creating new cycle with LMP=${pickerValue}`);
+        console.log(`[CycleMind] Creating new cycle with exact LMP=${exactIsoString}`);
         await base44.entities.Cycle.create({
-          start_date: pickerValue || today,
+          start_date: exactIsoString || today,
           cycle_type: selected,
           cycle_length: cycleLength || 28,
-          last_menstrual_period: pickerValue,
+          last_menstrual_period: exactIsoString,
           ovulation_date: ovulationDate || undefined,
         });
       } else {
-        // FORCE update existing cycle with exact picker value
+        // FORCE update existing cycle with exact ISO string (NO conversion, NO defaulting)
         const updatePayload = {
           cycle_type: selected,
-          last_menstrual_period: pickerValue, // Exact picker value, no conversion
+          last_menstrual_period: exactIsoString, // Exact ISO string preserved
         };
         
         if (selected === "menstrual" || selected === "perimenopause") {
           updatePayload.cycle_length = cycleLength || 28;
-          updatePayload.start_date = pickerValue || today;
+          updatePayload.start_date = exactIsoString || today;
         }
         
         if (selected === "pregnancy") {
           updatePayload.ovulation_date = ovulationDate || undefined;
-          if (pickerValue || ovulationDate) {
-            const eddData = calculateEDD(ovulationDate, pickerValue);
-            const baselineDate = ovulationDate || pickerValue;
+          if (exactIsoString || ovulationDate) {
+            const eddData = calculateEDD(ovulationDate, exactIsoString);
+            const baselineDate = ovulationDate || exactIsoString;
             const pregnancyWeek = getPregnancyWeek(baselineDate, new Date(today));
             updatePayload.estimated_due_date = eddData?.edd;
             updatePayload.pregnancy_week = pregnancyWeek;
@@ -97,7 +101,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
           updatePayload.hrt_type = hrtType || undefined;
         }
         
-        console.log(`[CycleMind] UPDATE Cycle ${latestCycle.id} with payload:`, updatePayload);
+        console.log(`[CycleMind] FORCE UPDATE Cycle ${latestCycle.id} with exact ISO payload:`, updatePayload);
         await base44.entities.Cycle.update(latestCycle.id, updatePayload);
       }
       
@@ -108,14 +112,16 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
       await queryClient.refetchQueries({ queryKey: ["cycles"] });
       await queryClient.refetchQueries({ queryKey: ["entries"] });
       
-      // Toast with exact selected value
-      const displayValue = pickerValue ? format(new Date(`${pickerValue}T00:00:00`), "MMM d, yyyy") : "Cleared";
-      toast.success(`LMP updated to ${displayValue}`);
+      // Toast showing exact selected date with day + month + year
+      const toastMsg = exactIsoString 
+        ? `LMP saved exactly as ${format(new Date(`${exactIsoString}T00:00:00Z`), "MMMM d, yyyy")}` 
+        : "LMP cleared";
+      toast.success(toastMsg);
       
-      console.log(`[CycleMind] EXPLICIT SAVE COMPLETE ✓ - LMP="${pickerValue}" persisted`);
+      console.log(`[CycleMind] FORCE EXACT SAVE COMPLETE ✓ - LMP="${exactIsoString}" (${day}/${month}/${year}) persisted unchanged`);
       onClose();
     } catch (error) {
-      console.error("[CycleMind] EXPLICIT SAVE FAILED:", error);
+      console.error("[CycleMind] FORCE EXACT SAVE FAILED:", error);
       toast.error("Failed to update LMP. Try again.");
     } finally {
       setSaving(false);
@@ -183,11 +189,11 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                             type="date" 
                             min={format(subYears(new Date(), 5), "yyyy-MM-dd")}
                             max={format(addDays(new Date(), 30), "yyyy-MM-dd")}
-                            value={String(lmp || "").split('T')[0]}
+                            value={lmp || ""}
                             onChange={(e) => {
-                              const pickedValue = e.target.value;
-                              console.log(`[CycleMind] LMP picker changed → value="${pickedValue}"`);
-                              setLmp(pickedValue);
+                              const exactValue = e.target.value;
+                              console.log(`[CycleMind] LMP picker: exact ISO string captured "${exactValue}" (day=${exactValue.split('-')[2]}, month=${exactValue.split('-')[1]}, year=${exactValue.split('-')[0]})`);
+                              setLmp(exactValue);
                             }} 
                             className="h-8 text-sm bg-background max-w-[140px]" 
                           />
