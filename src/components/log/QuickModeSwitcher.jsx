@@ -45,6 +45,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
     setSaving(true);
     try {
       const today = format(new Date(), "yyyy-MM-dd");
+      const isModeChange = selected !== currentCycleType;
       
       // Calculate EDD for pregnancy mode (ovulation priority)
       let eddData = null;
@@ -59,7 +60,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
         start_date: selected === "menstrual" || selected === "perimenopause" ? (lmp || today) : (latestCycle?.start_date || today),
         cycle_type: selected,
         cycle_length: selected === "menstrual" ? cycleLength || 28 : undefined,
-        last_menstrual_period: (selected === "pregnancy" || selected === "menopause" || selected === "perimenopause") ? lmp || undefined : undefined,
+        last_menstrual_period: (selected === "pregnancy" || selected === "menopause" || selected === "perimenopause" || selected === "menstrual") ? lmp || null : undefined,
         ovulation_date: selected === "pregnancy" ? ovulationDate || undefined : undefined,
         estimated_due_date: selected === "pregnancy" ? eddData?.edd : undefined,
         pregnancy_week: selected === "pregnancy" ? pregnancyWeek : undefined,
@@ -73,14 +74,22 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
         await base44.entities.Cycle.create(cycleData);
       }
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      if (selected === "pregnancy" && eddData) {
-        toast.success(`🤰 Pregnancy mode on! EDD: ${format(new Date(eddData.edd), "MMM d, yyyy")} (${eddData.method === "ovulation" ? "from ovulation" : "from LMP"})`);
+      queryClient.invalidateQueries({ queryKey: ["entries"] });
+      
+      if (isModeChange) {
+        if (selected === "pregnancy" && eddData) {
+          toast.success(`🤰 Switched to Pregnancy! EDD: ${format(new Date(eddData.edd), "MMM d, yyyy")}`);
+        } else {
+          toast.success(`Switched to ${selectedMode.label} 💜`);
+        }
       } else {
-        toast.success(`Switched to ${selectedMode.label} 💜`);
+        // Same mode update
+        const lmpDisplay = lmp ? format(new Date(lmp), "MMM d, yyyy") : "(cleared)";
+        toast.success(`Saved LMP: ${lmpDisplay} ✓`);
       }
       onClose();
     } catch {
-      toast.error("Failed to switch mode. Try again.");
+      toast.error("Failed to update cycle. Try again.");
     } finally {
       setSaving(false);
     }
@@ -88,11 +97,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
 
   const handleClearLmp = () => {
     setLmp("");
-    if (ovulationDate) {
-      toast.success("LMP cleared — now using ovulation date for EDD");
-    } else {
-      toast.info("LMP cleared. Enter ovulation date or LMP to calculate EDD");
-    }
+    toast.info("LMP cleared — ready to save");
   };
 
   return (
@@ -207,14 +212,19 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
           })}
         </div>
 
-        <Button
-          onClick={handleSave}
-          disabled={saving || selected === currentCycleType}
-          className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
-        >
-          {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
-          {selected === currentCycleType ? "Already in this mode" : `Switch to ${selectedMode?.label}`}
-        </Button>
+        <div className="space-y-2">
+          {selected === currentCycleType && (
+            <p className="text-xs text-muted-foreground text-center italic">You're already in this mode — updating fields below</p>
+          )}
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
+          >
+            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
+            {selected === currentCycleType ? `Update ${selectedMode?.label}` : `Switch to ${selectedMode?.label}`}
+          </Button>
+        </div>
       </div>
     </div>
   );
