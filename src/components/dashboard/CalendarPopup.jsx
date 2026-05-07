@@ -159,32 +159,32 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                 <div key={idx} className="relative group">
                   <button
                      onClick={() => window.location.href = `/log?date=${dateStr}`}
-                     className={`aspect-square rounded-lg flex flex-col items-center justify-center gap-0.5 text-xs font-medium transition-all active:scale-95 cursor-pointer relative overflow-hidden ${
+                     className={`aspect-square rounded-lg p-1 flex flex-col items-center justify-between text-xs font-medium transition-all active:scale-95 cursor-pointer relative ${
                        severityColor || "bg-card border border-border hover:border-primary"
                      }`}
                      title={`${dateStr}${severity ? ` · Severity ${Math.round(severity)}%` : ""}`}
                    >
-                     <span className="text-xs z-10 font-bold leading-none">{day}</span>
-                     {phaseEmoji && <span className="text-[11px] z-10">{phaseEmoji}</span>}
+                     <span className="text-sm font-bold leading-none">{day}</span>
+                     {phaseEmoji && <span className="text-xs">{phaseEmoji}</span>}
 
-                    {/* Rich markers overlay */}
-                    {entry && (
-                      <div className="absolute bottom-0.5 left-0 right-0 flex items-center justify-center gap-0.5 z-20">
-                        {markers.bleedingIntensity > 0 && (
-                          <Droplet className={`h-2 w-2 fill-red-500 text-red-500 ${markers.bleedingIntensity > 3 ? "h-3 w-3" : ""}`} />
-                        )}
-                        {markers.hasOvulation && (
-                          <Sparkles className="h-2 w-2 text-amber-400" />
-                        )}
-                        {markers.hasIntimacy && (
-                          <Heart className="h-2 w-2 text-pink-500 fill-pink-500" />
-                        )}
-                        {markers.moodLevel && severity > 50 && (
-                          <AlertCircle className="h-2 w-2 text-orange-500" />
-                        )}
-                      </div>
-                    )}
-                  </button>
+                     {/* Rich markers at bottom */}
+                     {entry && (
+                       <div className="flex items-center justify-center gap-0.5 w-full mt-auto">
+                         {markers.bleedingIntensity > 0 && (
+                           <Droplet className={`h-2 w-2 fill-red-500 text-red-500 ${markers.bleedingIntensity > 3 ? "h-2.5 w-2.5" : ""}`} />
+                         )}
+                         {markers.hasOvulation && (
+                           <Sparkles className="h-2 w-2 text-amber-400" />
+                         )}
+                         {markers.hasIntimacy && (
+                           <Heart className="h-2 w-2 text-pink-500 fill-pink-500" />
+                         )}
+                         {markers.moodLevel && severity > 50 && (
+                           <AlertCircle className="h-2 w-2 text-orange-500" />
+                         )}
+                       </div>
+                     )}
+                   </button>
 
                   {/* Info button */}
                   {entry && (
