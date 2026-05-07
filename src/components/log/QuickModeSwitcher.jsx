@@ -20,11 +20,11 @@ const MODES = [
 export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClose }) {
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState(currentCycleType || "menstrual");
-  const [lmp, setLmp] = useState(latestCycle?.last_menstrual_period || "");
-  const [ovulationDate, setOvulationDate] = useState(latestCycle?.ovulation_date || "");
-  const [cycleLength, setCycleLength] = useState(latestCycle?.cycle_length || 28);
+  const [lmp, setLmp] = useState(() => latestCycle?.last_menstrual_period || "");
+  const [ovulationDate, setOvulationDate] = useState(() => latestCycle?.ovulation_date || "");
+  const [cycleLength, setCycleLength] = useState(() => latestCycle?.cycle_length || 28);
   const [birthDate, setBirthDate] = useState("");
-  const [hrtType, setHrtType] = useState(latestCycle?.hrt_type || "");
+  const [hrtType, setHrtType] = useState(() => latestCycle?.hrt_type || "");
   const [saving, setSaving] = useState(false);
 
   const selectedMode = MODES.find((m) => m.id === selected);
@@ -167,7 +167,16 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                       <div className="space-y-0.5">
                         <Label className="text-xs font-medium">Last Menstrual Period</Label>
                         <div className="flex items-center gap-1.5">
-                          <Input type="date" value={lmp} onChange={(e) => setLmp(e.target.value)} className="h-8 text-sm bg-background max-w-[140px]" />
+                          <Input 
+                            type="date" 
+                            value={lmp || ""} 
+                            onChange={(e) => {
+                              const newVal = e.target.value;
+                              console.log(`[CycleMind] LMP input changed to: ${newVal}`);
+                              setLmp(newVal);
+                            }} 
+                            className="h-8 text-sm bg-background max-w-[140px]" 
+                          />
                           {lmp && (
                             <button
                               onClick={handleClearLmp}
