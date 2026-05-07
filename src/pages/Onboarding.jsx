@@ -68,7 +68,7 @@ export default function Onboarding() {
       });
 
       toast.success("Welcome to CycleMind!");
-      navigate("/");
+      navigate("/log");
     } catch (error) {
       console.error("Onboarding error:", error);
       toast.error("Setup failed — please try again");
