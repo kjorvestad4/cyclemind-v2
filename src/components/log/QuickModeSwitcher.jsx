@@ -52,72 +52,61 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
     setSaving(true);
     try {
       const today = format(new Date(), "yyyy-MM-dd");
-      
-      // Use exact ISO string from picker (YYYY-MM-DD), zero conversion
-      const exactIsoString = lmp || null;
-      const [year, month, day] = exactIsoString ? exactIsoString.split('-') : [null, null, null];
-      
-      console.log(`[CycleMind] FORCE EXACT SAVE: ISO="${exactIsoString}" (day=${day}, month=${month}, year=${year}), mode="${selected}"`);
-      
-      // Must have active cycle
+      const exactLmp = lmp || null;   // exact YYYY-MM-DD from picker or null
+
+      console.log(`[CycleMind] FORCE SAVE → LMP="${exactLmp}" (raw from picker)`);
+
       if (!latestCycle?.id) {
-        console.log(`[CycleMind] Creating new cycle with exact LMP=${exactIsoString}`);
+        // New cycle case (unchanged)
         await base44.entities.Cycle.create({
-          start_date: exactIsoString || today,
+          start_date: exactLmp || today,
           cycle_type: selected,
           cycle_length: cycleLength || 28,
-          last_menstrual_period: exactIsoString,
+          last_menstrual_period: exactLmp,
           ovulation_date: ovulationDate || undefined,
         });
       } else {
-        // FORCE update existing cycle with exact ISO string (NO conversion, NO defaulting)
+        // SAME-MODE UPDATE (this is the critical path)
         const updatePayload = {
           cycle_type: selected,
-          last_menstrual_period: exactIsoString, // Exact ISO string preserved
+          last_menstrual_period: exactLmp,           // force exact string
+          start_date: exactLmp || today,             // always keep start_date in sync
         };
-        
+
         if (selected === "menstrual" || selected === "perimenopause") {
           updatePayload.cycle_length = cycleLength || 28;
-          updatePayload.start_date = exactIsoString || today;
         }
-        
         if (selected === "pregnancy") {
           updatePayload.ovulation_date = ovulationDate || undefined;
-          if (exactIsoString || ovulationDate) {
-            const eddData = calculateEDD(ovulationDate, exactIsoString);
-            const baselineDate = ovulationDate || exactIsoString;
-            const pregnancyWeek = getPregnancyWeek(baselineDate, new Date(today));
+          if (exactLmp || ovulationDate) {
+            const eddData = calculateEDD(ovulationDate, exactLmp);
+            const baseline = ovulationDate || exactLmp;
             updatePayload.estimated_due_date = eddData?.edd;
-            updatePayload.pregnancy_week = pregnancyWeek;
+            updatePayload.pregnancy_week = getPregnancyWeek(baseline, new Date(today));
           }
         }
-        
         if (selected === "perimenopause" || selected === "menopause") {
           updatePayload.hrt_type = hrtType || undefined;
         }
-        
-        console.log(`[CycleMind] FORCE UPDATE Cycle ${latestCycle.id} with exact ISO payload:`, updatePayload);
+
+        console.log(`[CycleMind] Updating existing Cycle ${latestCycle.id} with payload:`, updatePayload);
         await base44.entities.Cycle.update(latestCycle.id, updatePayload);
       }
-      
-      // Force full refresh of all related queries
+
+      // Force refresh everything
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
       queryClient.invalidateQueries({ queryKey: ["entries"] });
-      queryClient.invalidateQueries({ queryKey: ["user"] });
       await queryClient.refetchQueries({ queryKey: ["cycles"] });
-      await queryClient.refetchQueries({ queryKey: ["entries"] });
-      
-      // Toast showing exact selected date with day + month + year
-      const toastMsg = exactIsoString 
-        ? `LMP saved exactly as ${format(new Date(`${exactIsoString}T00:00:00Z`), "MMMM d, yyyy")}` 
-        : "LMP cleared";
+
+      const toastMsg = exactLmp 
+        ? `LMP saved exactly as ${format(new Date(exactLmp + "T00:00:00"), "MMMM d, yyyy")}` 
+        : "LMP cleared successfully";
       toast.success(toastMsg);
-      
-      console.log(`[CycleMind] FORCE EXACT SAVE COMPLETE ✓ - LMP="${exactIsoString}" (${day}/${month}/${year}) persisted unchanged`);
+
       onClose();
     } catch (error) {
-      console.error("[CycleMind] FORCE EXACT SAVE FAILED:", error);
-      toast.error("Failed to update LMP. Try again.");
+      console.error("[CycleMind] Save failed:", error);
+      toast.error("Failed to save — please try Profile → Edit Cycle Details as workaround");
     } finally {
       setSaving(false);
     }
