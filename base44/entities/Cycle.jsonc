@@ -7,13 +7,32 @@
       "format": "date",
       "description": "First day of menstrual period"
     },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Last day of the cycle"
+    },
     "cycle_length": {
       "type": "number",
       "description": "Length of this cycle in days (filled when next cycle starts)"
     },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "menstrual",
+        "follicular",
+        "ovulatory",
+        "luteal"
+      ],
+      "description": "Current phase of the cycle"
+    },
     "notes": {
       "type": "string",
       "description": "Optional notes for this cycle"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user this cycle belongs to"
     }
   },
   "required": [
