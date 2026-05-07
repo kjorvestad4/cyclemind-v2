@@ -28,18 +28,18 @@ export default function Dashboard() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  // Guard: if not onboarded, redirect to onboarding
+  // Guard: if not onboarded, hard redirect to onboarding
   useEffect(() => {
     if (!user) return;
     
     const isOnboarded = user.onboarded === true;
-    const hasCycle = user.active_cycle_id || (cycles && cycles.length > 0);
+    console.log("[Dashboard Guard] onboarded =", isOnboarded);
     
-    if (!isOnboarded || !hasCycle) {
-      console.log("[Dashboard Guard] Redirecting to onboarding - onboarded:", isOnboarded, "hasCycle:", hasCycle);
-      navigate("/onboarding", { replace: true });
+    if (!isOnboarded) {
+      console.log("[Dashboard Guard] Forcing redirect to /onboarding");
+      window.location.href = "/onboarding";
     }
-  }, [user, cycles, navigate]);
+  }, [user]);
 
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],

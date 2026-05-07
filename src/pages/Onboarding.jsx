@@ -76,10 +76,11 @@ export default function Onboarding() {
       // STEP 4: Force HARD navigation (full page reload) to clear React state completely
       // This ensures the guard checks run with fresh user data
       const targetUrl = destination === "log" ? "/log" : "/";
-      console.log("[Onboarding] Navigating to", targetUrl);
+      console.log("[Onboarding] Hard navigating to", targetUrl);
+      // Use a small delay to ensure toast is visible, then force full page reload
       setTimeout(() => {
         window.location.href = targetUrl;
-      }, 500);
+      }, 800);
     } catch (error) {
       console.error("[Onboarding] Error:", error);
       toast.error("Setup failed — please try again");
@@ -140,7 +141,6 @@ export default function Onboarding() {
 
           {currentStep === 4 && (
             <OnboardingStep4
-              selectedMode={selectedMode}
               onLogToday={() => handleComplete("log")}
               onSkipToDashboard={() => handleComplete("dashboard")}
               saving={saving}

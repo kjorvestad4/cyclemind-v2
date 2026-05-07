@@ -32,16 +32,18 @@ export default function Insights() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  // Guard: if not onboarded, redirect to onboarding
+  // Guard: if not onboarded, hard redirect to onboarding
   useEffect(() => {
     if (!user) return;
     
     const isOnboarded = user.onboarded === true;
+    console.log("[Insights Guard] onboarded =", isOnboarded);
+    
     if (!isOnboarded) {
-      console.log("[Insights Guard] Redirecting to onboarding - onboarded:", isOnboarded);
-      navigate("/onboarding", { replace: true });
+      console.log("[Insights Guard] Forcing redirect to /onboarding");
+      window.location.href = "/onboarding";
     }
-  }, [user, navigate]);
+  }, [user]);
 
   const { data: allCycles = [] } = useQuery({
     queryKey: ["cycles"],

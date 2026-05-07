@@ -82,16 +82,18 @@ export default function DailyLog() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  // Guard: if not onboarded, redirect to onboarding
+  // Guard: if not onboarded, hard redirect to onboarding
   useEffect(() => {
     if (!user) return;
     
     const isOnboarded = user.onboarded === true;
+    console.log("[DailyLog Guard] onboarded =", isOnboarded);
+    
     if (!isOnboarded) {
-      console.log("[DailyLog Guard] Redirecting to onboarding - onboarded:", isOnboarded);
-      navigate("/onboarding", { replace: true });
+      console.log("[DailyLog Guard] Forcing redirect to /onboarding");
+      window.location.href = "/onboarding";
     }
-  }, [user, navigate]);
+  }, [user]);
 
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [scores, setScores] = useState({});
