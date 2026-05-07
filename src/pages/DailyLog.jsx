@@ -12,6 +12,7 @@ import BleedingPicker from "@/components/log/BleedingPicker";
 import MedicationsTaken from "@/components/log/MedicationsTaken";
 import CustomSymptoms from "@/components/log/CustomSymptoms";
 import MoodScales from "@/components/log/MoodScales";
+import EpdsScale from "@/components/log/EpdsScale";
 import PregnancySymptoms from "@/components/log/PregnancySymptoms";
 import MenopauseSymptoms from "@/components/log/MenopauseSymptoms";
 import { SYMPTOM_CATEGORIES, ALL_SYMPTOMS, getCycleDay, calculateDayTotal } from "@/lib/symptoms";
@@ -79,6 +80,8 @@ export default function DailyLog() {
   const [gad7Score, setGad7Score] = useState(0);
   const [phq9Responses, setPhq9Responses] = useState({});
   const [gad7Responses, setGad7Responses] = useState({});
+  const [epdsScore, setEpdsScore] = useState(0);
+  const [epdsResponses, setEpdsResponses] = useState({});
   const [fetalMovementFelt, setFetalMovementFelt] = useState(false);
   const [fetalMovementCount, setFetalMovementCount] = useState(0);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -136,6 +139,8 @@ export default function DailyLog() {
       setGad7Score(existingEntry.gad7_score || 0);
       setPhq9Responses(existingEntry.phq9_responses || {});
       setGad7Responses(existingEntry.gad7_responses || {});
+      setEpdsScore(existingEntry.epds_score || 0);
+      setEpdsResponses(existingEntry.epds_responses || {});
       setFetalMovementFelt(existingEntry.fetal_movement_felt || false);
       setFetalMovementCount(existingEntry.fetal_movement_count || 0);
     } else {
@@ -143,6 +148,7 @@ export default function DailyLog() {
       setFlow(""); setBleedingIntensity(null); setJournalEntry("");
       setMedications([]); setCustomSymptoms([]);
       setPhq9Score(0); setGad7Score(0); setPhq9Responses({}); setGad7Responses({});
+      setEpdsScore(0); setEpdsResponses({});
       setFetalMovementFelt(false); setFetalMovementCount(0);
     }
     setHasUnsavedChanges(false);
@@ -189,6 +195,8 @@ export default function DailyLog() {
       phq9_responses: Object.keys(phq9Responses).length ? phq9Responses : undefined,
       gad7_score: gad7Score || undefined,
       gad7_responses: Object.keys(gad7Responses).length ? gad7Responses : undefined,
+      epds_score: epdsScore || undefined,
+      epds_responses: Object.keys(epdsResponses).length ? epdsResponses : undefined,
       fetal_movement_felt: isPregnancy ? fetalMovementFelt : undefined,
       fetal_movement_count: isPregnancy && fetalMovementFelt ? fetalMovementCount : undefined,
     };
@@ -369,9 +377,15 @@ export default function DailyLog() {
               />
             </div>
           </Section>
+          <EpdsScale
+            responses={epdsResponses}
+            isPostpartum={cycleType === "postpartum"}
+            onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); }}
+          />
           <MoodScales
             phq9Responses={phq9Responses}
             gad7Responses={gad7Responses}
+            hidePhq9={true}
             onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
             onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
           />

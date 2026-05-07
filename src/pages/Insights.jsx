@@ -45,6 +45,13 @@ export default function Insights() {
     return sorted.slice(0, selectedCycles);
   }, [allCycles, selectedCycles]);
 
+  const latestCycle = useMemo(() => {
+    if (!allCycles.length) return null;
+    return [...allCycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
+  }, [allCycles]);
+
+  const isPerinatal = latestCycle?.cycle_type === "pregnancy" || latestCycle?.cycle_type === "postpartum";
+
   const analysis = useMemo(() => computeAnalysis(cycles, entries), [cycles, entries]);
   const moodTrend = useMemo(() => computeMoodTrend(entries, cycles), [entries, cycles]);
   const bleedingTimeline = useMemo(() => computeBleedingTimeline(entries, cycles), [entries, cycles]);
@@ -224,11 +231,13 @@ export default function Insights() {
         </Card>
       )}
 
-      {/* PHQ-9 & GAD-7 TREND */}
+      {/* Screening Trend — EPDS for perinatal, PHQ-9+GAD-7 otherwise */}
       {analysis.screeningTrend.length > 0 && (
         <Card className="border-border/50">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">PHQ-9 & GAD-7 Over Time</CardTitle>
+            <CardTitle className="text-sm font-semibold">
+              {isPerinatal ? "EPDS & GAD-7 Over Time" : "PHQ-9 & GAD-7 Over Time"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={180}>
@@ -238,12 +247,20 @@ export default function Insights() {
                 <YAxis tick={{ fontSize: 10 }} />
                 <Tooltip {...CHART_TOOLTIP_STYLE} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <ReferenceLine y={10} stroke="hsl(var(--destructive))" strokeDasharray="3 2" />
-                <Line type="monotone" dataKey="phq9" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={true} name="PHQ-9" connectNulls={false} />
+                <ReferenceLine y={10} stroke="hsl(var(--destructive))" strokeDasharray="3 2" label={{ value: "≥10", position: "right", fontSize: 9 }} />
+                {isPerinatal ? (
+                  <Line type="monotone" dataKey="epds" stroke="hsl(var(--chart-3))" strokeWidth={2} dot={true} name="EPDS" connectNulls={false} />
+                ) : (
+                  <Line type="monotone" dataKey="phq9" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={true} name="PHQ-9" connectNulls={false} />
+                )}
                 <Line type="monotone" dataKey="gad7" stroke="hsl(var(--chart-5))" strokeWidth={2} dot={true} name="GAD-7" connectNulls={false} />
               </LineChart>
             </ResponsiveContainer>
-            <p className="text-[10px] text-muted-foreground mt-2 text-center">Dashed red = moderate threshold (≥10). Complete PHQ-9/GAD-7 on the Log page to populate.</p>
+            <p className="text-[10px] text-muted-foreground mt-2 text-center">
+              {isPerinatal
+                ? "EPDS ≥10 suggests possible depression — discuss with your midwife or OB. Complete EPDS on the Log page."
+                : "Dashed red = moderate threshold (≥10). Complete PHQ-9/GAD-7 on the Log page to populate."}
+            </p>
           </CardContent>
         </Card>
       )}
@@ -468,9 +485,9 @@ function computeAnalysis(cycles, entries) {
 
   if (sortedCycles.length < 2) {
     result.screeningTrend = entries
-      .filter((e) => e.phq9_score > 0 || e.gad7_score > 0)
+      .filter((e) => e.phq9_score > 0 || e.gad7_score > 0 || e.epds_score > 0)
       .sort((a, b) => a.date.localeCompare(b.date))
-      .map((e) => ({ date: format(new Date(e.date), "M/d"), phq9: e.phq9_score || null, gad7: e.gad7_score || null }));
+      .map((e) => ({ date: format(new Date(e.date), "M/d"), phq9: e.phq9_score || null, gad7: e.gad7_score || null, epds: e.epds_score || null }));
     return result;
   }
 
@@ -531,9 +548,9 @@ function computeAnalysis(cycles, entries) {
   if (gadLuteal.length > 0) result.avgGAD7Luteal = gadLuteal.reduce((a, b) => a + b) / gadLuteal.length;
 
   result.screeningTrend = entries
-    .filter((e) => e.phq9_score > 0 || e.gad7_score > 0)
+    .filter((e) => e.phq9_score > 0 || e.gad7_score > 0 || e.epds_score > 0)
     .sort((a, b) => a.date.localeCompare(b.date))
-    .map((e) => ({ date: format(new Date(e.date), "M/d"), phq9: e.phq9_score || null, gad7: e.gad7_score || null }));
+    .map((e) => ({ date: format(new Date(e.date), "M/d"), phq9: e.phq9_score || null, gad7: e.gad7_score || null, epds: e.epds_score || null }));
 
   const insights = [];
   if (result.meetsThreshold && result.highLutealItems > 3) {

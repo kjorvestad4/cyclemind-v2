@@ -70,7 +70,7 @@ function getSeverityLabel(score, max) {
   }
 }
 
-export default function MoodScales({ phq9Responses = {}, gad7Responses = {}, onPHQ9Change, onGAD7Change }) {
+export default function MoodScales({ phq9Responses = {}, gad7Responses = {}, onPHQ9Change, onGAD7Change, hidePhq9 = false }) {
   const [open, setOpen] = useState(false);
 
   const handlePHQ = (key, val) => {
@@ -89,7 +89,7 @@ export default function MoodScales({ phq9Responses = {}, gad7Responses = {}, onP
   const gadTotal = Object.values(gad7Responses).reduce((a, b) => a + (b ?? 0), 0);
   const phqSev = getSeverityLabel(phqTotal, 27);
   const gadSev = getSeverityLabel(gadTotal, 21);
-  const hasScores = phqTotal > 0 || gadTotal > 0;
+  const hasScores = (!hidePhq9 && phqTotal > 0) || gadTotal > 0;
 
   return (
     <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
@@ -98,9 +98,9 @@ export default function MoodScales({ phq9Responses = {}, gad7Responses = {}, onP
         className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-muted/30 transition-colors"
       >
         <div className="text-left">
-          <p className="text-sm font-semibold">Mood Scales (for Clinical Tracking)</p>
+          <p className="text-sm font-semibold">{hidePhq9 ? "GAD-7 Anxiety Scale" : "Mood Scales (for Clinical Tracking)"}</p>
           {hasScores ? (
-            <p className="text-xs text-muted-foreground mt-0.5">PHQ-9: {phqTotal}/27 · GAD-7: {gadTotal}/21</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{!hidePhq9 && `PHQ-9: ${phqTotal}/27 · `}GAD-7: {gadTotal}/21</p>
           ) : (
             <p className="text-xs text-muted-foreground mt-0.5">Complete weekly or when symptoms are high — improves doctor reports</p>
           )}
@@ -114,28 +114,30 @@ export default function MoodScales({ phq9Responses = {}, gad7Responses = {}, onP
             Over the <strong>past 2 weeks</strong>, how often have you been bothered by any of the following problems?
           </p>
 
-          {/* PHQ-9 */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-bold uppercase tracking-wider text-foreground">PHQ-9 · Depression Screening</p>
-              {phqTotal > 0 && (
-                <span className={`text-xs font-semibold ${phqSev?.color}`}>{phqTotal}/27 — {phqSev?.text}</span>
+          {/* PHQ-9 — hidden in perinatal mode */}
+          {!hidePhq9 && (
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-bold uppercase tracking-wider text-foreground">PHQ-9 · Depression Screening</p>
+                {phqTotal > 0 && (
+                  <span className={`text-xs font-semibold ${phqSev?.color}`}>{phqTotal}/27 — {phqSev?.text}</span>
+                )}
+              </div>
+              {PHQ9.map((q) => (
+                <ScaleQuestion key={q.key} q={q} value={phq9Responses[q.key] ?? null} onChange={handlePHQ} />
+              ))}
+              {phqTotal >= 10 && (
+                <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mt-2">
+                  <p className="text-xs text-amber-800 dark:text-amber-200">⚠ Score {phqTotal}/27 suggests moderate-to-severe depression. Consider sharing this with your healthcare provider.</p>
+                </div>
+              )}
+              {(phq9Responses.q9 === 2 || phq9Responses.q9 === 3) && (
+                <div className="bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-700 rounded-xl p-3 mt-2">
+                  <p className="text-xs text-red-800 dark:text-red-200 font-semibold">🆘 You indicated thoughts of self-harm. Please reach out to a crisis line or healthcare provider. If in the US, call or text 988.</p>
+                </div>
               )}
             </div>
-            {PHQ9.map((q) => (
-              <ScaleQuestion key={q.key} q={q} value={phq9Responses[q.key] ?? null} onChange={handlePHQ} />
-            ))}
-            {phqTotal >= 10 && (
-              <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mt-2">
-                <p className="text-xs text-amber-800 dark:text-amber-200">⚠ Score {phqTotal}/27 suggests moderate-to-severe depression. Consider sharing this with your healthcare provider.</p>
-              </div>
-            )}
-            {(phq9Responses.q9 === 2 || phq9Responses.q9 === 3) && (
-              <div className="bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-700 rounded-xl p-3 mt-2">
-                <p className="text-xs text-red-800 dark:text-red-200 font-semibold">🆘 You indicated thoughts of self-harm. Please reach out to a crisis line or healthcare provider. If in the US, call or text 988.</p>
-              </div>
-            )}
-          </div>
+          )}
 
           {/* GAD-7 */}
           <div className="space-y-1">

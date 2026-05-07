@@ -303,6 +303,14 @@
       "type": "object",
       "description": "Individual GAD-7 responses (keys q1-q7, values 0-3)"
     },
+    "epds_score": {
+      "type": "number",
+      "description": "Edinburgh Postnatal Depression Scale total score (0-30)"
+    },
+    "epds_responses": {
+      "type": "object",
+      "description": "Individual EPDS responses (keys q1-q10, values 0-3)"
+    },
     "medications_taken": {
       "type": "array",
       "items": {

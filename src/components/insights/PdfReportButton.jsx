@@ -64,7 +64,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
       doc.text("Not a diagnostic tool. For informational and clinical discussion purposes only.", margin + 3, y + 5.5);
       doc.setFont("helvetica", "italic");
       doc.text("Based on the Daily Record of Severity of Problems (DRSP) — Endicott, Nee & Harrison (2006).", margin + 3, y + 10.5);
-      doc.text("PHQ-9 (Kroenke & Spitzer, 2001) and GAD-7 (Spitzer et al., 2006) are validated screening instruments.", margin + 3, y + 15);
+      doc.text("PHQ-9 (Kroenke & Spitzer, 2001), GAD-7 (Spitzer et al., 2006) and EPDS (Cox et al., 1987) are validated screening instruments.", margin + 3, y + 15);
       y += 24;
 
       // PSYCHIATRIST HANDOFF NOTE
@@ -253,9 +253,10 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
         y += 8;
       }
 
-      // PHQ-9 & GAD-7 OVER TIME
+      // SCREENING SCORES OVER TIME (PHQ-9/EPDS + GAD-7)
+      const hasEpds = entries.some((e) => e.epds_score > 0);
       const screeningEntries = [...entries]
-        .filter((e) => e.phq9_score > 0 || e.gad7_score > 0)
+        .filter((e) => e.phq9_score > 0 || e.gad7_score > 0 || e.epds_score > 0)
         .sort((a, b) => a.date.localeCompare(b.date));
 
       if (screeningEntries.length > 0) {
@@ -263,15 +264,23 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(...darkText);
-        doc.text("PHQ-9 & GAD-7 Scores Over Time", margin, y);
+        doc.text(hasEpds ? "EPDS, PHQ-9 & GAD-7 Scores Over Time" : "PHQ-9 & GAD-7 Scores Over Time", margin, y);
         y += 5;
         doc.setDrawColor(...purple);
         doc.setLineWidth(0.5);
         doc.line(margin, y, margin + 62, y);
-        y += 6;
+        y += 4;
 
-        const cw3 = [45, 40, 40, 55];
-        const sh = ["Date", "PHQ-9 (/27)", "GAD-7 (/21)", "Interpretation"];
+        if (hasEpds) {
+          doc.setFontSize(7.5);
+          doc.setFont("helvetica", "italic");
+          doc.setTextColor(...mutedText);
+          doc.text("EPDS interpretation: 0–8 Low concern · 9–11 Monitor · 12–14 Likely depression · ≥15 High concern · ≥10 warrants clinical review (ACOG/PSI)", margin, y);
+          y += 5;
+        }
+
+        const cw3 = hasEpds ? [38, 30, 30, 30, 52] : [45, 40, 40, 55];
+        const sh = hasEpds ? ["Date", "EPDS (/30)", "PHQ-9 (/27)", "GAD-7 (/21)", "Interpretation"] : ["Date", "PHQ-9 (/27)", "GAD-7 (/21)", "Interpretation"];
         doc.setFillColor(...purple);
         doc.rect(margin, y, contentW, 7, "F");
         doc.setFontSize(8.5);
@@ -289,13 +298,22 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
           doc.setTextColor(...darkText);
           let cx3 = margin + 3;
           doc.text(format(new Date(e.date), "MMM d, yyyy"), cx3, y + 4.5); cx3 += cw3[0];
-          doc.text(e.phq9_score > 0 ? String(e.phq9_score) : "—", cx3, y + 4.5); cx3 += cw3[1];
-          doc.text(e.gad7_score > 0 ? String(e.gad7_score) : "—", cx3, y + 4.5); cx3 += cw3[2];
-          const phqSev = e.phq9_score >= 20 ? "Severe dep." : e.phq9_score >= 15 ? "Mod-severe" : e.phq9_score >= 10 ? "Moderate" : e.phq9_score >= 5 ? "Mild" : "Minimal";
-          const gadSev = e.gad7_score >= 15 ? "Severe anx." : e.gad7_score >= 10 ? "Moderate" : e.gad7_score >= 5 ? "Mild" : "Minimal";
-          const interp = [e.phq9_score > 0 ? `Dep: ${phqSev}` : "", e.gad7_score > 0 ? `Anx: ${gadSev}` : ""].filter(Boolean).join(" / ");
+          if (hasEpds) {
+            const epdsFlag = e.epds_score >= 10;
+            doc.setFont("helvetica", epdsFlag ? "bold" : "normal");
+            doc.setTextColor(...(epdsFlag ? [180, 50, 50] : darkText));
+            doc.text(e.epds_score > 0 ? String(e.epds_score) : "—", cx3, y + 4.5); cx3 += cw3[1];
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(...darkText);
+          }
+          doc.text(e.phq9_score > 0 ? String(e.phq9_score) : "—", cx3, y + 4.5); cx3 += cw3[hasEpds ? 2 : 1];
+          doc.text(e.gad7_score > 0 ? String(e.gad7_score) : "—", cx3, y + 4.5); cx3 += cw3[hasEpds ? 3 : 2];
+          const epdsSev = e.epds_score >= 15 ? "EPDS: High concern" : e.epds_score >= 12 ? "EPDS: Likely dep." : e.epds_score >= 10 ? "EPDS: Monitor" : "";
+          const phqSev = e.phq9_score >= 20 ? "Severe dep." : e.phq9_score >= 15 ? "Mod-severe" : e.phq9_score >= 10 ? "Moderate" : e.phq9_score >= 5 ? "Mild" : "";
+          const gadSev = e.gad7_score >= 15 ? "Severe anx." : e.gad7_score >= 10 ? "Mod. anx." : e.gad7_score >= 5 ? "Mild anx." : "";
+          const interp = [epdsSev, e.phq9_score > 0 ? phqSev : "", e.gad7_score > 0 ? gadSev : ""].filter(Boolean).join(" / ");
           doc.setTextColor(...mutedText);
-          doc.text(interp, cx3, y + 4.5);
+          doc.text(interp || "—", cx3, y + 4.5);
           y += 6.5;
         });
         y += 8;
