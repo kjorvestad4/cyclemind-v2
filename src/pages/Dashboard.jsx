@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, addDays } from "date-fns";
-import { PenLine, TrendingUp, Heart, CalendarDays, Plus } from "lucide-react";
+import { PenLine, TrendingUp, Heart, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +21,7 @@ export default function Dashboard() {
   const [ovulationDay, setOvulationDay] = useState(14);
   const [lastPeriodDate, setLastPeriodDate] = useState("");
   const [lastOvulationDate, setLastOvulationDate] = useState("");
-  const [newPeriodDate, setNewPeriodDate] = useState("");
+
 
   useEffect(() => {
     base44.auth.me().then((u) => {
@@ -55,29 +55,11 @@ export default function Dashboard() {
     onSuccess: () => toast.success("Settings saved!"),
   });
 
-  const addCycleMutation = useMutation({
-    mutationFn: async () => {
-      if (cycles.length > 0) {
-        const prevCycle = cycles[0];
-        const prevStart = new Date(prevCycle.start_date);
-        const newStart = new Date(newPeriodDate);
-        const daysDiff = Math.round((newStart - prevStart) / (1000 * 60 * 60 * 24));
-        if (daysDiff > 0) {
-          await base44.entities.Cycle.update(prevCycle.id, { cycle_length: daysDiff });
-        }
-      }
-      await base44.entities.Cycle.create({ start_date: newPeriodDate });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      toast.success("Period start date recorded! 🩸");
-    },
-  });
+
 
   const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
 
-  // "Mark Period Start" takes priority over "Date of Last Period"
-  const activePeriodDateStr = newPeriodDate || lastPeriodDate || null;
+  const activePeriodDateStr = lastPeriodDate || null;
 
   // Ovulation anchor: explicit override, or calculated from activePeriodDate
   const isOvulationEstimated = !lastOvulationDate && !!activePeriodDateStr;
@@ -151,7 +133,7 @@ export default function Dashboard() {
           cycles={cycles}
           onDayClick={(date) => navigate(`/log?date=${date}`)}
           activePeriodDate={activePeriodDateStr}
-          newPeriodDate={newPeriodDate || null}
+          newPeriodDate={null}
           ovulationDate={computedOvulationDate}
           ovulationEstimated={isOvulationEstimated}
           fertilityWindowDates={fertilityWindowDates}
@@ -215,27 +197,7 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
-      {/* Mark Period Start */}
-      <Card className="border-border/50">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Plus className="w-4 h-4 text-accent-foreground" />
-            Mark Period Start (Day 1)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label className="text-xs">First day of menstrual flow</Label>
-              {newPeriodDate && <button type="button" onClick={() => setNewPeriodDate("")} className="text-[10px] text-muted-foreground hover:text-destructive underline">Clear</button>}
-            </div>
-            <Input type="date" value={newPeriodDate} onChange={(e) => setNewPeriodDate(e.target.value)} />
-          </div>
-          <Button onClick={() => addCycleMutation.mutate()} disabled={addCycleMutation.isPending || !newPeriodDate} className="w-full">
-            Record Period Start
-          </Button>
-        </CardContent>
-      </Card>
+
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 gap-3">
