@@ -132,7 +132,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                     {mode.fields.includes("lmp") && (
                       <div className="space-y-0.5">
                         <Label className="text-xs font-medium">Last Menstrual Period</Label>
-                        <Input type="date" value={lmp} onChange={(e) => setLmp(e.target.value)} className="h-8 text-sm bg-background" />
+                        <Input type="date" value={lmp} onChange={(e) => setLmp(e.target.value)} className="h-8 text-sm bg-background max-w-[140px]" />
                       </div>
                     )}
                     {mode.fields.includes("cycle_length") && (
