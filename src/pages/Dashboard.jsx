@@ -28,7 +28,8 @@ export default function Dashboard() {
       setUser(u);
       if (u?.cycle_length) setCycleLength(u.cycle_length);
       if (u?.ovulation_day) setOvulationDay(u.ovulation_day);
-      
+      if (u?.last_period_date) setLastPeriodDate(u.last_period_date);
+      if (u?.last_ovulation_date) setLastOvulationDate(u.last_ovulation_date);
     }).catch(() => {});
   }, []);
 
