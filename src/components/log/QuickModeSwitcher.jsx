@@ -29,16 +29,17 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
 
   const selectedMode = MODES.find((m) => m.id === selected);
 
-  // Sync state when latestCycle prop updates
+  // Sync state when latestCycle prop updates (skip during save to preserve user input)
+  const isSaving = saving;
   useEffect(() => {
-    if (latestCycle) {
+    if (latestCycle && !isSaving) {
       setLmp(latestCycle.last_menstrual_period || "");
       setOvulationDate(latestCycle.ovulation_date || "");
       setCycleLength(latestCycle.cycle_length || 28);
       setHrtType(latestCycle.hrt_type || "");
       console.log(`[CycleMind] QuickModeSwitcher synced from latestCycle:`, latestCycle);
     }
-  }, [latestCycle?.id]);
+  }, [latestCycle?.id, isSaving]);
 
   // Live EDD calculation for pregnancy mode (ovulation priority)
   const pregnancyCalcs = useMemo(() => {
