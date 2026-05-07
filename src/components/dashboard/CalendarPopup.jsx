@@ -177,33 +177,44 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
         </div>
 
         {/* Month Navigation */}
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" size="icon" onClick={() => setViewMonth(new Date(currentYear, currentMonth - 1))}>
-            <ChevronLeft className="w-4 h-4" />
+        <div className="flex items-center justify-between px-1">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setViewMonth(new Date(currentYear, currentMonth - 1))}
+            className="h-10 w-10 hover:bg-muted rounded-xl"
+          >
+            <ChevronLeft className="w-5 h-5 text-primary" />
           </Button>
-          <p className="text-sm font-semibold">{format(viewMonth, "MMMM yyyy")}</p>
-          <Button variant="ghost" size="icon" onClick={() => setViewMonth(new Date(currentYear, currentMonth + 1))}>
-            <ChevronRight className="w-4 h-4" />
+          <p className="text-base font-bold text-center flex-1">{format(viewMonth, "MMMM yyyy")}</p>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setViewMonth(new Date(currentYear, currentMonth + 1))}
+            className="h-10 w-10 hover:bg-muted rounded-xl"
+          >
+            <ChevronRight className="w-5 h-5 text-primary" />
           </Button>
         </div>
 
         {/* Calendar Grid */}
-        <div className="space-y-2">
+        <div className="space-y-3 bg-white dark:bg-slate-950/50 rounded-2xl p-4">
           {/* Weekday headers */}
-          <div className="grid grid-cols-7 gap-2 mb-2">
+          <div className="grid grid-cols-7 gap-3 mb-1">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-              <div key={d} className="text-center text-[10px] font-semibold text-muted-foreground uppercase">
+              <div key={d} className="text-center text-xs font-bold text-muted-foreground uppercase tracking-widest h-8 flex items-center justify-center">
                 {d}
               </div>
             ))}
           </div>
 
           {/* Days grid */}
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-3">
             {days.map((day, idx) => {
-              if (!day) return <div key={idx} className="aspect-square" />;
+              if (!day) return <div key={idx} className="h-16" />;
 
               const dateStr = format(new Date(currentYear, currentMonth, day), "yyyy-MM-dd");
+              const isToday = dateStr === format(now, "yyyy-MM-dd");
               const severity = getSeverity(dateStr);
               const entry = entryMap[dateStr];
               const markers = getEntryMarkers(entry);
@@ -214,25 +225,35 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                 <div key={idx} className="relative group">
                   <button
                      onClick={() => window.location.href = `/log?date=${dateStr}`}
-                     className={`aspect-square rounded-lg p-1 flex flex-col items-center justify-between text-xs font-medium transition-all active:scale-95 cursor-pointer relative ${
-                       severityColor || "bg-card border border-border hover:border-primary"
+                     className={`h-16 w-full rounded-2xl p-2 flex flex-col items-center justify-between text-xs font-medium transition-all active:scale-95 cursor-pointer relative border-2 ${
+                       isToday
+                         ? "border-primary bg-primary/10 shadow-md shadow-primary/20"
+                         : severityColor 
+                         ? severityColor + " border-transparent"
+                         : "bg-white dark:bg-slate-900 border-border hover:border-primary hover:shadow-sm"
                      }`}
                      title={`${dateStr}${severity ? ` · Severity ${Math.round(severity)}%` : ""}`}
                    >
-                     <span className="text-sm font-bold leading-none">{day}</span>
-                     {phaseEmoji && <span className="text-xs">{phaseEmoji}</span>}
+                     <div className="flex flex-col items-center gap-0.5 flex-1 justify-start">
+                       <span className="text-lg font-bold leading-none">{day}</span>
+                       {isToday && <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Today</span>}
+                     </div>
+
+                     <div className="flex flex-col items-center gap-1 flex-1 justify-center">
+                       {phaseEmoji && <span className="text-base">{phaseEmoji}</span>}
+                     </div>
 
                      {/* Rich markers at bottom */}
                      {entry && (
-                       <div className="flex items-center justify-center gap-0.5 w-full mt-auto">
+                       <div className="flex items-center justify-center gap-1 w-full mt-auto">
                          {markers.bleedingIntensity > 0 && (
-                           <Droplet className={`h-2 w-2 fill-red-500 text-red-500 ${markers.bleedingIntensity > 3 ? "h-2.5 w-2.5" : ""}`} />
+                           <Droplet className={`fill-red-500 text-red-500 ${markers.bleedingIntensity > 3 ? "h-2.5 w-2.5" : "h-2 w-2"}`} />
                          )}
                          {markers.hasOvulation && (
-                           <Sparkles className="h-2 w-2 text-amber-400" />
+                           <Sparkles className="h-2.5 w-2.5 text-amber-400" />
                          )}
                          {markers.hasIntimacy && (
-                           <Heart className="h-2 w-2 text-pink-500 fill-pink-500" />
+                           <Heart className="h-2.5 w-2.5 text-pink-500 fill-pink-500" />
                          )}
                          {markers.moodLevel && severity > 50 && (
                            <AlertCircle className="h-2 w-2 text-orange-500" />
@@ -248,9 +269,9 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                         e.stopPropagation();
                         setSelectedDateInfo({ dateStr, entry, markers });
                       }}
-                      className="absolute top-0.5 right-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-30 bg-primary rounded-full p-0.5"
+                      className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity z-30 bg-primary rounded-full p-1 shadow-sm"
                     >
-                      <Info className="h-2.5 w-2.5 text-primary-foreground" />
+                      <Info className="h-3 w-3 text-primary-foreground" />
                     </button>
                   )}
                 </div>

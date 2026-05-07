@@ -18,6 +18,7 @@ import {
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import ShareWithDoctor from "@/components/insights/ShareWithDoctor";
 import PdfReportButton from "@/components/insights/PdfReportButton";
+import EDDDisplay from "@/components/pregnancy/EDDDisplay";
 import { getCycleDay } from "@/lib/symptoms";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -201,46 +202,30 @@ function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLen
     }
 
     if (cycleType === "pregnancy") {
-      const pregnancyWeek = latestCycle.pregnancy_week
-        || (latestCycle.last_menstrual_period
-          ? Math.floor(differenceInDays(new Date(), new Date(latestCycle.last_menstrual_period)) / 7)
-          : null);
-      const trimester = pregnancyWeek 
-        ? (pregnancyWeek <= 13 ? "First" : pregnancyWeek <= 26 ? "Second" : "Third")
-        : null;
+       const pregnancyWeek = latestCycle.pregnancy_week
+         || (latestCycle.last_menstrual_period
+           ? Math.floor(differenceInDays(new Date(), new Date(latestCycle.last_menstrual_period)) / 7)
+           : null);
+       const trimester = pregnancyWeek 
+         ? (pregnancyWeek <= 13 ? "First" : pregnancyWeek <= 26 ? "Second" : "Third")
+         : null;
 
-      return (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 rounded-xl p-3">
-              <p className="text-[10px] text-pink-600 dark:text-pink-400 uppercase tracking-wider font-semibold">Week</p>
-              <p className="text-2xl font-bold text-pink-700 dark:text-pink-300 mt-1">{pregnancyWeek || "—"}</p>
-            </div>
-            <div className="bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 rounded-xl p-3">
-              <p className="text-[10px] text-pink-600 dark:text-pink-400 uppercase tracking-wider font-semibold">Trimester</p>
-              <p className="text-lg font-semibold text-pink-700 dark:text-pink-300 mt-1">{trimester || "—"}</p>
-            </div>
-            {latestCycle.estimated_due_date && (
-              <div className="bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 rounded-xl p-3">
-                <p className="text-[10px] text-pink-600 dark:text-pink-400 uppercase tracking-wider font-semibold">Due Date</p>
-                <p className="text-sm font-semibold text-pink-700 dark:text-pink-300 mt-1">{format(new Date(latestCycle.estimated_due_date), "MMM d")}</p>
-              </div>
-            )}
-            {latestCycle.last_menstrual_period && (
-              <div className="bg-muted/40 rounded-xl p-3">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">LMP</p>
-                <p className="text-sm font-semibold text-foreground mt-1">{format(new Date(latestCycle.last_menstrual_period), "MMM d, yyyy")}</p>
-              </div>
-            )}
-          </div>
-          <div className="pt-2 border-t border-border/40">
-            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => {}}>
-              <Edit className="w-4 h-4" /> Edit Pregnancy Details
-            </Button>
-          </div>
-        </div>
-      );
-    }
+       return (
+         <div className="space-y-4">
+           <EDDDisplay
+             lmp={latestCycle?.last_menstrual_period}
+             ovulationDate={latestCycle?.ovulation_date}
+             estimatedDueDate={latestCycle?.estimated_due_date}
+             pregnancyWeek={pregnancyWeek}
+           />
+           <div className="pt-2 border-t border-border/40">
+             <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => {}}>
+               <Edit className="w-4 h-4" /> Edit Pregnancy Details
+             </Button>
+           </div>
+         </div>
+       );
+     }
 
     if (cycleType === "postpartum") {
       const ppDay = latestCycle.start_date

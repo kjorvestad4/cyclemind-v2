@@ -21,6 +21,7 @@ import VitalsTracking from "@/components/log/VitalsTracking";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import QuickLogButtons from "@/components/log/QuickLogButtons";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
+import EDDDisplay from "@/components/pregnancy/EDDDisplay";
 import { SYMPTOM_CATEGORIES, ALL_SYMPTOMS, getCycleDay, calculateDayTotal } from "@/lib/symptoms";
 import { calculateEDD } from "@/lib/eddCalculation";
 
@@ -445,6 +446,12 @@ export default function DailyLog() {
       {/* PREGNANCY MODE */}
       {isPregnancy && (
         <>
+          <EDDDisplay
+            lmp={latestCycle?.last_menstrual_period}
+            ovulationDate={latestCycle?.ovulation_date}
+            estimatedDueDate={latestCycle?.estimated_due_date}
+            pregnancyWeek={pregnancyWeek}
+          />
           <Section
             title="Pregnancy Symptoms"
             subtitle={trimester ? `${trimester.charAt(0).toUpperCase() + trimester.slice(1)} trimester${pregnancyWeek ? ` · Week ${pregnancyWeek}` : ""}` : undefined}

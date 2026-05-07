@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { differenceInDays, format, subDays } from "date-fns";
 import { TrendingUp, Baby, Flame, Waves, AlertCircle, CheckCircle2 } from "lucide-react";
 import { ALL_SYMPTOMS, calculateDayTotal } from "@/lib/symptoms";
+import EDDDisplay from "@/components/pregnancy/EDDDisplay";
 
 const PP_KEYS = ["pp_lochiaBleeding","pp_perinealPain","pp_fatigue","pp_sleepWithBaby","pp_bondingDifficulties","pp_moodChanges","pp_anxietyAboutBaby"];
 const PP_LABELS = { pp_lochiaBleeding: "Bleeding", pp_perinealPain: "Perineal Pain", pp_fatigue: "Fatigue", pp_sleepWithBaby: "Sleep Disruption", pp_bondingDifficulties: "Bonding", pp_moodChanges: "Mood", pp_anxietyAboutBaby: "Baby Anxiety" };
@@ -98,6 +99,12 @@ function PregnancyContent({ latestCycle, entries }) {
 
   return (
     <div className="space-y-3">
+      <EDDDisplay
+        lmp={latestCycle?.last_menstrual_period}
+        ovulationDate={latestCycle?.ovulation_date}
+        estimatedDueDate={latestCycle?.estimated_due_date}
+        pregnancyWeek={pregnancyWeek}
+      />
       {pregnancyWeek && (
         <div className="bg-card rounded-2xl border border-pink-200 dark:border-pink-900 p-4 space-y-3">
           <div className="flex items-center gap-2">
