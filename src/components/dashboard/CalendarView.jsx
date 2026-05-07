@@ -15,7 +15,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDate, newPeriodDate, ovulationDate, ovulationEstimated }) {
+export default function CalendarView({ entries, cycles, onDayClick, activePeriodDate, newPeriodDate, ovulationDate, ovulationEstimated, fertilityWindowDates = [] }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const monthStart = startOfMonth(currentMonth);
@@ -29,12 +29,12 @@ export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDa
   });
 
   // Only show cycle start markers when a period date is actively set
-  const cycleStartDates = lastPeriodDate
+  const cycleStartDates = activePeriodDate
     ? new Set((cycles || []).map((c) => c.start_date))
     : new Set();
-  const lastPeriodStr = lastPeriodDate || null;
   const newPeriodStr = newPeriodDate || null;
   const ovulationStr = ovulationDate || null;
+  const fertilitySet = new Set(fertilityWindowDates);
 
   const getDaySeverity = (dateStr) => {
     const entry = entryMap[dateStr];
@@ -96,9 +96,9 @@ export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDa
           const inMonth = isSameMonth(d, currentMonth);
           const today = isToday(d);
           const isCycleStart = cycleStartDates.has(dateStr);
-          const isLastPeriod = lastPeriodStr === dateStr;
           const isNewPeriod = newPeriodStr === dateStr;
           const isOvulation = ovulationStr === dateStr;
+          const isFertility = fertilitySet.has(dateStr) && !isOvulation;
           const severity = getDaySeverity(dateStr);
           const hasEntry = !!entryMap[dateStr];
 
@@ -110,7 +110,7 @@ export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDa
                 relative aspect-square rounded-lg text-xs font-medium flex items-center justify-center transition-all
                 ${!inMonth ? "opacity-30" : ""}
                 ${today ? "ring-2 ring-primary ring-offset-1 ring-offset-background" : ""}
-                ${severity ? severityStyle[severity] : isNewPeriod || isLastPeriod ? "bg-rose-200/60 text-rose-800" : isOvulation ? "bg-purple-200/60 text-purple-800" : "hover:bg-muted"}
+                ${severity ? severityStyle[severity] : isNewPeriod ? "bg-rose-200/60 text-rose-800" : isOvulation ? "bg-purple-200/60 text-purple-800" : isFertility ? "bg-pink-100/70 text-pink-800" : "hover:bg-muted"}
                 ${isCycleStart || isNewPeriod ? "border-2 border-accent-foreground" : ""}
               `}
             >
@@ -121,8 +121,11 @@ export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDa
               {(isCycleStart || isNewPeriod) && (
                 <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-accent-foreground" />
               )}
-              {(isLastPeriod || isNewPeriod) && !isCycleStart && (
+              {isNewPeriod && !isCycleStart && (
                 <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-rose-500" />
+              )}
+              {isFertility && (
+                <div className="absolute -top-0.5 -left-0.5 w-2 h-2 rounded-full bg-pink-400" />
               )}
               {isOvulation && (
                 <div className="absolute -top-0.5 -left-0.5 w-2 h-2 rounded-full bg-purple-500" />
@@ -146,11 +149,11 @@ export default function CalendarView({ entries, cycles, onDayClick, lastPeriodDa
           <span className="w-2.5 h-2.5 rounded-sm border-2 border-accent-foreground" /> Period Start
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-full bg-rose-200/60 border border-rose-300" /> Last Period
-        </span>
-        <span className="flex items-center gap-1">
           <span className="w-2.5 h-2.5 rounded-full bg-purple-200/60 border border-purple-300" />
           {ovulationEstimated ? "Expected Ovulation" : "Ovulation"}
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-full bg-pink-100/70 border border-pink-300" /> Fertile Window
         </span>
       </div>
     </div>

@@ -74,15 +74,24 @@ export default function Dashboard() {
   });
 
   const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
-  // Resolve the active period date: typed value OR latest saved cycle
-  const activePeriodDate = lastPeriodDate || (cycles.length > 0 ? cycles[0].start_date : null);
-  // Only compute ovulation when the user has explicitly typed a period date
-  const isOvulationEstimated = !lastOvulationDate && !!lastPeriodDate;
+
+  // "Mark Period Start" takes priority over "Date of Last Period"
+  const activePeriodDateStr = newPeriodDate || lastPeriodDate || null;
+
+  // Ovulation anchor: explicit override, or calculated from activePeriodDate
+  const isOvulationEstimated = !lastOvulationDate && !!activePeriodDateStr;
   const computedOvulationDate = lastOvulationDate
     ? lastOvulationDate
-    : lastPeriodDate
-      ? format(addDays(parseLocalDate(lastPeriodDate), ovulationDay - 1), "yyyy-MM-dd")
+    : activePeriodDateStr
+      ? format(addDays(parseLocalDate(activePeriodDateStr), ovulationDay - 1), "yyyy-MM-dd")
       : null;
+
+  // Fertility window: 4 days before ovulation through 1 day after
+  const fertilityWindowDates = computedOvulationDate
+    ? Array.from({ length: 6 }, (_, i) =>
+        format(addDays(parseLocalDate(computedOvulationDate), i - 4), "yyyy-MM-dd")
+      )
+    : [];
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const todayEntry = entries.find((e) => e.date === todayStr);
@@ -104,7 +113,7 @@ export default function Dashboard() {
       </div>
 
       {/* Cycle Status */}
-      <CycleHeader cycles={cycles} cycleLength={cycleLength} lastPeriodDate={newPeriodDate || lastPeriodDate} />
+      <CycleHeader cycles={cycles} cycleLength={cycleLength} lastPeriodDate={activePeriodDateStr} />
 
       {/* Quick Log Button */}
       <Button
@@ -140,10 +149,11 @@ export default function Dashboard() {
           entries={entries}
           cycles={cycles}
           onDayClick={(date) => navigate(`/log?date=${date}`)}
-          lastPeriodDate={lastPeriodDate || null}
+          activePeriodDate={activePeriodDateStr}
           newPeriodDate={newPeriodDate || null}
           ovulationDate={computedOvulationDate}
           ovulationEstimated={isOvulationEstimated}
+          fertilityWindowDates={fertilityWindowDates}
         />
       </div>
 
