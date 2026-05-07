@@ -13,11 +13,47 @@
     },
     "cycle_day": {
       "type": "number",
-      "description": "Day number within the current cycle (1-35+)"
+      "description": "Day number within the current cycle (1\u201335+)"
+    },
+    "cycle_type": {
+      "type": "string",
+      "enum": [
+        "menstrual",
+        "pregnancy",
+        "postpartum",
+        "perimenopause",
+        "menopause"
+      ],
+      "default": "menstrual",
+      "description": "Lifecycle context at time of this entry \u2014 controls which symptom sets are shown"
+    },
+    "trimester": {
+      "type": "string",
+      "enum": [
+        "first",
+        "second",
+        "third",
+        "postpartum"
+      ],
+      "description": "Pregnancy trimester \u2014 auto-set from pregnancy_week, or manually overridden"
+    },
+    "pregnancy_week": {
+      "type": "number",
+      "description": "Gestational week at time of entry (auto-populated from Cycle)"
     },
     "bleeding_intensity": {
       "type": "number",
       "description": "Bleeding intensity: 0=none, 1=spotting, 2=light, 3=medium, 4=heavy"
+    },
+    "menstrual_flow": {
+      "type": "string",
+      "enum": [
+        "",
+        "H",
+        "M",
+        "L"
+      ],
+      "description": "Menstrual flow: H=heavy, M=medium, L=light/spotting"
     },
     "s_mood_swings": {
       "type": "number",
@@ -155,38 +191,124 @@
       "type": "number",
       "description": "DRSP: Elevated mood / unusually energetic (1-6)"
     },
-    "menstrual_flow": {
-      "type": "string",
-      "enum": [
-        "",
-        "H",
-        "M",
-        "L"
-      ],
-      "description": "Menstrual flow: H=heavy, M=medium, L=light/spotting"
+    "p_nausea": {
+      "type": "number",
+      "description": "Pregnancy: Nausea / morning sickness (1-6)"
+    },
+    "p_vomiting": {
+      "type": "number",
+      "description": "Pregnancy: Vomiting episodes (1-6)"
+    },
+    "p_fatigue": {
+      "type": "number",
+      "description": "Pregnancy: Fatigue / exhaustion (1-6)"
+    },
+    "p_mood_changes": {
+      "type": "number",
+      "description": "Pregnancy: Mood changes / emotional lability (1-6)"
+    },
+    "p_sleep_issues": {
+      "type": "number",
+      "description": "Pregnancy: Sleep disturbances (1-6)"
+    },
+    "p_back_pain": {
+      "type": "number",
+      "description": "Pregnancy: Back pain / pelvic discomfort (1-6)"
+    },
+    "p_braxton_hicks": {
+      "type": "number",
+      "description": "Pregnancy: Braxton Hicks contractions (1-6)"
+    },
+    "p_heartburn": {
+      "type": "number",
+      "description": "Pregnancy: Heartburn / acid reflux (1-6)"
+    },
+    "p_swelling": {
+      "type": "number",
+      "description": "Pregnancy: Swelling / edema of hands or feet (1-6)"
+    },
+    "p_breast_changes": {
+      "type": "number",
+      "description": "Pregnancy: Breast tenderness / changes (1-6)"
+    },
+    "fetal_movement_felt": {
+      "type": "boolean",
+      "description": "Pregnancy: Was fetal movement felt today?"
+    },
+    "fetal_movement_count": {
+      "type": "number",
+      "description": "Pregnancy: Approximate fetal kick count today"
+    },
+    "m_hot_flashes": {
+      "type": "number",
+      "description": "Menopause/Peri: Hot flashes / flushes (1-6)"
+    },
+    "m_night_sweats": {
+      "type": "number",
+      "description": "Menopause/Peri: Night sweats (1-6)"
+    },
+    "m_vaginal_dryness": {
+      "type": "number",
+      "description": "Menopause/Peri: Vaginal dryness / discomfort (1-6)"
+    },
+    "m_mood_swings": {
+      "type": "number",
+      "description": "Menopause/Peri: Mood swings / irritability (1-6)"
+    },
+    "m_brain_fog": {
+      "type": "number",
+      "description": "Menopause/Peri: Brain fog / memory issues (1-6)"
+    },
+    "m_joint_pain": {
+      "type": "number",
+      "description": "Menopause/Peri: Joint or muscle pain (1-6)"
+    },
+    "m_sleep_disturbance": {
+      "type": "number",
+      "description": "Menopause/Peri: Sleep disturbances (1-6)"
+    },
+    "m_fatigue": {
+      "type": "number",
+      "description": "Menopause/Peri: Fatigue / low energy (1-6)"
+    },
+    "m_anxiety": {
+      "type": "number",
+      "description": "Menopause/Peri: Anxiety / tension (1-6)"
+    },
+    "m_depression": {
+      "type": "number",
+      "description": "Menopause/Peri: Low mood / depression (1-6)"
+    },
+    "m_libido_changes": {
+      "type": "number",
+      "description": "Menopause/Peri: Changes in libido (1-6)"
+    },
+    "m_urinary_symptoms": {
+      "type": "number",
+      "description": "Menopause/Peri: Urinary frequency or urgency (1-6)"
     },
     "phq9_score": {
       "type": "number",
-      "description": "PHQ-9 depression screening total score (0-27)"
+      "description": "PHQ-9 total score (0-27)"
     },
     "phq9_responses": {
       "type": "object",
-      "description": "Individual PHQ-9 question responses (keys: q1-q9, values: 0-3)"
+      "description": "Individual PHQ-9 responses (keys q1-q9, values 0-3)"
     },
     "gad7_score": {
       "type": "number",
-      "description": "GAD-7 anxiety screening total score (0-21)"
+      "description": "GAD-7 total score (0-21)"
     },
     "gad7_responses": {
       "type": "object",
-      "description": "Individual GAD-7 question responses (keys: q1-q7, values: 0-3)"
+      "description": "Individual GAD-7 responses (keys q1-q7, values 0-3)"
     },
     "medications_taken": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Medications taken today. Suggested: Antidepressants (SSRI/SNRI), Hormonal Birth Control, HRT, NSAIDs/Pain Relief, Calcium/Vitamin B6, Other Supplement, Custom"
+      "description": "Medications / supplements taken today"
     },
     "journal_entry": {
       "type": "string",
@@ -213,7 +335,7 @@
     },
     "notes": {
       "type": "string",
-      "description": "Optional daily notes"
+      "description": "Optional short daily notes"
     }
   },
   "required": [

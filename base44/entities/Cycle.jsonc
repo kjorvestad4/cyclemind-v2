@@ -5,7 +5,7 @@
     "start_date": {
       "type": "string",
       "format": "date",
-      "description": "First day of menstrual period (required)"
+      "description": "First day of menstrual period / cycle start (required)"
     },
     "end_date": {
       "type": "string",
@@ -14,7 +14,7 @@
     },
     "cycle_length": {
       "type": "number",
-      "description": "Average length of this cycle in days"
+      "description": "Length of this cycle in days"
     },
     "phase": {
       "type": "string",
@@ -24,7 +24,42 @@
         "ovulatory",
         "luteal"
       ],
-      "description": "Current phase of the cycle"
+      "description": "Current phase of a standard menstrual cycle"
+    },
+    "cycle_type": {
+      "type": "string",
+      "enum": [
+        "menstrual",
+        "pregnancy",
+        "postpartum",
+        "perimenopause",
+        "menopause"
+      ],
+      "default": "menstrual",
+      "description": "Lifecycle context for this cycle record"
+    },
+    "last_menstrual_period": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of last menstrual period (LMP) \u2014 used for pregnancy dating"
+    },
+    "estimated_due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Estimated due date (EDD) for pregnancy cycles (Naegele's rule: LMP + 280 days)"
+    },
+    "pregnancy_week": {
+      "type": "number",
+      "description": "Current gestational week \u2014 auto-calculated from LMP or manually overridden"
+    },
+    "hrt_type": {
+      "type": "string",
+      "description": "HRT medication type for menopause/perimenopause (e.g. 'Estrogen patch', 'Oral combined HRT', 'Progesterone gel', 'Tibolone')"
+    },
+    "hrt_start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date HRT was started"
     },
     "notes": {
       "type": "string",
@@ -37,12 +72,12 @@
     "is_pregnancy_mode": {
       "type": "boolean",
       "default": false,
-      "description": "Whether this cycle is tracked in pregnancy mode"
+      "description": "Legacy flag \u2014 prefer cycle_type='pregnancy'"
     },
     "is_menopause_mode": {
       "type": "boolean",
       "default": false,
-      "description": "Whether this cycle is tracked in menopause mode"
+      "description": "Legacy flag \u2014 prefer cycle_type='menopause'"
     }
   },
   "required": [
