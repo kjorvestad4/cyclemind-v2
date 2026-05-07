@@ -46,7 +46,7 @@
     "estimated_due_date": {
       "type": "string",
       "format": "date",
-      "description": "Estimated due date (EDD) for pregnancy cycles (Naegele's rule: LMP + 280 days)"
+      "description": "Estimated due date (EDD) for pregnancy cycles (auto-calculated: LMP + 280 days)"
     },
     "pregnancy_week": {
       "type": "number",

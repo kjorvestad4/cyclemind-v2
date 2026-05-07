@@ -411,6 +411,30 @@
     "notes": {
       "type": "string",
       "description": "Optional short daily notes"
+    },
+    "heart_rate": {
+      "type": "number",
+      "description": "Heart rate in beats per minute (bpm)"
+    },
+    "systolic_bp": {
+      "type": "number",
+      "description": "Systolic blood pressure (mmHg)"
+    },
+    "diastolic_bp": {
+      "type": "number",
+      "description": "Diastolic blood pressure (mmHg)"
+    },
+    "respiratory_rate": {
+      "type": "number",
+      "description": "Respiratory rate in breaths per minute"
+    },
+    "weight": {
+      "type": "number",
+      "description": "Weight in lbs or kg"
+    },
+    "height": {
+      "type": "number",
+      "description": "Height in inches or cm"
     }
   },
   "required": [

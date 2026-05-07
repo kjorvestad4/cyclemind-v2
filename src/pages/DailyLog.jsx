@@ -17,6 +17,7 @@ import OvulationTracking from "@/components/log/OvulationTracking";
 import PregnancySymptoms from "@/components/log/PregnancySymptoms";
 import MenopauseSymptoms from "@/components/log/MenopauseSymptoms";
 import PostpartumSymptoms, { PP_SYMPTOM_KEYS } from "@/components/log/PostpartumSymptoms";
+import VitalsTracking from "@/components/log/VitalsTracking";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
 import { SYMPTOM_CATEGORIES, ALL_SYMPTOMS, getCycleDay, calculateDayTotal } from "@/lib/symptoms";
@@ -91,6 +92,7 @@ export default function DailyLog() {
   const [ovulationTest, setOvulationTest] = useState("");
   const [ovulationDate, setOvulationDate] = useState("");
   const [cervicalMucus, setCervicalMucus] = useState("");
+  const [vitals, setVitals] = useState({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [autoSaveTimer, setAutoSaveTimer] = useState(null);
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
@@ -155,6 +157,14 @@ export default function DailyLog() {
       setEpdsResponses(existingEntry.epds_responses || {});
       setFetalMovementFelt(existingEntry.fetal_movement_felt || false);
       setFetalMovementCount(existingEntry.fetal_movement_count || 0);
+      setVitals({
+        heart_rate: existingEntry.heart_rate || "",
+        systolic_bp: existingEntry.systolic_bp || "",
+        diastolic_bp: existingEntry.diastolic_bp || "",
+        respiratory_rate: existingEntry.respiratory_rate || "",
+        weight: existingEntry.weight || "",
+        height: existingEntry.height || "",
+      });
     } else {
       setScores({});
       setFlow(""); setBleedingIntensity(null); setJournalEntry("");
@@ -163,6 +173,7 @@ export default function DailyLog() {
       setEpdsScore(0); setEpdsResponses({});
       setFetalMovementFelt(false); setFetalMovementCount(0);
       setOvulationTest(""); setOvulationDate(""); setCervicalMucus("");
+      setVitals({});
     }
     setHasUnsavedChanges(false);
   }, [selectedDate, existingEntry?.id]);
@@ -222,6 +233,12 @@ export default function DailyLog() {
       ovulation_test: (isMenstrual || cycleType === "perimenopause") ? ovulationTest || undefined : undefined,
       ovulation_date: (isMenstrual || cycleType === "perimenopause") ? ovulationDate || undefined : undefined,
       cervical_mucus: (isMenstrual || cycleType === "perimenopause") ? cervicalMucus || undefined : undefined,
+      heart_rate: vitals.heart_rate || undefined,
+      systolic_bp: vitals.systolic_bp || undefined,
+      diastolic_bp: vitals.diastolic_bp || undefined,
+      respiratory_rate: vitals.respiratory_rate || undefined,
+      weight: vitals.weight || undefined,
+      height: vitals.height || undefined,
       // isPostpartum uses pp_* keys (populated below via PP_SYMPTOM_KEYS loop)
     };
     ALL_SYMPTOMS.forEach((s) => { data[s.key] = scores[s.key] || 0; });
@@ -546,6 +563,11 @@ export default function DailyLog() {
           <MedicationsTaken value={medications} onChange={(v) => { setMedications(v); setHasUnsavedChanges(true); }} />
         </div>
       </Section>
+
+      <VitalsTracking
+        values={vitals}
+        onChange={(v) => { setVitals(v); setHasUnsavedChanges(true); }}
+      />
 
       <Section title="Custom Symptoms">
         <div className="pt-1">

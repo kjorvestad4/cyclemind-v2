@@ -10,7 +10,7 @@ import { Check, Loader2, X } from "lucide-react";
 
 const MODES = [
   { id: "menstrual", emoji: "🌙", label: "Menstrual / PMDD", color: "border-primary/40 bg-primary/5", activeColor: "border-primary bg-primary/10", fields: ["lmp", "cycle_length"] },
-  { id: "pregnancy", emoji: "🤰", label: "Pregnancy", color: "border-pink-200 bg-pink-50/50 dark:border-pink-900 dark:bg-pink-950/20", activeColor: "border-pink-400 bg-pink-50 dark:border-pink-600 dark:bg-pink-950/40", fields: ["lmp", "edd"] },
+  { id: "pregnancy", emoji: "🤰", label: "Pregnancy", color: "border-pink-200 bg-pink-50/50 dark:border-pink-900 dark:bg-pink-950/20", activeColor: "border-pink-400 bg-pink-50 dark:border-pink-600 dark:bg-pink-950/40", fields: ["lmp"] },
   { id: "postpartum", emoji: "🍼", label: "Postpartum", color: "border-purple-200 bg-purple-50/50 dark:border-purple-900 dark:bg-purple-950/20", activeColor: "border-purple-400 bg-purple-50 dark:border-purple-600 dark:bg-purple-950/40", fields: ["birth_date"] },
   { id: "perimenopause", emoji: "🌊", label: "Perimenopause", color: "border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20", activeColor: "border-amber-400 bg-amber-50 dark:border-amber-600 dark:bg-amber-950/40", fields: ["lmp", "hrt_type"] },
   { id: "menopause", emoji: "🔥", label: "Menopause", color: "border-orange-200 bg-orange-50/50 dark:border-orange-900 dark:bg-orange-950/20", activeColor: "border-orange-400 bg-orange-50 dark:border-orange-600 dark:bg-orange-950/40", fields: ["lmp", "hrt_type"] },
@@ -28,16 +28,28 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
 
   const selectedMode = MODES.find((m) => m.id === selected);
 
+  const calculateEDD = (lmpDate) => {
+    // EDD = LMP + 280 days (40 weeks per Naegele's rule)
+    const lmpObj = new Date(lmpDate);
+    const eddObj = new Date(lmpObj.getTime() + 280 * 24 * 60 * 60 * 1000);
+    return format(eddObj, "yyyy-MM-dd");
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
       const today = format(new Date(), "yyyy-MM-dd");
+      const lmpForCalc = selected === "pregnancy" ? (lmp || today) : undefined;
+      const calculatedEdd = lmpForCalc ? calculateEDD(lmpForCalc) : undefined;
+      const pregnancyWeek = lmpForCalc ? Math.floor((new Date(today).getTime() - new Date(lmpForCalc).getTime()) / (7 * 24 * 60 * 60 * 1000)) : undefined;
+      
       const cycleData = {
         start_date: selected === "menstrual" || selected === "perimenopause" ? (lmp || today) : (latestCycle?.start_date || today),
         cycle_type: selected,
         cycle_length: selected === "menstrual" ? cycleLength || 28 : undefined,
         last_menstrual_period: (selected === "pregnancy" || selected === "menopause" || selected === "perimenopause") ? lmp || undefined : undefined,
-        estimated_due_date: selected === "pregnancy" ? edd || undefined : undefined,
+        estimated_due_date: selected === "pregnancy" ? calculatedEdd : undefined,
+        pregnancy_week: selected === "pregnancy" ? pregnancyWeek : undefined,
         hrt_type: (selected === "perimenopause" || selected === "menopause") ? hrtType || undefined : undefined,
         is_pregnancy_mode: selected === "pregnancy" || selected === "postpartum",
         is_menopause_mode: selected === "menopause" || selected === "perimenopause",
@@ -48,7 +60,11 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
         await base44.entities.Cycle.create(cycleData);
       }
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      toast.success(`Switched to ${selectedMode.label} 💜`);
+      if (selected === "pregnancy" && calculatedEdd) {
+        toast.success(`🤰 Pregnancy mode on! EDD: ${format(new Date(calculatedEdd), "MMM d, yyyy")}`);
+      } else {
+        toast.success(`Switched to ${selectedMode.label} 💜`);
+      }
       onClose();
     } catch {
       toast.error("Failed to switch mode. Try again.");
@@ -112,18 +128,12 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                       </div>
                     )}
                     {mode.fields.includes("cycle_length") && (
-                      <div className="space-y-1">
-                        <Label className="text-xs">Average Cycle Length (days)</Label>
-                        <Input type="number" min={20} max={60} value={cycleLength} onChange={(e) => setCycleLength(parseInt(e.target.value) || 28)} className="h-9 bg-background" />
-                      </div>
-                    )}
-                    {mode.fields.includes("edd") && (
-                      <div className="space-y-1">
-                        <Label className="text-xs">Estimated Due Date (EDD)</Label>
-                        <Input type="date" value={edd} onChange={(e) => setEdd(e.target.value)} className="h-9 bg-background" />
-                      </div>
-                    )}
-                    {mode.fields.includes("birth_date") && (
+                       <div className="space-y-1">
+                         <Label className="text-xs">Average Cycle Length (days)</Label>
+                         <Input type="number" min={20} max={60} value={cycleLength} onChange={(e) => setCycleLength(parseInt(e.target.value) || 28)} className="h-9 bg-background" />
+                       </div>
+                     )}
+                     {mode.fields.includes("birth_date") && (
                       <div className="space-y-1">
                         <Label className="text-xs">Birth / Delivery Date</Label>
                         <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="h-9 bg-background" />

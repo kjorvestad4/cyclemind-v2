@@ -3,6 +3,7 @@ import { X, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 const SUGGESTED_MEDS = [
+  "Prenatal Vitamin",
   "Antidepressants (SSRI/SNRI)",
   "Hormonal Birth Control",
   "HRT",
