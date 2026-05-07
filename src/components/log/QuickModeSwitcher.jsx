@@ -157,19 +157,20 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                   <div className="mt-2 space-y-1 border-t border-border/40 pt-2" onClick={(e) => e.stopPropagation()}>
                     {mode.fields.includes("lmp") && (
                       <div className="space-y-0.5">
-                        <Label className="text-xs font-medium">Last Menstrual Period</Label>
+                        <Label className="text-xs font-medium">Last Menstrual Period (YYYY-MM-DD)</Label>
                         <div className="flex items-center gap-1.5">
                           <Input 
-                            type="date" 
-                            min={format(subYears(new Date(), 5), "yyyy-MM-dd")}
-                            max={format(addDays(new Date(), 30), "yyyy-MM-dd")}
+                            type="text"
+                            placeholder="2025-04-15"
                             value={lmp || ""}
                             onChange={(e) => {
-                              const exactValue = e.target.value;
-                              console.log(`[CycleMind] LMP picker: exact ISO string captured "${exactValue}" (day=${exactValue.split('-')[2]}, month=${exactValue.split('-')[1]}, year=${exactValue.split('-')[0]})`);
-                              setLmp(exactValue);
-                            }} 
-                            className="h-8 text-sm bg-background max-w-[140px]" 
+                              const val = e.target.value.trim();
+                              // Accept only valid YYYY-MM-DD or empty
+                              if (!val || /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+                                setLmp(val);
+                              }
+                            }}
+                            className="h-8 text-sm bg-background font-mono max-w-[140px]"
                           />
                           {lmp && (
                             <button
@@ -180,6 +181,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                             </button>
                           )}
                         </div>
+                        <p className="text-[10px] text-muted-foreground">Exact date as YYYY-MM-DD — no timezone conversion</p>
                       </div>
                     )}
                     {mode.fields.includes("ovulation") && (
