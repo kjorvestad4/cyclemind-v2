@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -14,6 +14,7 @@ import DailyLog from '@/pages/DailyLog';
 import Insights from '@/pages/Insights';
 import Resources from '@/pages/Resources';
 import Profile from '@/pages/Profile';
+import Onboarding from '@/pages/Onboarding';
 
 const pageVariants = {
   initial: { opacity: 0, x: 24 },
@@ -76,7 +77,8 @@ const AnimatedOutlet = () => {
 };
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const navigate = useNavigate();
+  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin, user } = useAuth();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -98,6 +100,12 @@ const AuthenticatedApp = () => {
     }
   }
 
+  // Redirect to onboarding if user hasn't completed it
+  if (user && !user.has_completed_onboarding) {
+    navigate('/onboarding', { replace: true });
+    return null;
+  }
+
   return <AnimatedOutlet />;
 };
 
@@ -106,7 +114,10 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
-          <AuthenticatedApp />
+          <Routes>
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="*" element={<AuthenticatedApp />} />
+          </Routes>
         </Router>
         <Toaster />
       </QueryClientProvider>

@@ -8,12 +8,26 @@
         "admin",
         "user"
       ],
-      "default": "user"
+      "default": "user",
+      "description": "User role in the app"
     },
-    "cycle_length": {
-      "type": "number",
-      "description": "Typical cycle length in days",
-      "default": 28
+    "has_completed_onboarding": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has completed the initial onboarding flow"
+    },
+    "notification_time": {
+      "type": "string",
+      "description": "Preferred daily reminder time (HH:MM format)"
+    },
+    "unit_system": {
+      "type": "string",
+      "enum": [
+        "imperial",
+        "metric"
+      ],
+      "default": "imperial",
+      "description": "Preferred unit system (lbs/kg, inches/cm)"
     }
   }
 }
