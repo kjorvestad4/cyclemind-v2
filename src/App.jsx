@@ -95,6 +95,7 @@ const AuthenticatedApp = () => {
   useEffect(() => {
     const checkOnboardingStatus = async () => {
       if (!user) {
+        setNeedsOnboarding(true);
         setCheckingOnboarding(false);
         return;
       }
