@@ -96,7 +96,7 @@ export default function Onboarding() {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-5 pb-48 flex flex-col">
+        <div className="flex-1 overflow-y-auto p-5 flex flex-col">
           {currentStep === 1 && (
             <OnboardingStep1
               selectedMode={selectedMode}
@@ -141,40 +141,40 @@ export default function Onboarding() {
               saving={saving}
             />
           )}
-        </div>
 
-        {/* Footer buttons */}
-        <div className="border-t border-border/40 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] space-y-2 bg-card">
-          {currentStep > 1 && (
-            <Button
-              variant="ghost"
-              onClick={handleBack}
-              className="w-full gap-2"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Back
-            </Button>
-          )}
-          {currentStep < 4 && (
-            <Button
-              onClick={handleNext}
-              className="w-full h-12 rounded-2xl font-semibold text-base"
-            >
-              Continue
-            </Button>
-          )}
-          {currentStep === 4 && (
-            <Button
-              onClick={handleComplete}
-              disabled={saving}
-              className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
-            >
-              {saving ? "Setting up..." : <>
-                <Check className="w-5 h-5" />
-                Get Started
-              </>}
-            </Button>
-          )}
+          {/* Footer buttons inside scrollable area */}
+          <div className="space-y-2 mt-8 pt-4 border-t border-border/40">
+            {currentStep > 1 && (
+              <Button
+                variant="ghost"
+                onClick={handleBack}
+                className="w-full gap-2"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Back
+              </Button>
+            )}
+            {currentStep < 4 && (
+              <Button
+                onClick={handleNext}
+                className="w-full h-12 rounded-2xl font-semibold text-base"
+              >
+                Continue
+              </Button>
+            )}
+            {currentStep === 4 && (
+              <Button
+                onClick={handleComplete}
+                disabled={saving}
+                className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
+              >
+                {saving ? "Setting up..." : <>
+                  <Check className="w-5 h-5" />
+                  Get Started
+                </>}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
