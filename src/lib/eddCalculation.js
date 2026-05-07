@@ -2,14 +2,13 @@ import { format, addDays, differenceInDays } from "date-fns";
 
 /**
  * Calculate Estimated Due Date (EDD)
- * Prioritizes ovulation-based calculation (38 weeks from ovulation)
- * Falls back to LMP-based (40 weeks from LMP)
- * Returns { edd, baselineDate, method } where method is "ovulation" or "lmp"
+ * Priority order:
+ * 1. If ovulationDate exists → use ovulation-based EDD (ovulationDate + 266 days)
+ * 2. Else if lmpDate exists → use LMP-based EDD (LMP + 280 days)
+ * Returns { edd, baselineDate, method } where method is "ovulation" or "lmp", or null with message
  */
 export function calculateEDD(ovulationDate, lmpDate) {
-  if (!ovulationDate && !lmpDate) return null;
-
-  // Ovulation-based: EDD = ovulation date + 266 days (38 weeks)
+  // Ovulation takes priority
   if (ovulationDate) {
     const eddDate = addDays(new Date(ovulationDate), 266);
     return {
@@ -19,7 +18,7 @@ export function calculateEDD(ovulationDate, lmpDate) {
     };
   }
 
-  // LMP-based: EDD = LMP + 280 days (40 weeks, Naegele's rule)
+  // Fall back to LMP
   if (lmpDate) {
     const eddDate = addDays(new Date(lmpDate), 280);
     return {

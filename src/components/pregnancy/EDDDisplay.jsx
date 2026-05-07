@@ -5,17 +5,18 @@ import { Calendar, AlertCircle } from "lucide-react";
 export default function EDDDisplay({ lmp, ovulationDate, estimatedDueDate, pregnancyWeek }) {
   if (!lmp && !ovulationDate && !estimatedDueDate) return null;
 
-  // Calculate EDD if not provided
+  // Calculate EDD if not provided (ovulation takes priority)
   let eddData = null;
   let displayWeek = pregnancyWeek;
 
   if (!estimatedDueDate && (lmp || ovulationDate)) {
     eddData = calculateEDD(ovulationDate, lmp);
-    displayWeek = getPregnancyWeek(ovulationDate || lmp, new Date());
+    const baselineDate = ovulationDate || lmp;
+    displayWeek = getPregnancyWeek(baselineDate, new Date());
   }
 
   const edd = estimatedDueDate || eddData?.edd;
-  const method = ovulationDate ? "ovulation" : "LMP";
+  const method = eddData?.method || (ovulationDate ? "ovulation" : "lmp");
 
   if (!edd) return null;
 

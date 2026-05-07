@@ -11,7 +11,7 @@ import { calculateEDD, getPregnancyWeek } from "@/lib/eddCalculation";
 
 const MODES = [
   { id: "menstrual", emoji: "🌙", label: "Menstrual / PMDD", color: "border-primary/40 bg-primary/5", activeColor: "border-primary bg-primary/10", fields: ["lmp", "cycle_length"] },
-  { id: "pregnancy", emoji: "🤰", label: "Pregnancy", color: "border-pink-200 bg-pink-50/50 dark:border-pink-900 dark:bg-pink-950/20", activeColor: "border-pink-400 bg-pink-50 dark:border-pink-600 dark:bg-pink-950/40", fields: ["lmp"] },
+  { id: "pregnancy", emoji: "🤰", label: "Pregnancy", color: "border-pink-200 bg-pink-50/50 dark:border-pink-900 dark:bg-pink-950/20", activeColor: "border-pink-400 bg-pink-50 dark:border-pink-600 dark:bg-pink-950/40", fields: ["lmp", "ovulation"] },
   { id: "postpartum", emoji: "🍼", label: "Postpartum", color: "border-purple-200 bg-purple-50/50 dark:border-purple-900 dark:bg-purple-950/20", activeColor: "border-purple-400 bg-purple-50 dark:border-purple-600 dark:bg-purple-950/40", fields: ["birth_date"] },
   { id: "perimenopause", emoji: "🌊", label: "Perimenopause", color: "border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20", activeColor: "border-amber-400 bg-amber-50 dark:border-amber-600 dark:bg-amber-950/40", fields: ["lmp", "hrt_type"] },
   { id: "menopause", emoji: "🔥", label: "Menopause", color: "border-orange-200 bg-orange-50/50 dark:border-orange-900 dark:bg-orange-950/20", activeColor: "border-orange-400 bg-orange-50 dark:border-orange-600 dark:bg-orange-950/40", fields: ["lmp", "hrt_type"] },
@@ -21,34 +21,38 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState(currentCycleType || "menstrual");
   const [lmp, setLmp] = useState(latestCycle?.last_menstrual_period || "");
+  const [ovulationDate, setOvulationDate] = useState(latestCycle?.ovulation_date || "");
   const [cycleLength, setCycleLength] = useState(latestCycle?.cycle_length || 28);
-  const [edd, setEdd] = useState(latestCycle?.estimated_due_date || "");
   const [birthDate, setBirthDate] = useState("");
   const [hrtType, setHrtType] = useState(latestCycle?.hrt_type || "");
   const [saving, setSaving] = useState(false);
 
   const selectedMode = MODES.find((m) => m.id === selected);
 
-  // Live EDD calculation for pregnancy mode
+  // Live EDD calculation for pregnancy mode (ovulation priority)
   const pregnancyCalcs = useMemo(() => {
-    if (selected !== "pregnancy" || !lmp) return null;
-    const eddData = calculateEDD(undefined, lmp);
-    const week = getPregnancyWeek(lmp, new Date(format(new Date(), "yyyy-MM-dd")));
+    if (selected !== "pregnancy") return null;
+    if (!lmp && !ovulationDate) return null;
+    
+    const eddData = calculateEDD(ovulationDate, lmp);
+    const baselineDate = ovulationDate || lmp;
+    const week = getPregnancyWeek(baselineDate, new Date(format(new Date(), "yyyy-MM-dd")));
     const trimester = week <= 13 ? "First" : week <= 26 ? "Second" : "Third";
     return { eddData, week, trimester };
-  }, [selected, lmp]);
+  }, [selected, lmp, ovulationDate]);
 
   const handleSave = async () => {
     setSaving(true);
     try {
       const today = format(new Date(), "yyyy-MM-dd");
       
-      // Calculate EDD for pregnancy mode (prioritizes ovulation if available, falls back to LMP)
+      // Calculate EDD for pregnancy mode (ovulation priority)
       let eddData = null;
       let pregnancyWeek = undefined;
-      if (selected === "pregnancy" && lmp) {
-        eddData = calculateEDD(undefined, lmp); // Pass undefined for ovulation (not set in mode switcher)
-        pregnancyWeek = getPregnancyWeek(lmp, new Date(today));
+      if (selected === "pregnancy" && (lmp || ovulationDate)) {
+        eddData = calculateEDD(ovulationDate, lmp);
+        const baselineDate = ovulationDate || lmp;
+        pregnancyWeek = getPregnancyWeek(baselineDate, new Date(today));
       }
       
       const cycleData = {
@@ -56,6 +60,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
         cycle_type: selected,
         cycle_length: selected === "menstrual" ? cycleLength || 28 : undefined,
         last_menstrual_period: (selected === "pregnancy" || selected === "menopause" || selected === "perimenopause") ? lmp || undefined : undefined,
+        ovulation_date: selected === "pregnancy" ? ovulationDate || undefined : undefined,
         estimated_due_date: selected === "pregnancy" ? eddData?.edd : undefined,
         pregnancy_week: selected === "pregnancy" ? pregnancyWeek : undefined,
         hrt_type: (selected === "perimenopause" || selected === "menopause") ? hrtType || undefined : undefined,
@@ -78,6 +83,15 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
       toast.error("Failed to switch mode. Try again.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleClearLmp = () => {
+    setLmp("");
+    if (ovulationDate) {
+      toast.success("LMP cleared — now using ovulation date for EDD");
+    } else {
+      toast.info("LMP cleared. Enter ovulation date or LMP to calculate EDD");
     }
   };
 
@@ -132,7 +146,24 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                     {mode.fields.includes("lmp") && (
                       <div className="space-y-0.5">
                         <Label className="text-xs font-medium">Last Menstrual Period</Label>
-                        <Input type="date" value={lmp} onChange={(e) => setLmp(e.target.value)} className="h-8 text-sm bg-background max-w-[140px]" />
+                        <div className="flex items-center gap-1.5">
+                          <Input type="date" value={lmp} onChange={(e) => setLmp(e.target.value)} className="h-8 text-sm bg-background max-w-[140px]" />
+                          {lmp && (
+                            <button
+                              onClick={handleClearLmp}
+                              className="h-8 px-2 rounded text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {mode.fields.includes("ovulation") && (
+                      <div className="space-y-0.5">
+                        <Label className="text-xs font-medium">Ovulation Date (optional)</Label>
+                        <Input type="date" value={ovulationDate} onChange={(e) => setOvulationDate(e.target.value)} className="h-8 text-sm bg-background max-w-[140px]" />
+                        <p className="text-[10px] text-muted-foreground">Takes priority over LMP for EDD</p>
                       </div>
                     )}
                     {mode.fields.includes("cycle_length") && (
