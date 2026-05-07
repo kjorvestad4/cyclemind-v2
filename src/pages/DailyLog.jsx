@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, subDays, addDays, differenceInDays } from "date-fns";
-import { ChevronLeft, ChevronRight, Save, Check, Trash2, Mic, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, Check, Trash2, Mic, ChevronDown, ChevronUp, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -82,6 +82,7 @@ export default function DailyLog() {
   const [fetalMovementFelt, setFetalMovementFelt] = useState(false);
   const [fetalMovementCount, setFetalMovementCount] = useState(0);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [autoSaveTimer, setAutoSaveTimer] = useState(null);
 
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],
@@ -146,6 +147,17 @@ export default function DailyLog() {
     }
     setHasUnsavedChanges(false);
   }, [selectedDate, existingEntry?.id]);
+
+  // Auto-save: debounce 3s after any change
+  const scheduleAutoSave = useCallback(() => {
+    setAutoSaveTimer((prev) => {
+      if (prev) clearTimeout(prev);
+      return setTimeout(() => {
+        // saveMutation.mutate() called via ref to avoid stale closure
+        setAutoSaveTimer(null);
+      }, 3000);
+    });
+  }, []);
 
   const handleScoreChange = useCallback((key, value) => {
     setScores((prev) => ({ ...prev, [key]: value }));
@@ -269,6 +281,37 @@ export default function DailyLog() {
         </Button>
       </div>
 
+      {/* Mode Banner */}
+      <div className={`rounded-2xl border-2 p-3.5 flex items-center justify-between gap-3 ${
+        isPregnancy ? "border-pink-200 bg-pink-50 dark:border-pink-900 dark:bg-pink-950/30" :
+        isMenopause ? "border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950/30" :
+        "border-primary/20 bg-primary/5"
+      }`}>
+        <div>
+          <p className="text-sm font-bold text-foreground">
+            {isPregnancy && cycleType === "postpartum" && "🍼 Postpartum Mode"}
+            {isPregnancy && cycleType === "pregnancy" && `🤰 Pregnancy Mode${pregnancyWeek ? ` · Week ${pregnancyWeek}` : ""}`}
+            {isMenopause && cycleType === "perimenopause" && "🌊 Perimenopause Mode"}
+            {isMenopause && cycleType === "menopause" && "🔥 Menopause Mode"}
+            {isMenstrual && "🌙 Menstrual / PMDD Tracking"}
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">
+            {isPregnancy && trimester && trimester !== "postpartum" && `${trimester.charAt(0).toUpperCase() + trimester.slice(1)} trimester · `}
+            {isPregnancy && latestCycle?.estimated_due_date && `Due ${format(new Date(latestCycle.estimated_due_date), "MMM d, yyyy")}`}
+            {isMenopause && latestCycle?.hrt_type && `HRT: ${latestCycle.hrt_type}`}
+            {isMenstrual && cycleDay && `Cycle day ${cycleDay}${phaseInfo ? ` · ${phaseInfo.label} phase` : ""}`}
+            {!isPregnancy && !isMenopause && !cycleDay && "Log your symptoms below"}
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/profile")}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all shrink-0"
+        >
+          <Settings className="w-3.5 h-3.5" />
+          Switch Mode
+        </button>
+      </div>
+
       {/* Progress Bar */}
       <div className="bg-card rounded-2xl border border-border/50 p-3 space-y-2">
         <div className="flex justify-between text-xs">
@@ -309,7 +352,7 @@ export default function DailyLog() {
       {isPregnancy && (
         <>
           <Section
-            title="Pregnancy Symptoms"
+            title={cycleType === "postpartum" ? "Postpartum Symptoms" : "Pregnancy Symptoms"}
             subtitle={trimester ? `${trimester.charAt(0).toUpperCase() + trimester.slice(1)} trimester${pregnancyWeek ? ` · Week ${pregnancyWeek}` : ""}` : undefined}
             defaultOpen={true}
             badge={trimester ? trimester.charAt(0).toUpperCase() + trimester.slice(1) : undefined}
@@ -335,6 +378,14 @@ export default function DailyLog() {
           <Section title="Spotting / Bleeding" subtitle="Note any spotting — always inform your midwife if unexpected">
             <div className="pt-1">
               <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
+            </div>
+          </Section>
+
+          {/* Collapsible DRSP for pregnancy — hidden by default */}
+          <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — track emotional wellbeing alongside pregnancy symptoms">
+            <div className="pt-2 space-y-2">
+              <p className="text-xs text-muted-foreground">Prenatal mood tracking can be valuable for your care team. Rate 1–6 if relevant.</p>
+              <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
             </div>
           </Section>
         </>
@@ -371,6 +422,13 @@ export default function DailyLog() {
               </div>
             </Section>
           )}
+
+          {/* Collapsible DRSP for menopause — hidden by default */}
+          <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — classic PMDD/PMS symptom grid for comparison">
+            <div className="pt-2">
+              <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
+            </div>
+          </Section>
         </>
       )}
 
