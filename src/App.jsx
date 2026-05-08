@@ -34,18 +34,20 @@ function wrap(key, Component) {
 
 // Guard: Protect /dashboard and app routes — require valid session
 function OnboardingGuard({ children }) {
-  const { isAuthenticated, isLoadingAuth } = useAuth();
+  const { user, isLoadingAuth } = useAuth();
 
   if (isLoadingAuth) return null;
 
-  // If unauthenticated, hard redirect to /start
-  if (!isAuthenticated) {
+  if (!user || !user.id) {
+    // Not logged in
     window.location.href = '/start';
     return null;
   }
 
-  // If authenticated, ALWAYS allow access (no onboarded/cycle checks)
-  return children;
+  // If the user is logged in at all → ALWAYS show the dashboard
+  // Ignore onboarded flag and active Cycle for now
+  window.location.href = '/dashboard';
+  return null;
 }
 
 const AnimatedOutlet = () => {
