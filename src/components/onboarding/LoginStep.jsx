@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Mail, Lock, Chrome } from "lucide-react";
 
 export default function LoginStep({ onLoginSuccess }) {
+  const { checkUserAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,6 +45,9 @@ export default function LoginStep({ onLoginSuccess }) {
           start_date: today,
         });
       }
+      
+      // Update AuthContext with new auth state before redirecting
+      await checkUserAuth();
       
       // Hard redirect to dashboard
       toast.success("Logged in! Welcome to CycleMind.");
