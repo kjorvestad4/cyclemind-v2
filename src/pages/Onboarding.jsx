@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import OnboardingStep1 from "@/components/onboarding/OnboardingStep1";
 import OnboardingStep2 from "@/components/onboarding/OnboardingStep2";
 import OnboardingStep3 from "@/components/onboarding/OnboardingStep3";
-import OnboardingStep4 from "@/components/onboarding/OnboardingStep4";
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -26,7 +25,7 @@ export default function Onboarding() {
   const [saving, setSaving] = useState(false);
 
   const handleNext = () => {
-    if (currentStep < 5) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -87,7 +86,7 @@ export default function Onboarding() {
     window.location.href = targetUrl;
   };
 
-  const progress = (currentStep / 5) * 100;
+  const progress = (currentStep / 4) * 100;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -134,20 +133,27 @@ export default function Onboarding() {
           )}
 
           {currentStep === 3 && (
-            <OnboardingStep3
-              reminderTime={reminderTime}
-              setReminderTime={setReminderTime}
-              unitSystem={unitSystem}
-              setUnitSystem={setUnitSystem}
-              onNext={handleNext}
-            />
-          )}
-
-          {currentStep === 4 && (
-            <OnboardingStep4
-              onGetStarted={() => handleComplete("dashboard")}
-              saving={saving}
-            />
+            <div className="flex flex-col items-center justify-center flex-1 space-y-6 text-center max-w-md mx-auto">
+              <OnboardingStep3
+                reminderTime={reminderTime}
+                setReminderTime={setReminderTime}
+                unitSystem={unitSystem}
+                setUnitSystem={setUnitSystem}
+                onNext={() => {}}
+              />
+              <div className="w-full pt-4 border-t border-border/40">
+                <button
+                  onClick={() => handleComplete("dashboard")}
+                  disabled={saving}
+                  className="w-full h-12 rounded-2xl font-semibold text-base bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 gap-2 inline-flex items-center justify-center"
+                >
+                  {saving ? "Setting up..." : <>
+                    <Check className="w-5 h-5" />
+                    Get Started
+                  </>}
+                </button>
+              </div>
+            </div>
           )}
 
           {/* Footer buttons inside scrollable area */}
@@ -162,7 +168,7 @@ export default function Onboarding() {
                 {currentStep === 1 ? "Sign Out" : "Back"}
               </Button>
             )}
-            {currentStep >= 1 && currentStep < 5 && (
+            {currentStep >= 1 && currentStep < 3 && (
                <Button
                  onClick={handleNext}
                  className="w-full h-12 rounded-2xl font-semibold text-base"
@@ -170,18 +176,6 @@ export default function Onboarding() {
                  Continue
                </Button>
              )}
-            {currentStep === 5 && (
-              <Button
-                onClick={() => handleComplete("dashboard")}
-                disabled={saving}
-                className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
-              >
-                {saving ? "Setting up..." : <>
-                  <Check className="w-5 h-5" />
-                  Get Started
-                </>}
-              </Button>
-            )}
           </div>
         </div>
       </div>
