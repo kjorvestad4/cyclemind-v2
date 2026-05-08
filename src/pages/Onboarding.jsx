@@ -143,14 +143,11 @@ export default function Onboarding() {
               />
               <div className="w-full pt-4 border-t border-border/40">
                 <button
-                  onClick={() => handleComplete("dashboard")}
-                  disabled={saving}
-                  className="w-full h-12 rounded-2xl font-semibold text-base bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 gap-2 inline-flex items-center justify-center"
+                  onClick={() => base44.auth.redirectToLogin()}
+                  className="w-full h-12 rounded-2xl font-semibold text-base bg-primary text-primary-foreground hover:bg-primary/90 gap-2 inline-flex items-center justify-center"
                 >
-                  {saving ? "Setting up..." : <>
-                    <Check className="w-5 h-5" />
-                    Get Started
-                  </>}
+                  <Check className="w-5 h-5" />
+                  Get Started
                 </button>
               </div>
             </div>
