@@ -1,11 +1,13 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
 
 import AppLayout from '@/components/layout/AppLayout';
 import DoctorShareView from '@/pages/DoctorShareView';
@@ -22,64 +24,80 @@ const pageVariants = {
   exit: { opacity: 0, x: -24 },
 };
 
+function wrap(key, Component) {
+  return (
+    <motion.div key={key} variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
+      <Component />
+    </motion.div>
+  );
+}
+
+// Guard: redirect un-onboarded users to /start, onboarded users away from /start
+function OnboardingGuard({ children }) {
+  const [status, setStatus] = useState('loading'); // 'loading' | 'onboarded' | 'new'
+  const location = useLocation();
+
+  useEffect(() => {
+    base44.auth.me()
+      .then(async (user) => {
+        if (!user?.onboarded) {
+          setStatus('new');
+          return;
+        }
+        // Also check if they have at least one Cycle
+        const cycles = await base44.entities.Cycle.filter({ created_by: user.email }, '-start_date', 1);
+        setStatus(cycles.length > 0 ? 'onboarded' : 'new');
+      })
+      .catch(() => setStatus('new'));
+  }, []);
+
+  if (status === 'loading') return null;
+
+  const isStartPage = location.pathname === '/start';
+
+  if (status === 'new' && !isStartPage) {
+    return <Navigate to="/start" replace />;
+  }
+  if (status === 'onboarded' && isStartPage) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
+
 const AnimatedOutlet = () => {
   const location = useLocation();
-  
+
   return (
     <AnimatePresence mode="wait" initial={false} key={location.pathname}>
       <Routes location={location}>
-        <Route element={<AppLayout />}>
-          <Route
-            path="/"
-            element={
-              <motion.div key="dashboard" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
-                <Dashboard />
-              </motion.div>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <motion.div key="dashboard2" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
-                <Dashboard />
-              </motion.div>
-            }
-          />
-          <Route
-            path="/log"
-            element={
-              <motion.div key="log" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
-                <DailyLog />
-              </motion.div>
-            }
-          />
-          <Route
-            path="/insights"
-            element={
-              <motion.div key="insights" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
-                <Insights />
-              </motion.div>
-            }
-          />
-          <Route
-            path="/resources"
-            element={
-              <motion.div key="resources" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
-                <Resources />
-              </motion.div>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <motion.div key="profile" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
-                <Profile />
-              </motion.div>
-            }
-          />
-        </Route>
-        <Route path="/onboarding" element={<Onboarding />} />
+        {/* Public share view — no guard needed */}
         <Route path="/share/:token" element={<DoctorShareView />} />
+
+        {/* Onboarding — accessible at /start only */}
+        <Route
+          path="/start"
+          element={
+            <OnboardingGuard>
+              <Onboarding />
+            </OnboardingGuard>
+          }
+        />
+
+        {/* Redirect legacy /onboarding to /start */}
+        <Route path="/onboarding" element={<Navigate to="/start" replace />} />
+
+        {/* Main app — guarded */}
+        <Route element={<OnboardingGuard><AppLayout /></OnboardingGuard>}>
+          <Route path="/" element={wrap("dashboard", Dashboard)} />
+          <Route path="/log" element={wrap("log", DailyLog)} />
+          <Route path="/insights" element={wrap("insights", Insights)} />
+          <Route path="/resources" element={wrap("resources", Resources)} />
+          <Route path="/profile" element={wrap("profile", Profile)} />
+        </Route>
+
+        {/* Redirect /dashboard → / */}
+        <Route path="/dashboard" element={<Navigate to="/" replace />} />
+
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </AnimatePresence>

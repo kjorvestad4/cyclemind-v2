@@ -110,7 +110,7 @@ export default function Onboarding() {
               selectedMode={selectedMode}
               onSelect={setSelectedMode}
               onNext={handleNext}
-              onSkip={() => navigate("/dashboard")}
+              onSkip={() => navigate("/")}
             />
           )}
 
