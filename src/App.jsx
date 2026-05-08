@@ -26,10 +26,19 @@ const pageVariants = {
 
 const AnimatedOutlet = ({ needsOnboarding }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   
-  // If user needs onboarding and isn't on onboarding/share pages, show onboarding
+  // If user needs onboarding, redirect to /onboarding route (not overlay)
+  // BUT never redirect if already on /onboarding or /share
+  useEffect(() => {
+    if (needsOnboarding && !location.pathname.startsWith('/onboarding') && !location.pathname.startsWith('/share')) {
+      navigate('/onboarding', { replace: true });
+    }
+  }, [needsOnboarding, location.pathname]);
+
+  // While redirecting, render nothing to avoid flash
   if (needsOnboarding && !location.pathname.startsWith('/onboarding') && !location.pathname.startsWith('/share')) {
-    return <Onboarding />;
+    return null;
   }
   
   return (

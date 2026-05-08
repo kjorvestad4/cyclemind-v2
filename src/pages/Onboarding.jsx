@@ -178,7 +178,7 @@ export default function Onboarding() {
                   <Button
                     variant="outline"
                     onClick={async () => {
-                      try { await base44.auth.updateMe({ onboarded: true }); } catch (_) {}
+                      await base44.auth.updateMe({ onboarded: true });
                       window.location.href = '/log';
                     }}
                     className="h-11 rounded-2xl text-sm font-semibold"
@@ -188,7 +188,7 @@ export default function Onboarding() {
                   <Button
                     variant="outline"
                     onClick={async () => {
-                      try { await base44.auth.updateMe({ onboarded: true }); } catch (_) {}
+                      await base44.auth.updateMe({ onboarded: true });
                       window.location.href = '/';
                     }}
                     className="h-11 rounded-2xl text-sm font-semibold"
