@@ -11,8 +11,8 @@ export default function OnboardingStep4({
       <div className="space-y-3">
         <div className="text-7xl">🎉</div>
 
-        <p className="text-sm text-muted-foreground mt-2">
-          Your cycle tracking is ready. Let's get started.
+        <p className="text-lg font-semibold text-foreground mt-2">
+          Your cycle tracking is ready! Let's get started!
         </p>
       </div>
 
