@@ -38,13 +38,13 @@ function OnboardingGuard({ children }) {
 
   if (isLoadingAuth) return null;
 
-  // If unauthenticated, redirect to /start
+  // If unauthenticated, hard redirect to /start
   if (!isAuthenticated) {
     window.location.href = '/start';
     return null;
   }
 
-  // Otherwise, allow access to protected routes
+  // If authenticated, ALWAYS allow access (no onboarded/cycle checks)
   return children;
 }
 
