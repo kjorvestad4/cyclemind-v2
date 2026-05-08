@@ -155,16 +155,6 @@ export default function Onboarding() {
 
           {/* Footer buttons inside scrollable area */}
           <div className="space-y-2 mt-8 pt-4 border-t border-border/40">
-            {currentStep >= 1 && (
-              <Button
-                variant="ghost"
-                onClick={handleBack}
-                className="w-full gap-2"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                {currentStep === 1 ? "Sign Out" : "Back"}
-              </Button>
-            )}
             {currentStep >= 1 && currentStep < 3 && (
                <Button
                  onClick={handleNext}
