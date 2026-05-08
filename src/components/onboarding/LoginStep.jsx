@@ -183,7 +183,7 @@ export default function LoginStep({ onLoginSuccess }) {
       <p className="text-xs text-muted-foreground">
         Don't have an account?{" "}
         <button
-          onClick={() => base44.auth.redirectToSignup()}
+          onClick={() => base44.auth.redirectToLogin("/start")}
           className="text-primary hover:underline font-medium"
         >
           Sign up
