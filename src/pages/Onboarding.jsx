@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -23,6 +23,11 @@ export default function Onboarding() {
   const [reminderTime, setReminderTime] = useState("19:00");
   const [unitSystem, setUnitSystem] = useState("imperial");
   const [saving, setSaving] = useState(false);
+  const [isAuthed, setIsAuthed] = useState(null); // null = checking
+
+  useEffect(() => {
+    base44.auth.isAuthenticated().then(setIsAuthed);
+  }, []);
 
   const handleNext = () => {
     if (currentStep < 4) {
@@ -38,49 +43,54 @@ export default function Onboarding() {
 
   const handleComplete = async (destination = "log") => {
     setSaving(true);
-    try {
-      const today = format(new Date(), "yyyy-MM-dd");
-      const cyclePayload = {
-        cycle_type: selectedMode,
-        start_date: lmp || birthDate || today,
-        last_menstrual_period: lmp || null,
-        cycle_length: cycleLength || 28,
-      };
+    const today = format(new Date(), "yyyy-MM-dd");
+    const cyclePayload = {
+      cycle_type: selectedMode,
+      start_date: lmp || birthDate || today,
+      last_menstrual_period: lmp || null,
+      cycle_length: cycleLength || 28,
+    };
 
-      if (selectedMode === "pregnancy") {
-        cyclePayload.ovulation_date = ovulationDate || null;
-      }
-      if (selectedMode === "perimenopause" || selectedMode === "menopause") {
-        cyclePayload.hrt_type = hrtType || null;
-      }
-      if (selectedMode === "postpartum") {
-        cyclePayload.start_date = birthDate || today;
-      }
-
-      // STEP 1: Create Cycle record
-      const newCycle = await base44.entities.Cycle.create(cyclePayload);
-
-      // STEP 2: Mark user as onboarded — this MUST succeed before navigating
-      await base44.auth.updateMe({
-        onboarded: true,
-        active_cycle_id: newCycle.id,
-        notification_time: reminderTime,
-        unit_system: unitSystem,
-        ...(dateOfBirth ? { date_of_birth: dateOfBirth } : {}),
-      });
-
-      // STEP 3: Navigate immediately — no delay, no soft-nav
-      // The page reload means App.jsx will re-fetch user fresh from server
-      const targetUrl = destination === "log" ? "/log" : "/";
-      window.location.href = targetUrl;
-    } catch (error) {
-      console.error("[Onboarding] Error:", error);
-      toast.error("Setup failed — please try again");
-      setSaving(false);
+    if (selectedMode === "pregnancy") {
+      cyclePayload.ovulation_date = ovulationDate || null;
     }
+    if (selectedMode === "perimenopause" || selectedMode === "menopause") {
+      cyclePayload.hrt_type = hrtType || null;
+    }
+    if (selectedMode === "postpartum") {
+      cyclePayload.start_date = birthDate || today;
+    }
+
+    const newCycle = await base44.entities.Cycle.create(cyclePayload);
+
+    await base44.auth.updateMe({
+      onboarded: true,
+      active_cycle_id: newCycle.id,
+      notification_time: reminderTime,
+      unit_system: unitSystem,
+      ...(dateOfBirth ? { date_of_birth: dateOfBirth } : {}),
+    });
+
+    const targetUrl = destination === "log" ? "/log" : "/";
+    window.location.href = targetUrl;
   };
 
   const progress = (currentStep / 4) * 100;
+
+  // Not yet checked
+  if (isAuthed === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // Not authenticated — send to login
+  if (isAuthed === false) {
+    base44.auth.redirectToLogin(window.location.href);
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
