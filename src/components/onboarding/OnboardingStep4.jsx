@@ -10,9 +10,7 @@ export default function OnboardingStep4({
     <div className="flex flex-col items-center justify-center flex-1 space-y-8 text-center max-w-md mx-auto">
       <div className="space-y-3">
         <div className="text-7xl">🎉</div>
-        <h2 className="font-serif text-3xl font-semibold text-foreground">
-          Onboarding Complete!
-        </h2>
+
         <p className="text-sm text-muted-foreground mt-2">
           Your cycle tracking is ready. Let's get started.
         </p>
