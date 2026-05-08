@@ -40,10 +40,28 @@ function OnboardingGuard({ children }) {
   useEffect(() => {
     base44.auth.me()
       .then(async (user) => {
+        // Auto-complete onboarding on first login
         if (!user?.onboarded) {
-          setStatus('new');
+          try {
+            // Create default Cycle if none exists
+            const cycles = await base44.entities.Cycle.filter({ created_by: user.email }, '-start_date', 1);
+            if (cycles.length === 0) {
+              const today = new Date().toISOString().split('T')[0];
+              await base44.entities.Cycle.create({
+                cycle_type: 'menstrual',
+                cycle_length: 28,
+                start_date: today,
+              });
+            }
+            // Mark user as onboarded
+            await base44.auth.updateMe({ onboarded: true });
+          } catch (e) {
+            console.error('Auto-onboarding error:', e);
+          }
+          setStatus('onboarded');
           return;
         }
+        
         // Also check if they have at least one Cycle
         const cycles = await base44.entities.Cycle.filter({ created_by: user.email }, '-start_date', 1);
         setStatus(cycles.length > 0 ? 'onboarded' : 'new');
