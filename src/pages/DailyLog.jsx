@@ -274,6 +274,7 @@ export default function DailyLog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["entries"] });
+      queryClient.invalidateQueries({ queryKey: ["cycles"] });
       setHasUnsavedChanges(false);
       toast.success("Entry saved! 💜");
     },
@@ -287,6 +288,7 @@ export default function DailyLog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["entries"] });
+      queryClient.invalidateQueries({ queryKey: ["cycles"] });
       setHasUnsavedChanges(false);
       toast.success("Saved! See you tomorrow 🌙");
       setSelectedDate(format(addDays(parseLocalDate(selectedDate), 1), "yyyy-MM-dd"));

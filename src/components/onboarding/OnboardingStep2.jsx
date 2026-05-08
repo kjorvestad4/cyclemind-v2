@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState, useMemo } from "react";
 import { format, subYears, addDays } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +18,8 @@ export default function OnboardingStep2({
   setHrtType,
   dateOfBirth,
   setDateOfBirth,
+  fullName,
+  setFullName,
   onNext,
 }) {
   const [dobText, setDobText] = useState(
@@ -165,6 +167,20 @@ export default function OnboardingStep2({
             </p>
           </div>
         )}
+
+        {/* Full Name — shared across all modes */}
+        <div className="space-y-2 pt-2 border-t border-border/40">
+          <Label className="text-sm font-semibold">
+            👤 Full Name <span className="text-muted-foreground font-normal">(optional)</span>
+          </Label>
+          <Input
+            type="text"
+            placeholder="Your name"
+            className="h-10 text-base"
+            value={fullName || ""}
+            onChange={(e) => setFullName(e.target.value)}
+          />
+        </div>
 
         {/* Date of Birth — shared across all modes */}
         <div className="space-y-2 pt-2 border-t border-border/40">

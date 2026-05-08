@@ -20,6 +20,7 @@ export default function Onboarding() {
   const [cycleLength, setCycleLength] = useState(28);
   const [hrtType, setHrtType] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [fullName, setFullName] = useState("");
   const [reminderTime, setReminderTime] = useState("19:00");
   const [unitSystem, setUnitSystem] = useState("imperial");
   const [saving, setSaving] = useState(false);
@@ -61,6 +62,7 @@ export default function Onboarding() {
           notification_time: reminderTime,
           unit_system: unitSystem,
           ...(dateOfBirth ? { date_of_birth: dateOfBirth } : {}),
+          ...(fullName ? { full_name: fullName } : {}),
         });
       } catch (_) {}
     } catch (_) {}
@@ -106,6 +108,8 @@ export default function Onboarding() {
               setHrtType={setHrtType}
               dateOfBirth={dateOfBirth}
               setDateOfBirth={setDateOfBirth}
+              fullName={fullName}
+              setFullName={setFullName}
               onNext={handleNext}
             />
           )}

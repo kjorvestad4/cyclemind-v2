@@ -297,7 +297,8 @@ export default function Profile() {
   const [notifMode, setNotifMode] = useState(true);
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
   const [dateOfBirth, setDateOfBirth] = useState("");
-  const [savingDob, setSavingDob] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then((u) => {
@@ -305,15 +306,19 @@ export default function Profile() {
       if (u?.cycle_length) setCycleLength(u.cycle_length);
       if (u?.ovulation_day) setOvulationDay(u.ovulation_day);
       if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
+      if (u?.full_name) setFullName(u.full_name);
     }).catch(() => {});
   }, []);
 
-  const saveDob = async () => {
-    setSavingDob(true);
-    await base44.auth.updateMe({ date_of_birth: dateOfBirth || null });
-    setUser((prev) => ({ ...prev, date_of_birth: dateOfBirth }));
-    toast.success("Date of birth saved!");
-    setSavingDob(false);
+  const saveProfile = async () => {
+    setSavingProfile(true);
+    await base44.auth.updateMe({ 
+      date_of_birth: dateOfBirth || null,
+      full_name: fullName || null,
+    });
+    setUser((prev) => ({ ...prev, date_of_birth: dateOfBirth, full_name: fullName }));
+    toast.success("Profile saved!");
+    setSavingProfile(false);
   };
 
   const { data: cycles = [] } = useQuery({
@@ -416,36 +421,40 @@ export default function Profile() {
       {/* ── Personal Information ── */}
       <Section title="Personal Information" icon={User}>
         <div className="space-y-3">
-          <div>
-            <p className="text-xs font-medium text-muted-foreground mb-1">Full Name</p>
-            <p className="text-sm font-medium text-foreground">{user?.full_name || "—"}</p>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold">👤 Full Name</Label>
+            <Input
+              type="text"
+              placeholder="Your name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="h-9 text-sm"
+            />
           </div>
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-1">Email</p>
             <p className="text-sm font-medium text-foreground">{user?.email || "—"}</p>
           </div>
-          <div className="pt-2 border-t border-border/40">
+          <div className="space-y-1.5">
             <Label className="text-xs font-semibold">
-              🎂 Date of Birth <span className="text-muted-foreground font-normal">(helps us give better insights)</span>
+              🎂 Date of Birth <span className="text-muted-foreground font-normal">(optional)</span>
             </Label>
-            <div className="flex items-center gap-2 mt-1.5">
-              <Input
-                type="date"
-                max={format(new Date(), "yyyy-MM-dd")}
-                value={dateOfBirth || ""}
-                onChange={(e) => setDateOfBirth(e.target.value)}
-                className="h-9 text-sm flex-1"
-              />
-              <Button size="sm" variant="outline" onClick={saveDob} disabled={savingDob} className="shrink-0">
-                {savingDob ? "Saving…" : "Save"}
-              </Button>
-            </div>
+            <Input
+              type="date"
+              max={format(new Date(), "yyyy-MM-dd")}
+              value={dateOfBirth || ""}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              className="h-9 text-sm"
+            />
             {dateOfBirth && (
-              <p className="text-xs text-muted-foreground mt-1.5">
+              <p className="text-xs text-muted-foreground">
                 Age: {differenceInYears(new Date(), new Date(dateOfBirth))} years
               </p>
             )}
           </div>
+          <Button onClick={saveProfile} disabled={savingProfile} className="w-full h-10 rounded-xl font-semibold">
+            {savingProfile ? "Saving…" : "Save Profile"}
+          </Button>
         </div>
       </Section>
 
