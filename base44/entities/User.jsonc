@@ -37,6 +37,12 @@
       ],
       "default": "imperial",
       "description": "Preferred unit system (imperial or metric)"
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date",
+      "description": "User's date of birth (YYYY-MM-DD)"
     }
-  }
+  },
+  "required": []
 }

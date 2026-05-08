@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, differenceInDays } from "date-fns";
+import { format, differenceInDays, differenceInYears } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -296,14 +296,25 @@ export default function Profile() {
   const [notifDaily, setNotifDaily] = useState(true);
   const [notifMode, setNotifMode] = useState(true);
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [savingDob, setSavingDob] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then((u) => {
       setUser(u);
       if (u?.cycle_length) setCycleLength(u.cycle_length);
       if (u?.ovulation_day) setOvulationDay(u.ovulation_day);
+      if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
     }).catch(() => {});
   }, []);
+
+  const saveDob = async () => {
+    setSavingDob(true);
+    await base44.auth.updateMe({ date_of_birth: dateOfBirth || null });
+    setUser((prev) => ({ ...prev, date_of_birth: dateOfBirth }));
+    toast.success("Date of birth saved!");
+    setSavingDob(false);
+  };
 
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],
@@ -401,6 +412,42 @@ export default function Profile() {
         saveSettingsMutation={saveSettingsMutation}
         onEditClick={(mode) => setEditMode(mode)}
       />
+
+      {/* ── Personal Information ── */}
+      <Section title="Personal Information" icon={User}>
+        <div className="space-y-3">
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-1">Full Name</p>
+            <p className="text-sm font-medium text-foreground">{user?.full_name || "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-1">Email</p>
+            <p className="text-sm font-medium text-foreground">{user?.email || "—"}</p>
+          </div>
+          <div className="pt-2 border-t border-border/40">
+            <Label className="text-xs font-semibold">
+              🎂 Date of Birth <span className="text-muted-foreground font-normal">(helps us give better insights)</span>
+            </Label>
+            <div className="flex items-center gap-2 mt-1.5">
+              <Input
+                type="date"
+                max={format(new Date(), "yyyy-MM-dd")}
+                value={dateOfBirth || ""}
+                onChange={(e) => setDateOfBirth(e.target.value)}
+                className="h-9 text-sm flex-1"
+              />
+              <Button size="sm" variant="outline" onClick={saveDob} disabled={savingDob} className="shrink-0">
+                {savingDob ? "Saving…" : "Save"}
+              </Button>
+            </div>
+            {dateOfBirth && (
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Age: {differenceInYears(new Date(), new Date(dateOfBirth))} years
+              </p>
+            )}
+          </div>
+        </div>
+      </Section>
 
       {/* ── Quick Actions ── */}
       <Section title="Quick Actions" icon={Settings}>

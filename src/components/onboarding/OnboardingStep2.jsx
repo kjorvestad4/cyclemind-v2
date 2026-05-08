@@ -16,6 +16,8 @@ export default function OnboardingStep2({
   setCycleLength,
   hrtType,
   setHrtType,
+  dateOfBirth,
+  setDateOfBirth,
   onNext,
 }) {
   // Live pregnancy calculations
@@ -159,6 +161,24 @@ export default function OnboardingStep2({
             </p>
           </div>
         )}
+
+        {/* Date of Birth — shared across all modes */}
+        <div className="space-y-2 pt-2 border-t border-border/40">
+          <Label className="text-sm font-semibold">
+            🎂 Date of Birth <span className="text-muted-foreground font-normal">(helps us give better insights)</span>
+          </Label>
+          <Input
+            type="date"
+            max={format(new Date(), "yyyy-MM-dd")}
+            min={format(subYears(new Date(), 100), "yyyy-MM-dd")}
+            value={dateOfBirth || ""}
+            onChange={(e) => setDateOfBirth(e.target.value)}
+            className="h-10 text-base"
+          />
+          <p className="text-xs text-muted-foreground italic">
+            Optional — used to calculate your age and show age-appropriate tips
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -19,6 +19,7 @@ export default function Onboarding() {
   const [birthDate, setBirthDate] = useState("");
   const [cycleLength, setCycleLength] = useState(28);
   const [hrtType, setHrtType] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [reminderTime, setReminderTime] = useState("19:00");
   const [unitSystem, setUnitSystem] = useState("imperial");
   const [saving, setSaving] = useState(false);
@@ -67,6 +68,7 @@ export default function Onboarding() {
         active_cycle_id: newCycle.id,
         notification_time: reminderTime,
         unit_system: unitSystem,
+        ...(dateOfBirth ? { date_of_birth: dateOfBirth } : {}),
       });
       console.log("[Onboarding] User profile updated, onboarded=true");
 
@@ -125,6 +127,8 @@ export default function Onboarding() {
               setCycleLength={setCycleLength}
               hrtType={hrtType}
               setHrtType={setHrtType}
+              dateOfBirth={dateOfBirth}
+              setDateOfBirth={setDateOfBirth}
               onNext={handleNext}
             />
           )}

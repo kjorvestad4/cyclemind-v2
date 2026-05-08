@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileDown, Loader2 } from "lucide-react";
-import { format, differenceInDays } from "date-fns";
+import { format, differenceInDays, differenceInYears } from "date-fns";
 import { jsPDF } from "jspdf";
 import { ALL_SYMPTOMS, SYMPTOM_CATEGORIES, calculateDayTotal } from "@/lib/symptoms";
 import { toast } from "sonner";
@@ -46,9 +46,10 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
       doc.setFontSize(11);
       doc.setFont("helvetica", "normal");
       doc.text("DRSP Clinical Symptom Report", margin, 27);
+      const age = user?.date_of_birth ? differenceInYears(new Date(), new Date(user.date_of_birth)) : null;
       doc.setFontSize(8);
       doc.setTextColor(210, 200, 255);
-      doc.text(`Prepared: ${format(new Date(), "MMMM d, yyyy")}`, margin, 34);
+      doc.text(`Prepared: ${format(new Date(), "MMMM d, yyyy")}${age ? `  |  Age: ${age}` : ""}`, margin, 34);
       doc.text("De-identified — for clinical discussion only", pageW - margin, 34, { align: "right" });
       y = 52;
       addRunningHeader();
