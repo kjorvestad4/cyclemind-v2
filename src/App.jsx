@@ -39,15 +39,12 @@ function OnboardingGuard({ children }) {
   if (isLoadingAuth) return null;
 
   if (!user || !user.id) {
-    // Not logged in
     window.location.href = '/start';
     return null;
   }
 
-  // If the user is logged in at all → ALWAYS show the dashboard
-  // Ignore onboarded flag and active Cycle for now
+  // User is logged in — ALWAYS go to dashboard
   window.location.href = '/dashboard';
-  return null;
 }
 
 const AnimatedOutlet = () => {
