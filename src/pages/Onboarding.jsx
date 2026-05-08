@@ -38,7 +38,7 @@ export default function Onboarding() {
 
   const handleComplete = async (destination = "log") => {
     setSaving(true);
-    const targetUrl = destination === "log" ? "/log" : "/";
+    const targetUrl = destination === "log" ? "/log" : "/dashboard";
     try {
       const today = format(new Date(), "yyyy-MM-dd");
       const cyclePayload = {
@@ -87,7 +87,7 @@ export default function Onboarding() {
               selectedMode={selectedMode}
               onSelect={setSelectedMode}
               onNext={handleNext}
-              onSkip={() => navigate("/")}
+              onSkip={() => navigate("/dashboard")}
             />
           )}
 
@@ -171,7 +171,7 @@ export default function Onboarding() {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => { window.location.href = '/'; }}
+                    onClick={() => { window.location.href = '/dashboard'; }}
                     className="h-11 rounded-2xl text-sm font-semibold"
                   >
                     🏠 Exit to App
