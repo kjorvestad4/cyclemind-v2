@@ -16,7 +16,7 @@ export default function OnboardingStep1({ selectedMode, onSelect, onNext, onSkip
         <h1 className="font-serif text-3xl font-semibold text-foreground">
           Welcome to CycleMind
         </h1>
-        <p className="text-sm text-muted-foreground leading-relaxed">The app 
+        <p className="text-sm text-muted-foreground leading-relaxed">The app that supports your full hormonal journey from PMDD to pregnancy to menopause for those cycl
 
         </p>
       </div>
