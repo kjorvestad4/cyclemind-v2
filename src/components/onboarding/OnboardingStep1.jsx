@@ -11,7 +11,7 @@ const MODES = [
 
 export default function OnboardingStep1({ selectedMode, onSelect, onNext, onSkip }) {
   return (
-    <div className="flex flex-col items-center justify-center flex-1 space-y-8 text-center max-w-md mx-auto pb-32">
+    <div className="flex flex-col items-center space-y-8 text-center max-w-md mx-auto w-full">
       <div className="space-y-3">
         <h1 className="font-serif text-3xl font-semibold text-foreground">
           Welcome to CycleMind
