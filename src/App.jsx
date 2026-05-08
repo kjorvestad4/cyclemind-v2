@@ -1,13 +1,11 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { AnimatePresence, motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
 
 import AppLayout from '@/components/layout/AppLayout';
 import DoctorShareView from '@/pages/DoctorShareView';
@@ -24,23 +22,8 @@ const pageVariants = {
   exit: { opacity: 0, x: -24 },
 };
 
-const AnimatedOutlet = ({ needsOnboarding }) => {
+const AnimatedOutlet = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-
-  const isExempt = location.pathname.startsWith('/onboarding') || 
-                   location.pathname.startsWith('/share') || 
-                   location.pathname.startsWith('/dashboard');
-  
-  useEffect(() => {
-    if (needsOnboarding && !isExempt) {
-      navigate('/onboarding', { replace: true });
-    }
-  }, [needsOnboarding, location.pathname]);
-
-  if (needsOnboarding && !isExempt) {
-    return null;
-  }
   
   return (
     <AnimatePresence mode="wait" initial={false} key={location.pathname}>
@@ -104,25 +87,9 @@ const AnimatedOutlet = ({ needsOnboarding }) => {
 };
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin, user } = useAuth();
-  const location = useLocation();
-  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
-  const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Check if user needs onboarding on mount and when user changes
-  useEffect(() => {
-    const checkOnboardingStatus = () => {
-      // Only force onboarding if the flag is explicitly set to false
-      // undefined = new user who hasn't been onboarded yet but shouldn't be blocked
-      // !user = auth error will handle it separately
-      setNeedsOnboarding(!!user && user.onboarded === false);
-      setCheckingOnboarding(false);
-    };
-
-    checkOnboardingStatus();
-  }, [user]);
-
-  if (isLoadingPublicSettings || isLoadingAuth || checkingOnboarding) {
+  if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="text-center space-y-3">
@@ -142,7 +109,7 @@ const AuthenticatedApp = () => {
     }
   }
 
-  return <AnimatedOutlet needsOnboarding={needsOnboarding} />;
+  return <AnimatedOutlet />;
 };
 
 function App() {
