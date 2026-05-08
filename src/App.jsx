@@ -77,7 +77,7 @@ function OnboardingGuard({ children }) {
     return <Navigate to="/start" replace />;
   }
   if (status === 'onboarded' && isStartPage) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
   return children;
 }
