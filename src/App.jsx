@@ -92,14 +92,7 @@ const AnimatedOutlet = () => {
         <Route path="/share/:token" element={<DoctorShareView />} />
 
         {/* Onboarding — accessible at /start only */}
-        <Route
-          path="/start"
-          element={
-            <OnboardingGuard>
-              <Onboarding />
-            </OnboardingGuard>
-          }
-        />
+        <Route path="/start" element={<Onboarding />} />
 
         {/* Redirect legacy /onboarding to /start */}
         <Route path="/onboarding" element={<Navigate to="/start" replace />} />
