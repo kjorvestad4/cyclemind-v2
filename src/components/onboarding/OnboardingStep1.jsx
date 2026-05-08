@@ -32,8 +32,6 @@ export default function OnboardingStep1({ selectedMode, onSelect, onNext, onSkip
               className={`w-full rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
                 isSelected
                   ? "border-primary bg-primary/10"
-                  : isHighlighted
-                  ? "border-pink-300 bg-pink-50 dark:border-pink-700 dark:bg-pink-950/20 hover:border-pink-400"
                   : "border-border/60 hover:border-border hover:bg-muted/30"
               }`}
             >
