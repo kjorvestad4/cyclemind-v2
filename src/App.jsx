@@ -27,17 +27,18 @@ const pageVariants = {
 const AnimatedOutlet = ({ needsOnboarding }) => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const isExempt = location.pathname.startsWith('/onboarding') || 
+                   location.pathname.startsWith('/share') || 
+                   location.pathname.startsWith('/dashboard');
   
-  // If user needs onboarding, redirect to /onboarding route (not overlay)
-  // BUT never redirect if already on /onboarding or /share
   useEffect(() => {
-    if (needsOnboarding && !location.pathname.startsWith('/onboarding') && !location.pathname.startsWith('/share')) {
+    if (needsOnboarding && !isExempt) {
       navigate('/onboarding', { replace: true });
     }
   }, [needsOnboarding, location.pathname]);
 
-  // While redirecting, render nothing to avoid flash
-  if (needsOnboarding && !location.pathname.startsWith('/onboarding') && !location.pathname.startsWith('/share')) {
+  if (needsOnboarding && !isExempt) {
     return null;
   }
   
@@ -49,6 +50,14 @@ const AnimatedOutlet = ({ needsOnboarding }) => {
             path="/"
             element={
               <motion.div key="dashboard" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
+                <Dashboard />
+              </motion.div>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <motion.div key="dashboard2" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.18, ease: "easeInOut" }}>
                 <Dashboard />
               </motion.div>
             }
@@ -103,15 +112,10 @@ const AuthenticatedApp = () => {
   // Check if user needs onboarding on mount and when user changes
   useEffect(() => {
     const checkOnboardingStatus = () => {
-      if (!user) {
-        setNeedsOnboarding(true);
-        setCheckingOnboarding(false);
-        return;
-      }
-
-      // Only block if explicitly false — undefined means flag not set yet, allow through
-      const isOnboarded = user.onboarded !== false;
-      setNeedsOnboarding(!isOnboarded);
+      // Only force onboarding if the flag is explicitly set to false
+      // undefined = new user who hasn't been onboarded yet but shouldn't be blocked
+      // !user = auth error will handle it separately
+      setNeedsOnboarding(!!user && user.onboarded === false);
       setCheckingOnboarding(false);
     };
 
