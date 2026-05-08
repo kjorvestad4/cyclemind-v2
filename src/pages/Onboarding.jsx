@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { ChevronLeft, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import LoginStep from "@/components/onboarding/LoginStep";
 import OnboardingStep1 from "@/components/onboarding/OnboardingStep1";
 import OnboardingStep2 from "@/components/onboarding/OnboardingStep2";
 import OnboardingStep3 from "@/components/onboarding/OnboardingStep3";
@@ -12,7 +13,7 @@ import OnboardingStep4 from "@/components/onboarding/OnboardingStep4";
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
   const [selectedMode, setSelectedMode] = useState("menstrual");
   const [lmp, setLmp] = useState("");
   const [ovulationDate, setOvulationDate] = useState("");
@@ -26,7 +27,7 @@ export default function Onboarding() {
   const [saving, setSaving] = useState(false);
 
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -90,7 +91,7 @@ export default function Onboarding() {
     window.location.href = targetUrl;
   };
 
-  const progress = (currentStep / 4) * 100;
+  const progress = (currentStep / 5) * 100;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -105,6 +106,12 @@ export default function Onboarding() {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto p-5 pb-8 flex flex-col max-w-lg mx-auto w-full">
+          {currentStep === 0 && (
+            <LoginStep
+              onLoginSuccess={handleNext}
+            />
+          )}
+
           {currentStep === 1 && (
             <OnboardingStep1
               selectedMode={selectedMode}
@@ -165,15 +172,15 @@ export default function Onboarding() {
                 Back
               </Button>
             )}
-            {currentStep < 4 && (
-              <Button
-                onClick={handleNext}
-                className="w-full h-12 rounded-2xl font-semibold text-base"
-              >
-                Continue
-              </Button>
-            )}
-            {currentStep === 4 && (
+            {currentStep > 0 && currentStep < 5 && (
+               <Button
+                 onClick={handleNext}
+                 className="w-full h-12 rounded-2xl font-semibold text-base"
+               >
+                 Continue
+               </Button>
+             )}
+            {currentStep === 5 && (
               <>
                 <Button
                   onClick={() => handleComplete("dashboard")}
