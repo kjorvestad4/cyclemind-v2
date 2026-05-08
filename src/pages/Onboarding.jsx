@@ -13,7 +13,7 @@ import OnboardingStep4 from "@/components/onboarding/OnboardingStep4";
 export default function Onboarding() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedMode, setSelectedMode] = useState("pregnancy");
+  const [selectedMode, setSelectedMode] = useState("menstrual");
   const [lmp, setLmp] = useState("");
   const [ovulationDate, setOvulationDate] = useState("");
   const [birthDate, setBirthDate] = useState("");
