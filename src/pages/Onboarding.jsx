@@ -113,7 +113,7 @@ export default function Onboarding() {
               onSelect={setSelectedMode}
               onNext={handleNext}
               onSkip={() => navigate("/")}
-              onSignIn={() => base44.auth.redirectToLogin("/start")}
+              onSignIn={() => base44.auth.redirectToLogin("/")}
             />
           )}
 
