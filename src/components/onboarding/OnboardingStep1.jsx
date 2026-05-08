@@ -9,17 +9,23 @@ const MODES = [
 { id: "menopause", emoji: "🔥", label: "Menopause", description: "Manage your menopause" }];
 
 
-export default function OnboardingStep1({ selectedMode, onSelect, onNext, onSkip }) {
+export default function OnboardingStep1({ selectedMode, onSelect, onNext, onSkip, onSignIn }) {
   return (
     <div className="flex flex-col items-center space-y-8 text-center max-w-md mx-auto w-full">
       <div className="space-y-3">
-        <h1 className="font-serif text-3xl font-semibold text-foreground">
-          Welcome to CycleMind
-        </h1>
-        <p className="text-sm text-muted-foreground leading-relaxed">The app that supports your full hormonal journey from PMDD to pregnancy to menopause.
-
-        </p>
-      </div>
+         <h1 className="font-serif text-3xl font-semibold text-foreground">
+           Welcome to CycleMind
+         </h1>
+         <p className="text-sm text-muted-foreground leading-relaxed">The app that supports your full hormonal journey from PMDD to pregnancy to menopause.</p>
+         {onSignIn && (
+           <p className="text-xs text-muted-foreground">
+             Returning user?{" "}
+             <button onClick={onSignIn} className="text-primary hover:underline font-semibold">
+               Sign in here
+             </button>
+           </p>
+         )}
+       </div>
 
       <div className="w-full space-y-2">
         {MODES.map((mode) => {
