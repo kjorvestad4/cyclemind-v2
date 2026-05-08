@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { format, subYears, addDays } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,10 @@ export default function OnboardingStep2({
   setDateOfBirth,
   onNext,
 }) {
+  const [dobText, setDobText] = useState(
+    dateOfBirth ? (() => { const [y,m,d] = dateOfBirth.split("-"); return `${m}/${d}/${y}`; })() : ""
+  );
+
   // Live pregnancy calculations
   const pregnancyCalcs = useMemo(() => {
     if (selectedMode !== "pregnancy") return null;
@@ -172,18 +176,17 @@ export default function OnboardingStep2({
             placeholder="MM/DD/YYYY"
             maxLength={10}
             className="h-10 text-base"
-            value={dateOfBirth ? format(new Date(dateOfBirth + "T00:00:00"), "MM/dd/yyyy") : ""}
+            value={dobText}
             onChange={(e) => {
-              const val = e.target.value.replace(/[^\d/]/g, "");
-              let formatted = val.replace(/\//g, "");
-              if (formatted.length > 2) formatted = formatted.slice(0,2) + "/" + formatted.slice(2);
-              if (formatted.length > 5) formatted = formatted.slice(0,5) + "/" + formatted.slice(5,9);
-              e.target.value = formatted;
-              const parts = formatted.split("/");
+              let val = e.target.value.replace(/[^\d]/g, "");
+              if (val.length > 2) val = val.slice(0,2) + "/" + val.slice(2);
+              if (val.length > 5) val = val.slice(0,5) + "/" + val.slice(5,9);
+              setDobText(val);
+              const parts = val.split("/");
               if (parts.length === 3 && parts[2].length === 4) {
                 const d = new Date(`${parts[2]}-${parts[0].padStart(2,"0")}-${parts[1].padStart(2,"0")}`);
                 if (!isNaN(d)) setDateOfBirth(format(d, "yyyy-MM-dd"));
-              } else if (formatted === "") {
+              } else if (val === "") {
                 setDateOfBirth("");
               }
             }}
