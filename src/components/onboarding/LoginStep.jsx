@@ -51,39 +51,13 @@ export default function LoginStep({ onLoginSuccess }) {
   };
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
-    setError("");
-    
     try {
       // Redirect to Google login via Base44 SDK
-      await base44.auth.loginWithGoogle();
-      
-      // After Google login returns, check onboarded status
-      const user = await base44.auth.me();
-      
-      if (user?.onboarded) {
-        const cycles = await base44.entities.Cycle.filter(
-          { created_by: user.email },
-          "-start_date",
-          1
-        );
-        
-        if (cycles.length > 0) {
-          // User is fully onboarded with a cycle → go to main Dashboard
-          window.location.href = "/";
-          return;
-        }
-      }
-      
-      // User is not onboarded or has no cycle → proceed to onboarding flow
-      toast.success("Logged in! Let's set up your account.");
-      onLoginSuccess();
+      base44.auth.redirectToLogin();
     } catch (err) {
       console.error("Google login error:", err);
       setError("Google login failed. Please try again.");
       toast.error("Google login failed. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
