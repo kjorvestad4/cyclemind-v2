@@ -440,17 +440,18 @@ export default function Profile() {
               🎂 Date of Birth <span className="text-muted-foreground font-normal">(optional)</span>
             </Label>
             <Input
-              type="date"
-              max={format(new Date(), "yyyy-MM-dd")}
+              type="text"
+              placeholder="YYYY-MM-DD"
               value={dateOfBirth || ""}
               onChange={(e) => setDateOfBirth(e.target.value)}
               className="h-9 text-sm"
             />
-            {dateOfBirth && (
-              <p className="text-xs text-muted-foreground">
-                Age: {differenceInYears(new Date(), new Date(dateOfBirth))} years
-              </p>
-            )}
+            {dateOfBirth && (() => {
+              const age = differenceInYears(new Date(), new Date(dateOfBirth));
+              return !isNaN(age) && age >= 0 ? (
+                <p className="text-xs text-muted-foreground">Age: {age} years</p>
+              ) : null;
+            })()}
           </div>
           <Button onClick={saveProfile} disabled={savingProfile} className="w-full h-10 rounded-xl font-semibold">
             {savingProfile ? "Saving…" : "Save Profile"}

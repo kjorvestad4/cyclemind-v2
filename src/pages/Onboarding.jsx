@@ -39,33 +39,33 @@ export default function Onboarding() {
 
   const handleComplete = async (destination = "log") => {
     setSaving(true);
-    const targetUrl = destination === "log" ? "/log" : "/dashboard";
-    try {
-      const today = format(new Date(), "yyyy-MM-dd");
-      const cyclePayload = {
-        cycle_type: selectedMode,
-        start_date: lmp || birthDate || today,
-        last_menstrual_period: lmp || null,
-        cycle_length: cycleLength || 28,
-      };
-      if (selectedMode === "pregnancy") cyclePayload.ovulation_date = ovulationDate || null;
-      if (selectedMode === "perimenopause" || selectedMode === "menopause") cyclePayload.hrt_type = hrtType || null;
-      if (selectedMode === "postpartum") cyclePayload.start_date = birthDate || today;
+    const targetUrl = destination === "log" ? "/log" : "/";
+    const today = format(new Date(), "yyyy-MM-dd");
 
-      let cycleId = null;
-      try { const c = await base44.entities.Cycle.create(cyclePayload); cycleId = c.id; } catch (_) {}
+    // 1. Create cycle
+    const cyclePayload = {
+      cycle_type: selectedMode,
+      start_date: lmp || birthDate || today,
+      last_menstrual_period: lmp || null,
+      cycle_length: cycleLength || 28,
+    };
+    if (selectedMode === "pregnancy") cyclePayload.ovulation_date = ovulationDate || null;
+    if (selectedMode === "perimenopause" || selectedMode === "menopause") cyclePayload.hrt_type = hrtType || null;
+    if (selectedMode === "postpartum") cyclePayload.start_date = birthDate || today;
 
-      try {
-        await base44.auth.updateMe({
-          onboarded: true,
-          ...(cycleId ? { active_cycle_id: cycleId } : {}),
-          notification_time: reminderTime,
-          unit_system: unitSystem,
-          ...(dateOfBirth ? { date_of_birth: dateOfBirth } : {}),
-          ...(fullName ? { full_name: fullName } : {}),
-        });
-      } catch (_) {}
-    } catch (_) {}
+    const cycle = await base44.entities.Cycle.create(cyclePayload);
+
+    // 2. Save user profile
+    await base44.auth.updateMe({
+      onboarded: true,
+      active_cycle_id: cycle.id,
+      notification_time: reminderTime,
+      unit_system: unitSystem,
+      date_of_birth: dateOfBirth || null,
+      full_name: fullName || null,
+    });
+
+    toast.success("Onboarding data saved successfully!");
     window.location.href = targetUrl;
   };
 
