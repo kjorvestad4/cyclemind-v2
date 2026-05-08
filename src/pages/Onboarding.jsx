@@ -145,8 +145,7 @@ export default function Onboarding() {
 
           {currentStep === 4 && (
             <OnboardingStep4
-              onLogToday={() => handleComplete("log")}
-              onSkipToDashboard={() => handleComplete("dashboard")}
+              onGetStarted={() => handleComplete("dashboard")}
               saving={saving}
             />
           )}
@@ -172,19 +171,16 @@ export default function Onboarding() {
                </Button>
              )}
             {currentStep === 5 && (
-              <>
-                <Button
-                  onClick={() => handleComplete("dashboard")}
-                  disabled={saving}
-                  className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
-                >
-                  {saving ? "Setting up..." : <>
-                    <Check className="w-5 h-5" />
-                    Get Started
-                  </>}
-                </Button>
-
-              </>
+              <Button
+                onClick={() => handleComplete("dashboard")}
+                disabled={saving}
+                className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
+              >
+                {saving ? "Setting up..." : <>
+                  <Check className="w-5 h-5" />
+                  Get Started
+                </>}
+              </Button>
             )}
           </div>
         </div>

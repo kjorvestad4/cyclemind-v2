@@ -1,9 +1,8 @@
-import { Loader2 } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function OnboardingStep4({
-  onLogToday,
-  onSkipToDashboard,
+  onGetStarted,
   saving,
 }) {
   return (
@@ -25,30 +24,23 @@ export default function OnboardingStep4({
         </ul>
       </div>
 
-      <div className="w-full space-y-3">
-        <Button
-          onClick={onLogToday}
-          disabled={saving}
-          className="w-full h-12 rounded-2xl font-semibold text-base"
-        >
-          {saving ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin mr-2" />
-              Setting up...
-            </>
-          ) : (
-            "Log Today"
-          )}
-        </Button>
-        <Button
-          onClick={onSkipToDashboard}
-          disabled={saving}
-          variant="outline"
-          className="w-full h-12 rounded-2xl font-semibold text-base"
-        >
-          Go to Dashboard
-        </Button>
-      </div>
+      <Button
+        onClick={onGetStarted}
+        disabled={saving}
+        className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
+      >
+        {saving ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Setting up...
+          </>
+        ) : (
+          <>
+            <Check className="w-5 h-5" />
+            Get Started
+          </>
+        )}
+      </Button>
     </div>
   );
 }
