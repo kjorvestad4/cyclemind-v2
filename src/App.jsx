@@ -32,40 +32,25 @@ function wrap(key, Component) {
   );
 }
 
-// Guard: Allow authenticated users to /dashboard; redirect unauthenticated to /start
+// Guard: Protect /dashboard and app routes — require valid session
 function OnboardingGuard({ children }) {
   const [status, setStatus] = useState('loading'); // 'loading' | 'authenticated' | 'unauthenticated'
-  const location = useLocation();
 
   useEffect(() => {
     base44.auth.me()
-      .then(() => {
-        // User is authenticated (logged in)
-        setStatus('authenticated');
-      })
-      .catch(() => {
-        // User is not authenticated
-        setStatus('unauthenticated');
-      });
+      .then(() => setStatus('authenticated'))
+      .catch(() => setStatus('unauthenticated'));
   }, []);
 
   if (status === 'loading') return null;
 
-  const isStartPage = location.pathname === '/start';
-
-  // If unauthenticated and NOT on /start, redirect to /start
-  if (status === 'unauthenticated' && !isStartPage) {
+  // If unauthenticated, redirect to /start
+  if (status === 'unauthenticated') {
     window.location.href = '/start';
     return null;
   }
 
-  // If authenticated and on /start, redirect to /dashboard
-  if (status === 'authenticated' && isStartPage) {
-    window.location.href = '/dashboard';
-    return null;
-  }
-
-  // Otherwise, allow access
+  // Otherwise, allow access to protected routes
   return children;
 }
 
