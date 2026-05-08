@@ -89,14 +89,12 @@ const AnimatedOutlet = () => {
         {/* Main app — guarded */}
         <Route element={<OnboardingGuard><AppLayout /></OnboardingGuard>}>
           <Route path="/" element={wrap("dashboard", Dashboard)} />
+          <Route path="/dashboard" element={wrap("dashboard", Dashboard)} />
           <Route path="/log" element={wrap("log", DailyLog)} />
           <Route path="/insights" element={wrap("insights", Insights)} />
           <Route path="/resources" element={wrap("resources", Resources)} />
           <Route path="/profile" element={wrap("profile", Profile)} />
         </Route>
-
-        {/* Redirect /dashboard → / */}
-        <Route path="/dashboard" element={<Navigate to="/" replace />} />
 
         <Route path="*" element={<PageNotFound />} />
       </Routes>
