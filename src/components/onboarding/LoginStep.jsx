@@ -51,13 +51,17 @@ export default function LoginStep({ onLoginSuccess }) {
   };
 
   const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError("");
+    
     try {
       // Redirect to Google login via Base44 SDK
-      base44.auth.redirectToLogin();
+      base44.auth.redirectToLogin("/start");
     } catch (err) {
       console.error("Google login error:", err);
       setError("Google login failed. Please try again.");
       toast.error("Google login failed. Please try again.");
+      setLoading(false);
     }
   };
 
