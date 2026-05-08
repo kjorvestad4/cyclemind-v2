@@ -38,35 +38,32 @@ export default function Onboarding() {
 
   const handleComplete = async (destination = "log") => {
     setSaving(true);
-    const today = format(new Date(), "yyyy-MM-dd");
-    const cyclePayload = {
-      cycle_type: selectedMode,
-      start_date: lmp || birthDate || today,
-      last_menstrual_period: lmp || null,
-      cycle_length: cycleLength || 28,
-    };
-
-    if (selectedMode === "pregnancy") {
-      cyclePayload.ovulation_date = ovulationDate || null;
-    }
-    if (selectedMode === "perimenopause" || selectedMode === "menopause") {
-      cyclePayload.hrt_type = hrtType || null;
-    }
-    if (selectedMode === "postpartum") {
-      cyclePayload.start_date = birthDate || today;
-    }
-
-    const newCycle = await base44.entities.Cycle.create(cyclePayload);
-
-    await base44.auth.updateMe({
-      onboarded: true,
-      active_cycle_id: newCycle.id,
-      notification_time: reminderTime,
-      unit_system: unitSystem,
-      ...(dateOfBirth ? { date_of_birth: dateOfBirth } : {}),
-    });
-
     const targetUrl = destination === "log" ? "/log" : "/";
+    try {
+      const today = format(new Date(), "yyyy-MM-dd");
+      const cyclePayload = {
+        cycle_type: selectedMode,
+        start_date: lmp || birthDate || today,
+        last_menstrual_period: lmp || null,
+        cycle_length: cycleLength || 28,
+      };
+      if (selectedMode === "pregnancy") cyclePayload.ovulation_date = ovulationDate || null;
+      if (selectedMode === "perimenopause" || selectedMode === "menopause") cyclePayload.hrt_type = hrtType || null;
+      if (selectedMode === "postpartum") cyclePayload.start_date = birthDate || today;
+
+      let cycleId = null;
+      try { const c = await base44.entities.Cycle.create(cyclePayload); cycleId = c.id; } catch (_) {}
+
+      try {
+        await base44.auth.updateMe({
+          onboarded: true,
+          ...(cycleId ? { active_cycle_id: cycleId } : {}),
+          notification_time: reminderTime,
+          unit_system: unitSystem,
+          ...(dateOfBirth ? { date_of_birth: dateOfBirth } : {}),
+        });
+      } catch (_) {}
+    } catch (_) {}
     window.location.href = targetUrl;
   };
 
@@ -167,20 +164,14 @@ export default function Onboarding() {
                 <div className="grid grid-cols-2 gap-2 pt-1">
                   <Button
                     variant="outline"
-                    onClick={async () => {
-                      await base44.auth.updateMe({ onboarded: true });
-                      window.location.href = '/log';
-                    }}
+                    onClick={() => { window.location.href = '/log'; }}
                     className="h-11 rounded-2xl text-sm font-semibold"
                   >
                     📓 Log Today
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={async () => {
-                      await base44.auth.updateMe({ onboarded: true });
-                      window.location.href = '/';
-                    }}
+                    onClick={() => { window.location.href = '/'; }}
                     className="h-11 rounded-2xl text-sm font-semibold"
                   >
                     🏠 Exit to App
