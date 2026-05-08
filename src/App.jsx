@@ -1,10 +1,7 @@
-import { Toaster } from "@/components/ui/toaster"
-import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClientInstance } from '@/lib/query-client'
+import { Toaster } from "@/components/ui/toaster";
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClientInstance } from '@/lib/query-client';
 import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
-import PageNotFound from './lib/PageNotFound';
-import { AuthProvider, useAuth } from '@/lib/AuthContext';
-import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
@@ -17,6 +14,9 @@ import Insights from '@/pages/Insights';
 import Resources from '@/pages/Resources';
 import Profile from '@/pages/Profile';
 import Onboarding from '@/pages/Onboarding';
+import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import PageNotFound from './lib/PageNotFound';
 
 const pageVariants = {
   initial: { opacity: 0, x: 24 },
@@ -32,11 +32,20 @@ function wrap(key, Component) {
   );
 }
 
-// Guard: Protect /dashboard and app routes — require valid session
-function OnboardingGuard({ children }) {
+// SIMPLE GUARD - only protect unauthenticated users
+function AuthGuard({ children }) {
   const { user, isLoadingAuth } = useAuth();
 
-  if (isLoadingAuth) return null;
+  if (isLoadingAuth) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-background">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 border-3 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
+          <p className="text-sm text-muted-foreground font-medium">Loading CycleMind...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user || !user.id) {
     window.location.href = '/start';
@@ -45,6 +54,7 @@ function OnboardingGuard({ children }) {
 
   // User is logged in — ALWAYS go to dashboard
   window.location.href = '/dashboard';
+  return null;
 }
 
 const AnimatedOutlet = () => {
@@ -53,17 +63,15 @@ const AnimatedOutlet = () => {
   return (
     <AnimatePresence mode="wait" initial={false} key={location.pathname}>
       <Routes location={location}>
-        {/* Public share view — no guard needed */}
+        {/* Public share view */}
         <Route path="/share/:token" element={<DoctorShareView />} />
 
-        {/* Onboarding — accessible at /start only */}
+        {/* Onboarding / Start page */}
         <Route path="/start" element={<Onboarding />} />
-
-        {/* Redirect legacy /onboarding to /start */}
         <Route path="/onboarding" element={<Navigate to="/start" replace />} />
 
-        {/* Main app — guarded */}
-        <Route element={<OnboardingGuard><AppLayout /></OnboardingGuard>}>
+        {/* Main app - protected */}
+        <Route element={<AuthGuard><AppLayout /></AuthGuard>}>
           <Route path="/" element={wrap("dashboard", Dashboard)} />
           <Route path="/dashboard" element={wrap("dashboard", Dashboard)} />
           <Route path="/log" element={wrap("log", DailyLog)} />
@@ -79,7 +87,7 @@ const AnimatedOutlet = () => {
 };
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -95,9 +103,6 @@ const AuthenticatedApp = () => {
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      navigateToLogin();
-      return null;
     }
   }
 
@@ -116,7 +121,7 @@ function App() {
         <Toaster />
       </QueryClientProvider>
     </AuthProvider>
-  )
+  );
 }
 
-export default App
+export default App;
