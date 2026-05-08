@@ -34,18 +34,12 @@ function wrap(key, Component) {
 
 // Guard: Protect /dashboard and app routes — require valid session
 function OnboardingGuard({ children }) {
-  const [status, setStatus] = useState('loading'); // 'loading' | 'authenticated' | 'unauthenticated'
+  const { isAuthenticated, isLoadingAuth } = useAuth();
 
-  useEffect(() => {
-    base44.auth.me()
-      .then(() => setStatus('authenticated'))
-      .catch(() => setStatus('unauthenticated'));
-  }, []);
-
-  if (status === 'loading') return null;
+  if (isLoadingAuth) return null;
 
   // If unauthenticated, redirect to /start
-  if (status === 'unauthenticated') {
+  if (!isAuthenticated) {
     window.location.href = '/start';
     return null;
   }
