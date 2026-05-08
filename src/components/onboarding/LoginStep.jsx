@@ -150,6 +150,13 @@ export default function LoginStep({ onLoginSuccess }) {
             </>
           )}
         </Button>
+        <button
+          type="button"
+          onClick={() => base44.auth.redirectToPasswordReset()}
+          className="w-full text-sm text-primary hover:underline font-medium py-2"
+        >
+          Forgot your password?
+        </button>
       </form>
 
       <div className="relative w-full">
