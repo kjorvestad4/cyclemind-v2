@@ -21,26 +21,32 @@ export default function LoginStep({ onLoginSuccess }) {
       // Attempt email/password login via Base44 SDK
       await base44.auth.loginWithEmail(email, password);
       
-      // After login, check if user is onboarded and has a cycle
+      // After login, get user data
       const user = await base44.auth.me();
       
-      if (user?.onboarded) {
-        const cycles = await base44.entities.Cycle.filter(
-          { created_by: user.email },
-          "-start_date",
-          1
-        );
-        
-        if (cycles.length > 0) {
-          // User is fully onboarded with a cycle → go to main Dashboard
-          window.location.href = "/";
-          return;
-        }
+      // Mark user as onboarded (auto-complete onboarding)
+      await base44.auth.updateMe({ onboarded: true });
+      
+      // Check if user has a cycle
+      const cycles = await base44.entities.Cycle.filter(
+        { created_by: user.email },
+        "-start_date",
+        1
+      );
+      
+      // If no cycle, create default menstrual cycle
+      if (cycles.length === 0) {
+        const today = new Date().toISOString().split('T')[0];
+        await base44.entities.Cycle.create({
+          cycle_type: 'menstrual',
+          cycle_length: 28,
+          start_date: today,
+        });
       }
       
-      // User is not onboarded or has no cycle → proceed to onboarding flow
-      toast.success("Logged in! Let's set up your account.");
-      onLoginSuccess();
+      // Hard redirect to dashboard
+      toast.success("Logged in! Welcome to CycleMind.");
+      window.location.href = "/dashboard";
     } catch (err) {
       console.error("Login error:", err);
       setError("Incorrect email or password. Please try again.");
@@ -51,17 +57,14 @@ export default function LoginStep({ onLoginSuccess }) {
   };
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
-    setError("");
-    
+    // For Google OAuth, we'll redirect to the login flow with /dashboard as the return URL
+    // The login success is handled server-side by the Base44 SDK
     try {
-      // Redirect to Google login via Base44 SDK
-      base44.auth.redirectToLogin("/start");
+      base44.auth.redirectToLogin("/dashboard");
     } catch (err) {
       console.error("Google login error:", err);
       setError("Google login failed. Please try again.");
       toast.error("Google login failed. Please try again.");
-      setLoading(false);
     }
   };
 
@@ -161,7 +164,7 @@ export default function LoginStep({ onLoginSuccess }) {
       <p className="text-xs text-muted-foreground">
         Don't have an account?{" "}
         <button
-          onClick={() => base44.auth.redirectToLogin("/start")}
+          onClick={() => base44.auth.redirectToLogin("/dashboard")}
           className="text-primary hover:underline font-medium"
         >
           Sign up

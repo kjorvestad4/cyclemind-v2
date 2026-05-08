@@ -32,53 +32,40 @@ function wrap(key, Component) {
   );
 }
 
-// Guard: redirect un-onboarded users to /start, onboarded users away from /start
+// Guard: Allow authenticated users to /dashboard; redirect unauthenticated to /start
 function OnboardingGuard({ children }) {
-  const [status, setStatus] = useState('loading'); // 'loading' | 'onboarded' | 'new'
+  const [status, setStatus] = useState('loading'); // 'loading' | 'authenticated' | 'unauthenticated'
   const location = useLocation();
 
   useEffect(() => {
     base44.auth.me()
-      .then(async (user) => {
-        // Auto-complete onboarding on first login
-        if (!user?.onboarded) {
-          try {
-            // Create default Cycle if none exists
-            const cycles = await base44.entities.Cycle.filter({ created_by: user.email }, '-start_date', 1);
-            if (cycles.length === 0) {
-              const today = new Date().toISOString().split('T')[0];
-              await base44.entities.Cycle.create({
-                cycle_type: 'menstrual',
-                cycle_length: 28,
-                start_date: today,
-              });
-            }
-            // Mark user as onboarded
-            await base44.auth.updateMe({ onboarded: true });
-          } catch (e) {
-            console.error('Auto-onboarding error:', e);
-          }
-          setStatus('onboarded');
-          return;
-        }
-        
-        // Also check if they have at least one Cycle
-        const cycles = await base44.entities.Cycle.filter({ created_by: user.email }, '-start_date', 1);
-        setStatus(cycles.length > 0 ? 'onboarded' : 'new');
+      .then(() => {
+        // User is authenticated (logged in)
+        setStatus('authenticated');
       })
-      .catch(() => setStatus('new'));
+      .catch(() => {
+        // User is not authenticated
+        setStatus('unauthenticated');
+      });
   }, []);
 
   if (status === 'loading') return null;
 
   const isStartPage = location.pathname === '/start';
 
-  if (status === 'new' && !isStartPage) {
-    return <Navigate to="/start" replace />;
+  // If unauthenticated and NOT on /start, redirect to /start
+  if (status === 'unauthenticated' && !isStartPage) {
+    window.location.href = '/start';
+    return null;
   }
-  if (status === 'onboarded' && isStartPage) {
-    return <Navigate to="/dashboard" replace />;
+
+  // If authenticated and on /start, redirect to /dashboard
+  if (status === 'authenticated' && isStartPage) {
+    window.location.href = '/dashboard';
+    return null;
   }
+
+  // Otherwise, allow access
   return children;
 }
 
