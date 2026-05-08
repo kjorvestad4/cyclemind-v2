@@ -40,55 +40,50 @@ export default function Onboarding() {
   };
 
   const handleComplete = async (destination = "log") => {
+    // Validate required fields
+    if (!lmp && !birthDate) {
+      toast.error("Please enter a start date to continue");
+      return;
+    }
+
     setSaving(true);
     const targetUrl = destination === "log" ? "/log" : "/";
     const today = format(new Date(), "yyyy-MM-dd");
 
     try {
-      // 1. Create cycle
+      // 1. Create Cycle entity (active cycle)
       const cyclePayload = {
         cycle_type: selectedMode,
         start_date: lmp || birthDate || today,
-        last_menstrual_period: lmp || null,
+        last_menstrual_period: lmp || (selectedMode === "pregnancy" ? null : birthDate || null),
         cycle_length: cycleLength || 28,
       };
-      if (selectedMode === "pregnancy") cyclePayload.ovulation_date = ovulationDate || null;
+      if (selectedMode === "pregnancy") cyclePayload.estimated_ovulation_date = ovulationDate || null;
       if (selectedMode === "perimenopause" || selectedMode === "menopause") cyclePayload.hrt_type = hrtType || null;
       if (selectedMode === "postpartum") cyclePayload.start_date = birthDate || today;
 
-      let cycleId = null;
-      try {
-        const cycle = await base44.entities.Cycle.create(cyclePayload);
-        cycleId = cycle.id;
-      } catch (e) {
-        console.error("Cycle create failed:", e);
-      }
+      const cycle = await base44.entities.Cycle.create(cyclePayload);
+      const cycleId = cycle.id;
 
-      // 2. Save user profile
-      try {
-        await base44.auth.updateMe({
-          onboarded: true,
-          ...(cycleId ? { active_cycle_id: cycleId } : {}),
-          notification_time: reminderTime,
-          unit_system: unitSystem,
-          date_of_birth: dateOfBirth || null,
-          display_name: fullName || null,
-        });
-      } catch (e) {
-        console.error("updateMe failed:", e);
-        if (e?.message?.toLowerCase().includes("authentication")) {
-          base44.auth.redirectToLogin(targetUrl);
-          return;
-        }
-      }
+      // 2. Save User entity with full_name and date_of_birth
+      await base44.auth.updateMe({
+        full_name: fullName || null,
+        date_of_birth: dateOfBirth || null,
+        onboarded: true,
+        active_cycle_id: cycleId,
+        notification_time: reminderTime,
+        unit_system: unitSystem,
+      });
 
-      toast.success("Onboarding data saved successfully!");
+      toast.success("Onboarding data saved successfully — welcome to CycleMind");
     } catch (e) {
       console.error("handleComplete error:", e);
       toast.error("Something went wrong, but we'll take you to the app.");
-    } finally {
       setSaving(false);
+      return;
     }
+    
+    // Hard navigate
     window.location.href = targetUrl;
   };
 
