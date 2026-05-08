@@ -39,7 +39,6 @@ export default function Onboarding() {
   const handleComplete = async (destination = "log") => {
     setSaving(true);
     try {
-      // Build cycle payload based on selected mode
       const today = format(new Date(), "yyyy-MM-dd");
       const cyclePayload = {
         cycle_type: selectedMode,
@@ -58,11 +57,10 @@ export default function Onboarding() {
         cyclePayload.start_date = birthDate || today;
       }
 
-      // STEP 1: Create the Cycle record FIRST
+      // STEP 1: Create Cycle record
       const newCycle = await base44.entities.Cycle.create(cyclePayload);
-      console.log("[Onboarding] Cycle created:", newCycle.id);
-      
-      // STEP 2: Immediately set onboarded=true and store active_cycle_id
+
+      // STEP 2: Mark user as onboarded — this MUST succeed before navigating
       await base44.auth.updateMe({
         onboarded: true,
         active_cycle_id: newCycle.id,
@@ -70,19 +68,11 @@ export default function Onboarding() {
         unit_system: unitSystem,
         ...(dateOfBirth ? { date_of_birth: dateOfBirth } : {}),
       });
-      console.log("[Onboarding] User profile updated, onboarded=true");
 
-      // STEP 3: Show success toast
-      toast.success("Onboarding complete! Welcome to CycleMind");
-      
-      // STEP 4: Force HARD navigation (full page reload) to clear React state completely
-      // This ensures the guard checks run with fresh user data
+      // STEP 3: Navigate immediately — no delay, no soft-nav
+      // The page reload means App.jsx will re-fetch user fresh from server
       const targetUrl = destination === "log" ? "/log" : "/";
-      console.log("[Onboarding] Hard navigating to", targetUrl);
-      // Use a small delay to ensure toast is visible, then force full page reload
-      setTimeout(() => {
-        window.location.href = targetUrl;
-      }, 800);
+      window.location.href = targetUrl;
     } catch (error) {
       console.error("[Onboarding] Error:", error);
       toast.error("Setup failed — please try again");
