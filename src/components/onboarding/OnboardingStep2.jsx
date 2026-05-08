@@ -3,6 +3,7 @@ import { format, subYears, addDays } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { calculateEDD, getPregnancyWeek } from "@/lib/eddCalculation";
+import LMPPicker from "@/components/common/LMPPicker";
 
 export default function OnboardingStep2({
   selectedMode,
@@ -68,22 +69,14 @@ export default function OnboardingStep2({
 
       <div className="w-full space-y-4">
         {/* Menstrual / Perimenopause / Pregnancy: LMP */}
-        {["menstrual", "perimenopause", "pregnancy"].includes(selectedMode) && (
-          <div className="space-y-2">
-            <Label className="text-sm font-semibold">Last Menstrual Period</Label>
-            <Input
-              type="date"
-              min={format(subYears(new Date(), 5), "yyyy-MM-dd")}
-              max={format(addDays(new Date(), 30), "yyyy-MM-dd")}
-              value={lmp || ""}
-              onChange={(e) => setLmp(e.target.value)}
-              className="h-10 text-base"
-            />
-            <p className="text-xs text-muted-foreground italic">
-              ℹ️ We use this to calculate your cycle phase and pregnancy week
-            </p>
-          </div>
-        )}
+         {["menstrual", "perimenopause", "pregnancy"].includes(selectedMode) && (
+           <>
+             <LMPPicker value={lmp} onChange={setLmp} />
+             <p className="text-xs text-muted-foreground italic">
+               ℹ️ We use this to calculate your cycle phase and pregnancy week
+             </p>
+           </>
+         )}
 
         {/* Pregnancy: Ovulation */}
         {selectedMode === "pregnancy" && (

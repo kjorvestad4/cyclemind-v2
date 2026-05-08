@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Check, Loader2, X } from "lucide-react";
 import { calculateEDD, getPregnancyWeek } from "@/lib/eddCalculation";
+import LMPPicker from "@/components/common/LMPPicker";
 
 const MODES = [
   { id: "menstrual", emoji: "🌙", label: "Menstrual / PMDD", color: "border-primary/40 bg-primary/5", activeColor: "border-primary bg-primary/10", fields: ["lmp", "cycle_length"] },
@@ -145,30 +146,15 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                 {isActive && mode.fields.length > 0 && (
                   <div className="mt-2 space-y-1 border-t border-border/40 pt-2" onClick={(e) => e.stopPropagation()}>
                     {mode.fields.includes("lmp") && (
-                      <div className="space-y-0.5">
-                        <Label className="text-xs font-medium">Last Menstrual Period</Label>
-                        <div className="flex items-center gap-1.5">
-                          <Input 
-                            key={lmp || "lmp-key"}
-                            type="date" 
-                            min={format(subYears(new Date(), 5), "yyyy-MM-dd")}
-                            max={format(addDays(new Date(), 30), "yyyy-MM-dd")}
-                            value={lmp || ""}
-                            onChange={(e) => {
-                              const exactValue = e.target.value;
-                              console.log(`[CycleMind] LMP picker captured exact: ${exactValue}`);
-                              setLmp(exactValue);
-                            }} 
-                            className="h-8 text-sm bg-background max-w-[140px]" 
-                          />
-                          {lmp && (
-                            <button onClick={handleClearLmp} className="h-8 px-2 rounded text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                              Clear
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    )}
+                       <div className="space-y-0.5" onClick={(e) => e.stopPropagation()}>
+                         <LMPPicker 
+                           value={lmp} 
+                           onChange={setLmp}
+                           label="Last Menstrual Period"
+                           showClear={true}
+                         />
+                       </div>
+                     )}
                     {mode.fields.includes("ovulation") && (
                       <div className="space-y-0.5">
                         <Label className="text-xs font-medium">Ovulation Date (optional)</Label>

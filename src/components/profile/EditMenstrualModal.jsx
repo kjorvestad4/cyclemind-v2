@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
+import LMPPicker from "@/components/common/LMPPicker";
 
 export default function EditMenstrualModal({ cycle, onClose, onSuccess }) {
   const queryClient = useQueryClient();
@@ -53,17 +54,9 @@ export default function EditMenstrualModal({ cycle, onClose, onSuccess }) {
 
         <div className="space-y-4">
           {/* LMP */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Last Menstrual Period</Label>
-            <div className="flex items-center gap-2">
-              <Input type="date" value={lmp} onChange={(e) => setLmp(e.target.value)} className="flex-1" />
-              {lmp && (
-                <Button variant="outline" size="sm" onClick={handleClearLmp} className="px-3">
-                  Clear
-                </Button>
-              )}
-            </div>
-            <p className="text-[11px] text-muted-foreground">First day of your menstrual period</p>
+          <div>
+            <LMPPicker value={lmp} onChange={setLmp} />
+            <p className="text-[11px] text-muted-foreground mt-2">First day of your menstrual period</p>
           </div>
 
           {/* Cycle Length */}
