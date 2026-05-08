@@ -162,16 +162,41 @@ export default function Onboarding() {
               </Button>
             )}
             {currentStep === 4 && (
-              <Button
-                onClick={() => handleComplete("dashboard")}
-                disabled={saving}
-                className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
-              >
-                {saving ? "Setting up..." : <>
-                  <Check className="w-5 h-5" />
-                  Get Started
-                </>}
-              </Button>
+              <>
+                <Button
+                  onClick={() => handleComplete("dashboard")}
+                  disabled={saving}
+                  className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
+                >
+                  {saving ? "Setting up..." : <>
+                    <Check className="w-5 h-5" />
+                    Get Started
+                  </>}
+                </Button>
+                {/* Emergency escape buttons — always available even if handleComplete fails */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      try { await base44.auth.updateMe({ onboarded: true }); } catch (_) {}
+                      window.location.href = '/log';
+                    }}
+                    className="h-11 rounded-2xl text-sm font-semibold"
+                  >
+                    📓 Log Today
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      try { await base44.auth.updateMe({ onboarded: true }); } catch (_) {}
+                      window.location.href = '/';
+                    }}
+                    className="h-11 rounded-2xl text-sm font-semibold"
+                  >
+                    🏠 Exit to App
+                  </Button>
+                </div>
+              </>
             )}
           </div>
         </div>

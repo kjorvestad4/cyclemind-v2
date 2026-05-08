@@ -100,8 +100,8 @@ const AuthenticatedApp = () => {
         return;
       }
 
-      // Single check: onboarded flag only — no async DB lookup that can race
-      const isOnboarded = user.onboarded === true;
+      // Only block if explicitly false — undefined means flag not set yet, allow through
+      const isOnboarded = user.onboarded !== false;
       setNeedsOnboarding(!isOnboarded);
       setCheckingOnboarding(false);
     };
