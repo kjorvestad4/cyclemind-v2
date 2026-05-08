@@ -23,11 +23,6 @@ export default function Onboarding() {
   const [reminderTime, setReminderTime] = useState("19:00");
   const [unitSystem, setUnitSystem] = useState("imperial");
   const [saving, setSaving] = useState(false);
-  const [isAuthed, setIsAuthed] = useState(null); // null = checking
-
-  useEffect(() => {
-    base44.auth.isAuthenticated().then(setIsAuthed);
-  }, []);
 
   const handleNext = () => {
     if (currentStep < 4) {
@@ -76,21 +71,6 @@ export default function Onboarding() {
   };
 
   const progress = (currentStep / 4) * 100;
-
-  // Not yet checked
-  if (isAuthed === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  // Not authenticated — send to login
-  if (isAuthed === false) {
-    base44.auth.redirectToLogin(window.location.href);
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
