@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -42,30 +42,51 @@ export default function Onboarding() {
     const targetUrl = destination === "log" ? "/log" : "/";
     const today = format(new Date(), "yyyy-MM-dd");
 
-    // 1. Create cycle
-    const cyclePayload = {
-      cycle_type: selectedMode,
-      start_date: lmp || birthDate || today,
-      last_menstrual_period: lmp || null,
-      cycle_length: cycleLength || 28,
-    };
-    if (selectedMode === "pregnancy") cyclePayload.ovulation_date = ovulationDate || null;
-    if (selectedMode === "perimenopause" || selectedMode === "menopause") cyclePayload.hrt_type = hrtType || null;
-    if (selectedMode === "postpartum") cyclePayload.start_date = birthDate || today;
+    try {
+      // 1. Create cycle
+      const cyclePayload = {
+        cycle_type: selectedMode,
+        start_date: lmp || birthDate || today,
+        last_menstrual_period: lmp || null,
+        cycle_length: cycleLength || 28,
+      };
+      if (selectedMode === "pregnancy") cyclePayload.ovulation_date = ovulationDate || null;
+      if (selectedMode === "perimenopause" || selectedMode === "menopause") cyclePayload.hrt_type = hrtType || null;
+      if (selectedMode === "postpartum") cyclePayload.start_date = birthDate || today;
 
-    const cycle = await base44.entities.Cycle.create(cyclePayload);
+      let cycleId = null;
+      try {
+        const cycle = await base44.entities.Cycle.create(cyclePayload);
+        cycleId = cycle.id;
+      } catch (e) {
+        console.error("Cycle create failed:", e);
+      }
 
-    // 2. Save user profile
-    await base44.auth.updateMe({
-      onboarded: true,
-      active_cycle_id: cycle.id,
-      notification_time: reminderTime,
-      unit_system: unitSystem,
-      date_of_birth: dateOfBirth || null,
-      full_name: fullName || null,
-    });
+      // 2. Save user profile
+      try {
+        await base44.auth.updateMe({
+          onboarded: true,
+          ...(cycleId ? { active_cycle_id: cycleId } : {}),
+          notification_time: reminderTime,
+          unit_system: unitSystem,
+          date_of_birth: dateOfBirth || null,
+          full_name: fullName || null,
+        });
+      } catch (e) {
+        console.error("updateMe failed:", e);
+        if (e?.message?.toLowerCase().includes("authentication")) {
+          base44.auth.redirectToLogin(targetUrl);
+          return;
+        }
+      }
 
-    toast.success("Onboarding data saved successfully!");
+      toast.success("Onboarding data saved successfully!");
+    } catch (e) {
+      console.error("handleComplete error:", e);
+      toast.error("Something went wrong, but we'll take you to the app.");
+    } finally {
+      setSaving(false);
+    }
     window.location.href = targetUrl;
   };
 
