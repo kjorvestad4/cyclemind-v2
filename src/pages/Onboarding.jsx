@@ -5,7 +5,6 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { ChevronLeft, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import LoginStep from "@/components/onboarding/LoginStep";
 import OnboardingStep1 from "@/components/onboarding/OnboardingStep1";
 import OnboardingStep2 from "@/components/onboarding/OnboardingStep2";
 import OnboardingStep3 from "@/components/onboarding/OnboardingStep3";
@@ -13,7 +12,7 @@ import OnboardingStep4 from "@/components/onboarding/OnboardingStep4";
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
   const [selectedMode, setSelectedMode] = useState("menstrual");
   const [lmp, setLmp] = useState("");
   const [ovulationDate, setOvulationDate] = useState("");
@@ -35,6 +34,8 @@ export default function Onboarding() {
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+    } else if (currentStep === 1) {
+      base44.auth.logout();
     }
   };
 
@@ -106,12 +107,6 @@ export default function Onboarding() {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto p-5 pb-8 flex flex-col max-w-lg mx-auto w-full">
-          {currentStep === 0 && (
-            <LoginStep
-              onLoginSuccess={handleNext}
-            />
-          )}
-
           {currentStep === 1 && (
             <OnboardingStep1
               selectedMode={selectedMode}
@@ -162,17 +157,17 @@ export default function Onboarding() {
 
           {/* Footer buttons inside scrollable area */}
           <div className="space-y-2 mt-8 pt-4 border-t border-border/40">
-            {currentStep > 1 && (
+            {currentStep >= 1 && (
               <Button
                 variant="ghost"
                 onClick={handleBack}
                 className="w-full gap-2"
               >
                 <ChevronLeft className="w-4 h-4" />
-                Back
+                {currentStep === 1 ? "Sign Out" : "Back"}
               </Button>
             )}
-            {currentStep > 0 && currentStep < 5 && (
+            {currentStep >= 1 && currentStep < 5 && (
                <Button
                  onClick={handleNext}
                  className="w-full h-12 rounded-2xl font-semibold text-base"
