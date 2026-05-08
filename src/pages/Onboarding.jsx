@@ -173,7 +173,7 @@ export default function Onboarding() {
             )}
             {currentStep === 4 && (
               <Button
-                onClick={handleComplete}
+                onClick={() => handleComplete("dashboard")}
                 disabled={saving}
                 className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
               >
