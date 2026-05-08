@@ -28,19 +28,6 @@ export default function Dashboard() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  // Guard: if not onboarded, hard redirect to onboarding
-  useEffect(() => {
-    if (!user) return;
-    
-    const isOnboarded = user.onboarded === true;
-    console.log("[Dashboard Guard] onboarded =", isOnboarded);
-    
-    if (!isOnboarded) {
-      console.log("[Dashboard Guard] Forcing redirect to /onboarding");
-      window.location.href = "/onboarding";
-    }
-  }, [user]);
-
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],
     queryFn: async () => {
