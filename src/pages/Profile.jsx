@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, differenceInDays, differenceInYears } from "date-fns";
+import DOBPicker from "@/components/common/DOBPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -436,21 +437,17 @@ export default function Profile() {
             <p className="text-xs font-medium text-muted-foreground mb-1">Email</p>
             <p className="text-sm font-medium text-foreground">{user?.email || "—"}</p>
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold">
-              🎂 Date of Birth <span className="text-muted-foreground font-normal">(optional)</span>
-            </Label>
-            <Input
-              type="text"
-              placeholder="YYYY-MM-DD"
-              value={dateOfBirth || ""}
-              onChange={(e) => setDateOfBirth(e.target.value)}
-              className="h-9 text-sm"
+          <div>
+            <DOBPicker 
+              value={dateOfBirth} 
+              onChange={setDateOfBirth}
+              label="🎂 Date of Birth"
+              optional={true}
             />
             {dateOfBirth && (() => {
               const age = differenceInYears(new Date(), new Date(dateOfBirth));
               return !isNaN(age) && age >= 0 ? (
-                <p className="text-xs text-muted-foreground">Age: {age} years</p>
+                <p className="text-xs text-muted-foreground mt-2">Age: {age} years</p>
               ) : null;
             })()}
           </div>

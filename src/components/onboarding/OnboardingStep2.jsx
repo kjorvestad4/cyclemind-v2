@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { calculateEDD, getPregnancyWeek } from "@/lib/eddCalculation";
 import LMPPicker from "@/components/common/LMPPicker";
+import DOBPicker from "@/components/common/DOBPicker";
 
 export default function OnboardingStep2({
   selectedMode,
@@ -176,34 +177,17 @@ export default function OnboardingStep2({
         </div>
 
         {/* Date of Birth — shared across all modes */}
-        <div className="space-y-2 pt-2 border-t border-border/40">
-          <Label className="text-sm font-semibold">
-            🎂 Date of Birth <span className="text-muted-foreground font-normal">(helps us give better insights)</span>
-          </Label>
-          <Input
-            type="text"
-            placeholder="MM/DD/YYYY"
-            maxLength={10}
-            className="h-10 text-base"
-            value={dobText}
-            onChange={(e) => {
-              let val = e.target.value.replace(/[^\d]/g, "");
-              if (val.length > 2) val = val.slice(0,2) + "/" + val.slice(2);
-              if (val.length > 5) val = val.slice(0,5) + "/" + val.slice(5,9);
-              setDobText(val);
-              const parts = val.split("/");
-              if (parts.length === 3 && parts[2].length === 4) {
-                const d = new Date(`${parts[2]}-${parts[0].padStart(2,"0")}-${parts[1].padStart(2,"0")}`);
-                if (!isNaN(d)) setDateOfBirth(format(d, "yyyy-MM-dd"));
-              } else if (val === "") {
-                setDateOfBirth("");
-              }
-            }}
-          />
-          <p className="text-xs text-muted-foreground italic">
-            Optional — used to calculate your age and show age-appropriate tips
-          </p>
-        </div>
+         <div className="pt-2 border-t border-border/40">
+           <DOBPicker 
+             value={dateOfBirth} 
+             onChange={setDateOfBirth}
+             label="🎂 Date of Birth"
+             optional={true}
+           />
+           <p className="text-xs text-muted-foreground italic mt-2">
+             Optional — used to calculate your age and show age-appropriate tips
+           </p>
+         </div>
       </div>
     </div>
   );
