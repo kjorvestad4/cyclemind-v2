@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { useAuth } from "@/lib/AuthContext";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Mail, Lock, Chrome } from "lucide-react";
 
 export default function LoginStep({ onLoginSuccess }) {
-  const { checkUserAuth } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,12 +46,9 @@ export default function LoginStep({ onLoginSuccess }) {
         });
       }
       
-      // Update AuthContext with new auth state before redirecting
-      await checkUserAuth();
-      
-      // Hard redirect to dashboard
+      // Navigate to dashboard (router will sync with updated auth)
       toast.success("Logged in! Welcome to CycleMind.");
-      window.location.href = "/dashboard";
+      navigate("/dashboard");
     } catch (err) {
       console.error("Login error:", err);
       setError("Incorrect email or password. Please try again.");
