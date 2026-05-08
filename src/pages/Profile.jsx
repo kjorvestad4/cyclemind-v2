@@ -306,7 +306,8 @@ export default function Profile() {
       if (u?.cycle_length) setCycleLength(u.cycle_length);
       if (u?.ovulation_day) setOvulationDay(u.ovulation_day);
       if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
-      if (u?.full_name) setFullName(u.full_name);
+      // display_name is the editable custom field; fall back to built-in full_name
+      setFullName(u?.display_name || u?.full_name || "");
     }).catch(() => {});
   }, []);
 
@@ -314,9 +315,9 @@ export default function Profile() {
     setSavingProfile(true);
     await base44.auth.updateMe({ 
       date_of_birth: dateOfBirth || null,
-      full_name: fullName || null,
+      display_name: fullName || null,
     });
-    setUser((prev) => ({ ...prev, date_of_birth: dateOfBirth, full_name: fullName }));
+    setUser((prev) => ({ ...prev, date_of_birth: dateOfBirth, display_name: fullName }));
     toast.success("Profile saved!");
     setSavingProfile(false);
   };
@@ -379,10 +380,10 @@ export default function Profile() {
       {/* ── Header ── */}
       <div className="flex items-center gap-4 pt-1">
         <div className="w-16 h-16 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
-          <span className="text-2xl font-bold text-primary">{getInitials(user?.full_name)}</span>
+          <span className="text-2xl font-bold text-primary">{getInitials(user?.display_name || user?.full_name)}</span>
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="font-serif text-xl font-semibold text-foreground truncate">{user?.full_name || "Your Profile"}</h2>
+          <h2 className="font-serif text-xl font-semibold text-foreground truncate">{user?.display_name || user?.full_name || "Your Profile"}</h2>
           <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
           <button
             onClick={() => setShowModeSwitcher(true)}

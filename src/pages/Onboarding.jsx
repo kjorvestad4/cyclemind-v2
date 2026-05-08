@@ -70,7 +70,7 @@ export default function Onboarding() {
           notification_time: reminderTime,
           unit_system: unitSystem,
           date_of_birth: dateOfBirth || null,
-          full_name: fullName || null,
+          display_name: fullName || null,
         });
       } catch (e) {
         console.error("updateMe failed:", e);

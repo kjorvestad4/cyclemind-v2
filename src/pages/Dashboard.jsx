@@ -73,7 +73,7 @@ export default function Dashboard() {
       <div className="flex items-start justify-between gap-3 pt-1">
         <div className="flex-1">
           <h2 className="font-serif text-2xl font-semibold text-foreground">
-            {getGreeting()}{user?.full_name ? `, ${user.full_name.split(" ")[0]}` : ""}
+            {getGreeting()}{(user?.display_name || user?.full_name) ? `, ${(user.display_name || user.full_name).split(" ")[0]}` : ""}
           </h2>
           <p className="text-sm text-muted-foreground mt-1">You've got this — tracking helps. 💜</p>
         </div>

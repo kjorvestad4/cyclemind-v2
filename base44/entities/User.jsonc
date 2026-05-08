@@ -13,12 +13,10 @@
     },
     "onboarded": {
       "type": "boolean",
-      "default": false,
       "description": "Whether the user has completed onboarding"
     },
     "has_completed_onboarding": {
       "type": "boolean",
-      "default": false,
       "description": "Legacy field - prefer 'onboarded'"
     },
     "active_cycle_id": {
@@ -40,8 +38,11 @@
     },
     "date_of_birth": {
       "type": "string",
-      "format": "date",
-      "description": "User's date of birth (YYYY-MM-DD)"
+      "description": "User's date of birth (YYYY-MM-DD string)"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "User's preferred display name entered during onboarding or profile edit"
     }
   },
   "required": []
