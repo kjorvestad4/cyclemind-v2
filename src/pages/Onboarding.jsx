@@ -160,23 +160,7 @@ export default function Onboarding() {
                     Get Started
                   </>}
                 </Button>
-                {/* Emergency escape buttons — always available even if handleComplete fails */}
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                  <Button
-                    variant="outline"
-                    onClick={() => { window.location.href = '/log'; }}
-                    className="h-11 rounded-2xl text-sm font-semibold"
-                  >
-                    📓 Log Today
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => { window.location.href = '/dashboard'; }}
-                    className="h-11 rounded-2xl text-sm font-semibold"
-                  >
-                    🏠 Exit to App
-                  </Button>
-                </div>
+
               </>
             )}
           </div>
