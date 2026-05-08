@@ -167,16 +167,41 @@ export default function OnboardingStep2({
           <Label className="text-sm font-semibold">
             🎂 Date of Birth <span className="text-muted-foreground font-normal">(helps us give better insights)</span>
           </Label>
-          <Input
-            type="date"
-            max={format(new Date(), "yyyy-MM-dd")}
-            min={format(subYears(new Date(), 100), "yyyy-MM-dd")}
-            value={dateOfBirth || ""}
-            onChange={(e) => setDateOfBirth(e.target.value)}
-            className="h-10 text-base"
-          />
+          <div className="flex gap-2">
+            <Input
+              type="date"
+              max={format(new Date(), "yyyy-MM-dd")}
+              min={format(subYears(new Date(), 100), "yyyy-MM-dd")}
+              value={dateOfBirth || ""}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              className="h-10 text-base flex-1"
+            />
+            <Input
+              type="text"
+              placeholder="MM/DD/YYYY"
+              maxLength={10}
+              className="h-10 text-base w-36"
+              value={dateOfBirth ? format(new Date(dateOfBirth + "T00:00:00"), "MM/dd/yyyy") : ""}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[^\d/]/g, "");
+                // Auto-insert slashes
+                let formatted = val.replace(/\//g, "");
+                if (formatted.length > 2) formatted = formatted.slice(0,2) + "/" + formatted.slice(2);
+                if (formatted.length > 5) formatted = formatted.slice(0,5) + "/" + formatted.slice(5,9);
+                e.target.value = formatted;
+                // Parse when complete
+                const parts = formatted.split("/");
+                if (parts.length === 3 && parts[2].length === 4) {
+                  const d = new Date(`${parts[2]}-${parts[0].padStart(2,"0")}-${parts[1].padStart(2,"0")}`);
+                  if (!isNaN(d)) setDateOfBirth(format(d, "yyyy-MM-dd"));
+                } else if (formatted === "") {
+                  setDateOfBirth("");
+                }
+              }}
+            />
+          </div>
           <p className="text-xs text-muted-foreground italic">
-            Optional — used to calculate your age and show age-appropriate tips
+            Optional — use the calendar picker or type manually (MM/DD/YYYY)
           </p>
         </div>
       </div>
