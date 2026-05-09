@@ -16,6 +16,7 @@ import Welcome from '@/pages/Welcome';
 import DoctorShareView from '@/pages/DoctorShareView';
 import Landing from '@/pages/Landing';
 import About from '@/pages/About';
+import Billing from '@/pages/Billing';
 
 const pageVariants = {
   initial: { opacity: 0, x: 24 },
@@ -34,6 +35,7 @@ const AnimatedOutlet = () => {
         {/* Landing Pages */}
         <Route path="/landing" element={<Landing />} />
         <Route path="/about" element={<About />} />
+        <Route path="/billing" element={<Billing />} />
 
         {/* Welcome + Onboarding */}
         <Route path="/welcome" element={<Welcome />} />
