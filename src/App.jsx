@@ -12,6 +12,7 @@ import Insights from '@/pages/Insights';
 import Resources from '@/pages/Resources';
 import Profile from '@/pages/Profile';
 import Onboarding from '@/pages/Onboarding';
+import Welcome from '@/pages/Welcome';
 import DoctorShareView from '@/pages/DoctorShareView';
 
 const pageVariants = {
@@ -28,7 +29,8 @@ const AnimatedOutlet = () => {
       <Routes location={location}>
         <Route path="/share/:token" element={<DoctorShareView />} />
 
-        {/* Onboarding for new users */}
+        {/* Welcome + Onboarding */}
+        <Route path="/welcome" element={<Welcome />} />
         <Route path="/start" element={<Onboarding />} />
 
         {/* Main app - protected by auth only */}
@@ -41,7 +43,7 @@ const AnimatedOutlet = () => {
           <Route path="/profile" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Profile /></motion.div>} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/start" replace />} />
+        <Route path="*" element={<Navigate to="/welcome" replace />} />
       </Routes>
     </AnimatePresence>
   );
