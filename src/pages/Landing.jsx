@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Check, Brain, Heart, Activity, TrendingUp, BarChart3 } from 'lucide-react';
 
@@ -15,9 +16,18 @@ export default function Landing() {
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="font-serif text-2xl font-bold text-foreground">CycleMind</h1>
-          <Button variant="outline" onClick={() => navigate('/about')}>
-            Learn More
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => base44.auth.redirectToLogin()}
+              className="text-sm"
+            >
+              Sign In
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/about')} className="text-sm">
+              Learn More
+            </Button>
+          </div>
         </div>
       </nav>
 
