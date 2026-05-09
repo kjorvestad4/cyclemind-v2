@@ -75,10 +75,10 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
       setIsLoadingAuth(false);
       // Redirect unauthenticated users away from protected routes
-      const publicPaths = ['/welcome', '/start', '/share'];
+      const publicPaths = ['/welcome', '/start', '/share', '/landing', '/about'];
       const isPublic = publicPaths.some(p => window.location.pathname.startsWith(p));
       if (!isPublic) {
-        window.location.href = '/welcome';
+        window.location.href = '/landing';
       }
     }
   };
