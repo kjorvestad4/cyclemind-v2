@@ -56,12 +56,7 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
           type="text"
           placeholder="YYYY-MM-DD"
           value={value || ""}
-          onChange={(e) => {
-            const val = e.target.value.trim();
-            if (val === "" || /^\d{4}-\d{2}-\d{2}$/.test(val)) {
-              onChange(val);
-            }
-          }}
+          onChange={(e) => onChange(e.target.value)}
           className="h-10 text-base flex-1"
         />
         <button
