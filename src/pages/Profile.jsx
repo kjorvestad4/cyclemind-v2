@@ -410,7 +410,10 @@ export default function Profile() {
 
   const exportCSV = () => {
     if (!entries.length) { toast.info("No data to export yet."); return; }
-    const headers = ["date", "cycle_type", "cycle_day", "s_mood_swings", "s_irritability", "s_anxiety", "s_depression", "phq9_score", "gad7_score", "epds_score", "journal_entry"];
+    const isFreeUser = user && getUserTier(user) === TIERS.FREE;
+    const headers = isFreeUser
+      ? ["date", "cycle_type", "cycle_day", "bleeding_intensity", "menstrual_flow", "ovulation_test", "journal_entry"]
+      : ["date", "cycle_type", "cycle_day", "s_mood_swings", "s_irritability", "s_anxiety", "s_depression", "phq9_score", "gad7_score", "epds_score", "journal_entry"];
     const rows = entries.map((e) => headers.map((h) => JSON.stringify(e[h] ?? "")).join(","));
     const csv = [headers.join(","), ...rows].join("\n");
     const a = document.createElement("a");
