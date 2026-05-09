@@ -1,6 +1,7 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { CalendarDays, PenLine, BarChart3, BookOpen, User, ChevronLeft, LogOut } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useScrollPosition } from "@/hooks/useScrollPosition";
 
 const NAV_ITEMS = [
   { path: "/", icon: CalendarDays, label: "Dashboard" },
@@ -14,6 +15,7 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const isRoot = location.pathname === "/";
+  const mainRef = useScrollPosition(location.pathname);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -56,7 +58,11 @@ export default function AppLayout() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 pb-24">
+      <main
+        ref={mainRef}
+        className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 pb-24 overflow-y-auto"
+        style={{ maxHeight: "calc(100vh - 140px)" }}
+      >
         <Outlet />
       </main>
 

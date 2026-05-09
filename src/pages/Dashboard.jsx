@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { PenLine, Check, Calendar as CalendarIcon } from "lucide-react";
+import { PenLine, Check, Calendar as CalendarIcon, RefreshCw } from "lucide-react";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Button } from "@/components/ui/button";
 import { calculateDayTotal, ALL_SYMPTOMS, getCycleDay } from "@/lib/symptoms";
 import ModeBanner from "@/components/dashboard/ModeBanner";
@@ -25,6 +26,13 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+
+  const handlePullRefresh = async () => {
+    await queryClient.refetchQueries({ queryKey: ["cycles"] });
+    await queryClient.refetchQueries({ queryKey: ["entries"] });
+  };
+
+  const { containerRef, isPulling, pullProgress } = usePullToRefresh(handlePullRefresh);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -68,16 +76,27 @@ export default function Dashboard() {
   const filledCount = todayEntry ? ALL_SYMPTOMS.filter((s) => (todayEntry[s.key] || 0) > 0).length : 0;
 
   return (
-    <div className="space-y-5 pb-40">
-      <CalendarPopup
-        isOpen={showCalendar}
-        onClose={() => setShowCalendar(false)}
-        entries={entries}
-        cycles={cycles}
-        cycleType={cycleType}
-      />
-      {/* Greeting with Calendar */}
-      <div className="flex items-start justify-between gap-3 pt-1">
+    <div className="space-y-5 pb-40 relative">
+      {/* Pull-to-refresh indicator */}
+      {isPulling && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all">
+          <div className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full shadow-lg">
+            <RefreshCw className={`h-4 w-4 ${pullProgress >= 1 ? "animate-spin" : ""}`} />
+            <span className="text-xs font-medium">{pullProgress >= 1 ? "Refreshing..." : "Pull to refresh"}</span>
+          </div>
+        </div>
+      )}
+      
+      <div className="space-y-5 pb-40">
+        <CalendarPopup
+          isOpen={showCalendar}
+          onClose={() => setShowCalendar(false)}
+          entries={entries}
+          cycles={cycles}
+          cycleType={cycleType}
+        />
+        {/* Greeting with Calendar */}
+        <div className="flex items-start justify-between gap-3 pt-1">
         <div className="flex-1">
           <h2 className="font-serif text-2xl font-semibold text-foreground">
             {getGreeting()}{(user?.display_name || user?.full_name) ? `, ${(user.display_name || user.full_name).split(" ")[0]}` : ""}
@@ -92,61 +111,62 @@ export default function Dashboard() {
         >
           <CalendarIcon className="w-5 h-5 text-primary" />
         </Button>
-      </div>
+        </div>
 
-      {/* Profile Completion Banner */}
-      <ProfileCompletionBanner user={user} latestCycle={latestCycle} />
+        {/* Profile Completion Banner */}
+        <ProfileCompletionBanner user={user} latestCycle={latestCycle} />
 
-      {/* Mode Banner */}
-      <ModeBanner
-        latestCycle={latestCycle}
-        cycleDay={cycleDay}
-        onSwitchMode={() => setShowModeSwitcher(true)}
-      />
-
-      {showModeSwitcher && (
-        <QuickModeSwitcher
-          currentCycleType={cycleType}
+        {/* Mode Banner */}
+        <ModeBanner
           latestCycle={latestCycle}
-          onClose={() => {
-            setShowModeSwitcher(false);
-            queryClient.invalidateQueries({ queryKey: ["cycles"] });
-          }}
+          cycleDay={cycleDay}
+          onSwitchMode={() => setShowModeSwitcher(true)}
         />
-      )}
 
-      {/* Today's Severity Card — primary CTA, clickable to /log */}
-      <TodaySeverityCard entries={entries} cycleType={cycleType} />
+        {showModeSwitcher && (
+          <QuickModeSwitcher
+            currentCycleType={cycleType}
+            latestCycle={latestCycle}
+            onClose={() => {
+              setShowModeSwitcher(false);
+              queryClient.invalidateQueries({ queryKey: ["cycles"] });
+            }}
+          />
+        )}
 
-      {/* Secondary log button */}
-      {todayEntry && (
-        <Button
-          onClick={() => navigate(`/log?date=${todayStr}`)}
-          variant="outline"
-          className="w-full h-11 rounded-2xl text-sm font-medium gap-2"
-        >
-          <Check className="w-4 h-4" />
-          Update Log · {filledCount} symptoms rated
-        </Button>
-      )}
+        {/* Today's Severity Card — primary CTA, clickable to /log */}
+        <TodaySeverityCard entries={entries} cycleType={cycleType} />
 
-      {/* Mode-specific content */}
-      <ModeContent
-        cycleType={cycleType}
-        latestCycle={latestCycle}
-        entries={entries}
-        cycleDay={cycleDay}
-      />
+        {/* Secondary log button */}
+        {todayEntry && (
+          <Button
+            onClick={() => navigate(`/log?date=${todayStr}`)}
+            variant="outline"
+            className="w-full h-11 rounded-2xl text-sm font-medium gap-2"
+          >
+            <Check className="w-4 h-4" />
+            Update Log · {filledCount} symptoms rated
+          </Button>
+        )}
 
-      {/* Universal widgets */}
-      <StreakWidget entries={entries} />
-      <RecentInsightsWidget entries={entries} />
-      <NextMilestoneWidget cycleType={cycleType} latestCycle={latestCycle} cycleLength={cycleLength} />
-      <QuickLinksRow />
+        {/* Mode-specific content */}
+        <ModeContent
+          cycleType={cycleType}
+          latestCycle={latestCycle}
+          entries={entries}
+          cycleDay={cycleDay}
+        />
 
-      <p className="text-[10px] text-muted-foreground text-center">
-        CycleMind is not a substitute for professional medical advice.
-      </p>
-    </div>
-  );
-}
+        {/* Universal widgets */}
+        <StreakWidget entries={entries} />
+        <RecentInsightsWidget entries={entries} />
+        <NextMilestoneWidget cycleType={cycleType} latestCycle={latestCycle} cycleLength={cycleLength} />
+        <QuickLinksRow />
+
+        <p className="text-[10px] text-muted-foreground text-center">
+          CycleMind is not a substitute for professional medical advice.
+        </p>
+        </div>
+        </div>
+        );
+        }

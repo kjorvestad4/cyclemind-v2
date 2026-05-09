@@ -23,7 +23,7 @@ export default function QuickLogButtons({
     existingEntry?.ovulation_test === "Positive"
   );
 
-  // Bleeding toggle mutation
+  // Bleeding toggle mutation with optimistic updates
   const bleedingMutation = useMutation({
     mutationFn: async () => {
       const newIntensity = isBleedingActive ? 0 : 2;
@@ -33,15 +33,38 @@ export default function QuickLogButtons({
         await base44.entities.DailyEntry.create({ date: selectedDate, bleeding_intensity: newIntensity });
       }
     },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["entries"] });
+      const previousEntries = queryClient.getQueryData(["entries"]);
+      
+      queryClient.setQueryData(["entries"], (old) => {
+        if (!old) return old;
+        const newIntensity = isBleedingActive ? 0 : 2;
+        return old.map((e) =>
+          e.id === existingEntry?.id
+            ? { ...e, bleeding_intensity: newIntensity }
+            : e.date === selectedDate && !existingEntry?.id
+            ? { ...e, bleeding_intensity: newIntensity }
+            : e
+        );
+      });
+
+      return { previousEntries };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["entries"] });
       toast.success(isBleedingActive ? "Period cleared ✓" : "Period logged ✓");
       setLoadingState((prev) => ({ ...prev, bleeding: false }));
     },
-    onError: () => { toast.error("Failed to save"); setLoadingState((prev) => ({ ...prev, bleeding: false })); },
+    onError: (err, vars, context) => {
+      if (context?.previousEntries) {
+        queryClient.setQueryData(["entries"], context.previousEntries);
+      }
+      toast.error("Failed to save");
+      setLoadingState((prev) => ({ ...prev, bleeding: false }));
+    },
   });
 
-  // Intimacy mutation with protection status
+  // Intimacy mutation with optimistic updates
   const intimacyMutation = useMutation({
     mutationFn: async (protected_status) => {
       if (existingEntry?.id) {
@@ -57,13 +80,35 @@ export default function QuickLogButtons({
         });
       }
     },
+    onMutate: async (protected_status) => {
+      await queryClient.cancelQueries({ queryKey: ["entries"] });
+      const previousEntries = queryClient.getQueryData(["entries"]);
+
+      queryClient.setQueryData(["entries"], (old) => {
+        if (!old) return old;
+        return old.map((e) =>
+          e.id === existingEntry?.id
+            ? { ...e, intimacy_logged: true, intimacy_protected: protected_status }
+            : e.date === selectedDate && !existingEntry?.id
+            ? { ...e, intimacy_logged: true, intimacy_protected: protected_status }
+            : e
+        );
+      });
+
+      return { previousEntries };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["entries"] });
       toast.success("Intimacy logged ✓");
       setShowIntimacyOptions(false);
       setLoadingState((prev) => ({ ...prev, intimacy: false }));
     },
-    onError: () => { toast.error("Failed to save"); setLoadingState((prev) => ({ ...prev, intimacy: false })); },
+    onError: (err, vars, context) => {
+      if (context?.previousEntries) {
+        queryClient.setQueryData(["entries"], context.previousEntries);
+      }
+      toast.error("Failed to save");
+      setLoadingState((prev) => ({ ...prev, intimacy: false }));
+    },
   });
 
   const clearIntimacyMutation = useMutation({
@@ -79,7 +124,7 @@ export default function QuickLogButtons({
     },
   });
 
-  // Ovulation toggle mutation
+  // Ovulation toggle mutation with optimistic updates
   const ovulationMutation = useMutation({
     mutationFn: async () => {
       const newTest = isOvulationActive ? "" : "Positive";
@@ -90,12 +135,36 @@ export default function QuickLogButtons({
         await base44.entities.DailyEntry.create({ date: selectedDate, ovulation_test: newTest, ovulation_date: newDate });
       }
     },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["entries"] });
+      const previousEntries = queryClient.getQueryData(["entries"]);
+
+      queryClient.setQueryData(["entries"], (old) => {
+        if (!old) return old;
+        const newTest = isOvulationActive ? "" : "Positive";
+        const newDate = isOvulationActive ? "" : selectedDate;
+        return old.map((e) =>
+          e.id === existingEntry?.id
+            ? { ...e, ovulation_test: newTest, ovulation_date: newDate }
+            : e.date === selectedDate && !existingEntry?.id
+            ? { ...e, ovulation_test: newTest, ovulation_date: newDate }
+            : e
+        );
+      });
+
+      return { previousEntries };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["entries"] });
       toast.success(isOvulationActive ? "Ovulation cleared ✓" : "Ovulation logged ✓");
       setLoadingState((prev) => ({ ...prev, ovulation: false }));
     },
-    onError: () => { toast.error("Failed to save"); setLoadingState((prev) => ({ ...prev, ovulation: false })); },
+    onError: (err, vars, context) => {
+      if (context?.previousEntries) {
+        queryClient.setQueryData(["entries"], context.previousEntries);
+      }
+      toast.error("Failed to save");
+      setLoadingState((prev) => ({ ...prev, ovulation: false }));
+    },
   });
 
   if (!["menstrual", "perimenopause", "postpartum"].includes(cycleType)) return null;

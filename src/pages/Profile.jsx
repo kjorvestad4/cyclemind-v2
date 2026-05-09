@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, differenceInDays, differenceInYears } from "date-fns";
+import { queryClientInstance } from "@/lib/query-client";
 import DOBPicker from "@/components/common/DOBPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -355,6 +356,36 @@ export default function Profile() {
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["cycles"] }); toast.success("Cycle removed"); },
   });
 
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      const currentUser = await base44.auth.me();
+      
+      // Delete all cycles
+      const userCycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, "-start_date", 1000);
+      for (const cycle of userCycles) {
+        await base44.entities.Cycle.delete(cycle.id);
+      }
+
+      // Delete all entries
+      const userEntries = await base44.entities.DailyEntry.filter({ created_by: currentUser.email }, "-date", 1000);
+      for (const entry of userEntries) {
+        await base44.entities.DailyEntry.delete(entry.id);
+      }
+
+      // Delete all doctor shares
+      const userShares = await base44.entities.DoctorShare.filter({ created_by: currentUser.email }, "-created_date", 1000);
+      for (const share of userShares) {
+        await base44.entities.DoctorShare.delete(share.id);
+      }
+    },
+    onSuccess: async () => {
+      toast.success("Account and all data deleted. Goodbye!");
+      queryClientInstance.clear();
+      await base44.auth.logout("/");
+    },
+    onError: () => toast.error("Failed to delete account. Please contact support."),
+  });
+
   const saveSettingsMutation = useMutation({
     mutationFn: () => base44.auth.updateMe({ cycle_length: cycleLength, ovulation_day: ovulationDay, menstruation_length: menstruationLength }),
     onSuccess: () => toast.success("Settings saved!"),
@@ -591,9 +622,10 @@ export default function Profile() {
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    onClick={() => toast.error("Please contact support to delete your account.")}
+                    onClick={() => deleteAccountMutation.mutate()}
+                    disabled={deleteAccountMutation.isPending}
                   >
-                    Delete Account
+                    {deleteAccountMutation.isPending ? "Deleting..." : "Delete Account"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
