@@ -11,7 +11,7 @@ export default function Landing() {
   };
 
   const handleSignIn = async () => {
-    await base44.auth.redirectToLogin();
+    await base44.auth.redirectToLogin("/");
   };
 
   return (
