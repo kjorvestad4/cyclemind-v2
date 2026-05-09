@@ -354,7 +354,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
 
       // OVULATION & FERTILITY TRACKING
       const ovulationTests = entries.filter((e) => e.ovulation_test && e.ovulation_test !== "");
-      const cervicalMucus = entries.filter((e) => e.cervical_mucus);
+      const cervicalMucus = entries.filter((e) => e.cervical_mucus && e.cervical_mucus.trim().length > 0);
       if (ovulationTests.length > 0 || cervicalMucus.length > 0) {
         checkBreak(45);
         doc.setFontSize(12);
@@ -403,7 +403,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
       }
 
       // CUSTOM SYMPTOMS
-      const customSymptomEntries = entries.filter((e) => e.custom_symptoms && e.custom_symptoms.length > 0);
+      const customSymptomEntries = entries.filter((e) => e.custom_symptoms && e.custom_symptoms.length > 0).filter((e) => e.custom_symptoms.some((s) => s.severity > 0));
       if (customSymptomEntries.length > 0) {
         checkBreak(35);
         doc.setFontSize(12);
@@ -440,7 +440,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
       }
 
       // INTIMACY TRACKING
-      const intimacyEntries = entries.filter((e) => e.intimacy_logged);
+      const intimacyEntries = entries.filter((e) => e.intimacy_logged === true);
       if (intimacyEntries.length > 0) {
         checkBreak(20);
         doc.setFontSize(12);
@@ -469,7 +469,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
       }
 
       // PREGNANCY-SPECIFIC TRENDS
-      const hasPregnancyData = entries.some((e) => e.p_nausea || e.p_vomiting || e.p_fatigue || e.p_mood_changes || e.fetal_movement_felt);
+      const hasPregnancyData = entries.some((e) => (e.p_nausea > 0) || (e.p_vomiting > 0) || (e.p_fatigue > 0) || (e.p_mood_changes > 0) || (e.fetal_movement_felt === true));
       if (hasPregnancyData) {
         checkBreak(30);
         doc.setFontSize(12);
@@ -517,7 +517,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
       }
 
       // POSTPARTUM-SPECIFIC TRENDS
-      const hasPostpartumData = entries.some((e) => e.pp_lochiaBleeding || e.pp_fatigue || e.pp_moodChanges);
+      const hasPostpartumData = entries.some((e) => (e.pp_lochiaBleeding > 0) || (e.pp_fatigue > 0) || (e.pp_moodChanges > 0));
       if (hasPostpartumData) {
         checkBreak(30);
         doc.setFontSize(12);
@@ -581,7 +581,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
       }
 
       // MENOPAUSE/PERIMENOPAUSE-SPECIFIC TRENDS
-      const hasMenopauseData = entries.some((e) => e.m_hot_flashes || e.m_night_sweats || e.m_mood_swings);
+      const hasMenopauseData = entries.some((e) => (e.m_hot_flashes > 0) || (e.m_night_sweats > 0) || (e.m_mood_swings > 0));
       if (hasMenopauseData) {
         checkBreak(30);
         doc.setFontSize(12);

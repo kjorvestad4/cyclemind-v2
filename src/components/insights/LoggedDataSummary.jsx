@@ -18,14 +18,14 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
 
   // Vitals tracking
   const vitalsData = entries
-    .filter((e) => e.heart_rate || e.systolic_bp || e.diastolic_bp || e.basal_body_temp || e.weight)
+    .filter((e) => (e.heart_rate > 0) || (e.systolic_bp > 0) || (e.diastolic_bp > 0) || (e.basal_body_temp > 0) || (e.weight > 0))
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(-30)
     .map((e) => ({
       date: e.date.slice(5), // MM-DD
-      hr: e.heart_rate || null,
-      bbt: e.basal_body_temp || null,
-      weight: e.weight || null,
+      hr: e.heart_rate > 0 ? e.heart_rate : null,
+      bbt: e.basal_body_temp > 0 ? e.basal_body_temp : null,
+      weight: e.weight > 0 ? e.weight : null,
     }));
 
   // Intimacy days
