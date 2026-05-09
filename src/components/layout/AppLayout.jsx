@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
 
 const NAV_ITEMS = [
-  { path: "/", icon: CalendarDays, label: "Dashboard" },
+  { path: "/dashboard", icon: CalendarDays, label: "Dashboard" },
   { path: "/log", icon: PenLine, label: "Log" },
   { path: "/insights", icon: BarChart3, label: "Insights" },
   { path: "/resources", icon: BookOpen, label: "Resources" },
