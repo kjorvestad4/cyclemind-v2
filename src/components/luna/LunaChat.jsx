@@ -30,7 +30,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
         });
         setMessages([{
           role: 'assistant',
-          content: response.data.message || "Hi there! I'm Luna, your CycleMind companion. I'm here to support you through your cycle with warmth and evidence-based guidance. How are you feeling today?"
+          content: response.data.message || "Hello! How are you feeling today?"
         }]);
         setInitialGreeting(false);
       } catch (err) {
