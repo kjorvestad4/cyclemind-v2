@@ -32,6 +32,28 @@ function wrap(key, Component) {
   );
 }
 
+// /start route: redirect to dashboard if already logged in
+function StartRoute() {
+  const { user, isLoadingAuth } = useAuth();
+
+  if (isLoadingAuth) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-background">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 border-3 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
+          <p className="text-sm text-muted-foreground font-medium">Loading CycleMind...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (user && user.id) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Onboarding />;
+}
+
 // SIMPLE GUARD - only protect unauthenticated users
 function AuthGuard({ children }) {
   const { user, isLoadingAuth } = useAuth();
@@ -66,7 +88,7 @@ const AnimatedOutlet = () => {
         <Route path="/share/:token" element={<DoctorShareView />} />
 
         {/* Onboarding / Start page */}
-        <Route path="/start" element={<Onboarding />} />
+        <Route path="/start" element={<StartRoute />} />
         <Route path="/onboarding" element={<Navigate to="/start" replace />} />
 
         {/* Main app - protected */}
