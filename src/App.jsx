@@ -48,7 +48,7 @@ const AnimatedOutlet = () => {
           <Route path="/profile" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Profile /></motion.div>} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/landing" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>
   );
