@@ -149,7 +149,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
 
     if (dayInCycle <= 5) return "🌙"; // Menstrual
     if (dayInCycle <= 12) return "🌱"; // Follicular
-    if (dayInCycle <= 16) return "💜"; // Ovulatory
+    if (dayInCycle <= 16) return "💜"; // Fertility Window
     return "🌊"; // Luteal
   };
 
@@ -456,7 +456,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
               <div className="grid grid-cols-2 gap-1">
                 <span>🌙 Menstrual</span>
                 <span>🌱 Follicular</span>
-                <span>💜 Ovulatory</span>
+                <span>💜 Fertility Window</span>
                 <span>🌊 Luteal</span>
               </div>
             </div>

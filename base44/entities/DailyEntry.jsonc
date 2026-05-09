@@ -72,12 +72,16 @@
     },
     "cervical_mucus": {
       "type": "string",
-      "description": "Cervical mucus observation (e.g., 'Thick and tacky', 'Egg-white consistency', 'Dry')"
+      "description": "Cervical mucus observation"
     },
     "intimacy_logged": {
       "type": "boolean",
       "default": false,
       "description": "Whether intimacy / sexual activity was logged for this day"
+    },
+    "intimacy_protected": {
+      "type": "boolean",
+      "description": "Whether intimacy was protected (true) or unprotected (false)"
     },
     "s_mood_swings": {
       "type": "number",
@@ -281,7 +285,7 @@
     },
     "pp_mastitisSymptoms": {
       "type": "number",
-      "description": "Postpartum: Mastitis symptoms \u2014 redness, heat, pain (1-6)"
+      "description": "Postpartum: Mastitis symptoms (1-6)"
     },
     "pp_urinaryIncontinence": {
       "type": "number",

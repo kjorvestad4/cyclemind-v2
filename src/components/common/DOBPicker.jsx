@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { format, subYears, addYears } from "date-fns";
+import { format, subYears } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar, X } from "lucide-react";
@@ -86,22 +86,29 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
         <div className="absolute z-50 bg-white dark:bg-slate-950 border border-border rounded-lg p-3 shadow-xl">
           <div className="w-80">
             {/* Month Navigation */}
-            <div className="flex items-center justify-between mb-4">
-              <button
-                onClick={handlePrevMonth}
-                className="px-2 py-1 hover:bg-muted rounded text-sm"
-              >
-                ← Prev
-              </button>
-              <div className="font-semibold text-center min-w-[120px]">
-                {format(calendarMonth, "MMMM yyyy")}
+            <div className="flex items-center justify-between mb-3 gap-1">
+              <button onClick={handlePrevMonth} className="px-2 py-1 hover:bg-muted rounded text-sm shrink-0">←</button>
+              <div className="flex items-center gap-1 flex-1 justify-center">
+                <select
+                  value={calendarMonth.getMonth()}
+                  onChange={(e) => setCalendarMonth(new Date(calendarMonth.getFullYear(), parseInt(e.target.value)))}
+                  className="text-sm font-semibold bg-muted rounded px-1.5 py-1 border-none outline-none cursor-pointer"
+                >
+                  {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m, i) => (
+                    <option key={m} value={i}>{m}</option>
+                  ))}
+                </select>
+                <select
+                  value={calendarMonth.getFullYear()}
+                  onChange={(e) => setCalendarMonth(new Date(parseInt(e.target.value), calendarMonth.getMonth()))}
+                  className="text-sm font-semibold bg-muted rounded px-1.5 py-1 border-none outline-none cursor-pointer"
+                >
+                  {Array.from({ length: 121 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
               </div>
-              <button
-                onClick={handleNextMonth}
-                className="px-2 py-1 hover:bg-muted rounded text-sm"
-              >
-                Next →
-              </button>
+              <button onClick={handleNextMonth} className="px-2 py-1 hover:bg-muted rounded text-sm shrink-0">→</button>
             </div>
 
             {/* Day Headers */}

@@ -432,10 +432,6 @@ export default function DailyLog() {
       {/* MENSTRUAL MODE */}
       {isMenstrual && (
         <>
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-1">DRSP Symptoms · 1 = Not at all · 6 = Extreme</p>
-            <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
-          </div>
           <Section title="Bleeding & Flow" defaultOpen={true}>
             <div className="pt-1">
               <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
@@ -447,6 +443,11 @@ export default function DailyLog() {
             cervicalMucus={cervicalMucus}
             onChange={handleOvulationChange}
           />
+          <Section title="DRSP Symptoms" subtitle="PMDD symptom tracker · 1 = Not at all · 6 = Extreme" defaultOpen={true}>
+            <div className="pt-2">
+              <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
+            </div>
+          </Section>
           <MoodScales
             phq9Responses={phq9Responses}
             gad7Responses={gad7Responses}

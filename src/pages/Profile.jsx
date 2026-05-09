@@ -99,7 +99,7 @@ function Toggle({ checked, onChange }) {
 
 // ── CurrentCycleDetails Component ─────────────────────────────────────────
 
-function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLength, setCycleLength, ovulationDay, setOvulationDay, saveSettingsMutation, onEditClick }) {
+function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLength, setCycleLength, ovulationDay, setOvulationDay, menstruationLength, setMenstruationLength, saveSettingsMutation, onEditClick }) {
   const [expanded, setExpanded] = useState(true);
 
   if (!latestCycle) {
@@ -141,13 +141,13 @@ function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLen
               <p className="text-lg font-bold text-foreground mt-1">{cycLen}d</p>
             </div>
             <div className="bg-muted/40 rounded-xl p-3">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Avg Length</p>
-              <p className="text-lg font-semibold text-foreground mt-1">{avgLength}d{variance > 0 ? ` (±${variance}d)` : ""}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Menstruation Length</p>
+              <p className="text-lg font-semibold text-foreground mt-1">{menstruationLength || 5}d</p>
             </div>
           </div>
           <div className="pt-2 border-t border-border/40 space-y-2">
             <p className="text-xs font-semibold text-muted-foreground uppercase">Edit Cycle Settings</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               <div className="space-y-1.5">
                 <Label className="text-xs">Cycle Length</Label>
                 <Input type="number" min={20} max={60} value={cycleLength}
@@ -157,6 +157,11 @@ function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLen
                 <Label className="text-xs">Ovulation Day</Label>
                 <Input type="number" min={1} max={cycleLength - 1} value={ovulationDay}
                   onChange={(e) => setOvulationDay(parseInt(e.target.value) || 14)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Period Length</Label>
+                <Input type="number" min={1} max={14} value={menstruationLength || 5}
+                  onChange={(e) => setMenstruationLength(parseInt(e.target.value) || 5)} />
               </div>
             </div>
             <Button variant="outline" size="sm" className="w-full gap-2 mb-2" onClick={() => saveSettingsMutation.mutate()} disabled={saveSettingsMutation.isPending}>
@@ -294,6 +299,7 @@ export default function Profile() {
   const [editMode, setEditMode] = useState(null); // 'pregnancy', 'menstrual', 'menopause', 'postpartum'
   const [cycleLength, setCycleLength] = useState(28);
   const [ovulationDay, setOvulationDay] = useState(14);
+  const [menstruationLength, setMenstruationLength] = useState(5);
   const [notifDaily, setNotifDaily] = useState(true);
   const [notifMode, setNotifMode] = useState(true);
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
@@ -306,6 +312,7 @@ export default function Profile() {
       setUser(u);
       if (u?.cycle_length) setCycleLength(u.cycle_length);
       if (u?.ovulation_day) setOvulationDay(u.ovulation_day);
+      if (u?.menstruation_length) setMenstruationLength(u.menstruation_length);
       if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
       setFullName(u?.display_name || u?.full_name || "");
     }).catch(() => {});
@@ -349,7 +356,7 @@ export default function Profile() {
   });
 
   const saveSettingsMutation = useMutation({
-    mutationFn: () => base44.auth.updateMe({ cycle_length: cycleLength, ovulation_day: ovulationDay }),
+    mutationFn: () => base44.auth.updateMe({ cycle_length: cycleLength, ovulation_day: ovulationDay, menstruation_length: menstruationLength }),
     onSuccess: () => toast.success("Settings saved!"),
   });
 
@@ -420,6 +427,8 @@ export default function Profile() {
         setCycleLength={setCycleLength}
         ovulationDay={ovulationDay}
         setOvulationDay={setOvulationDay}
+        menstruationLength={menstruationLength}
+        setMenstruationLength={setMenstruationLength}
         saveSettingsMutation={saveSettingsMutation}
         onEditClick={(mode) => setEditMode(mode)}
       />
