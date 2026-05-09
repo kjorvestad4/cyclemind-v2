@@ -68,12 +68,20 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
             if (input === "") {
               onChange("");
             } else {
-              const formats = ["M/d/yyyy", "M-d-yyyy", "MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd"];
+              let month, day, year;
+              // Try M/d/yyyy or M-d-yyyy format
+              const slashMatch = input.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+              if (slashMatch) {
+                [, month, day, year] = slashMatch.map(x => parseInt(x, 10));
+                onChange(`${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`);
+                return;
+              }
+              // Try text formats (MMMM d, yyyy or MMM d, yyyy)
+              const formats = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd"];
               for (const fmt of formats) {
                 const parsed = parse(input, fmt, new Date());
                 if (isValid(parsed)) {
-                  const isoString = `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, "0")}-${String(parsed.getDate()).padStart(2, "0")}`;
-                  onChange(isoString);
+                  onChange(`${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, "0")}-${String(parsed.getDate()).padStart(2, "0")}`);
                   return;
                 }
               }
