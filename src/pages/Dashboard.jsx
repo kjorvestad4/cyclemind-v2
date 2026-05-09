@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { calculateDayTotal, ALL_SYMPTOMS, getCycleDay } from "@/lib/symptoms";
 import { getUserTier, canAccessMode, TIERS } from "@/lib/freemium";
 import UpgradeBanner from "@/components/common/UpgradeBanner";
+import PremiumBanner from "@/components/common/PremiumBanner";
 import ModeBanner from "@/components/dashboard/ModeBanner";
 import ModeContent from "@/components/dashboard/ModeContent";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
@@ -136,6 +137,11 @@ export default function Dashboard() {
 
         {/* Profile Completion Banner */}
         <ProfileCompletionBanner user={user} latestCycle={latestCycle} />
+
+        {/* Premium Banner for Free Users */}
+        {user && getUserTier(user) === TIERS.FREE && (
+          <PremiumBanner />
+        )}
 
         {/* Upgrade Banner for Restricted Mode */}
         {isModeRestricted && (

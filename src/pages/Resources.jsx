@@ -1,6 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 import { ExternalLink, Heart, AlertTriangle, BookOpen, Phone, Baby, Flame, Shield, Bookmark, Search, X, Info } from "lucide-react";
 import { toast } from "sonner";
+import { getUserTier, TIERS } from "@/lib/freemium";
+import PremiumBanner from "@/components/common/PremiumBanner";
 
 // ── Crisis Lines ──────────────────────────────────────────────────────────────
 
@@ -393,10 +396,15 @@ function CrisisSection() {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function Resources() {
+  const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("menstrual");
   const [saved, setSaved] = useState([]);
   const [search, setSearch] = useState("");
   const [showSaved, setShowSaved] = useState(false);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
 
   const toggleSave = (id) => {
     const isNowSaved = !saved.includes(id);
@@ -424,6 +432,11 @@ export default function Resources() {
 
   return (
     <div className="space-y-5 pb-24">
+      {/* Premium Banner for Free Users */}
+      {user && getUserTier(user) === TIERS.FREE && (
+        <PremiumBanner />
+      )}
+
       {/* Header */}
       <div>
         <h2 className="font-serif text-2xl font-semibold tracking-tight">Resources</h2>

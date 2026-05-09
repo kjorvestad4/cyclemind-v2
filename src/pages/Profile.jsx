@@ -26,6 +26,8 @@ import EditMenstrualModal from "@/components/profile/EditMenstrualModal";
 import EditMenopauseModal from "@/components/profile/EditMenopauseModal";
 import EditPostpartumModal from "@/components/profile/EditPostpartumModal";
 import { getCycleDay } from "@/lib/symptoms";
+import { getUserTier, TIERS } from "@/lib/freemium";
+import { Crown } from "lucide-react";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -591,6 +593,14 @@ export default function Profile() {
       {/* ── Account ── */}
       <Section title="Account" icon={User}>
         <div className="divide-y divide-border/30">
+          {user && getUserTier(user) === TIERS.FREE && (
+            <ActionRow
+              icon={Crown}
+              label="Upgrade to Premium"
+              sublabel="Unlock all tracking modes and features"
+              onClick={() => window.location.href = '/billing'}
+            />
+          )}
           <ActionRow
             icon={LogOut}
             label="Sign Out"

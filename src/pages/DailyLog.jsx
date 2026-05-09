@@ -7,8 +7,9 @@ import { ChevronLeft, ChevronRight, Save, Check, Trash2, Mic, ChevronDown, Chevr
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { canAccessMode, canAccessScale } from "@/lib/freemium";
+import { canAccessMode, canAccessScale, getUserTier, TIERS } from "@/lib/freemium";
 import UpgradeBanner from "@/components/common/UpgradeBanner";
+import PremiumBanner from "@/components/common/PremiumBanner";
 import SymptomGrid from "@/components/log/SymptomGrid";
 import BleedingPicker from "@/components/log/BleedingPicker";
 import MedicationsTaken from "@/components/log/MedicationsTaken";
@@ -439,6 +440,11 @@ export default function DailyLog() {
       {/* Upgrade Banner for Restricted Mode */}
       {!canAccessMode(user, cycleType) && (
         <UpgradeBanner feature={`${cycleType.charAt(0).toUpperCase() + cycleType.slice(1)} Tracking`} />
+      )}
+
+      {/* Premium Banner for Free Users */}
+      {user && getUserTier(user) === TIERS.FREE && (
+        <PremiumBanner />
       )}
 
       {/* MENSTRUAL MODE */}

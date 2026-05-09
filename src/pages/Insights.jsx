@@ -9,7 +9,9 @@ import {
 } from "recharts";
 import { AlertTriangle, CheckCircle, Info, TrendingUp, Activity, Brain, Heart } from "lucide-react";
 import { ALL_SYMPTOMS, SYMPTOM_CATEGORIES, calculateDayTotal } from "@/lib/symptoms";
+import { getUserTier, TIERS } from "@/lib/freemium";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import PremiumBanner from "@/components/common/PremiumBanner";
 import PdfReportButton from "@/components/insights/PdfReportButton";
 import ShareWithDoctor from "@/components/insights/ShareWithDoctor";
 import LoggedDataSummary from "@/components/insights/LoggedDataSummary";
@@ -70,6 +72,11 @@ export default function Insights() {
 
   return (
     <div className="space-y-6 pb-10">
+      {/* Premium Banner for Free Users */}
+      {user && getUserTier(user) === TIERS.FREE && (
+        <PremiumBanner />
+      )}
+
       {/* Header */}
       <div className="space-y-3">
         <div className="flex items-start justify-between flex-wrap gap-3">
