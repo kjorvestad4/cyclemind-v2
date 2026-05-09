@@ -6,6 +6,8 @@ import { Calendar, X } from "lucide-react";
 
 export default function DOBPicker({ value, onChange, label = "Date of Birth", optional = false }) {
   const [showCalendar, setShowCalendar] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(() => {
     if (value) return new Date(value);
     return subYears(new Date(), 30);
@@ -55,16 +57,20 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
         <Input
           type="text"
           placeholder="May 9, 2026 or 5/9/1991"
-          value={value ? format(new Date(value), "MMMM d, yyyy") : ""}
-          onChange={(e) => {
-            const input = e.target.value.trim();
+          value={isFocused ? inputValue : (value ? format(new Date(value), "MMMM d, yyyy") : "")}
+          onFocus={() => {
+            setIsFocused(true);
+            setInputValue(value ? format(new Date(value), "MMMM d, yyyy") : "");
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+            const input = inputValue.trim();
             if (input === "") {
               onChange("");
             } else {
               const formats = ["M/d/yyyy", "M-d-yyyy", "MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd"];
-              let parsed;
               for (const fmt of formats) {
-                parsed = parse(input, fmt, new Date());
+                const parsed = parse(input, fmt, new Date());
                 if (isValid(parsed)) {
                   onChange(format(parsed, "yyyy-MM-dd"));
                   return;
@@ -72,6 +78,7 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
               }
             }
           }}
+          onChange={(e) => setInputValue(e.target.value)}
           className="h-10 text-base flex-1"
         />
         <button
