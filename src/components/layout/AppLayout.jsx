@@ -27,6 +27,7 @@ export default function AppLayout() {
     const loadData = async () => {
       try {
         const currentUser = await base44.auth.me();
+        if (!currentUser) return;
         setUser(currentUser);
 
         const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, "-start_date", 5);
@@ -41,7 +42,6 @@ export default function AppLayout() {
         }
       } catch (err) {
         console.error('Failed to load user data for Luna:', err);
-        setUser(null);
       }
     };
 

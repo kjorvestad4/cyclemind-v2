@@ -5,7 +5,11 @@ import LunaChat from './LunaChat';
 
 export default function LunaButton({ user, cycleMode, cycleDay, eddInfo }) {
   const [isOpen, setIsOpen] = useState(false);
-  const isPremium = user && getUserTier(user) === TIERS.PREMIUM;
+  const isPremium = user ? getUserTier(user) === TIERS.PREMIUM : false;
+
+  if (!user) {
+    return null;
+  }
 
   if (isPremium) {
     return (
