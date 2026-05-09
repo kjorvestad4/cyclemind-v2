@@ -35,12 +35,20 @@ export default function ProfileCompletionBanner({ user, latestCycle }) {
           <p className="text-xs text-teal-700 dark:text-teal-300 mt-0.5 leading-relaxed">
             Add your {[missingLmp && "LMP", missingName && "name", missingDob && "birth date"].filter(Boolean).join(", ")} to unlock personalized cycle tracking and symptom analysis.
           </p>
-          <button
-            onClick={() => navigate("/profile")}
-            className="mt-2.5 text-xs font-semibold text-teal-700 dark:text-teal-300 bg-teal-100 dark:bg-teal-900/60 hover:bg-teal-200 dark:hover:bg-teal-800/60 px-3 py-1.5 rounded-lg transition-colors"
-          >
-            Complete Profile →
-          </button>
+          <div className="flex gap-2 mt-2.5 flex-wrap">
+            <button
+              onClick={() => navigate("/start")}
+              className="text-xs font-semibold text-teal-700 dark:text-teal-300 bg-teal-100 dark:bg-teal-900/60 hover:bg-teal-200 dark:hover:bg-teal-800/60 px-3 py-1.5 rounded-lg transition-colors"
+            >
+              Re-run Setup →
+            </button>
+            <button
+              onClick={() => navigate("/profile")}
+              className="text-xs font-semibold text-teal-600 dark:text-teal-400 hover:underline px-1 py-1.5 transition-colors"
+            >
+              Edit Profile
+            </button>
+          </div>
         </div>
       </div>
     </div>
