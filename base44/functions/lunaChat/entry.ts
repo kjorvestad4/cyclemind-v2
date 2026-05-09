@@ -32,25 +32,20 @@ Deno.serve(async (req) => {
 
     const { messages, cycleMode, cycleDay, eddInfo } = await req.json();
 
+    // Check if this is the initial greeting
+    const isInitialGreeting = messages.length === 1 && messages[0].content === 'Hello Luna, I just opened the chat.';
+    
+    if (isInitialGreeting) {
+      return Response.json({
+        message: "Hello. Is there any specific feelings or situation on your mind that you'd like to talk about? Remember this is not a substitute for professional medical advice. Please consult your doctor.",
+        timestamp: new Date().toISOString()
+      });
+    }
+
     // Build context from cycle data
     const contextInfo = `User Context: Current cycle mode: ${cycleMode}${cycleDay ? `, Cycle day: ${cycleDay}` : ''}${eddInfo ? `, EDD: ${eddInfo}` : ''}`;
 
     // Call InvokeLLM with Luna system prompt
-    const response = await base44.integrations.Core.InvokeLLM({
-      prompt: `${contextInfo}\n\nContinue this conversation naturally:`,
-      model: 'automatic',
-      response_json_schema: {
-        type: 'object',
-        properties: {
-          message: { type: 'string' },
-          includes_disclaimer: { type: 'boolean' }
-        },
-        required: ['message']
-      },
-      // We'll use the system prompt as part of the conversation context
-    });
-
-    // For now, we'll use a simpler approach with the prompt
     const lunaResponse = await base44.integrations.Core.InvokeLLM({
       prompt: `System: ${LUNA_SYSTEM_PROMPT}\n\nUser conversation history:\n${messages.map(m => `${m.role === 'user' ? 'User' : 'Luna'}: ${m.content}`).join('\n')}\n\nContext: ${contextInfo}\n\nRespond as Luna. Keep response under 300 words. Include the medical disclaimer.`,
       model: 'automatic'
