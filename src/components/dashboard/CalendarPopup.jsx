@@ -349,7 +349,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
 
                 {/* Quick toggle buttons */}
                 {["menstrual", "perimenopause"].includes(cycleType) && (
-                  <div className="flex gap-1.5 pt-2 border-t border-border/40">
+                   <div className="space-y-2 pt-2 border-t border-border/40">
                     <Button
                       variant="outline"
                       size="sm"
@@ -358,7 +358,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                         setSelectedDateInfo(null);
                       }}
                       disabled={toggleBleedingMutation.isPending}
-                      className="flex-1 h-8 gap-1.5 text-xs"
+                      className="w-full h-8 gap-1.5 text-xs"
                     >
                       <Droplet className="h-3 w-3" />
                       {selectedDateInfo.markers.bleedingIntensity > 0 ? "Remove" : "Add"} Bleeding
@@ -371,7 +371,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                         setSelectedDateInfo(null);
                       }}
                       disabled={toggleOvulationMutation.isPending}
-                      className="flex-1 h-8 gap-1.5 text-xs"
+                      className="w-full h-8 gap-1.5 text-xs"
                     >
                       <Sparkles className="h-3 w-3" />
                       {selectedDateInfo.markers.hasOvulation ? "Remove" : "Add"} Ovulation
@@ -384,7 +384,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                         setSelectedDateInfo(null);
                       }}
                       disabled={toggleIntimacyMutation.isPending}
-                      className="flex-1 h-8 gap-1.5 text-xs"
+                      className="w-full h-8 gap-1.5 text-xs"
                     >
                       <Heart className="h-3 w-3" />
                       {selectedDateInfo.markers.hasIntimacy ? "Remove" : "Add"} Intimacy
