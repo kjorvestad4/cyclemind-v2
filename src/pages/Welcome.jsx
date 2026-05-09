@@ -3,7 +3,10 @@ import { Button } from "@/components/ui/button";
 
 export default function Welcome() {
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+    <div 
+      className="min-h-screen bg-background flex flex-col items-center justify-center p-6"
+      style={{ paddingTop: "max(1.5rem, env(safe-area-inset-top))", paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
+    >
       <div className="flex flex-col items-center space-y-8 text-center max-w-md w-full">
         <div className="space-y-4">
           <div className="w-20 h-20 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto">

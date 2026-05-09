@@ -75,9 +75,16 @@ export default function AppLayout() {
           {NAV_ITEMS.map(({ path, icon: Icon, label }) => {
             const isActive = location.pathname === path;
             return (
-              <Link
+              <button
                 key={path}
-                to={path}
+                onClick={() => {
+                  if (isActive) {
+                    // Re-click on active tab: scroll to top
+                    mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                  } else {
+                    navigate(path);
+                  }
+                }}
                 className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all ${
                   isActive
                     ? "text-primary bg-primary/10"
@@ -86,7 +93,7 @@ export default function AppLayout() {
               >
                 <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 1.5} />
                 <span className="text-[10px] font-medium">{label}</span>
-              </Link>
+              </button>
             );
           })}
         </div>

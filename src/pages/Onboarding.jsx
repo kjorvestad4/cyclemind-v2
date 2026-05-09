@@ -110,7 +110,10 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div 
+      className="min-h-screen bg-background flex flex-col"
+      style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
       {/* Progress bar */}
       <div className="h-1 bg-muted">
         <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />

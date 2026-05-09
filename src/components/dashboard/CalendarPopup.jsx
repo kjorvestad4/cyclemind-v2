@@ -173,7 +173,11 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
   const title = cycleType === "postpartum" ? "View History" : cycleType === "pregnancy" ? "View History" : "Cycle Calendar";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={onClose}>
+    <div 
+      className="fixed inset-0 z-50 flex items-end justify-center" 
+      onClick={onClose}
+      style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
       <div
         className="relative w-full max-w-lg bg-background rounded-t-3xl border-t border-border shadow-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto"

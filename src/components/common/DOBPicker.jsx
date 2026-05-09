@@ -2,7 +2,7 @@ import { useState } from "react";
 import { format, subYears, parse, isValid } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar, X } from "lucide-react";
+import { Calendar, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function DOBPicker({ value, onChange, label = "Date of Birth", optional = false }) {
   const [showCalendar, setShowCalendar] = useState(false);
@@ -12,6 +12,8 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
     if (value) return new Date(value);
     return subYears(new Date(), 30);
   });
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
+  const [showYearPicker, setShowYearPicker] = useState(false);
 
   const handleDateSelect = (day) => {
     const year = calendarMonth.getFullYear();
@@ -117,33 +119,91 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
 
       {/* Calendar Popup */}
       {showCalendar && (
-        <div className="absolute z-50 bg-white dark:bg-slate-950 border border-border rounded-lg p-3 shadow-xl">
-          <div className="w-80">
-            {/* Month Navigation */}
-            <div className="flex items-center justify-between mb-3 gap-1">
-              <button onClick={handlePrevMonth} className="px-2 py-1 hover:bg-muted rounded text-sm shrink-0">←</button>
-              <div className="flex items-center gap-1 flex-1 justify-center">
-                <select
-                  value={calendarMonth.getMonth()}
-                  onChange={(e) => setCalendarMonth(new Date(calendarMonth.getFullYear(), parseInt(e.target.value)))}
-                  className="text-sm font-semibold bg-muted rounded px-1.5 py-1 border-none outline-none cursor-pointer"
-                >
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowCalendar(false)} />
+          <div className="relative bg-white dark:bg-slate-950 border border-border rounded-2xl md:rounded-lg p-4 shadow-xl max-h-[90vh] overflow-y-auto w-full md:w-80">
+            {/* Month/Year Pickers */}
+            {showMonthPicker ? (
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-center">Select Month</p>
+                <div className="grid grid-cols-3 gap-2">
                   {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m, i) => (
-                    <option key={m} value={i}>{m}</option>
+                    <button
+                      key={m}
+                      onClick={() => {
+                        setCalendarMonth(new Date(calendarMonth.getFullYear(), i));
+                        setShowMonthPicker(false);
+                      }}
+                      className={`py-2 px-2 rounded text-sm font-medium transition-colors ${
+                        calendarMonth.getMonth() === i
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted hover:bg-muted/80"
+                      }`}
+                    >
+                      {m}
+                    </button>
                   ))}
-                </select>
-                <select
-                  value={calendarMonth.getFullYear()}
-                  onChange={(e) => setCalendarMonth(new Date(parseInt(e.target.value), calendarMonth.getMonth()))}
-                  className="text-sm font-semibold bg-muted rounded px-1.5 py-1 border-none outline-none cursor-pointer"
+                </div>
+                <button
+                  onClick={() => setShowMonthPicker(false)}
+                  className="w-full py-2 text-sm font-medium hover:bg-muted rounded transition-colors"
                 >
-                  {Array.from({ length: 121 }, (_, i) => new Date().getFullYear() - i).map(y => (
-                    <option key={y} value={y}>{y}</option>
-                  ))}
-                </select>
+                  Back
+                </button>
               </div>
-              <button onClick={handleNextMonth} className="px-2 py-1 hover:bg-muted rounded text-sm shrink-0">→</button>
-            </div>
+            ) : showYearPicker ? (
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-center">Select Year</p>
+                <div className="grid grid-cols-4 gap-2 max-h-64 overflow-y-auto">
+                  {Array.from({ length: 121 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                    <button
+                      key={y}
+                      onClick={() => {
+                        setCalendarMonth(new Date(y, calendarMonth.getMonth()));
+                        setShowYearPicker(false);
+                      }}
+                      className={`py-2 px-2 rounded text-sm font-medium transition-colors ${
+                        calendarMonth.getFullYear() === y
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted hover:bg-muted/80"
+                      }`}
+                    >
+                      {y}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setShowYearPicker(false)}
+                  className="w-full py-2 text-sm font-medium hover:bg-muted rounded transition-colors"
+                >
+                  Back
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* Month Navigation */}
+                <div className="flex items-center justify-between mb-3 gap-1">
+                  <button onClick={handlePrevMonth} className="px-2 py-1 hover:bg-muted rounded text-sm shrink-0">
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <div className="flex items-center gap-1 flex-1 justify-center">
+                    <button
+                      onClick={() => setShowMonthPicker(true)}
+                      className="text-sm font-semibold bg-muted hover:bg-muted/80 rounded px-2 py-1 transition-colors"
+                    >
+                      {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][calendarMonth.getMonth()]}
+                    </button>
+                    <button
+                      onClick={() => setShowYearPicker(true)}
+                      className="text-sm font-semibold bg-muted hover:bg-muted/80 rounded px-2 py-1 transition-colors"
+                    >
+                      {calendarMonth.getFullYear()}
+                    </button>
+                  </div>
+                  <button onClick={handleNextMonth} className="px-2 py-1 hover:bg-muted rounded text-sm shrink-0">
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
 
             {/* Day Headers */}
             <div className="grid grid-cols-7 gap-1 mb-2 text-center">
@@ -186,13 +246,15 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
               })}
             </div>
 
-            {/* Close Button */}
-            <button
-              onClick={() => setShowCalendar(false)}
-              className="w-full mt-3 px-2 py-1 text-sm font-medium rounded hover:bg-muted"
-            >
-              Close Calendar
-            </button>
+                {/* Close Button */}
+                <button
+                  onClick={() => setShowCalendar(false)}
+                  className="w-full mt-3 px-2 py-1 text-sm font-medium rounded hover:bg-muted"
+                >
+                  Close Calendar
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

@@ -6,9 +6,9 @@ export default function About() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/50">
+      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/50" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Button variant="link" onClick={() => navigate('/')} className="text-foreground hover:text-primary">
             ← CycleMind
@@ -17,7 +17,7 @@ export default function About() {
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-4 py-16 space-y-12">
+      <div className="flex-1 max-w-4xl mx-auto px-4 py-16 space-y-12">
         {/* Hero */}
         <section className="space-y-4">
           <h1 className="font-serif text-4xl font-bold text-foreground">
