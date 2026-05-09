@@ -6,7 +6,7 @@ const SUGGESTED_MEDS = [
   "Prenatal Vitamin",
   "Antidepressants (SSRI/SNRI)",
   "Hormonal Birth Control",
-  "HRT",
+  "Hormone Replacement Therapy",
   "NSAIDs/Pain Relief",
   "Calcium/Vitamin B6",
   "Magnesium",
