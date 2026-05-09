@@ -1,7 +1,9 @@
+import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { CalendarDays, PenLine, BarChart3, BookOpen, User, ChevronLeft, LogOut } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
+import LunaButton from "@/components/luna/LunaButton";
 
 const NAV_ITEMS = [
   { path: "/dashboard", icon: CalendarDays, label: "Dashboard" },
@@ -16,6 +18,31 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const isRoot = location.pathname === "/";
   const mainRef = useScrollPosition(location.pathname);
+  const [user, setUser] = useState(null);
+  const [cycleData, setCycleData] = useState({ mode: 'menstrual', day: null, edd: null });
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const currentUser = await base44.auth.me();
+        setUser(currentUser);
+
+        const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, "-start_date", 1);
+        if (cycles.length > 0) {
+          const latestCycle = cycles[0];
+          setCycleData({
+            mode: latestCycle.cycle_type || 'menstrual',
+            day: latestCycle.cycle_day || null,
+            edd: latestCycle.estimated_due_date || null
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load user data for Luna:', err);
+      }
+    };
+
+    loadData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -65,6 +92,9 @@ export default function AppLayout() {
       >
         <Outlet />
       </main>
+
+      {/* Luna AI Button */}
+      <LunaButton user={user} cycleMode={cycleData.mode} cycleDay={cycleData.day} eddInfo={cycleData.edd} />
 
       {/* Bottom Navigation */}
       <nav
