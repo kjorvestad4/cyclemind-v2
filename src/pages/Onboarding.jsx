@@ -26,13 +26,13 @@ function WelcomeStep() {
 
       <div className="w-full space-y-3">
         <Button
-          onClick={() => base44.auth.redirectToLogin("/start?step=1")}
+          onClick={() => base44.auth.redirectToLogin("/start")}
           className="w-full h-12 rounded-2xl font-semibold text-base"
         >
           Get Started
         </Button>
         <Button
-          onClick={() => base44.auth.redirectToLogin("/start?step=1")}
+          onClick={() => base44.auth.redirectToLogin("/start")}
           variant="outline"
           className="w-full h-12 rounded-2xl font-semibold text-base"
         >
@@ -97,43 +97,24 @@ export default function Onboarding() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const stepParam = params.get("step");
-
-    if (stepParam) {
-      // Came back from Base44 login — must be authenticated now
-      base44.auth.me().then((u) => {
-        if (u?.onboarded) {
-          window.location.href = "/";
-          return;
-        }
-        if (u?.display_name) setFullName(u.display_name);
-        else if (u?.full_name) setFullName(u.full_name);
-        if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
-        setCurrentStep(parseInt(stepParam));
-      }).catch(() => {
-        // Auth failed — back to welcome
-        setCurrentStep(0);
-      });
-    } else {
-      // No step param — check if already authenticated
-      base44.auth.isAuthenticated().then((authed) => {
-        if (authed) {
-          base44.auth.me().then((u) => {
-            if (u?.onboarded) {
-              window.location.href = "/";
-              return;
-            }
-            if (u?.display_name) setFullName(u.display_name);
-            else if (u?.full_name) setFullName(u.full_name);
-            if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
-            setCurrentStep(1);
-          });
-        } else {
-          setCurrentStep(0); // Show welcome
-        }
-      });
-    }
+    // Check auth state — if authenticated, skip welcome and go to step 1
+    // If not, show welcome screen
+    base44.auth.isAuthenticated().then((authed) => {
+      if (authed) {
+        base44.auth.me().then((u) => {
+          if (u?.onboarded) {
+            window.location.href = "/";
+            return;
+          }
+          if (u?.display_name) setFullName(u.display_name);
+          else if (u?.full_name) setFullName(u.full_name);
+          if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
+          setCurrentStep(1); // authenticated but not onboarded → mode selection
+        });
+      } else {
+        setCurrentStep(0); // not authenticated → welcome screen
+      }
+    });
   }, []);
 
   const handleBack = () => {
