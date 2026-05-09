@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Check, Brain, Heart, Activity, TrendingUp, BarChart3 } from 'lucide-react';
 
@@ -10,9 +9,7 @@ export default function Landing() {
     navigate('/welcome');
   };
 
-  const handleSignIn = () => {
-    base44.auth.redirectToLogin("/");
-  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5">
@@ -21,13 +18,6 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="font-serif text-2xl font-bold text-foreground">CycleMind</h1>
           <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
-              onClick={handleSignIn}
-              className="text-sm"
-            >
-              Sign In
-            </Button>
             <Button variant="outline" onClick={() => navigate('/about')} className="text-sm">
               Learn More
             </Button>
