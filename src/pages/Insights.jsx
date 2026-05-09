@@ -104,7 +104,7 @@ export default function Insights() {
           )}
         </div>
 
-        {hasData && (
+        {hasData && user && getUserTier(user) !== TIERS.FREE && (
           <PdfReportButton cycles={cycles} entries={entries} analysis={analysis} user={user} />
         )}
       </div>
@@ -317,7 +317,7 @@ export default function Insights() {
       {hasData && <LoggedDataSummary entries={entries} cycles={cycles} cycleType={latestCycle?.cycle_type || "menstrual"} />}
 
       {/* SHARE WITH DOCTOR */}
-      {hasData && (
+      {hasData && user && getUserTier(user) !== TIERS.FREE && (
         <Card className="border-primary/20 bg-primary/3">
           <CardContent className="pt-5 pb-5">
             <ShareWithDoctor cycles={cycles} entries={entries} analysis={analysis} />
