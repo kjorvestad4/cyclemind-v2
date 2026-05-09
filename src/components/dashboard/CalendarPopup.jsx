@@ -351,43 +351,49 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                 {["menstrual", "perimenopause"].includes(cycleType) && (
                    <div className="space-y-2 pt-2 border-t border-border/40">
                     <Button
-                      variant="outline"
-                      size="sm"
                       onClick={() => {
                         toggleBleedingMutation.mutate(selectedDateInfo.dateStr);
                         setSelectedDateInfo(null);
                       }}
                       disabled={toggleBleedingMutation.isPending}
-                      className="w-full h-8 gap-1.5 text-xs"
+                      className={`w-full h-8 gap-1.5 text-xs font-semibold transition-all rounded-lg ${
+                        selectedDateInfo.markers.bleedingIntensity > 0
+                          ? "bg-red-500 hover:bg-red-600 text-white"
+                          : "bg-card border border-border text-muted-foreground hover:border-red-500/50"
+                      }`}
                     >
                       <Droplet className="h-3 w-3" />
                       {selectedDateInfo.markers.bleedingIntensity > 0 ? "Remove" : "Add"} Bleeding
                     </Button>
                     <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        toggleOvulationMutation.mutate(selectedDateInfo.dateStr);
-                        setSelectedDateInfo(null);
-                      }}
-                      disabled={toggleOvulationMutation.isPending}
-                      className="w-full h-8 gap-1.5 text-xs"
-                    >
-                      <Sparkles className="h-3 w-3" />
-                      {selectedDateInfo.markers.hasOvulation ? "Remove" : "Add"} Ovulation
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
                       onClick={() => {
                         toggleIntimacyMutation.mutate(selectedDateInfo.dateStr);
                         setSelectedDateInfo(null);
                       }}
                       disabled={toggleIntimacyMutation.isPending}
-                      className="w-full h-8 gap-1.5 text-xs"
+                      className={`w-full h-8 gap-1.5 text-xs font-semibold transition-all rounded-lg ${
+                        selectedDateInfo.markers.hasIntimacy
+                          ? "bg-pink-500 hover:bg-pink-600 text-white"
+                          : "bg-card border border-border text-muted-foreground hover:border-pink-500/50"
+                      }`}
                     >
                       <Heart className="h-3 w-3" />
                       {selectedDateInfo.markers.hasIntimacy ? "Remove" : "Add"} Intimacy
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        toggleOvulationMutation.mutate(selectedDateInfo.dateStr);
+                        setSelectedDateInfo(null);
+                      }}
+                      disabled={toggleOvulationMutation.isPending}
+                      className={`w-full h-8 gap-1.5 text-xs font-semibold transition-all rounded-lg ${
+                        selectedDateInfo.markers.hasOvulation
+                          ? "bg-amber-500 hover:bg-amber-600 text-white"
+                          : "bg-card border border-border text-muted-foreground hover:border-amber-500/50"
+                      }`}
+                    >
+                      <Sparkles className="h-3 w-3" />
+                      {selectedDateInfo.markers.hasOvulation ? "Remove" : "Add"} Ovulation
                     </Button>
                   </div>
                 )}
