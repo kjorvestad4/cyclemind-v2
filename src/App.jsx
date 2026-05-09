@@ -14,6 +14,8 @@ import Profile from '@/pages/Profile';
 import Onboarding from '@/pages/Onboarding';
 import Welcome from '@/pages/Welcome';
 import DoctorShareView from '@/pages/DoctorShareView';
+import Landing from '@/pages/Landing';
+import About from '@/pages/About';
 
 const pageVariants = {
   initial: { opacity: 0, x: 24 },
@@ -29,6 +31,10 @@ const AnimatedOutlet = () => {
       <Routes location={location}>
         <Route path="/share/:token" element={<DoctorShareView />} />
 
+        {/* Landing Pages */}
+        <Route path="/landing" element={<Landing />} />
+        <Route path="/about" element={<About />} />
+
         {/* Welcome + Onboarding */}
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/start" element={<Onboarding />} />
@@ -43,7 +49,7 @@ const AnimatedOutlet = () => {
           <Route path="/profile" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Profile /></motion.div>} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/welcome" replace />} />
+        <Route path="*" element={<Navigate to="/landing" replace />} />
       </Routes>
     </AnimatePresence>
   );
