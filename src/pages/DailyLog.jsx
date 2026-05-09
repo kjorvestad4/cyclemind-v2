@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, subDays, addDays, differenceInDays } from "date-fns";
@@ -7,6 +8,8 @@ import { ChevronLeft, ChevronRight, Save, Check, Trash2, Mic, ChevronDown, Chevr
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { canAccessMode, canAccessScale } from "@/lib/freemium";
+import UpgradeBanner from "@/components/common/UpgradeBanner";
 import SymptomGrid from "@/components/log/SymptomGrid";
 import BleedingPicker from "@/components/log/BleedingPicker";
 import MedicationsTaken from "@/components/log/MedicationsTaken";
@@ -434,6 +437,11 @@ export default function DailyLog() {
         cycleType={cycleType}
       />
 
+      {/* Upgrade Banner for Restricted Mode */}
+      {!canAccessMode(user, cycleType) && (
+        <UpgradeBanner feature={`${cycleType.charAt(0).toUpperCase() + cycleType.slice(1)} Tracking`} />
+      )}
+
       {/* MENSTRUAL MODE */}
       {isMenstrual && (
         <>
@@ -448,17 +456,23 @@ export default function DailyLog() {
             cervicalMucus={cervicalMucus}
             onChange={handleOvulationChange}
           />
-          <Section title="DRSP Symptoms" subtitle="PMDD symptom tracker · 1 = Not at all · 6 = Extreme" defaultOpen={true}>
-            <div className="pt-2">
-              <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
-            </div>
-          </Section>
-          <MoodScales
-            phq9Responses={phq9Responses}
-            gad7Responses={gad7Responses}
-            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
-            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
-          />
+          {canAccessScale(user, "drsp") ? (
+            <>
+              <Section title="DRSP Symptoms" subtitle="PMDD symptom tracker · 1 = Not at all · 6 = Extreme" defaultOpen={true}>
+                <div className="pt-2">
+                  <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
+                </div>
+              </Section>
+              <MoodScales
+                phq9Responses={phq9Responses}
+                gad7Responses={gad7Responses}
+                onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
+                onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+              />
+            </>
+          ) : (
+            <UpgradeBanner feature="Full DRSP & Mental Health Scales" />
+          )}
         </>
       )}
 

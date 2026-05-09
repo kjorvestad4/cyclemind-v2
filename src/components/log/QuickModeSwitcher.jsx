@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, Loader2, X, Crown } from "lucide-react";
 import { calculateEDD, getPregnancyWeek } from "@/lib/eddCalculation";
+import { canAccessMode } from "@/lib/freemium";
 import LMPPicker from "@/components/common/LMPPicker";
 
 const MODES = [
@@ -20,7 +21,12 @@ const MODES = [
 
 export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClose }) {
   const queryClient = useQueryClient();
+  const [user, setUser] = useState(null);
   const [selected, setSelected] = useState(currentCycleType || "menstrual");
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
   // Initialize with exact ISO string (YYYY-MM-DD), no conversion or defaulting
   const [lmp, setLmp] = useState(() => {
     const raw = latestCycle?.last_menstrual_period;
@@ -118,11 +124,23 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
           {MODES.map((mode) => {
             const isActive = selected === mode.id;
             const isCurrent = currentCycleType === mode.id;
+            const canAccess = canAccessMode(user, mode.id);
+            const isPremiumOnly = !canAccess;
+            
             return (
               <button
                 key={mode.id}
-                onClick={() => setSelected(mode.id)}
+                onClick={() => {
+                  if (isPremiumOnly) {
+                    toast.error("This mode requires Premium");
+                  } else {
+                    setSelected(mode.id);
+                  }
+                }}
+                disabled={isPremiumOnly && !isActive}
                 className={`w-full text-left rounded-2xl border-2 p-4 transition-all active:scale-[0.99] ${
+                  isPremiumOnly && !isActive ? "opacity-50 cursor-not-allowed" : ""
+                } ${
                   isActive ? mode.activeColor : mode.color + " hover:opacity-80"
                 }`}
               >
@@ -133,6 +151,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold">{mode.label}</span>
                         {isCurrent && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary font-semibold">Active</span>}
+                        {isPremiumOnly && !isActive && <Crown className="w-3.5 h-3.5 text-accent" />}
                       </div>
                     </div>
                   </div>

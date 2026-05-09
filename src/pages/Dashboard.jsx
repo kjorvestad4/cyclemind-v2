@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -7,6 +8,8 @@ import { PenLine, Check, Calendar as CalendarIcon, RefreshCw } from "lucide-reac
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Button } from "@/components/ui/button";
 import { calculateDayTotal, ALL_SYMPTOMS, getCycleDay } from "@/lib/symptoms";
+import { getUserTier, canAccessMode, TIERS } from "@/lib/freemium";
+import UpgradeBanner from "@/components/common/UpgradeBanner";
 import ModeBanner from "@/components/dashboard/ModeBanner";
 import ModeContent from "@/components/dashboard/ModeContent";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
@@ -15,6 +18,7 @@ import TodaySeverityCard from "@/components/dashboard/TodaySeverityCard";
 import { StreakWidget, RecentInsightsWidget, NextMilestoneWidget, QuickLinksRow } from "@/components/dashboard/UniversalWidgets";
 import OnboardingNudge from "@/components/dashboard/OnboardingNudge";
 import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBanner";
+import UpgradeBanner from "@/components/common/UpgradeBanner";
 
 function getGreeting() {
   return "Hello";
@@ -74,6 +78,10 @@ export default function Dashboard() {
   const cycleLength = latestCycle?.cycle_length || user?.cycle_length || 28;
 
   const filledCount = todayEntry ? ALL_SYMPTOMS.filter((s) => (todayEntry[s.key] || 0) > 0).length : 0;
+  
+  const userTier = getUserTier(user);
+  const isFreeUser = userTier === TIERS.FREE;
+  const isModeRestricted = isFreeUser && cycleType !== 'menstrual';
 
   return (
     <div className="space-y-5 pb-40 relative">
@@ -115,6 +123,11 @@ export default function Dashboard() {
 
         {/* Profile Completion Banner */}
         <ProfileCompletionBanner user={user} latestCycle={latestCycle} />
+
+        {/* Upgrade Banner for Restricted Mode */}
+        {isModeRestricted && (
+          <UpgradeBanner feature={`${cycleType.charAt(0).toUpperCase() + cycleType.slice(1)} Tracking`} />
+        )}
 
         {/* Mode Banner */}
         <ModeBanner
