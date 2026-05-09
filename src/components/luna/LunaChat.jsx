@@ -30,7 +30,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
         });
         setMessages([{
           role: 'assistant',
-          content: response.data.message || "Hello! How are you feeling today?"
+          content: response.data.message || "Hello. Is there any specific feelings or situation on your mind that you'd like to talk about? Remember this is not a substitute for professional medical advice. Please consult your doctor."
         }]);
         setInitialGreeting(false);
       } catch (err) {
