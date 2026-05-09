@@ -32,7 +32,7 @@ const AnimatedOutlet = () => {
         <Route path="/share/:token" element={<DoctorShareView />} />
 
         {/* Landing Pages */}
-        <Route path="/" element={<Landing />} />
+        <Route path="/landing" element={<Landing />} />
         <Route path="/about" element={<About />} />
 
         {/* Welcome + Onboarding */}
@@ -41,6 +41,7 @@ const AnimatedOutlet = () => {
 
         {/* Main app - protected by auth only */}
         <Route element={<AppLayout />}>
+          <Route path="/" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Dashboard /></motion.div>} />
           <Route path="/dashboard" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Dashboard /></motion.div>} />
           <Route path="/log" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><DailyLog /></motion.div>} />
           <Route path="/insights" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Insights /></motion.div>} />
