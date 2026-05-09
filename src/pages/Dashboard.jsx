@@ -30,6 +30,38 @@ export default function Dashboard() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
+  useEffect(() => {
+    const syncOnboardingData = async () => {
+      try {
+        const currentUser = await base44.auth.me();
+        const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, '-start_date', 1);
+
+        if (!currentUser.full_name || !currentUser.date_of_birth || cycles.length === 0) {
+          const name = localStorage.getItem("onboarding_fullName") || currentUser.full_name || "";
+          const dob = localStorage.getItem("onboarding_dob") || currentUser.date_of_birth || null;
+          const lmp = localStorage.getItem("onboarding_lmp") || null;
+          const cycleLength = localStorage.getItem("onboarding_cycleLength") || 28;
+
+          await base44.entities.User.update(currentUser.id, {
+            full_name: name,
+            date_of_birth: dob,
+          });
+
+          if (cycles.length === 0) {
+            await base44.entities.Cycle.create({
+              cycle_type: "menstrual",
+              last_menstrual_period: lmp,
+              cycle_length: parseInt(cycleLength),
+            });
+          }
+        }
+      } catch (e) {
+        console.error("Safety-net sync failed", e);
+      }
+    };
+    syncOnboardingData();
+  }, []);
+
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],
     queryFn: async () => {
