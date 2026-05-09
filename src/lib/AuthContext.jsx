@@ -60,13 +60,10 @@ export const AuthProvider = ({ children }) => {
 
       if (pendingMode) {
         // Save profile data from onboarding
-        await base44.entities.User.update(currentUser.id, {
-          full_name: pendingFullName || currentUser.full_name || null,
-          date_of_birth: pendingDob || null,
-        });
         await base44.auth.updateMe({
           onboarded: true,
           date_of_birth: pendingDob || null,
+          display_name: pendingFullName || null,
         });
         if (cycles.length === 0) {
           await base44.entities.Cycle.create({

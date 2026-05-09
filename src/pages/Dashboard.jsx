@@ -42,9 +42,9 @@ export default function Dashboard() {
           const lmp = localStorage.getItem("onboarding_lmp") || null;
           const cycleLength = localStorage.getItem("onboarding_cycleLength") || 28;
 
-          await base44.entities.User.update(currentUser.id, {
-            full_name: name,
-            date_of_birth: dob,
+          await base44.auth.updateMe({
+            display_name: name || null,
+            date_of_birth: dob || null,
           });
 
           if (cycles.length === 0) {
@@ -54,6 +54,10 @@ export default function Dashboard() {
               cycle_length: parseInt(cycleLength),
             });
           }
+
+          // Refresh user state so greeting updates
+          const updatedUser = await base44.auth.me();
+          setUser(updatedUser);
         }
       } catch (e) {
         console.error("Safety-net sync failed", e);

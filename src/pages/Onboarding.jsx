@@ -48,6 +48,14 @@ export default function Onboarding() {
     setSaving(true);
     const targetUrl = destination === "log" ? "/log" : "/";
     const today = format(new Date(), "yyyy-MM-dd");
+    const effectiveLmp = lmp || birthDate || today;
+
+    // Always persist to localStorage first as a safety net
+    localStorage.setItem("onboarding_mode", selectedMode);
+    localStorage.setItem("onboarding_lmp", effectiveLmp);
+    localStorage.setItem("onboarding_cycleLength", String(cycleLength || 28));
+    localStorage.setItem("onboarding_fullName", fullName || "");
+    localStorage.setItem("onboarding_dob", dateOfBirth || "");
 
     try {
       const currentUser = await base44.auth.me();
@@ -55,7 +63,7 @@ export default function Onboarding() {
       // 1. Create Cycle entity (active cycle)
       const cyclePayload = {
         cycle_type: selectedMode,
-        start_date: lmp || birthDate || today,
+        start_date: effectiveLmp,
         last_menstrual_period: lmp || (selectedMode === "pregnancy" ? null : birthDate || null),
         cycle_length: cycleLength || 28,
       };
@@ -65,29 +73,23 @@ export default function Onboarding() {
 
       const cycle = await base44.entities.Cycle.create(cyclePayload);
 
-      // 2. Save name + DOB directly to User entity
-      await base44.entities.User.update(currentUser.id, {
-        full_name: fullName || null,
-        date_of_birth: dateOfBirth || null,
-      });
-
-      // 3. Save additional prefs + onboarded flag
+      // 2. Save name + DOB to auth user
       await base44.auth.updateMe({
         date_of_birth: dateOfBirth || null,
+        display_name: fullName || null,
         onboarded: true,
         active_cycle_id: cycle.id,
         notification_time: reminderTime,
         unit_system: unitSystem,
       });
 
+      // Clear localStorage since we saved successfully
+      ["onboarding_mode","onboarding_lmp","onboarding_cycleLength","onboarding_fullName","onboarding_dob"]
+        .forEach(k => localStorage.removeItem(k));
+
       toast.success("Welcome to CycleMind!");
     } catch (e) {
-      // Not logged in yet — store onboarding data for after login
-      localStorage.setItem("onboarding_mode", selectedMode);
-      localStorage.setItem("onboarding_lmp", lmp || birthDate || today);
-      localStorage.setItem("onboarding_cycleLength", String(cycleLength || 28));
-      localStorage.setItem("onboarding_fullName", fullName || "");
-      localStorage.setItem("onboarding_dob", dateOfBirth || "");
+      // Not logged in — localStorage already set above, AuthContext will sync on login
     }
     
     // Hard navigate
