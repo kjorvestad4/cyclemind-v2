@@ -152,7 +152,7 @@ export default function Onboarding() {
                 setUnitSystem={setUnitSystem}
                 onNext={() => {}}
               />
-              <div className="w-full pt-4 border-t border-border/40">
+              <div className="w-full pt-4 border-t border-border/40 space-y-2">
                 <Button
                   onClick={handleComplete}
                   disabled={saving}
@@ -160,6 +160,14 @@ export default function Onboarding() {
                 >
                   {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
                   Get Started
+                </Button>
+                <Button
+                  onClick={handleComplete}
+                  variant="outline"
+                  disabled={saving}
+                  className="w-full h-10 rounded-2xl font-semibold text-base"
+                >
+                  Add Later
                 </Button>
               </div>
             </div>
