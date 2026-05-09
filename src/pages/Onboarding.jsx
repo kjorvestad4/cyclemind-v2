@@ -64,9 +64,17 @@ export default function Onboarding() {
       const cycle = await base44.entities.Cycle.create(cyclePayload);
       const cycleId = cycle.id;
 
-      // 2. Save User entity with full_name and date_of_birth
-      await base44.auth.updateMe({
+      // 2. Get current user
+      const currentUser = await base44.auth.me();
+
+      // 3. Save name + DOB directly to User entity
+      await base44.entities.User.update(currentUser.id, {
         full_name: fullName || null,
+        date_of_birth: dateOfBirth || null,
+      });
+
+      // 4. Save additional prefs + onboarded flag
+      await base44.auth.updateMe({
         date_of_birth: dateOfBirth || null,
         onboarded: true,
         active_cycle_id: cycleId,
