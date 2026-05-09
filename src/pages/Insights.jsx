@@ -12,6 +12,7 @@ import { ALL_SYMPTOMS, SYMPTOM_CATEGORIES, calculateDayTotal } from "@/lib/sympt
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PdfReportButton from "@/components/insights/PdfReportButton";
 import ShareWithDoctor from "@/components/insights/ShareWithDoctor";
+import LoggedDataSummary from "@/components/insights/LoggedDataSummary";
 
 const CHART_TOOLTIP_STYLE = {
   contentStyle: {
@@ -304,6 +305,9 @@ export default function Insights() {
           </CardContent>
         </Card>
       )}
+
+      {/* LOGGED DATA SUMMARY — Vitals, Intimacy, Flow, Meds, Ovulation, CM */}
+      {hasData && <LoggedDataSummary entries={entries} cycles={cycles} />}
 
       {/* SHARE WITH DOCTOR */}
       {hasData && (
