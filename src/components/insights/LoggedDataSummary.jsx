@@ -248,7 +248,8 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
           </CardContent>
         </Card>
       )}
-      </div>
+
+      {/* Medications */}
       {medsList.length > 0 && (
         <Card className="border-border/50">
           <CardHeader className="pb-2">
