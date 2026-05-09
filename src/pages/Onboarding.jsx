@@ -92,7 +92,7 @@ export default function Onboarding() {
       }
 
       toast.success("Welcome to CycleMind! 💜");
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     } finally {
       setSaving(false);
     }

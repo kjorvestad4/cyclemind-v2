@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 
       const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, '-start_date', 1);
 
-      if (!currentUser.onboarded && !window.location.pathname.startsWith('/start')) {
+      if (!currentUser.onboarded && !window.location.pathname.startsWith('/start') && !window.location.pathname.startsWith('/dashboard')) {
         // New user — send to onboarding
         window.location.href = '/start';
         return;
