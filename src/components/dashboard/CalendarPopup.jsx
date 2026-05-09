@@ -313,29 +313,124 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                 {/* Clinical Scores */}
                   {selectedDateInfo.entry && (
                     <div className="space-y-1">
-                      {["menstrual", "perimenopause"].includes(cycleType) && selectedDateInfo.entry.phq9_score > 0 && (
-                        <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
-                          <span className="text-muted-foreground">PHQ-9</span>
-                          <span className="font-bold text-primary">{selectedDateInfo.entry.phq9_score} / 27</span>
-                        </div>
+                      {cycleType === "menstrual" && (
+                        <>
+                          <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                            <span className="text-muted-foreground">DRSP</span>
+                            <span className="font-bold text-primary">{calculateDayTotal(selectedDateInfo.entry)}</span>
+                          </div>
+                          {selectedDateInfo.entry.phq9_score > 0 && (
+                            <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                              <span className="text-muted-foreground">PHQ-9</span>
+                              <span className="font-bold text-primary">{selectedDateInfo.entry.phq9_score} / 27</span>
+                            </div>
+                          )}
+                          {selectedDateInfo.entry.gad7_score > 0 && (
+                            <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                              <span className="text-muted-foreground">GAD-7</span>
+                              <span className="font-bold text-primary">{selectedDateInfo.entry.gad7_score} / 21</span>
+                            </div>
+                          )}
+                        </>
                       )}
-                      {["menstrual", "perimenopause"].includes(cycleType) && selectedDateInfo.entry.gad7_score > 0 && (
-                        <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
-                          <span className="text-muted-foreground">GAD-7</span>
-                          <span className="font-bold text-primary">{selectedDateInfo.entry.gad7_score} / 21</span>
-                        </div>
+
+                      {cycleType === "pregnancy" && (
+                        <>
+                          {(() => {
+                            const pregnancySymptoms = ["p_nausea", "p_vomiting", "p_fatigue", "p_mood_changes", "p_sleep_issues"];
+                            const total = pregnancySymptoms.reduce((sum, key) => sum + (selectedDateInfo.entry[key] || 0), 0);
+                            return total > 0 ? (
+                              <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                                <span className="text-muted-foreground">Pregnancy Symptoms</span>
+                                <span className="font-bold text-primary">{total}</span>
+                              </div>
+                            ) : null;
+                          })()}
+                          {selectedDateInfo.entry.epds_score > 0 && (
+                            <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                              <span className="text-muted-foreground">EPDS</span>
+                              <span className="font-bold text-primary">{selectedDateInfo.entry.epds_score} / 30</span>
+                            </div>
+                          )}
+                          {selectedDateInfo.entry.phq9_score > 0 && (
+                            <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                              <span className="text-muted-foreground">PHQ-9</span>
+                              <span className="font-bold text-primary">{selectedDateInfo.entry.phq9_score} / 27</span>
+                            </div>
+                          )}
+                          {selectedDateInfo.entry.gad7_score > 0 && (
+                            <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                              <span className="text-muted-foreground">GAD-7</span>
+                              <span className="font-bold text-primary">{selectedDateInfo.entry.gad7_score} / 21</span>
+                            </div>
+                          )}
+                        </>
                       )}
-                      {cycleType === "postpartum" && selectedDateInfo.entry.epds_score > 0 && (
-                        <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
-                          <span className="text-muted-foreground">EPDS</span>
-                          <span className="font-bold text-primary">{selectedDateInfo.entry.epds_score} / 30</span>
-                        </div>
+
+                      {cycleType === "postpartum" && (
+                        <>
+                          {(() => {
+                            const postpartumSymptoms = ["pp_lochiaBleeding", "pp_perinealPain", "pp_incisionPain", "pp_breastEngorgement", "pp_fatigue", "pp_moodChanges"];
+                            const total = postpartumSymptoms.reduce((sum, key) => sum + (selectedDateInfo.entry[key] || 0), 0);
+                            return total > 0 ? (
+                              <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                                <span className="text-muted-foreground">Postpartum Symptoms</span>
+                                <span className="font-bold text-primary">{total}</span>
+                              </div>
+                            ) : null;
+                          })()}
+                          {selectedDateInfo.entry.epds_score > 0 && (
+                            <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                              <span className="text-muted-foreground">EPDS</span>
+                              <span className="font-bold text-primary">{selectedDateInfo.entry.epds_score} / 30</span>
+                            </div>
+                          )}
+                          {selectedDateInfo.entry.phq9_score > 0 && (
+                            <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                              <span className="text-muted-foreground">PHQ-9</span>
+                              <span className="font-bold text-primary">{selectedDateInfo.entry.phq9_score} / 27</span>
+                            </div>
+                          )}
+                          {selectedDateInfo.entry.gad7_score > 0 && (
+                            <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                              <span className="text-muted-foreground">GAD-7</span>
+                              <span className="font-bold text-primary">{selectedDateInfo.entry.gad7_score} / 21</span>
+                            </div>
+                          )}
+                        </>
                       )}
-                      {(cycleType === "menopause" || cycleType === "perimenopause") && selectedDateInfo.entry.gad7_score > 0 && (
-                        <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
-                          <span className="text-muted-foreground">GAD-7</span>
-                          <span className="font-bold text-primary">{selectedDateInfo.entry.gad7_score} / 21</span>
-                        </div>
+
+                      {(cycleType === "menopause" || cycleType === "perimenopause") && (
+                        <>
+                          {selectedDateInfo.entry.m_hot_flashes > 0 && (
+                            <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                              <span className="text-muted-foreground">Hot Flashes</span>
+                              <span className="font-bold text-primary">{selectedDateInfo.entry.m_hot_flashes} / 6</span>
+                            </div>
+                          )}
+                          {(() => {
+                            const menopauseSymptoms = ["m_night_sweats", "m_vaginal_dryness", "m_mood_swings", "m_brain_fog", "m_fatigue"];
+                            const total = menopauseSymptoms.reduce((sum, key) => sum + (selectedDateInfo.entry[key] || 0), 0);
+                            return total > 0 ? (
+                              <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                                <span className="text-muted-foreground">Peri/Menopause Symptoms</span>
+                                <span className="font-bold text-primary">{total}</span>
+                              </div>
+                            ) : null;
+                          })()}
+                          {selectedDateInfo.entry.phq9_score > 0 && (
+                            <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                              <span className="text-muted-foreground">PHQ-9</span>
+                              <span className="font-bold text-primary">{selectedDateInfo.entry.phq9_score} / 27</span>
+                            </div>
+                          )}
+                          {selectedDateInfo.entry.gad7_score > 0 && (
+                            <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                              <span className="text-muted-foreground">GAD-7</span>
+                              <span className="font-bold text-primary">{selectedDateInfo.entry.gad7_score} / 21</span>
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   )}
