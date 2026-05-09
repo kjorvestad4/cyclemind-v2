@@ -59,6 +59,7 @@ export default function Onboarding() {
 
       // 2. Save User profile: name, DOB, and onboarding state
       await base44.auth.updateMe({
+        full_name: fullName || null,
         display_name: fullName || null,
         date_of_birth: dateOfBirth || null,
         onboarded: true,
