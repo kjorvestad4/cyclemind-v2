@@ -498,7 +498,7 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
       {/* Menopause/Perimenopause-specific Trends */}
       {(cycleType === "menopause" || cycleType === "perimenopause") && (
         <>
-          {hotFlashTrend.length > 2 && (
+          {hotFlashTrend.length > 0 && (
             <Card className="border-border/50">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -520,7 +520,7 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
             </Card>
           )}
 
-          {menopauseTrend.length > 2 && (
+          {menopauseTrend.length > 0 && (
             <Card className="border-border/50">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
