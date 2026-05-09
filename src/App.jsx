@@ -33,6 +33,7 @@ const AnimatedOutlet = () => {
 
         {/* Landing Pages */}
         <Route path="/" element={<Landing />} />
+        <Route path="/landing" element={<Landing />} />
         <Route path="/about" element={<About />} />
 
         {/* Welcome + Onboarding */}
