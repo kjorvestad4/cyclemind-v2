@@ -60,34 +60,38 @@ export default function Onboarding() {
     try {
       const currentUser = await base44.auth.me();
 
-      // 1. Create Cycle entity (active cycle)
+      // 1. Always save name + DOB to auth user
+      await base44.auth.updateMe({
+        date_of_birth: dateOfBirth || null,
+        display_name: fullName || null,
+        onboarded: true,
+        notification_time: reminderTime,
+        unit_system: unitSystem,
+      });
+
+      // 2. Upsert cycle: update existing latest cycle or create new one
       const cyclePayload = {
         cycle_type: selectedMode,
         start_date: effectiveLmp,
         last_menstrual_period: lmp || (selectedMode === "pregnancy" ? null : birthDate || null),
         cycle_length: cycleLength || 28,
       };
-      if (selectedMode === "pregnancy") cyclePayload.estimated_ovulation_date = ovulationDate || null;
+      if (selectedMode === "pregnancy") cyclePayload.ovulation_date = ovulationDate || null;
       if (selectedMode === "perimenopause" || selectedMode === "menopause") cyclePayload.hrt_type = hrtType || null;
       if (selectedMode === "postpartum") cyclePayload.start_date = birthDate || today;
 
-      const cycle = await base44.entities.Cycle.create(cyclePayload);
-
-      // 2. Save name + DOB to auth user
-      await base44.auth.updateMe({
-        date_of_birth: dateOfBirth || null,
-        display_name: fullName || null,
-        onboarded: true,
-        active_cycle_id: cycle.id,
-        notification_time: reminderTime,
-        unit_system: unitSystem,
-      });
+      const existingCycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, "-start_date", 1);
+      if (existingCycles.length > 0) {
+        await base44.entities.Cycle.update(existingCycles[0].id, cyclePayload);
+      } else {
+        await base44.entities.Cycle.create(cyclePayload);
+      }
 
       // Clear localStorage since we saved successfully
       ["onboarding_mode","onboarding_lmp","onboarding_cycleLength","onboarding_fullName","onboarding_dob"]
         .forEach(k => localStorage.removeItem(k));
 
-      toast.success("Welcome to CycleMind!");
+      toast.success("Profile updated!");
     } catch (e) {
       // Not logged in — localStorage already set above, AuthContext will sync on login
     }
