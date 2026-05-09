@@ -104,8 +104,18 @@ export default function Insights() {
           )}
         </div>
 
-        {hasData && user && getUserTier(user) !== TIERS.FREE && (
-          <PdfReportButton cycles={cycles} entries={entries} analysis={analysis} user={user} />
+        {hasData && (
+          user && getUserTier(user) === TIERS.FREE ? (
+            <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-2xl p-4">
+              <p className="text-sm font-semibold text-foreground">Want a clinical report?</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Upgrade to Premium to generate and download PDF reports.</p>
+              <button onClick={() => window.location.href = '/billing'} className="mt-3 px-3 py-1.5 text-xs font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                Upgrade Now
+              </button>
+            </div>
+          ) : (
+            <PdfReportButton cycles={cycles} entries={entries} analysis={analysis} user={user} />
+          )
         )}
       </div>
 
@@ -317,12 +327,28 @@ export default function Insights() {
       {hasData && <LoggedDataSummary entries={entries} cycles={cycles} cycleType={latestCycle?.cycle_type || "menstrual"} />}
 
       {/* SHARE WITH DOCTOR */}
-      {hasData && user && getUserTier(user) !== TIERS.FREE && (
-        <Card className="border-primary/20 bg-primary/3">
-          <CardContent className="pt-5 pb-5">
-            <ShareWithDoctor cycles={cycles} entries={entries} analysis={analysis} />
-          </CardContent>
-        </Card>
+      {hasData && (
+        user && getUserTier(user) === TIERS.FREE ? (
+          <Card className="border-primary/20 bg-primary/3">
+            <CardContent className="pt-5 pb-5">
+              <div className="space-y-3">
+                <div>
+                  <p className="font-semibold text-foreground">Share with your doctor?</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Create shareable links and send your data securely to your healthcare provider.</p>
+                </div>
+                <button onClick={() => window.location.href = '/billing'} className="px-3 py-1.5 text-xs font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                  Upgrade to Premium
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="border-primary/20 bg-primary/3">
+            <CardContent className="pt-5 pb-5">
+              <ShareWithDoctor cycles={cycles} entries={entries} analysis={analysis} />
+            </CardContent>
+          </Card>
+        )
       )}
 
       <Disclaimer />
