@@ -7,6 +7,7 @@ export default function OnboardingStep3({
   setReminderTime,
   unitSystem,
   setUnitSystem,
+  onSkipReminder,
 }) {
   return (
     <div className="flex flex-col items-center justify-center flex-1 space-y-6 text-center max-w-md mx-auto">
@@ -22,7 +23,17 @@ export default function OnboardingStep3({
       <div className="w-full space-y-5">
         {/* Daily Log Reminder */}
         <div className="space-y-2 text-left">
-          <Label className="text-sm font-semibold">Daily Log Reminder Time</Label>
+          <div className="flex items-center justify-between">
+            <Label className="text-sm font-semibold">Daily Log Reminder Time</Label>
+            {onSkipReminder && (
+              <button
+                onClick={onSkipReminder}
+                className="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
+              >
+                Add Later
+              </button>
+            )}
+          </div>
           <Input
             type="time"
             value={reminderTime}
