@@ -472,6 +472,18 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
             </Card>
           )}
 
+          {spottingDays > 0 && (
+            <Card className="border-border/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">Spotting Trend</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-orange-600">{spottingDays}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">days with spotting or bleeding</p>
+              </CardContent>
+            </Card>
+          )}
+
           {epdsTrend.length > 0 && (
             <Card className="border-border/50">
               <CardHeader className="pb-2">
@@ -492,8 +504,8 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
               </CardContent>
             </Card>
           )}
-        </>
-      )}
+          </>
+          )}
 
       {/* Menopause/Perimenopause-specific Trends */}
       {(cycleType === "menopause" || cycleType === "perimenopause") && (
