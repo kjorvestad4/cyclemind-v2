@@ -66,10 +66,6 @@ export default function Onboarding() {
         return;
       }
       base44.auth.me().then((u) => {
-        if (u?.onboarded) {
-          window.location.href = "/";
-          return;
-        }
         if (u?.display_name) setFullName(u.display_name);
         else if (u?.full_name) setFullName(u.full_name);
         if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
