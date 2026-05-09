@@ -72,7 +72,8 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
               for (const fmt of formats) {
                 const parsed = parse(input, fmt, new Date());
                 if (isValid(parsed)) {
-                  onChange(format(parsed, "yyyy-MM-dd"));
+                  const isoString = `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, "0")}-${String(parsed.getDate()).padStart(2, "0")}`;
+                  onChange(isoString);
                   return;
                 }
               }
