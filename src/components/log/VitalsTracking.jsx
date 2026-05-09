@@ -7,6 +7,7 @@ const VITAL_FIELDS = [
   { key: "systolic_bp", label: "Systolic BP", unit: "mmHg", range: "< 120", placeholder: "e.g. 115" },
   { key: "diastolic_bp", label: "Diastolic BP", unit: "mmHg", range: "< 80", placeholder: "e.g. 75" },
   { key: "respiratory_rate", label: "Respiratory Rate", unit: "breaths/min", range: "12–20", placeholder: "e.g. 16" },
+  { key: "basal_body_temp", label: "Basal Body Temperature", unit: "°F / °C", range: "96.3–97.6°F", placeholder: "e.g. 97.2" },
   { key: "weight", label: "Weight", unit: "lbs / kg", range: "varies", placeholder: "e.g. 150" },
   { key: "height", label: "Height", unit: "in / cm", range: "once", placeholder: "e.g. 65" },
 ];

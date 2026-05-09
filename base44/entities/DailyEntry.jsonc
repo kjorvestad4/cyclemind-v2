@@ -437,6 +437,10 @@
       "type": "number",
       "description": "Respiratory rate in breaths per minute"
     },
+    "basal_body_temp": {
+      "type": "number",
+      "description": "Basal body temperature (\u00b0F or \u00b0C)"
+    },
     "weight": {
       "type": "number",
       "description": "Weight in lbs or kg"

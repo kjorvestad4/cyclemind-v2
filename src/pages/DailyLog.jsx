@@ -178,6 +178,7 @@ export default function DailyLog() {
         systolic_bp: existingEntry.systolic_bp || "",
         diastolic_bp: existingEntry.diastolic_bp || "",
         respiratory_rate: existingEntry.respiratory_rate || "",
+        basal_body_temp: existingEntry.basal_body_temp || "",
         weight: existingEntry.weight || "",
         height: existingEntry.height || "",
       });
@@ -255,6 +256,7 @@ export default function DailyLog() {
       systolic_bp: vitals.systolic_bp || undefined,
       diastolic_bp: vitals.diastolic_bp || undefined,
       respiratory_rate: vitals.respiratory_rate || undefined,
+      basal_body_temp: vitals.basal_body_temp || undefined,
       weight: vitals.weight || undefined,
       height: vitals.height || undefined,
       // isPostpartum uses pp_* keys (populated below via PP_SYMPTOM_KEYS loop)
