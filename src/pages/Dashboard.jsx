@@ -45,7 +45,9 @@ export default function Dashboard() {
           if (cycles.length > 0) {
             const latest = cycles[0];
             if (latest.cycle_type && latest.cycle_type !== "menstrual") {
-              base44.entities.Cycle.update(latest.id, { cycle_type: "menstrual" });
+              base44.entities.Cycle.update(latest.id, { cycle_type: "menstrual" }).then(() => {
+                queryClient.invalidateQueries({ queryKey: ["cycles"] });
+              });
             }
           }
         });
@@ -54,7 +56,7 @@ export default function Dashboard() {
     // Re-fetch after a short delay to pick up any AuthContext sync (e.g. onboarding data)
     const t = setTimeout(() => base44.auth.me().then(setUser).catch(() => {}), 2000);
     return () => clearTimeout(t);
-  }, []);
+  }, [queryClient]);
 
 
 
