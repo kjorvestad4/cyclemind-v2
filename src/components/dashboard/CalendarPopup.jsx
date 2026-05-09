@@ -245,8 +245,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                      title={`${dateStr}${severity ? ` · Severity ${Math.round(severity)}%` : ""}`}
                    >
                      <div className="flex flex-col items-center gap-0.5 flex-1 justify-start">
-                       <span className="text-lg font-bold leading-none">{day}</span>
-                       {isToday && <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Today</span>}
+                       <span className={`text-lg font-bold leading-none ${isToday ? "text-primary" : ""}`}>{day}</span>
                      </div>
 
                      <div className="flex flex-col items-center gap-1 flex-1 justify-center">
