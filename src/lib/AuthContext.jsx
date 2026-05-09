@@ -50,16 +50,16 @@ export const AuthProvider = ({ children }) => {
 
       const today = new Date().toISOString().split('T')[0];
 
-      const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, '-start_date', 1);
+       const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, '-start_date', 1);
 
-      if (!currentUser.onboarded && !window.location.pathname.startsWith('/start') && !window.location.pathname.startsWith('/dashboard')) {
-        // New user — send to onboarding
-        window.location.href = '/start';
-        return;
-      } else if (currentUser.onboarded && window.location.pathname === '/welcome') {
-        // Already onboarded — skip welcome and go to dashboard
-        window.location.href = '/';
-        return;
+       if (!currentUser.onboarded && !window.location.pathname.startsWith('/start')) {
+         // New user — send to onboarding
+         window.location.href = '/start';
+         return;
+       } else if (currentUser.onboarded && (window.location.pathname === '/' || window.location.pathname === '/welcome' || window.location.pathname === '/landing')) {
+         // Already onboarded — go to dashboard
+         window.location.href = '/dashboard';
+         return;
       } else if (cycles.length === 0) {
         // Onboarded but missing cycle — create a default one
         await base44.entities.Cycle.create({
