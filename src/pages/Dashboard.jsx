@@ -34,39 +34,50 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const syncOnboardingData = async () => {
+    const forceSyncOnboardingData = async () => {
       try {
         const currentUser = await base44.auth.me();
-        const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, '-start_date', 1);
 
-        if (!currentUser.full_name || !currentUser.date_of_birth || cycles.length === 0) {
-          const name = localStorage.getItem("onboarding_fullName") || currentUser.full_name || "";
-          const dob = localStorage.getItem("onboarding_dob") || currentUser.date_of_birth || null;
-          const lmp = localStorage.getItem("onboarding_lmp") || null;
-          const cycleLength = localStorage.getItem("onboarding_cycleLength") || 28;
+        const pendingName = localStorage.getItem("onboarding_fullName");
+        const pendingDob = localStorage.getItem("onboarding_dob");
+        const pendingLmp = localStorage.getItem("onboarding_lmp");
+        const pendingCycleLength = localStorage.getItem("onboarding_cycleLength");
 
-          await base44.auth.updateMe({
-            display_name: name || null,
-            date_of_birth: dob || null,
-          });
+        if (pendingName || pendingDob || pendingLmp || pendingCycleLength) {
+          // Save profile data via auth API
+          const profileUpdate = {};
+          if (pendingName) profileUpdate.display_name = pendingName;
+          if (pendingDob) profileUpdate.date_of_birth = pendingDob;
+          await base44.auth.updateMe(profileUpdate);
 
-          if (cycles.length === 0) {
-            await base44.entities.Cycle.create({
-              cycle_type: "menstrual",
-              last_menstrual_period: lmp,
-              cycle_length: parseInt(cycleLength),
-            });
+          // Upsert cycle data
+          const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, '-start_date', 1);
+          const cyclePayload = {
+            cycle_type: localStorage.getItem("onboarding_mode") || "menstrual",
+            last_menstrual_period: pendingLmp || null,
+            start_date: pendingLmp || new Date().toISOString().split('T')[0],
+            cycle_length: parseInt(pendingCycleLength) || 28,
+          };
+          if (cycles.length > 0) {
+            await base44.entities.Cycle.update(cycles[0].id, cyclePayload);
+          } else {
+            await base44.entities.Cycle.create(cyclePayload);
           }
 
-          // Refresh user state so greeting updates
+          // Clear localStorage
+          ["onboarding_fullName", "onboarding_dob", "onboarding_lmp", "onboarding_cycleLength", "onboarding_mode"]
+            .forEach(k => localStorage.removeItem(k));
+
+          // Refresh user state and cycle query so banner and mode content update
           const updatedUser = await base44.auth.me();
           setUser(updatedUser);
+          queryClient.invalidateQueries({ queryKey: ["cycles"] });
         }
       } catch (e) {
-        console.error("Safety-net sync failed", e);
+        console.error("Dashboard safety-net sync failed", e);
       }
     };
-    syncOnboardingData();
+    forceSyncOnboardingData();
   }, []);
 
   const { data: cycles = [] } = useQuery({
