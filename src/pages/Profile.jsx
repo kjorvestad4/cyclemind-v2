@@ -314,13 +314,18 @@ export default function Profile() {
 
   const saveProfile = async () => {
     setSavingProfile(true);
-    await base44.auth.updateMe({ 
-      date_of_birth: dateOfBirth || null,
-      display_name: fullName || null,
-    });
-    setUser((prev) => ({ ...prev, date_of_birth: dateOfBirth, display_name: fullName }));
-    toast.success("Profile saved!");
-    setSavingProfile(false);
+    try {
+      await base44.auth.updateMe({ 
+        date_of_birth: dateOfBirth || null,
+        display_name: fullName || null,
+      });
+      setUser((prev) => ({ ...prev, date_of_birth: dateOfBirth, display_name: fullName }));
+      toast.success("Profile saved!");
+    } catch (e) {
+      toast.error("Could not save profile. Please make sure you're logged in.");
+    } finally {
+      setSavingProfile(false);
+    }
   };
 
   const { data: cycles = [] } = useQuery({
