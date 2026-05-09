@@ -450,12 +450,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                         <span>Ovulation detected</span>
                       </div>
                     )}
-                    {selectedDateInfo.entry.epds_score > 0 && (
-                      <div className="flex items-center gap-2 text-xs">
-                        <AlertCircle className="h-3 w-3 text-orange-500" />
-                        <span>EPDS: {selectedDateInfo.entry.epds_score}</span>
-                      </div>
-                    )}
+
                     {selectedDateInfo.entry.journal_entry && (
                       <div className="text-xs p-2 rounded bg-muted italic text-muted-foreground line-clamp-2">
                         "{selectedDateInfo.entry.journal_entry}"
