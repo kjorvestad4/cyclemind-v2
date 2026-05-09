@@ -451,7 +451,7 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
       {/* Postpartum-specific Trends */}
       {cycleType === "postpartum" && (
         <>
-          {postpartumTrend.length > 2 && (
+          {postpartumTrend.length > 0 && (
             <Card className="border-border/50">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold">Postpartum Symptoms</CardTitle>
