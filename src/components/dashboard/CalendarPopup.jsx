@@ -125,21 +125,31 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
     return "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300";
   };
 
-  // Get phase info for menstrual cycle
+  // Get phase info for menstrual cycle — projects 6+ cycles into the future
   const getPhaseColor = (dateStr) => {
+    if (cycleType !== "menstrual") return null;
     const latestCycle = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
-    if (!latestCycle || cycleType !== "menstrual") return null;
+    if (!latestCycle) return null;
 
-    const cycleStart = new Date(latestCycle.start_date);
-    const dateObj = new Date(dateStr);
-    const dayInCycle = Math.floor((dateObj - cycleStart) / 86400000) + 1;
     const cycleLength = latestCycle.cycle_length || 28;
+    const lmpStr = latestCycle.last_menstrual_period || latestCycle.start_date;
+    const lmp = new Date(lmpStr);
+    const dateObj = new Date(dateStr);
 
-    if (dayInCycle < 1 || dayInCycle > cycleLength) return null;
+    // Total days from LMP
+    const totalDays = Math.floor((dateObj - lmp) / 86400000);
+    if (totalDays < 0) return null;
+
+    // Only show up to 6 full cycles ahead
+    const maxDays = cycleLength * 7;
+    if (totalDays > maxDays) return null;
+
+    // Day within the current projected cycle (1-based)
+    const dayInCycle = (totalDays % cycleLength) + 1;
 
     if (dayInCycle <= 5) return "🌙"; // Menstrual
     if (dayInCycle <= 12) return "🌱"; // Follicular
-    if (dayInCycle >= 12 && dayInCycle <= 16) return "💜"; // Ovulatory
+    if (dayInCycle <= 16) return "💜"; // Ovulatory
     return "🌊"; // Luteal
   };
 
