@@ -301,36 +301,14 @@ export default function Profile() {
   const [fullName, setFullName] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
 
-  const loadUser = async () => {
-    try {
-      // First check if there are any pending localStorage values to sync (safety net)
-      const pendingName = localStorage.getItem("onboarding_fullName");
-      const pendingDob = localStorage.getItem("onboarding_dob");
-      const pendingMode = localStorage.getItem("onboarding_mode");
-
-      if (pendingName || pendingDob) {
-        const profileUpdate = {};
-        if (pendingName) profileUpdate.display_name = pendingName;
-        if (pendingDob) profileUpdate.date_of_birth = pendingDob;
-        await base44.auth.updateMe(profileUpdate);
-        ["onboarding_fullName", "onboarding_dob", "onboarding_mode"].forEach(k => localStorage.removeItem(k));
-      } else if (pendingMode) {
-        localStorage.removeItem("onboarding_mode");
-      }
-
-      const u = await base44.auth.me();
+  useEffect(() => {
+    base44.auth.me().then((u) => {
       setUser(u);
       if (u?.cycle_length) setCycleLength(u.cycle_length);
       if (u?.ovulation_day) setOvulationDay(u.ovulation_day);
       if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
       setFullName(u?.display_name || u?.full_name || "");
-    } catch (e) {
-      console.error("Profile: failed to load user", e);
-    }
-  };
-
-  useEffect(() => {
-    loadUser();
+    }).catch(() => {});
   }, []);
 
   const saveProfile = async () => {

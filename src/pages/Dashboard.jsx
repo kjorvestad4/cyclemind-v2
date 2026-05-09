@@ -33,52 +33,7 @@ export default function Dashboard() {
     return () => clearTimeout(t);
   }, []);
 
-  useEffect(() => {
-    const forceSyncOnboardingData = async () => {
-      try {
-        const currentUser = await base44.auth.me();
 
-        const pendingName = localStorage.getItem("onboarding_fullName");
-        const pendingDob = localStorage.getItem("onboarding_dob");
-        const pendingLmp = localStorage.getItem("onboarding_lmp");
-        const pendingCycleLength = localStorage.getItem("onboarding_cycleLength");
-
-        if (pendingName || pendingDob || pendingLmp || pendingCycleLength) {
-          // Save profile data via auth API
-          const profileUpdate = {};
-          if (pendingName) profileUpdate.display_name = pendingName;
-          if (pendingDob) profileUpdate.date_of_birth = pendingDob;
-          await base44.auth.updateMe(profileUpdate);
-
-          // Upsert cycle data
-          const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, '-start_date', 1);
-          const cyclePayload = {
-            cycle_type: localStorage.getItem("onboarding_mode") || "menstrual",
-            last_menstrual_period: pendingLmp || null,
-            start_date: pendingLmp || new Date().toISOString().split('T')[0],
-            cycle_length: parseInt(pendingCycleLength) || 28,
-          };
-          if (cycles.length > 0) {
-            await base44.entities.Cycle.update(cycles[0].id, cyclePayload);
-          } else {
-            await base44.entities.Cycle.create(cyclePayload);
-          }
-
-          // Clear localStorage
-          ["onboarding_fullName", "onboarding_dob", "onboarding_lmp", "onboarding_cycleLength", "onboarding_mode"]
-            .forEach(k => localStorage.removeItem(k));
-
-          // Refresh user state and cycle query so banner and mode content update
-          const updatedUser = await base44.auth.me();
-          setUser(updatedUser);
-          queryClient.invalidateQueries({ queryKey: ["cycles"] });
-        }
-      } catch (e) {
-        console.error("Dashboard safety-net sync failed", e);
-      }
-    };
-    forceSyncOnboardingData();
-  }, []);
 
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],

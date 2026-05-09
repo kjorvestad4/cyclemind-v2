@@ -50,53 +50,18 @@ export const AuthProvider = ({ children }) => {
 
       const today = new Date().toISOString().split('T')[0];
 
-      // Read any pending onboarding data from localStorage
-      const pendingMode = localStorage.getItem("onboarding_mode");
-      const pendingLmp = localStorage.getItem("onboarding_lmp");
-      const pendingCycleLength = localStorage.getItem("onboarding_cycleLength");
-      const pendingFullName = localStorage.getItem("onboarding_fullName");
-      const pendingDob = localStorage.getItem("onboarding_dob");
-
-      console.log("[AuthContext] Pending onboarding data:", { pendingMode, pendingLmp, pendingFullName, pendingDob });
-
       const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, '-start_date', 1);
 
-      if (pendingMode || pendingLmp || pendingFullName || pendingDob) {
-        // Save profile data from onboarding — only overwrite fields that were actually provided
-        const profileUpdate = { onboarded: true };
-        if (pendingDob && pendingDob !== "") profileUpdate.date_of_birth = pendingDob;
-        if (pendingFullName && pendingFullName !== "") profileUpdate.display_name = pendingFullName;
-        await base44.auth.updateMe(profileUpdate);
-
-        // Upsert cycle — update existing or create new
-        const cyclePayload = {
-          cycle_type: pendingMode || "menstrual",
-          start_date: pendingLmp || today,
-          last_menstrual_period: pendingLmp || null,
-          cycle_length: parseInt(pendingCycleLength) || 28,
-        };
-        if (cycles.length > 0) {
-          await base44.entities.Cycle.update(cycles[0].id, cyclePayload);
-        } else {
-          await base44.entities.Cycle.create(cyclePayload);
-        }
-
-        // Clear localStorage after saving
-        ["onboarding_mode","onboarding_lmp","onboarding_cycleLength","onboarding_fullName","onboarding_dob"]
-          .forEach(k => localStorage.removeItem(k));
-
-        console.log("[AuthContext] Onboarding data synced successfully.");
-      } else {
-        if (!currentUser.onboarded) {
-          await base44.auth.updateMe({ onboarded: true });
-        }
-        if (cycles.length === 0) {
-          await base44.entities.Cycle.create({
-            cycle_type: "menstrual",
-            cycle_length: 28,
-            start_date: today,
-          });
-        }
+      if (!currentUser.onboarded) {
+        // New user — redirect to onboarding to complete setup
+        // Don't auto-create cycle here; onboarding handles it
+      } else if (cycles.length === 0) {
+        // Onboarded but missing cycle — create a default one
+        await base44.entities.Cycle.create({
+          cycle_type: "menstrual",
+          cycle_length: 28,
+          start_date: today,
+        });
       }
 
       setIsLoadingAuth(false);

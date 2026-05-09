@@ -1,127 +1,214 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { ChevronLeft, Check } from "lucide-react";
+import { Check, Loader2, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import DOBPicker from "@/components/common/DOBPicker";
 import OnboardingStep1 from "@/components/onboarding/OnboardingStep1";
-import OnboardingStep2 from "@/components/onboarding/OnboardingStep2";
 import OnboardingStep3 from "@/components/onboarding/OnboardingStep3";
 
+// Step 0: Login/Signup gate
+function LoginGate({ onAuthenticated }) {
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    base44.auth.isAuthenticated().then((authed) => {
+      if (authed) {
+        onAuthenticated();
+      } else {
+        setChecking(false);
+      }
+    });
+  }, []);
+
+  if (checking) {
+    return (
+      <div className="flex flex-col items-center justify-center flex-1 space-y-4 text-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center flex-1 space-y-6 text-center max-w-md mx-auto w-full">
+      <div className="space-y-3">
+        <div className="w-16 h-16 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto">
+          <span className="text-3xl">🌙</span>
+        </div>
+        <h1 className="font-serif text-3xl font-semibold text-foreground">Welcome to CycleMind</h1>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          The app that supports your full hormonal journey — from PMDD to pregnancy to menopause.
+        </p>
+      </div>
+
+      <div className="w-full space-y-3">
+        <Button
+          onClick={() => base44.auth.redirectToLogin("/start")}
+          className="w-full h-12 rounded-2xl font-semibold text-base"
+        >
+          Create Account / Sign In
+        </Button>
+        <p className="text-xs text-muted-foreground">
+          Free to use · Private by design · No ads
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Step 2: Personal Info (Name + DOB) — runs while logged in
+function PersonalInfoStep({ fullName, setFullName, dateOfBirth, setDateOfBirth }) {
+  return (
+    <div className="flex flex-col items-center justify-center flex-1 space-y-6 text-center max-w-md mx-auto w-full">
+      <div className="space-y-2">
+        <h2 className="font-serif text-2xl font-semibold text-foreground">Tell us about you</h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          This helps us personalize your experience and show age-appropriate insights.
+        </p>
+      </div>
+
+      <div className="w-full space-y-5">
+        <div className="space-y-2 text-left">
+          <Label className="text-sm font-semibold">
+            👤 Full Name <span className="text-muted-foreground font-normal">(optional)</span>
+          </Label>
+          <Input
+            type="text"
+            placeholder="Your name"
+            className="h-11 text-base"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
+        </div>
+
+        <div className="text-left">
+          <DOBPicker
+            value={dateOfBirth}
+            onChange={setDateOfBirth}
+            label="🎂 Date of Birth"
+            optional={true}
+          />
+          <p className="text-xs text-muted-foreground italic mt-2">
+            Optional — used to show age-appropriate tips
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Onboarding() {
-  const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0); // 0=login, 1=mode, 2=personal, 3=preferences
   const [selectedMode, setSelectedMode] = useState("menstrual");
-  const [dateOfBirth, setDateOfBirth] = useState("");
   const [fullName, setFullName] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [reminderTime, setReminderTime] = useState("19:00");
   const [unitSystem, setUnitSystem] = useState("imperial");
   const [saving, setSaving] = useState(false);
 
-  const handleNext = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
+  // If user lands here already authenticated, skip the login step
+  useEffect(() => {
+    base44.auth.isAuthenticated().then((authed) => {
+      if (authed) {
+        // Pre-fill name from existing account
+        base44.auth.me().then((u) => {
+          if (u?.display_name) setFullName(u.display_name);
+          else if (u?.full_name) setFullName(u.full_name);
+          if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
+          // If already onboarded, go straight to dashboard
+          if (u?.onboarded) {
+            window.location.href = "/";
+            return;
+          }
+          setCurrentStep(1);
+        });
+      }
+      // else stay on step 0 (login gate)
+    });
+  }, []);
 
   const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    } else if (currentStep === 1) {
-      base44.auth.logout();
-    }
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
+    else if (currentStep === 1) base44.auth.logout("/start");
   };
 
-  const handleComplete = async (destination = "dashboard") => {
+  const handleNext = () => setCurrentStep((s) => s + 1);
+
+  const handleComplete = async () => {
     setSaving(true);
-    const targetUrl = "/";
-    const today = format(new Date(), "yyyy-MM-dd");
+    try {
+      const today = format(new Date(), "yyyy-MM-dd");
 
-    // Persist name + DOB to localStorage as safety net
-    if (fullName) localStorage.setItem("onboarding_fullName", fullName);
-    else localStorage.removeItem("onboarding_fullName");
-    if (dateOfBirth) localStorage.setItem("onboarding_dob", dateOfBirth);
-    else localStorage.removeItem("onboarding_dob");
-    localStorage.setItem("onboarding_mode", selectedMode);
+      // Save profile directly — user is authenticated at this point
+      const profileUpdate = { onboarded: true, notification_time: reminderTime, unit_system: unitSystem };
+      if (fullName) profileUpdate.display_name = fullName;
+      if (dateOfBirth) profileUpdate.date_of_birth = dateOfBirth;
+      await base44.auth.updateMe(profileUpdate);
 
-    // Check if user is logged in
-    const isLoggedIn = await base44.auth.isAuthenticated();
-
-    if (isLoggedIn) {
-      try {
-        const currentUser = await base44.auth.me();
-
-        // Save name + DOB + preferences
-        const profileUpdate = {
-          onboarded: true,
-          notification_time: reminderTime,
-          unit_system: unitSystem,
-        };
-        if (fullName) profileUpdate.display_name = fullName;
-        if (dateOfBirth) profileUpdate.date_of_birth = dateOfBirth;
-        await base44.auth.updateMe(profileUpdate);
-
-        // Create a default cycle if none exists (LMP will be set on Profile page)
-        const existingCycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, "-start_date", 1);
-        if (existingCycles.length === 0) {
-          await base44.entities.Cycle.create({
-            cycle_type: selectedMode,
-            cycle_length: 28,
-            start_date: today,
-          });
-        } else {
-          // Update mode on existing cycle
-          await base44.entities.Cycle.update(existingCycles[0].id, { cycle_type: selectedMode });
-        }
-
-        // Clear localStorage
-        ["onboarding_mode","onboarding_fullName","onboarding_dob"]
-          .forEach(k => localStorage.removeItem(k));
-
-        toast.success("Welcome to CycleMind!");
-      } catch (e) {
-        console.error("Failed to save onboarding data:", e);
-        toast.error("Something went wrong. Please try again.");
-        setSaving(false);
-        return;
+      // Upsert cycle
+      const u = await base44.auth.me();
+      const existingCycles = await base44.entities.Cycle.filter({ created_by: u.email }, "-start_date", 1);
+      if (existingCycles.length === 0) {
+        await base44.entities.Cycle.create({ cycle_type: selectedMode, cycle_length: 28, start_date: today });
+      } else {
+        await base44.entities.Cycle.update(existingCycles[0].id, { cycle_type: selectedMode });
       }
-    } else {
-      // Not logged in — redirect to login; AuthContext will sync on return
-      base44.auth.redirectToLogin(targetUrl);
-      return;
-    }
 
-    window.location.href = targetUrl;
+      toast.success("Welcome to CycleMind! 💜");
+      window.location.href = "/";
+    } catch (e) {
+      console.error("Failed to complete onboarding:", e);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const progress = (currentStep / 4) * 100;
+  const totalSteps = 3; // steps 1–3 (after login)
+  const progress = currentStep === 0 ? 0 : (currentStep / totalSteps) * 100;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Progress bar */}
       <div className="h-1 bg-muted">
-        <div
-          className="h-full bg-primary transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        />
+        <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
       </div>
+
+      {/* Back button */}
+      {currentStep >= 1 && (
+        <div className="px-4 pt-3">
+          <button onClick={handleBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <ChevronLeft className="w-4 h-4" />
+            Back
+          </button>
+        </div>
+      )}
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto p-5 pb-8 flex flex-col max-w-lg mx-auto w-full">
+
+          {/* Step 0: Login Gate */}
+          {currentStep === 0 && (
+            <LoginGate onAuthenticated={() => setCurrentStep(1)} />
+          )}
+
+          {/* Step 1: Choose Mode */}
           {currentStep === 1 && (
             <OnboardingStep1
               selectedMode={selectedMode}
               onSelect={setSelectedMode}
               onNext={handleNext}
-              onSkip={() => navigate("/")}
-              onSignIn={() => base44.auth.redirectToLogin("/")}
             />
           )}
 
+          {/* Step 2: Personal Info */}
           {currentStep === 2 && (
-            <OnboardingStep2
+            <PersonalInfoStep
               fullName={fullName}
               setFullName={setFullName}
               dateOfBirth={dateOfBirth}
@@ -129,6 +216,7 @@ export default function Onboarding() {
             />
           )}
 
+          {/* Step 3: Preferences + Finish */}
           {currentStep === 3 && (
             <div className="flex flex-col items-center justify-center flex-1 space-y-6 text-center max-w-md mx-auto">
               <OnboardingStep3
@@ -139,28 +227,26 @@ export default function Onboarding() {
                 onNext={() => {}}
               />
               <div className="w-full pt-4 border-t border-border/40">
-                <button
-                  onClick={() => handleComplete("dashboard")}
-                  className="w-full h-12 rounded-2xl font-semibold text-base bg-primary text-primary-foreground hover:bg-primary/90 gap-2 inline-flex items-center justify-center"
+                <Button
+                  onClick={handleComplete}
+                  disabled={saving}
+                  className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
                 >
-                  <Check className="w-5 h-5" />
+                  {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
                   Get Started
-                </button>
+                </Button>
               </div>
             </div>
           )}
 
-          {/* Footer buttons inside scrollable area */}
-          <div className="space-y-2 mt-8 pt-4 border-t border-border/40">
-            {currentStep >= 1 && currentStep < 3 && (
-               <Button
-                 onClick={handleNext}
-                 className="w-full h-12 rounded-2xl font-semibold text-base"
-               >
-                 Continue
-               </Button>
-             )}
-          </div>
+          {/* Continue button for steps 1 & 2 */}
+          {currentStep >= 1 && currentStep < 3 && (
+            <div className="mt-8 pt-4 border-t border-border/40">
+              <Button onClick={handleNext} className="w-full h-12 rounded-2xl font-semibold text-base">
+                Continue
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
