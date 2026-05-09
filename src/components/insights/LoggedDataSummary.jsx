@@ -394,7 +394,7 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
       {/* Pregnancy-specific Trends */}
       {cycleType === "pregnancy" && (
         <>
-          {pregnancyTrend.length > 2 && (
+          {pregnancyTrend.length > 0 && (
             <Card className="border-border/50">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold">Pregnancy Symptoms Trend</CardTitle>
@@ -424,8 +424,29 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
               </CardContent>
             </Card>
           )}
-        </>
-      )}
+
+          {epdsTrend.length > 0 && (
+           <Card className="border-border/50">
+             <CardHeader className="pb-2">
+               <CardTitle className="text-sm font-semibold">EPDS Trend (Pregnancy)</CardTitle>
+             </CardHeader>
+             <CardContent>
+               <ResponsiveContainer width="100%" height={160}>
+                 <LineChart data={epdsTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                   <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                   <YAxis tick={{ fontSize: 9 }} domain={[0, 30]} />
+                   <Tooltip {...CHART_TOOLTIP_STYLE} />
+                   <Legend wrapperStyle={{ fontSize: 11 }} />
+                   <Line type="monotone" dataKey="score" stroke="hsl(var(--chart-3))" strokeWidth={2} dot={true} name="EPDS Score" connectNulls={true} />
+                 </LineChart>
+               </ResponsiveContainer>
+               <p className="text-[10px] text-muted-foreground mt-2">≥13 suggests possible perinatal depression</p>
+             </CardContent>
+           </Card>
+          )}
+          </>
+          )}
 
       {/* Postpartum-specific Trends */}
       {cycleType === "postpartum" && (
