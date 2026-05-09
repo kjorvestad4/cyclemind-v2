@@ -157,12 +157,8 @@ export default function Billing() {
             <h3 className="text-xl font-semibold text-foreground mb-4">Questions?</h3>
             <div className="space-y-4 text-sm">
               <div>
-                <p className="font-medium text-foreground">Can I cancel anytime?</p>
-                <p className="text-muted-foreground">Yes, cancel your subscription at any time with no penalties.</p>
-              </div>
-              <div>
-                <p className="font-medium text-foreground">Is there a trial?</p>
-                <p className="text-muted-foreground">Contact support to request a trial period.</p>
+                <p className="font-medium text-foreground">What payment methods do you accept?</p>
+                <p className="text-muted-foreground">We accept all major credit cards and digital payment methods.</p>
               </div>
               <div>
                 <p className="font-medium text-foreground">What payment methods do you accept?</p>
