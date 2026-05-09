@@ -28,6 +28,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
+    // Re-fetch after a short delay to pick up any AuthContext sync (e.g. onboarding data)
+    const t = setTimeout(() => base44.auth.me().then(setUser).catch(() => {}), 2000);
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {

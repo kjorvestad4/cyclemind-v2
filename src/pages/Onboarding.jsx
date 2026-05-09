@@ -54,8 +54,10 @@ export default function Onboarding() {
     localStorage.setItem("onboarding_mode", selectedMode);
     localStorage.setItem("onboarding_lmp", effectiveLmp);
     localStorage.setItem("onboarding_cycleLength", String(cycleLength || 28));
-    localStorage.setItem("onboarding_fullName", fullName || "");
-    localStorage.setItem("onboarding_dob", dateOfBirth || "");
+    if (fullName) localStorage.setItem("onboarding_fullName", fullName);
+    else localStorage.removeItem("onboarding_fullName");
+    if (dateOfBirth) localStorage.setItem("onboarding_dob", dateOfBirth);
+    else localStorage.removeItem("onboarding_dob");
 
     // Check if user is logged in
     const isLoggedIn = await base44.auth.isAuthenticated();
