@@ -143,7 +143,7 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
       <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-1">Logged Data Summary</p>
 
       {/* Vitals Trends */}
-      {vitalsData.length > 2 && (
+      {vitalsData.length > 0 && (
         <Card className="border-border/50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -219,7 +219,36 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
         )}
       </div>
 
-      {/* Medications */}
+      {/* Bleeding Trends Over Time */}
+      {entries.filter((e) => e.bleeding_intensity).length > 0 && (
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Droplet className="w-4 h-4 text-red-600" />
+              Bleeding Trends
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={160}>
+              <LineChart
+                data={entries
+                  .filter((e) => e.bleeding_intensity)
+                  .sort((a, b) => a.date.localeCompare(b.date))
+                  .slice(-30)
+                  .map((e) => ({ date: e.date.slice(5), intensity: e.bleeding_intensity }))}
+                margin={{ left: 0, right: 10, top: 5, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                <YAxis tick={{ fontSize: 9 }} domain={[0, 4]} />
+                <Tooltip {...CHART_TOOLTIP_STYLE} />
+                <Line type="monotone" dataKey="intensity" stroke="hsl(var(--chart-3))" strokeWidth={2} dot={true} name="Intensity" connectNulls={true} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+      </div>
       {medsList.length > 0 && (
         <Card className="border-border/50">
           <CardHeader className="pb-2">
@@ -308,7 +337,7 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
       )}
 
       {/* Custom Symptoms Trend */}
-      {customSymptomsTrend.length > 2 && (
+      {customSymptomsTrend.length > 0 && (
         <Card className="border-border/50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold">Custom Symptoms Trend</CardTitle>
