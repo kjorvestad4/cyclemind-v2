@@ -311,12 +311,26 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
 
               <div className="space-y-2 text-sm">
                 {/* Score */}
-                {getSeverity(selectedDateInfo.dateStr) && (
-                  <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
-                    <span className="text-muted-foreground">Overall Severity</span>
-                    <span className="font-bold text-primary">{Math.round(getSeverity(selectedDateInfo.dateStr))}%</span>
-                  </div>
-                )}
+                  {selectedDateInfo.entry && (
+                    (() => {
+                      const severity = getSeverity(selectedDateInfo.dateStr);
+                      const colorClass = getSeverityColor(severity);
+                      const totalSymptoms = cycleType === "postpartum" 
+                        ? 30 
+                        : cycleType === "pregnancy" 
+                        ? 30 
+                        : cycleType === "menopause" || cycleType === "perimenopause"
+                        ? 30
+                        : 6 * 39;
+                      const score = severity ? Math.round((severity / 100) * totalSymptoms) : 0;
+                      return (
+                        <div className={`flex items-center justify-between p-3 rounded-xl border ${colorClass}`}>
+                          <span className="font-semibold text-sm">Score</span>
+                          <span className="font-bold text-sm">{score} / {totalSymptoms}</span>
+                        </div>
+                      );
+                    })()
+                  )}
 
                 {/* Key symptoms */}
                 {selectedDateInfo.entry && (
