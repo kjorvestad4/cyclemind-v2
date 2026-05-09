@@ -127,7 +127,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
 
   // Get phase info for menstrual cycle — projects 6+ cycles into the future
   const getPhaseColor = (dateStr) => {
-    if (cycleType !== "menstrual") return null;
+    if (!["menstrual", "perimenopause"].includes(cycleType)) return null;
     const latestCycle = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
     if (!latestCycle) return null;
 
@@ -449,7 +449,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
             </div>
           </div>
 
-          {cycleType === "menstrual" && (
+          {["menstrual", "perimenopause"].includes(cycleType) && (
             <div className="pt-2 border-t border-border/40 space-y-1">
               <p className="font-semibold text-foreground">Cycle Phase:</p>
               <div className="grid grid-cols-2 gap-1">
