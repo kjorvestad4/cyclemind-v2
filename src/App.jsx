@@ -33,7 +33,6 @@ const AnimatedOutlet = () => {
 
         {/* Landing Pages */}
         <Route path="/" element={<Landing />} />
-        <Route path="/landing" element={<Landing />} />
         <Route path="/about" element={<About />} />
 
         {/* Welcome + Onboarding */}
@@ -49,7 +48,7 @@ const AnimatedOutlet = () => {
           <Route path="/profile" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Profile /></motion.div>} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/landing" replace />} />
       </Routes>
     </AnimatePresence>
   );

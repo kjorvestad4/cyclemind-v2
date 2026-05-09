@@ -9,19 +9,15 @@ export default function Landing() {
     navigate('/welcome');
   };
 
-
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="font-serif text-2xl font-bold text-foreground">CycleMind</h1>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={() => navigate('/about')} className="text-sm">
-              Learn More
-            </Button>
-          </div>
+          <Button variant="outline" onClick={() => navigate('/about')}>
+            Learn More
+          </Button>
         </div>
       </nav>
 

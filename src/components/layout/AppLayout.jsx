@@ -45,7 +45,7 @@ export default function AppLayout() {
               Not medical advice. Always consult your doctor.
             </p>
             <button
-              onClick={() => base44.auth.logout("/landing")}
+              onClick={() => base44.auth.logout("/welcome")}
               className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors"
               aria-label="Sign out"
             >

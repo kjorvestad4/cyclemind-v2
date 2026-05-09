@@ -56,8 +56,8 @@ export const AuthProvider = ({ children }) => {
         // New user — send to onboarding
         window.location.href = '/start';
         return;
-      } else if (currentUser.onboarded && (window.location.pathname === '/welcome' || window.location.pathname === '/landing')) {
-        // Already onboarded — skip welcome/landing and go to dashboard
+      } else if (currentUser.onboarded && window.location.pathname === '/welcome') {
+        // Already onboarded — skip welcome and go to dashboard
         window.location.href = '/';
         return;
       } else if (cycles.length === 0) {
@@ -75,10 +75,10 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
       setIsLoadingAuth(false);
       // Redirect unauthenticated users away from protected routes
-      const publicPaths = ['/welcome', '/start', '/share', '/landing', '/about'];
+      const publicPaths = ['/welcome', '/start', '/share'];
       const isPublic = publicPaths.some(p => window.location.pathname.startsWith(p));
       if (!isPublic) {
-        window.location.href = '/landing';
+        window.location.href = '/welcome';
       }
     }
   };
