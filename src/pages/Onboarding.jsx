@@ -59,18 +59,14 @@ export default function Onboarding() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    base44.auth.isAuthenticated().then((authed) => {
-      if (!authed) {
-        // Not logged in — send back to welcome
-        window.location.href = "/welcome";
-        return;
-      }
-      base44.auth.me().then((u) => {
-        if (u?.display_name) setFullName(u.display_name);
-        else if (u?.full_name) setFullName(u.full_name);
-        if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
-        setCurrentStep(1);
-      });
+    base44.auth.me().then((u) => {
+      if (u?.display_name) setFullName(u.display_name);
+      else if (u?.full_name) setFullName(u.full_name);
+      if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
+      setCurrentStep(1);
+    }).catch(() => {
+      // Not authenticated — still show the onboarding UI
+      setCurrentStep(1);
     });
   }, []);
 
