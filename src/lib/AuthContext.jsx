@@ -65,13 +65,17 @@ export const AuthProvider = ({ children }) => {
           date_of_birth: pendingDob || null,
           display_name: pendingFullName || null,
         });
-        if (cycles.length === 0) {
-          await base44.entities.Cycle.create({
-            cycle_type: pendingMode,
-            start_date: pendingLmp || today,
-            last_menstrual_period: pendingLmp || null,
-            cycle_length: parseInt(pendingCycleLength) || 28,
-          });
+        // Upsert cycle — update existing or create new
+        const cyclePayload = {
+          cycle_type: pendingMode,
+          start_date: pendingLmp || today,
+          last_menstrual_period: pendingLmp || null,
+          cycle_length: parseInt(pendingCycleLength) || 28,
+        };
+        if (cycles.length > 0) {
+          await base44.entities.Cycle.update(cycles[0].id, cyclePayload);
+        } else {
+          await base44.entities.Cycle.create(cyclePayload);
         }
         // Clear localStorage after saving
         ["onboarding_mode","onboarding_lmp","onboarding_cycleLength","onboarding_fullName","onboarding_dob"]
