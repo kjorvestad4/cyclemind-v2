@@ -61,13 +61,24 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
     }
   });
 
-  // Ovulation testing results
+  // Ovulation testing results & trend
   const ovulationResults = {
     positive: entries.filter((e) => e.ovulation_test === "Positive").length,
     lhSurge: entries.filter((e) => e.ovulation_test === "LH Surge").length,
     negative: entries.filter((e) => e.ovulation_test === "Negative").length,
   };
   const totalOvTests = ovulationResults.positive + ovulationResults.lhSurge + ovulationResults.negative;
+
+  // Ovulation testing timeline
+  const ovulationTrend = entries
+    .filter((e) => e.ovulation_test && e.ovulation_test !== "")
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-30)
+    .map((e) => ({
+      date: e.date.slice(5),
+      value: e.ovulation_test === "LH Surge" ? 3 : e.ovulation_test === "Positive" ? 2 : 1,
+      label: e.ovulation_test,
+    }));
 
   // Cervical mucus logged
   const cervicalMucusEntries = entries.filter((e) => e.cervical_mucus).length;
@@ -306,6 +317,29 @@ export default function LoggedDataSummary({ entries, cycles, cycleType = "menstr
                 </div>
               )}
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Ovulation Test Trend */}
+      {ovulationTrend.length > 0 && (
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              Ovulation Tracking Timeline
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart data={ovulationTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                <YAxis tick={{ fontSize: 9 }} domain={[0, 3]} tickFormatter={(v) => ["", "Neg", "Pos", "LH"][v] || ""} width={32} />
+                <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v, name) => [["", "Negative", "Positive", "LH Surge"][v] || v, "Result"]} />
+                <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[3, 3, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       )}
