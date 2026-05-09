@@ -10,6 +10,10 @@ export default function Landing() {
     navigate('/welcome');
   };
 
+  const handleSignIn = async () => {
+    await base44.auth.redirectToLogin();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5">
       {/* Navigation */}
@@ -19,7 +23,7 @@ export default function Landing() {
           <div className="flex items-center gap-3">
             <Button 
               variant="outline" 
-              onClick={() => base44.auth.redirectToLogin()}
+              onClick={handleSignIn}
               className="text-sm"
             >
               Sign In
