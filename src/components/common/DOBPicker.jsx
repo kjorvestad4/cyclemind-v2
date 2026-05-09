@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { format, subYears } from "date-fns";
+import { format, subYears, parse, isValid } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar, X } from "lucide-react";
@@ -54,20 +54,21 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
       <div className="flex items-center gap-2">
         <Input
           type="text"
-          placeholder="May 9, 2026"
+          placeholder="May 9, 2026 or 5/9/1991"
           value={value ? format(new Date(value), "MMMM d, yyyy") : ""}
           onChange={(e) => {
             const input = e.target.value.trim();
             if (input === "") {
               onChange("");
             } else {
-              try {
-                const parsed = new Date(input);
-                if (!isNaN(parsed)) {
+              const formats = ["M/d/yyyy", "M-d-yyyy", "MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd"];
+              let parsed;
+              for (const fmt of formats) {
+                parsed = parse(input, fmt, new Date());
+                if (isValid(parsed)) {
                   onChange(format(parsed, "yyyy-MM-dd"));
+                  return;
                 }
-              } catch (err) {
-                // Invalid input, keep current value
               }
             }
           }}
