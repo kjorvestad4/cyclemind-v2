@@ -310,26 +310,34 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
               </div>
 
               <div className="space-y-2 text-sm">
-                {/* Score */}
+                {/* Clinical Scores */}
                   {selectedDateInfo.entry && (
-                    (() => {
-                      const severity = getSeverity(selectedDateInfo.dateStr);
-                      const colorClass = getSeverityColor(severity);
-                      const totalSymptoms = cycleType === "postpartum" 
-                        ? 30 
-                        : cycleType === "pregnancy" 
-                        ? 30 
-                        : cycleType === "menopause" || cycleType === "perimenopause"
-                        ? 30
-                        : 6 * 39;
-                      const score = severity ? Math.round((severity / 100) * totalSymptoms) : 0;
-                      return (
-                        <div className={`flex items-center justify-between p-3 rounded-xl border ${colorClass}`}>
-                          <span className="font-semibold text-sm">Score</span>
-                          <span className="font-bold text-sm">{score} / {totalSymptoms}</span>
+                    <div className="space-y-1">
+                      {["menstrual", "perimenopause"].includes(cycleType) && selectedDateInfo.entry.phq9_score > 0 && (
+                        <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                          <span className="text-muted-foreground">PHQ-9</span>
+                          <span className="font-bold text-primary">{selectedDateInfo.entry.phq9_score} / 27</span>
                         </div>
-                      );
-                    })()
+                      )}
+                      {["menstrual", "perimenopause"].includes(cycleType) && selectedDateInfo.entry.gad7_score > 0 && (
+                        <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                          <span className="text-muted-foreground">GAD-7</span>
+                          <span className="font-bold text-primary">{selectedDateInfo.entry.gad7_score} / 21</span>
+                        </div>
+                      )}
+                      {cycleType === "postpartum" && selectedDateInfo.entry.epds_score > 0 && (
+                        <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                          <span className="text-muted-foreground">EPDS</span>
+                          <span className="font-bold text-primary">{selectedDateInfo.entry.epds_score} / 30</span>
+                        </div>
+                      )}
+                      {(cycleType === "menopause" || cycleType === "perimenopause") && selectedDateInfo.entry.gad7_score > 0 && (
+                        <div className="flex items-center justify-between text-xs p-2 rounded-lg bg-muted/50">
+                          <span className="text-muted-foreground">GAD-7</span>
+                          <span className="font-bold text-primary">{selectedDateInfo.entry.gad7_score} / 21</span>
+                        </div>
+                      )}
+                    </div>
                   )}
 
                 {/* Key symptoms */}
