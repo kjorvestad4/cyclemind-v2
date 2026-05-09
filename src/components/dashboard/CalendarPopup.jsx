@@ -250,7 +250,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                      </div>
 
                      <div className="flex flex-col items-center gap-1 flex-1 justify-center">
-                       {phaseEmoji && <span className="text-base">{phaseEmoji}</span>}
+                       {phaseEmoji && <span className="text-lg leading-none">{phaseEmoji}</span>}
                      </div>
 
                      {/* Rich markers at bottom */}
