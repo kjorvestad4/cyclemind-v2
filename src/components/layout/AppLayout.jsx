@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { CalendarDays, PenLine, BarChart3, BookOpen, User, ChevronLeft } from "lucide-react";
+import { CalendarDays, PenLine, BarChart3, BookOpen, User, ChevronLeft, LogOut } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 
 const NAV_ITEMS = [
   { path: "/", icon: CalendarDays, label: "Dashboard" },
@@ -39,9 +40,18 @@ export default function AppLayout() {
               <h1 className="font-serif text-lg font-semibold text-foreground">CycleMind</h1>
             </Link>
           </div>
-          <p className="text-[10px] text-muted-foreground max-w-[140px] text-right leading-tight shrink-0">
-            Not medical advice. Always consult your doctor.
-          </p>
+          <div className="flex items-center gap-2 shrink-0">
+            <p className="text-[10px] text-muted-foreground max-w-[120px] text-right leading-tight">
+              Not medical advice. Always consult your doctor.
+            </p>
+            <button
+              onClick={() => base44.auth.logout("/welcome")}
+              className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors"
+              aria-label="Sign out"
+            >
+              <LogOut className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
         </div>
       </header>
 
