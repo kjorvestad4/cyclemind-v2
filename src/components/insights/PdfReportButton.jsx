@@ -352,6 +352,269 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
         y += 4;
       }
 
+      // OVULATION & FERTILITY TRACKING
+      const ovulationTests = entries.filter((e) => e.ovulation_test && e.ovulation_test !== "");
+      const cervicalMucus = entries.filter((e) => e.cervical_mucus);
+      if (ovulationTests.length > 0 || cervicalMucus.length > 0) {
+        checkBreak(45);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...darkText);
+        doc.text("Ovulation & Fertility Tracking", margin, y);
+        y += 5;
+        doc.setDrawColor(...purple);
+        doc.setLineWidth(0.5);
+        doc.line(margin, y, margin + 50, y);
+        y += 7;
+
+        if (ovulationTests.length > 0) {
+          const ovCounts = { "Positive": 0, "Negative": 0, "LH Surge": 0 };
+          ovulationTests.forEach((e) => { if (ovCounts.hasOwnProperty(e.ovulation_test)) ovCounts[e.ovulation_test]++; });
+          doc.setFontSize(9);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(...darkText);
+          doc.text("Ovulation Tests:", margin, y);
+          y += 5;
+          Object.entries(ovCounts).forEach(([type, count]) => {
+            if (count > 0) {
+              doc.setFontSize(8.5);
+              doc.text(`• ${type}: ${count}`, margin + 5, y);
+              y += 4;
+            }
+          });
+          y += 2;
+        }
+
+        if (cervicalMucus.length > 0) {
+          const cmTypes = {};
+          cervicalMucus.forEach((e) => { cmTypes[e.cervical_mucus] = (cmTypes[e.cervical_mucus] || 0) + 1; });
+          doc.setFontSize(9);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(...darkText);
+          doc.text("Cervical Mucus Observations:", margin, y);
+          y += 5;
+          Object.entries(cmTypes).forEach(([type, count]) => {
+            doc.setFontSize(8.5);
+            doc.text(`• ${type}: ${count}`, margin + 5, y);
+            y += 4;
+          });
+        }
+        y += 4;
+      }
+
+      // CUSTOM SYMPTOMS
+      const customSymptomEntries = entries.filter((e) => e.custom_symptoms && e.custom_symptoms.length > 0);
+      if (customSymptomEntries.length > 0) {
+        checkBreak(35);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...darkText);
+        doc.text("Custom Symptoms Tracking", margin, y);
+        y += 5;
+        doc.setDrawColor(...purple);
+        doc.setLineWidth(0.5);
+        doc.line(margin, y, margin + 50, y);
+        y += 7;
+
+        const customCounts = {};
+        customSymptomEntries.forEach((e) => {
+          e.custom_symptoms.forEach((s) => {
+            if (!customCounts[s.name]) customCounts[s.name] = [];
+            customCounts[s.name].push(s.severity);
+          });
+        });
+
+        Object.entries(customCounts).forEach(([name, severities]) => {
+          checkBreak(6);
+          const avg = severities.reduce((a, b) => a + b) / severities.length;
+          doc.setFontSize(8.5);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(...darkText);
+          doc.text(`• ${name}`, margin, y);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(...purple);
+          doc.text(`Avg: ${avg.toFixed(1)}/6 (${severities.length} logs)`, margin + 60, y);
+          y += 5;
+        });
+        y += 4;
+      }
+
+      // INTIMACY TRACKING
+      const intimacyEntries = entries.filter((e) => e.intimacy_logged);
+      if (intimacyEntries.length > 0) {
+        checkBreak(20);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...darkText);
+        doc.text("Intimacy Log", margin, y);
+        y += 5;
+        doc.setDrawColor(...purple);
+        doc.setLineWidth(0.5);
+        doc.line(margin, y, margin + 25, y);
+        y += 7;
+
+        const unprotected = intimacyEntries.filter((e) => !e.intimacy_protected).length;
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(...darkText);
+        doc.text(`Total logged: ${intimacyEntries.length} days`, margin, y);
+        y += 5;
+        if (unprotected > 0) {
+          doc.setTextColor([180, 50, 50]);
+          doc.setFont("helvetica", "bold");
+          doc.text(`Unprotected: ${unprotected} days`, margin, y);
+          y += 5;
+        }
+        y += 4;
+      }
+
+      // PREGNANCY-SPECIFIC TRENDS
+      const hasPregnancyData = entries.some((e) => e.p_nausea || e.p_vomiting || e.p_fatigue || e.p_mood_changes || e.fetal_movement_felt);
+      if (hasPregnancyData) {
+        checkBreak(30);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...darkText);
+        doc.text("Pregnancy Symptom Log", margin, y);
+        y += 5;
+        doc.setDrawColor(...purple);
+        doc.setLineWidth(0.5);
+        doc.line(margin, y, margin + 45, y);
+        y += 7;
+
+        const pregnancySymptoms = ["p_nausea", "p_vomiting", "p_fatigue", "p_mood_changes", "p_sleep_issues"];
+        const symData = {};
+        pregnancySymptoms.forEach((key) => {
+          const vals = entries.filter((e) => e[key] > 0).map((e) => e[key]);
+          if (vals.length > 0) symData[key] = { avg: vals.reduce((a, b) => a + b) / vals.length, count: vals.length };
+        });
+
+        const symLabels = { p_nausea: "Nausea", p_vomiting: "Vomiting", p_fatigue: "Fatigue", p_mood_changes: "Mood Changes", p_sleep_issues: "Sleep Issues" };
+        Object.entries(symData).forEach(([key, data]) => {
+          checkBreak(5);
+          doc.setFontSize(8.5);
+          doc.setFont("helvetica", "normal");
+          doc.text(`• ${symLabels[key]}`, margin, y);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(...purple);
+          doc.text(`${data.avg.toFixed(1)}/6 (${data.count} logs)`, margin + 60, y);
+          doc.setTextColor(...darkText);
+          y += 5;
+        });
+
+        const fetalMovement = entries.filter((e) => e.fetal_movement_felt).length;
+        if (fetalMovement > 0) {
+          doc.setFontSize(8.5);
+          doc.setFont("helvetica", "normal");
+          doc.text(`• Fetal Movement Felt`, margin, y);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(...purple);
+          doc.text(`${fetalMovement} days logged`, margin + 60, y);
+          doc.setTextColor(...darkText);
+          y += 5;
+        }
+        y += 4;
+      }
+
+      // POSTPARTUM-SPECIFIC TRENDS
+      const hasPostpartumData = entries.some((e) => e.pp_lochiaBleeding || e.pp_fatigue || e.pp_moodChanges);
+      if (hasPostpartumData) {
+        checkBreak(30);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...darkText);
+        doc.text("Postpartum Symptom Log", margin, y);
+        y += 5;
+        doc.setDrawColor(...purple);
+        doc.setLineWidth(0.5);
+        doc.line(margin, y, margin + 45, y);
+        y += 7;
+
+        const physicalKeys = ["pp_lochiaBleeding", "pp_perinealPain", "pp_incisionPain", "pp_breastEngorgement"];
+        const mentalKeys = ["pp_bondingDifficulties", "pp_anxietyAboutBaby", "pp_moodChanges"];
+        const phyLabels = { pp_lochiaBleeding: "Lochia Bleeding", pp_perinealPain: "Perineal Pain", pp_incisionPain: "Incision Pain", pp_breastEngorgement: "Breast Engorgement" };
+        const menLabels = { pp_bondingDifficulties: "Bonding Issues", pp_anxietyAboutBaby: "Baby Anxiety", pp_moodChanges: "Mood Changes" };
+
+        doc.setFontSize(8.5);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...purple);
+        doc.text("Physical Symptoms", margin, y);
+        y += 4;
+        physicalKeys.forEach((key) => {
+          const vals = entries.filter((e) => e[key] > 0).map((e) => e[key]);
+          if (vals.length > 0) {
+            const avg = vals.reduce((a, b) => a + b) / vals.length;
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(...darkText);
+            doc.text(`• ${phyLabels[key]}`, margin + 2, y);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(...purple);
+            doc.text(`${avg.toFixed(1)}/6`, margin + 60, y);
+            doc.setTextColor(...darkText);
+            y += 4;
+          }
+        });
+
+        y += 2;
+        doc.setFontSize(8.5);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...purple);
+        doc.text("Mental/Emotional", margin, y);
+        y += 4;
+        mentalKeys.forEach((key) => {
+          const vals = entries.filter((e) => e[key] > 0).map((e) => e[key]);
+          if (vals.length > 0) {
+            const avg = vals.reduce((a, b) => a + b) / vals.length;
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(...darkText);
+            doc.text(`• ${menLabels[key]}`, margin + 2, y);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(...purple);
+            doc.text(`${avg.toFixed(1)}/6`, margin + 60, y);
+            doc.setTextColor(...darkText);
+            y += 4;
+          }
+        });
+        y += 4;
+      }
+
+      // MENOPAUSE/PERIMENOPAUSE-SPECIFIC TRENDS
+      const hasMenopauseData = entries.some((e) => e.m_hot_flashes || e.m_night_sweats || e.m_mood_swings);
+      if (hasMenopauseData) {
+        checkBreak(30);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...darkText);
+        doc.text("Menopause/Perimenopause Symptom Log", margin, y);
+        y += 5;
+        doc.setDrawColor(...purple);
+        doc.setLineWidth(0.5);
+        doc.line(margin, y, margin + 70, y);
+        y += 7;
+
+        const mKeys = ["m_hot_flashes", "m_night_sweats", "m_vaginal_dryness", "m_mood_swings", "m_brain_fog", "m_joint_pain", "m_fatigue"];
+        const mLabels = { m_hot_flashes: "Hot Flashes", m_night_sweats: "Night Sweats", m_vaginal_dryness: "Vaginal Dryness", m_mood_swings: "Mood Swings", m_brain_fog: "Brain Fog", m_joint_pain: "Joint Pain", m_fatigue: "Fatigue" };
+
+        mKeys.forEach((key) => {
+          const vals = entries.filter((e) => e[key] > 0).map((e) => e[key]);
+          if (vals.length > 0) {
+            const avg = vals.reduce((a, b) => a + b) / vals.length;
+            checkBreak(5);
+            doc.setFontSize(8.5);
+            doc.setFont("helvetica", "normal");
+            doc.text(`• ${mLabels[key]}`, margin, y);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(...purple);
+            doc.text(`${avg.toFixed(1)}/6 (${vals.length} logs)`, margin + 60, y);
+            doc.setTextColor(...darkText);
+            y += 4;
+          }
+        });
+        y += 4;
+      }
+
       // DAILY SYMPTOM LOG
       const sortedEntries = [...entries].sort((a, b) => a.date.localeCompare(b.date));
       if (sortedEntries.length > 0) {
