@@ -52,9 +52,8 @@ function AuthGuard({ children }) {
     return null;
   }
 
-  // User is logged in — ALWAYS go to dashboard
-  window.location.href = '/dashboard';
-  return null;
+  // User is logged in — render the protected content
+  return children;
 }
 
 const AnimatedOutlet = () => {
