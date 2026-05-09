@@ -3,6 +3,8 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { CalendarDays, PenLine, BarChart3, BookOpen, User, ChevronLeft, LogOut } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
+import { getCycleDay } from "@/lib/symptoms";
+import { format } from "date-fns";
 import LunaButton from "@/components/luna/LunaButton";
 
 const NAV_ITEMS = [
@@ -27,17 +29,19 @@ export default function AppLayout() {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
 
-        const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, "-start_date", 1);
+        const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, "-start_date", 5);
         if (cycles.length > 0) {
           const latestCycle = cycles[0];
+          const cycleDay = getCycleDay(format(new Date(), "yyyy-MM-dd"), cycles);
           setCycleData({
             mode: latestCycle.cycle_type || 'menstrual',
-            day: latestCycle.cycle_day || null,
+            day: cycleDay || null,
             edd: latestCycle.estimated_due_date || null
           });
         }
       } catch (err) {
         console.error('Failed to load user data for Luna:', err);
+        setUser(null);
       }
     };
 
