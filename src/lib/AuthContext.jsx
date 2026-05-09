@@ -52,9 +52,10 @@ export const AuthProvider = ({ children }) => {
 
       const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, '-start_date', 1);
 
-      if (!currentUser.onboarded) {
-        // New user — redirect to onboarding to complete setup
-        // Don't auto-create cycle here; onboarding handles it
+      if (!currentUser.onboarded && !window.location.pathname.startsWith('/start')) {
+        // New user — send to onboarding
+        window.location.href = '/start';
+        return;
       } else if (cycles.length === 0) {
         // Onboarded but missing cycle — create a default one
         await base44.entities.Cycle.create({
