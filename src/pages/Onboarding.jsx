@@ -102,7 +102,7 @@ function PersonalInfoStep({ fullName, setFullName, dateOfBirth, setDateOfBirth }
 }
 
 export default function Onboarding() {
-  const [currentStep, setCurrentStep] = useState(0); // 0=login, 1=mode, 2=personal, 3=preferences
+  const [currentStep, setCurrentStep] = useState(null); // null = still checking auth
   const [selectedMode, setSelectedMode] = useState("menstrual");
   const [fullName, setFullName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -110,24 +110,23 @@ export default function Onboarding() {
   const [unitSystem, setUnitSystem] = useState("imperial");
   const [saving, setSaving] = useState(false);
 
-  // If user lands here already authenticated, skip the login step
+  // Check auth on mount before rendering anything
   useEffect(() => {
     base44.auth.isAuthenticated().then((authed) => {
       if (authed) {
-        // Pre-fill name from existing account
         base44.auth.me().then((u) => {
-          if (u?.display_name) setFullName(u.display_name);
-          else if (u?.full_name) setFullName(u.full_name);
-          if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
-          // If already onboarded, go straight to dashboard
           if (u?.onboarded) {
             window.location.href = "/";
             return;
           }
-          setCurrentStep(1);
+          if (u?.display_name) setFullName(u.display_name);
+          else if (u?.full_name) setFullName(u.full_name);
+          if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
+          setCurrentStep(1); // skip login, go straight to mode selection
         });
+      } else {
+        setCurrentStep(0); // show login gate
       }
-      // else stay on step 0 (login gate)
     });
   }, []);
 
@@ -169,7 +168,16 @@ export default function Onboarding() {
   };
 
   const totalSteps = 3; // steps 1–3 (after login)
-  const progress = currentStep === 0 ? 0 : (currentStep / totalSteps) * 100;
+  const progress = currentStep === 0 ? 0 : ((currentStep || 0) / totalSteps) * 100;
+
+  // Still checking auth — show spinner
+  if (currentStep === null) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
