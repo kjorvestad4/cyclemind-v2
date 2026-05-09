@@ -8,7 +8,7 @@ export default function ProfileCompletionBanner({ user, latestCycle }) {
 
   if (dismissed) return null;
 
-  const missingLmp = !latestCycle?.last_menstrual_period && !latestCycle?.start_date;
+  const missingLmp = !latestCycle?.last_menstrual_period;
   const missingName = !user?.full_name && !user?.display_name;
   const missingDob = !user?.date_of_birth;
 

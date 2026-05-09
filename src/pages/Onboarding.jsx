@@ -13,11 +13,6 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedMode, setSelectedMode] = useState("menstrual");
-  const [lmp, setLmp] = useState("");
-  const [ovulationDate, setOvulationDate] = useState("");
-  const [birthDate, setBirthDate] = useState("");
-  const [cycleLength, setCycleLength] = useState(28);
-  const [hrtType, setHrtType] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [fullName, setFullName] = useState("");
   const [reminderTime, setReminderTime] = useState("19:00");
@@ -38,26 +33,17 @@ export default function Onboarding() {
     }
   };
 
-  const handleComplete = async (destination = "log") => {
-    // Validate required fields
-    if (!lmp && !birthDate) {
-      toast.error("Please enter a start date to continue");
-      return;
-    }
-
+  const handleComplete = async (destination = "dashboard") => {
     setSaving(true);
-    const targetUrl = destination === "log" ? "/log" : "/";
+    const targetUrl = "/";
     const today = format(new Date(), "yyyy-MM-dd");
-    const effectiveLmp = lmp || birthDate || today;
 
-    // Always persist to localStorage first as a safety net
-    localStorage.setItem("onboarding_mode", selectedMode);
-    localStorage.setItem("onboarding_lmp", effectiveLmp);
-    localStorage.setItem("onboarding_cycleLength", String(cycleLength || 28));
+    // Persist name + DOB to localStorage as safety net
     if (fullName) localStorage.setItem("onboarding_fullName", fullName);
     else localStorage.removeItem("onboarding_fullName");
     if (dateOfBirth) localStorage.setItem("onboarding_dob", dateOfBirth);
     else localStorage.removeItem("onboarding_dob");
+    localStorage.setItem("onboarding_mode", selectedMode);
 
     // Check if user is logged in
     const isLoggedIn = await base44.auth.isAuthenticated();
@@ -66,51 +52,46 @@ export default function Onboarding() {
       try {
         const currentUser = await base44.auth.me();
 
-        // 1. Save name + DOB
-        await base44.auth.updateMe({
-          date_of_birth: dateOfBirth || null,
-          display_name: fullName || null,
+        // Save name + DOB + preferences
+        const profileUpdate = {
           onboarded: true,
           notification_time: reminderTime,
           unit_system: unitSystem,
-        });
-
-        // 2. Upsert cycle
-        const cyclePayload = {
-          cycle_type: selectedMode,
-          start_date: selectedMode === "postpartum" ? (birthDate || today) : effectiveLmp,
-          last_menstrual_period: lmp || (selectedMode === "pregnancy" ? null : birthDate || null),
-          cycle_length: cycleLength || 28,
         };
-        if (selectedMode === "pregnancy") cyclePayload.ovulation_date = ovulationDate || null;
-        if (selectedMode === "perimenopause" || selectedMode === "menopause") cyclePayload.hrt_type = hrtType || null;
+        if (fullName) profileUpdate.display_name = fullName;
+        if (dateOfBirth) profileUpdate.date_of_birth = dateOfBirth;
+        await base44.auth.updateMe(profileUpdate);
 
+        // Create a default cycle if none exists (LMP will be set on Profile page)
         const existingCycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, "-start_date", 1);
-        if (existingCycles.length > 0) {
-          await base44.entities.Cycle.update(existingCycles[0].id, cyclePayload);
+        if (existingCycles.length === 0) {
+          await base44.entities.Cycle.create({
+            cycle_type: selectedMode,
+            cycle_length: 28,
+            start_date: today,
+          });
         } else {
-          await base44.entities.Cycle.create(cyclePayload);
+          // Update mode on existing cycle
+          await base44.entities.Cycle.update(existingCycles[0].id, { cycle_type: selectedMode });
         }
 
-        // Clear localStorage since we saved successfully
-        ["onboarding_mode","onboarding_lmp","onboarding_cycleLength","onboarding_fullName","onboarding_dob"]
+        // Clear localStorage
+        ["onboarding_mode","onboarding_fullName","onboarding_dob"]
           .forEach(k => localStorage.removeItem(k));
 
-        toast.success("Profile updated!");
+        toast.success("Welcome to CycleMind!");
       } catch (e) {
         console.error("Failed to save onboarding data:", e);
-        toast.error("Something went wrong saving your data. Please try again.");
+        toast.error("Something went wrong. Please try again.");
         setSaving(false);
         return;
       }
     } else {
-      // Not logged in — localStorage is already set above.
-      // Redirect to login; AuthContext will sync on return.
+      // Not logged in — redirect to login; AuthContext will sync on return
       base44.auth.redirectToLogin(targetUrl);
       return;
     }
-    
-    // Hard navigate
+
     window.location.href = targetUrl;
   };
 
@@ -141,22 +122,10 @@ export default function Onboarding() {
 
           {currentStep === 2 && (
             <OnboardingStep2
-              selectedMode={selectedMode}
-              lmp={lmp}
-              setLmp={setLmp}
-              ovulationDate={ovulationDate}
-              setOvulationDate={setOvulationDate}
-              birthDate={birthDate}
-              setBirthDate={setBirthDate}
-              cycleLength={cycleLength}
-              setCycleLength={setCycleLength}
-              hrtType={hrtType}
-              setHrtType={setHrtType}
-              dateOfBirth={dateOfBirth}
-              setDateOfBirth={setDateOfBirth}
               fullName={fullName}
               setFullName={setFullName}
-              onNext={handleNext}
+              dateOfBirth={dateOfBirth}
+              setDateOfBirth={setDateOfBirth}
             />
           )}
 
