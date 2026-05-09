@@ -39,8 +39,14 @@ export default function Onboarding() {
   };
 
   const handleComplete = async (destination = "log") => {
+    // Validate required fields
+    if (!lmp && !birthDate) {
+      toast.error("Please enter a start date to continue");
+      return;
+    }
+
     setSaving(true);
-    const targetUrl = destination === "log" ? "/log" : "/dashboard";
+    const targetUrl = destination === "log" ? "/log" : "/";
     const today = format(new Date(), "yyyy-MM-dd");
 
     try {
@@ -48,21 +54,22 @@ export default function Onboarding() {
       const cyclePayload = {
         cycle_type: selectedMode,
         start_date: lmp || birthDate || today,
-        last_menstrual_period: lmp || null,
+        last_menstrual_period: lmp || (selectedMode === "pregnancy" ? null : birthDate || null),
         cycle_length: cycleLength || 28,
       };
-      if (selectedMode === "pregnancy" && ovulationDate) cyclePayload.ovulation_date = ovulationDate;
+      if (selectedMode === "pregnancy") cyclePayload.estimated_ovulation_date = ovulationDate || null;
       if (selectedMode === "perimenopause" || selectedMode === "menopause") cyclePayload.hrt_type = hrtType || null;
       if (selectedMode === "postpartum") cyclePayload.start_date = birthDate || today;
 
       const cycle = await base44.entities.Cycle.create(cyclePayload);
+      const cycleId = cycle.id;
 
-      // 2. Save User profile: full_name, date_of_birth, and active cycle
+      // 2. Save User entity with full_name and date_of_birth
       await base44.auth.updateMe({
-        display_name: fullName || null,
+        full_name: fullName || null,
         date_of_birth: dateOfBirth || null,
         onboarded: true,
-        active_cycle_id: cycle.id,
+        active_cycle_id: cycleId,
         notification_time: reminderTime,
         unit_system: unitSystem,
       });
@@ -74,7 +81,7 @@ export default function Onboarding() {
       setSaving(false);
       return;
     }
-
+    
     // Hard navigate
     window.location.href = targetUrl;
   };
@@ -134,21 +141,13 @@ export default function Onboarding() {
                 setUnitSystem={setUnitSystem}
                 onNext={() => {}}
               />
-              <div className="w-full pt-4 border-t border-border/40 space-y-2">
+              <div className="w-full pt-4 border-t border-border/40">
                 <button
-                  onClick={() => handleComplete("log")}
-                  disabled={saving}
-                  className="w-full h-12 rounded-2xl font-semibold text-base bg-primary text-primary-foreground hover:bg-primary/90 gap-2 inline-flex items-center justify-center disabled:opacity-60"
+                  onClick={() => base44.auth.redirectToLogin("/dashboard")}
+                  className="w-full h-12 rounded-2xl font-semibold text-base bg-primary text-primary-foreground hover:bg-primary/90 gap-2 inline-flex items-center justify-center"
                 >
                   <Check className="w-5 h-5" />
-                  {saving ? "Saving…" : "Log Today"}
-                </button>
-                <button
-                  onClick={() => handleComplete("dashboard")}
-                  disabled={saving}
-                  className="w-full h-11 rounded-2xl font-semibold text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                >
-                  Skip to Dashboard
+                  Get Started
                 </button>
               </div>
             </div>

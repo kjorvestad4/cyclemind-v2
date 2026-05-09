@@ -12,7 +12,7 @@ import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
 import TodaySeverityCard from "@/components/dashboard/TodaySeverityCard";
 import { StreakWidget, RecentInsightsWidget, NextMilestoneWidget, QuickLinksRow } from "@/components/dashboard/UniversalWidgets";
-import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBanner";
+import OnboardingNudge from "@/components/dashboard/OnboardingNudge";
 
 function getGreeting() {
   return "Hello";
@@ -88,7 +88,10 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      <ProfileCompletionBanner user={user} latestCycle={latestCycle} />
+      {/* Onboarding nudge — show if user hasn't filled in LMP or name */}
+      {(!latestCycle?.start_date || !user?.full_name) && (
+        <OnboardingNudge />
+      )}
 
       {/* Mode Banner */}
       <ModeBanner
