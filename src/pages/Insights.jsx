@@ -306,8 +306,8 @@ export default function Insights() {
         </Card>
       )}
 
-      {/* LOGGED DATA SUMMARY — Vitals, Intimacy, Flow, Meds, Ovulation, CM */}
-      {hasData && <LoggedDataSummary entries={entries} cycles={cycles} />}
+      {/* LOGGED DATA SUMMARY — Vitals, Intimacy, Flow, Meds, Ovulation, CM, Custom Symptoms, Mode-Specific Trends */}
+      {hasData && <LoggedDataSummary entries={entries} cycles={cycles} cycleType={latestCycle?.cycle_type || "menstrual"} />}
 
       {/* SHARE WITH DOCTOR */}
       {hasData && (

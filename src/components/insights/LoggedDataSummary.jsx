@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid, Legend } from "recharts";
-import { Activity, Heart, Droplet, Pill, Sparkles, Wind } from "lucide-react";
+import { Activity, Heart, Droplet, Pill, Sparkles, Wind, Flame, Brain } from "lucide-react";
+import { format, differenceInDays } from "date-fns";
 
 const CHART_TOOLTIP_STYLE = {
   contentStyle: {
@@ -12,7 +13,7 @@ const CHART_TOOLTIP_STYLE = {
   },
 };
 
-export default function LoggedDataSummary({ entries, cycles }) {
+export default function LoggedDataSummary({ entries, cycles, cycleType = "menstrual" }) {
   if (!entries.length) return null;
 
   // Vitals tracking
@@ -76,6 +77,66 @@ export default function LoggedDataSummary({ entries, cycles }) {
       cervicalMuculusSamples[e.cervical_mucus] = (cervicalMuculusSamples[e.cervical_mucus] || 0) + 1;
     }
   });
+
+  // Custom symptoms trends
+  const customSymptomsTrend = entries
+    .filter((e) => e.custom_symptoms && e.custom_symptoms.length > 0)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-30)
+    .map((e) => {
+      const avg = e.custom_symptoms.reduce((sum, s) => sum + (s.severity || 0), 0) / e.custom_symptoms.length;
+      return { date: e.date.slice(5), avg: parseFloat(avg.toFixed(1)) };
+    });
+
+  // Pregnancy-specific: pregnancy symptoms and spotting
+  const pregnancySymptoms = ["p_nausea", "p_vomiting", "p_fatigue", "p_mood_changes", "p_sleep_issues"];
+  const pregnancyTrend = entries
+    .filter((e) => pregnancySymptoms.some((s) => e[s]))
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-30)
+    .map((e) => ({
+      date: e.date.slice(5),
+      avg: parseFloat((pregnancySymptoms.reduce((sum, s) => sum + (e[s] || 0), 0) / pregnancySymptoms.length).toFixed(1)),
+    }));
+
+  const spottingDays = entries.filter((e) => e.bleeding_intensity > 0).length;
+
+  // Postpartum-specific: physical and mental symptoms
+  const postpartumPhysical = ["pp_lochiaBleeding", "pp_perinealPain", "pp_incisionPain", "pp_breastEngorgement"];
+  const postpartumMental = ["pp_bondingDifficulties", "pp_anxietyAboutBaby", "pp_moodChanges"];
+  const postpartumTrend = entries
+    .filter((e) => [...postpartumPhysical, ...postpartumMental].some((s) => e[s]))
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-30)
+    .map((e) => ({
+      date: e.date.slice(5),
+      physical: parseFloat((postpartumPhysical.reduce((sum, s) => sum + (e[s] || 0), 0) / postpartumPhysical.length).toFixed(1)),
+      mental: parseFloat((postpartumMental.reduce((sum, s) => sum + (e[s] || 0), 0) / postpartumMental.length).toFixed(1)),
+    }));
+
+  // Menopause/Perimenopause-specific: hot flashes and symptoms
+  const hotFlashTrend = entries
+    .filter((e) => e.m_hot_flashes)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-30)
+    .map((e) => ({ date: e.date.slice(5), value: e.m_hot_flashes || 0 }));
+
+  const menopauseSymptomsKeys = ["m_night_sweats", "m_vaginal_dryness", "m_mood_swings", "m_brain_fog", "m_fatigue"];
+  const menopauseTrend = entries
+    .filter((e) => menopauseSymptomsKeys.some((s) => e[s]))
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-30)
+    .map((e) => ({
+      date: e.date.slice(5),
+      avg: parseFloat((menopauseSymptomsKeys.reduce((sum, s) => sum + (e[s] || 0), 0) / menopauseSymptomsKeys.length).toFixed(1)),
+    }));
+
+  // EPDS for postpartum
+  const epdsTrend = entries
+    .filter((e) => e.epds_score > 0)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-30)
+    .map((e) => ({ date: e.date.slice(5), score: e.epds_score }));
 
   return (
     <div className="space-y-4">
@@ -244,6 +305,158 @@ export default function LoggedDataSummary({ entries, cycles }) {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Custom Symptoms Trend */}
+      {customSymptomsTrend.length > 2 && (
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold">Custom Symptoms Trend</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={180}>
+              <LineChart data={customSymptomsTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                <YAxis tick={{ fontSize: 9 }} domain={[0, 6]} />
+                <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [v.toFixed(1), "Avg"]} />
+                <Line type="monotone" dataKey="avg" stroke="hsl(var(--chart-4))" strokeWidth={2} dot={false} name="Custom Avg" connectNulls={true} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Pregnancy-specific Trends */}
+      {cycleType === "pregnancy" && (
+        <>
+          {pregnancyTrend.length > 2 && (
+            <Card className="border-border/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">Pregnancy Symptoms Trend</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={180}>
+                  <LineChart data={pregnancyTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                    <YAxis tick={{ fontSize: 9 }} domain={[0, 6]} />
+                    <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [v.toFixed(1), "Avg"]} />
+                    <Line type="monotone" dataKey="avg" stroke="hsl(var(--chart-3))" strokeWidth={2} dot={false} name="Pregnancy Symptoms Avg" connectNulls={true} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+
+          {spottingDays > 0 && (
+            <Card className="border-border/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">Spotting Trend</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-orange-600">{spottingDays}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">days with spotting or bleeding</p>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
+
+      {/* Postpartum-specific Trends */}
+      {cycleType === "postpartum" && (
+        <>
+          {postpartumTrend.length > 2 && (
+            <Card className="border-border/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">Postpartum Symptoms</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={180}>
+                  <LineChart data={postpartumTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                    <YAxis tick={{ fontSize: 9 }} domain={[0, 6]} />
+                    <Tooltip {...CHART_TOOLTIP_STYLE} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                    <Line type="monotone" dataKey="physical" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={false} name="Physical Avg" connectNulls={true} />
+                    <Line type="monotone" dataKey="mental" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={false} name="Mental Avg" connectNulls={true} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+
+          {epdsTrend.length > 0 && (
+            <Card className="border-border/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">EPDS Trend</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={160}>
+                  <LineChart data={epdsTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                    <YAxis tick={{ fontSize: 9 }} domain={[0, 30]} />
+                    <Tooltip {...CHART_TOOLTIP_STYLE} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                    <Line type="monotone" dataKey="score" stroke="hsl(var(--chart-3))" strokeWidth={2} dot={true} name="EPDS Score" connectNulls={true} />
+                  </LineChart>
+                </ResponsiveContainer>
+                <p className="text-[10px] text-muted-foreground mt-2">≥10 suggests possible postpartum depression</p>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
+
+      {/* Menopause/Perimenopause-specific Trends */}
+      {(cycleType === "menopause" || cycleType === "perimenopause") && (
+        <>
+          {hotFlashTrend.length > 2 && (
+            <Card className="border-border/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-orange-500" />
+                  Hot Flashes Trend
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={160}>
+                  <BarChart data={hotFlashTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                    <YAxis tick={{ fontSize: 9 }} domain={[0, 6]} />
+                    <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [v, "Severity"]} />
+                    <Bar dataKey="value" fill="hsl(var(--chart-3))" radius={[3, 3, 0, 0]} name="Hot Flash Severity" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+
+          {menopauseTrend.length > 2 && (
+            <Card className="border-border/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-chart-1" />
+                  Menopause Symptoms Trend
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={180}>
+                  <LineChart data={menopauseTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                    <YAxis tick={{ fontSize: 9 }} domain={[0, 6]} />
+                    <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [v.toFixed(1), "Avg"]} />
+                    <Line type="monotone" dataKey="avg" stroke="hsl(var(--chart-5))" strokeWidth={2} dot={false} name="Symptom Avg" connectNulls={true} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+        </>
       )}
     </div>
   );
