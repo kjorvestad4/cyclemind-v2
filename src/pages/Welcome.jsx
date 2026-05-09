@@ -23,7 +23,7 @@ export default function Welcome() {
             Get Started
           </Button>
           <Button
-            onClick={() => base44.auth.redirectToLogin("/")}
+            onClick={() => base44.auth.redirectToLogin("/dashboard")}
             variant="outline"
             className="w-full h-12 rounded-2xl font-semibold text-base"
           >
