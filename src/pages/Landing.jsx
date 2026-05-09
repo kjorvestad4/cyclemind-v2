@@ -10,8 +10,8 @@ export default function Landing() {
     navigate('/welcome');
   };
 
-  const handleSignIn = async () => {
-    await base44.auth.redirectToLogin("/");
+  const handleSignIn = () => {
+    base44.auth.redirectToLogin("/");
   };
 
   return (
