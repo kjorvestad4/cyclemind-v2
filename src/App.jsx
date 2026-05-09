@@ -41,7 +41,6 @@ const AnimatedOutlet = () => {
 
         {/* Main app - protected by auth only */}
         <Route element={<AppLayout />}>
-          <Route path="/" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Dashboard /></motion.div>} />
           <Route path="/dashboard" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Dashboard /></motion.div>} />
           <Route path="/log" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><DailyLog /></motion.div>} />
           <Route path="/insights" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Insights /></motion.div>} />
@@ -49,7 +48,8 @@ const AnimatedOutlet = () => {
           <Route path="/profile" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Profile /></motion.div>} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/landing" replace />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>
   );
