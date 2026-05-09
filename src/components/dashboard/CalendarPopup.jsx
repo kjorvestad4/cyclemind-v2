@@ -234,7 +234,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
               return (
                 <div key={idx} className="relative group">
                   <button
-                     onClick={() => window.location.href = `/log?date=${dateStr}`}
+                     onClick={() => setSelectedDateInfo({ dateStr, entry, markers })}
                      className={`h-16 w-full rounded-2xl p-2 flex flex-col items-center justify-between text-xs font-medium transition-all active:scale-95 cursor-pointer relative border-2 ${
                        isToday
                          ? "border-primary bg-primary/10 shadow-md shadow-primary/20"
@@ -399,16 +399,54 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                    }}
                    className="w-full h-9 text-xs gap-1 mt-2"
                  >
-                   Edit Entry →
+                   Go to Log Date →
                  </Button>
                 </div>
                 </div>
                 </div>
                 )}
 
+                {/* User Input Data Display */}
+                {selectedDateInfo && (
+                <div className="bg-card rounded-xl border border-border/50 p-3 space-y-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Logged Data</p>
+                <div className="space-y-1.5 text-xs">
+                {selectedDateInfo.entry?.bleeding_intensity > 0 && (
+                <div className="flex items-center gap-2">
+                 <Droplet className="h-3 w-3 text-red-500 flex-shrink-0" />
+                 <span className="text-foreground">
+                   Bleeding: {selectedDateInfo.entry.menstrual_flow === "H" ? "Heavy" : selectedDateInfo.entry.menstrual_flow === "M" ? "Medium" : selectedDateInfo.entry.menstrual_flow === "L" ? "Light" : `Intensity ${selectedDateInfo.entry.bleeding_intensity}`}
+                 </span>
+                </div>
+                )}
+                {selectedDateInfo.entry?.intimacy_logged && (
+                <div className="flex items-center gap-2">
+                 <Heart className="h-3 w-3 text-pink-500 fill-pink-500 flex-shrink-0" />
+                 <span className="text-foreground">
+                   Intimacy {selectedDateInfo.entry.intimacy_protected === false ? "• Unprotected" : selectedDateInfo.entry.intimacy_protected === true ? "• Protected" : ""}
+                 </span>
+                </div>
+                )}
+                {selectedDateInfo.markers.hasOvulation && (
+                <div className="flex items-center gap-2">
+                 <Sparkles className="h-3 w-3 text-amber-400 flex-shrink-0" />
+                 <span className="text-foreground">Ovulation: {selectedDateInfo.entry?.ovulation_test || "Detected"}</span>
+                </div>
+                )}
+                {selectedDateInfo.markers.moodLevel && (
+                <div className="flex items-center gap-2">
+                 <AlertCircle className="h-3 w-3 text-orange-500 flex-shrink-0" />
+                 <span className="text-foreground">Elevated mood/anxiety</span>
+                </div>
+                )}
+                {!selectedDateInfo.entry?.bleeding_intensity && !selectedDateInfo.entry?.intimacy_logged && !selectedDateInfo.markers.hasOvulation && !selectedDateInfo.markers.moodLevel && (
+                <span className="text-muted-foreground text-xs">No logged data for this date</span>
+                )}
+                </div>
+                </div>
+                )}
 
-
-        {/* Legend */}
+                {/* Legend */}
         <div className="bg-muted/40 rounded-xl p-3 space-y-2 text-[10px]">
           <p className="font-semibold text-foreground">Severity Legend:</p>
           <div className="grid grid-cols-2 gap-1">
