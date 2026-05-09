@@ -57,10 +57,18 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
         <Input
           type="text"
           placeholder="May 9, 2026 or 5/9/1991"
-          value={isFocused ? inputValue : (value ? format(new Date(value), "MMMM d, yyyy") : "")}
+          value={isFocused ? inputValue : (value ? (() => {
+            const [y, m, d] = value.split("-");
+            return format(new Date(parseInt(y), parseInt(m) - 1, parseInt(d)), "MMMM d, yyyy");
+          })() : "")}
           onFocus={() => {
             setIsFocused(true);
-            setInputValue(value ? format(new Date(value), "MMMM d, yyyy") : "");
+            if (value) {
+              const [y, m, d] = value.split("-");
+              setInputValue(format(new Date(parseInt(y), parseInt(m) - 1, parseInt(d)), "MMMM d, yyyy"));
+            } else {
+              setInputValue("");
+            }
           }}
           onBlur={() => {
             setIsFocused(false);
