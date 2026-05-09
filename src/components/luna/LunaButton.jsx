@@ -16,7 +16,7 @@ export default function LunaButton({ user, cycleMode, cycleDay, eddInfo }) {
       <>
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 flex items-center justify-center"
+          className="fixed bottom-20 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 flex items-center justify-center"
           title="Chat with Luna"
         >
           <Moon className="w-6 h-6" />
@@ -38,7 +38,7 @@ export default function LunaButton({ user, cycleMode, cycleDay, eddInfo }) {
   return (
     <button
       onClick={() => window.location.href = '/billing'}
-      className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 text-slate-600 shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 flex items-center justify-center group"
+      className="fixed bottom-20 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 text-slate-600 shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 flex items-center justify-center group"
       title="Upgrade to Premium for Luna AI"
     >
       <div className="relative">
