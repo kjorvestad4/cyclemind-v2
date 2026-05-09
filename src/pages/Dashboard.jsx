@@ -37,7 +37,20 @@ export default function Dashboard() {
   const { containerRef, isPulling, pullProgress } = usePullToRefresh(handlePullRefresh);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then((u) => {
+      setUser(u);
+      // Enforce menstrual mode for free users with restricted cycle type
+      if (u && getUserTier(u) === TIERS.FREE) {
+        base44.entities.Cycle.list("-start_date", 1).then((cycles) => {
+          if (cycles.length > 0) {
+            const latest = cycles[0];
+            if (latest.cycle_type && latest.cycle_type !== "menstrual") {
+              base44.entities.Cycle.update(latest.id, { cycle_type: "menstrual" });
+            }
+          }
+        });
+      }
+    }).catch(() => {});
     // Re-fetch after a short delay to pick up any AuthContext sync (e.g. onboarding data)
     const t = setTimeout(() => base44.auth.me().then(setUser).catch(() => {}), 2000);
     return () => clearTimeout(t);
