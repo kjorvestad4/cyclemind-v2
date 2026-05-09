@@ -48,20 +48,48 @@ export const AuthProvider = ({ children }) => {
       setUser(currentUser);
       setIsAuthenticated(true);
 
-      // FORCE ONBOARDING COMPLETION FOR LOGGED-IN USERS
-      if (!currentUser.onboarded) {
-        await base44.auth.updateMe({ onboarded: true });
-      }
+      // Apply any onboarding data saved before login
+      const pendingMode = localStorage.getItem("onboarding_mode");
+      const pendingLmp = localStorage.getItem("onboarding_lmp");
+      const pendingCycleLength = localStorage.getItem("onboarding_cycleLength");
+      const pendingFullName = localStorage.getItem("onboarding_fullName");
+      const pendingDob = localStorage.getItem("onboarding_dob");
 
-      // Create default active Cycle if none exists
+      const today = new Date().toISOString().split('T')[0];
       const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, '-start_date', 1);
-      if (cycles.length === 0) {
-        const today = new Date().toISOString().split('T')[0];
-        await base44.entities.Cycle.create({
-          cycle_type: "menstrual",
-          cycle_length: 28,
-          start_date: today,
+
+      if (pendingMode) {
+        // Save profile data from onboarding
+        await base44.entities.User.update(currentUser.id, {
+          full_name: pendingFullName || currentUser.full_name || null,
+          date_of_birth: pendingDob || null,
         });
+        await base44.auth.updateMe({
+          onboarded: true,
+          date_of_birth: pendingDob || null,
+        });
+        if (cycles.length === 0) {
+          await base44.entities.Cycle.create({
+            cycle_type: pendingMode,
+            start_date: pendingLmp || today,
+            last_menstrual_period: pendingLmp || null,
+            cycle_length: parseInt(pendingCycleLength) || 28,
+          });
+        }
+        // Clear localStorage after saving
+        ["onboarding_mode","onboarding_lmp","onboarding_cycleLength","onboarding_fullName","onboarding_dob"]
+          .forEach(k => localStorage.removeItem(k));
+      } else {
+        if (!currentUser.onboarded) {
+          await base44.auth.updateMe({ onboarded: true });
+        }
+        if (cycles.length === 0) {
+          await base44.entities.Cycle.create({
+            cycle_type: "menstrual",
+            cycle_length: 28,
+            start_date: today,
+          });
+        }
       }
 
       setIsLoadingAuth(false);
