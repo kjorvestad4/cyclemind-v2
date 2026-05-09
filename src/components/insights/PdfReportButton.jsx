@@ -32,7 +32,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
         doc.line(margin, 10, pageW - margin, 10);
         doc.setFontSize(7);
         doc.setTextColor(...mutedText);
-        doc.text("CycleMind — DRSP Clinical Report (Confidential)", margin, 8);
+        doc.text("CycleMind — Clinical Report (Confidential)", margin, 8);
         doc.text(`Generated ${format(new Date(), "MMM d, yyyy")}`, pageW - margin, 8, { align: "right" });
       };
 
@@ -45,7 +45,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
       doc.text("CycleMind", margin, 18);
       doc.setFontSize(11);
       doc.setFont("helvetica", "normal");
-      doc.text("DRSP Clinical Symptom Report", margin, 27);
+      doc.text("Clinical Report", margin, 27);
       const age = user?.date_of_birth ? differenceInYears(new Date(), new Date(user.date_of_birth)) : null;
       doc.setFontSize(8);
       doc.setTextColor(210, 200, 255);
@@ -144,7 +144,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(...darkText);
-      doc.text("Diagnostic Indicators (DRSP Criteria)", margin, y);
+      doc.text("Diagnostic Indicators", margin, y);
       y += 5;
       doc.setDrawColor(...purple);
       doc.setLineWidth(0.5);
@@ -218,7 +218,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(...darkText);
-        doc.text("DRSP Averages by Phase", margin, y);
+        doc.text("Symptom Averages by Phase", margin, y);
         y += 5;
         doc.setDrawColor(...purple);
         doc.setLineWidth(0.5);
@@ -622,7 +622,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(...darkText);
-        doc.text("Daily Symptom Log (DRSP Scale 1-6)", margin, y);
+        doc.text("Daily Symptom Log (Scale 1-6)", margin, y);
         y += 5;
         doc.setDrawColor(...purple);
         doc.setLineWidth(0.5);
@@ -721,7 +721,7 @@ export default function PdfReportButton({ cycles, entries, analysis, user }) {
         doc.setPage(p);
         doc.setFontSize(7);
         doc.setTextColor(...mutedText);
-        doc.text(`Page ${p} of ${total}  |  CycleMind DRSP Clinical Report`, pageW / 2, 291, { align: "center" });
+        doc.text(`Page ${p} of ${total}  |  CycleMind Clinical Report`, pageW / 2, 291, { align: "center" });
       }
 
       doc.save(`CycleMind_Clinical_Report_${format(new Date(), "yyyy-MM-dd")}.pdf`);
