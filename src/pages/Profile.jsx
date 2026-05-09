@@ -149,10 +149,10 @@ function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLen
             <p className="text-xs font-semibold text-muted-foreground uppercase">Edit Cycle Settings</p>
             <div className="grid grid-cols-3 gap-2">
               <div className="space-y-1.5">
-                <Label className="text-xs">Cycle Length</Label>
-                <Input type="number" min={20} max={60} value={cycleLength}
-                  onChange={(e) => { const v = parseInt(e.target.value) || 28; setCycleLength(v); setOvulationDay(Math.max(1, v - 14)); }} />
-              </div>
+                 <Label className="text-xs">Cycle Length</Label>
+                 <Input type="number" min={20} max={60} value={cycleLength}
+                   onChange={(e) => { const v = e.target.value === "" ? "" : parseInt(e.target.value); setCycleLength(v); if (v) setOvulationDay(Math.max(1, v - 14)); }} />
+               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Ovulation Day</Label>
                 <Input type="number" min={1} max={cycleLength - 1} value={ovulationDay}
@@ -160,8 +160,8 @@ function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLen
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Period Length</Label>
-                <Input type="number" min={1} max={14} value={menstruationLength || 5}
-                  onChange={(e) => setMenstruationLength(parseInt(e.target.value) || 5)} />
+                <Input type="number" min={1} max={14} value={menstruationLength}
+                  onChange={(e) => setMenstruationLength(e.target.value === "" ? "" : parseInt(e.target.value))} />
               </div>
             </div>
             <Button variant="outline" size="sm" className="w-full gap-2 mb-2" onClick={() => saveSettingsMutation.mutate()} disabled={saveSettingsMutation.isPending}>
