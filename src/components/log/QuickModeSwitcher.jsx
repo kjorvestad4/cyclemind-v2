@@ -165,7 +165,7 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                     {mode.fields.includes("cycle_length") && (
                        <div className="space-y-0.5">
                          <Label className="text-xs font-medium">Cycle Length (days)</Label>
-                         <Input type="number" min={20} max={60} value={cycleLength} onChange={(e) => setCycleLength(parseInt(e.target.value) || 28)} className="h-8 text-sm bg-background" />
+                         <Input type="number" min={20} max={60} value={cycleLength} onChange={(e) => setCycleLength(e.target.value === "" ? "" : parseInt(e.target.value))} className="h-8 text-sm bg-background" />
                        </div>
                      )}
                      {mode.fields.includes("birth_date") && (
