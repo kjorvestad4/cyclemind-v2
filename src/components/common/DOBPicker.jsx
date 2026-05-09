@@ -54,9 +54,23 @@ export default function DOBPicker({ value, onChange, label = "Date of Birth", op
       <div className="flex items-center gap-2">
         <Input
           type="text"
-          placeholder="YYYY-MM-DD"
-          value={value || ""}
-          onChange={(e) => onChange(e.target.value)}
+          placeholder="May 9, 2026"
+          value={value ? format(new Date(value), "MMMM d, yyyy") : ""}
+          onChange={(e) => {
+            const input = e.target.value.trim();
+            if (input === "") {
+              onChange("");
+            } else {
+              try {
+                const parsed = new Date(input);
+                if (!isNaN(parsed)) {
+                  onChange(format(parsed, "yyyy-MM-dd"));
+                }
+              } catch (err) {
+                // Invalid input, keep current value
+              }
+            }
+          }}
           className="h-10 text-base flex-1"
         />
         <button
