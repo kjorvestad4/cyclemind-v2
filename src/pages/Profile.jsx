@@ -512,18 +512,53 @@ export default function Profile() {
             sublabel="Download CSV with all entries"
             onClick={exportCSV}
           />
-          <ActionRow
-            icon={Link2}
-            label="Doctor Share Link"
-            sublabel="Secure, 30-day view-only link for your clinician"
-            onClick={() => setShowSharePanel(!showSharePanel)}
-          />
-          <div className="pt-3">
-            <PdfReportButton cycles={cycles} entries={entries} analysis={{}} user={user} />
-          </div>
+          {user && getUserTier(user) === TIERS.FREE ? (
+            <>
+              <div className="py-3.5">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Link2 className="w-4.5 h-4.5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Doctor Share Link</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">Upgrade to Premium for secure sharing</p>
+                  </div>
+                </div>
+              </div>
+              <div className="py-3.5">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <FileDown className="w-4.5 h-4.5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Download Clinical Report</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">Upgrade to Premium for PDF reports</p>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => window.location.href = '/billing'}
+                className="w-full py-2.5 text-sm font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors mt-2"
+              >
+                Upgrade Now
+              </button>
+            </>
+          ) : (
+            <>
+              <ActionRow
+                icon={Link2}
+                label="Doctor Share Link"
+                sublabel="Secure, 30-day view-only link for your clinician"
+                onClick={() => setShowSharePanel(!showSharePanel)}
+              />
+              <div className="pt-3">
+                <PdfReportButton cycles={cycles} entries={entries} analysis={{}} user={user} />
+              </div>
+            </>
+          )}
         </div>
 
-        {showSharePanel && (
+        {showSharePanel && user && getUserTier(user) !== TIERS.FREE && (
           <div className="mt-4 pt-4 border-t border-border/40">
             <ShareWithDoctor cycles={cycles} entries={entries} analysis={{}} />
           </div>
