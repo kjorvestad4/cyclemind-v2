@@ -324,6 +324,9 @@ export default function DailyLog() {
         entries={entries}
         cycles={cycles}
         cycleType={cycleType}
+        cycleLength={user?.cycle_length}
+        ovulationDay={user?.ovulation_day}
+        menstruationLength={user?.menstruation_length}
       />
     <div className="space-y-5 pb-36">
       {/* Header */}
@@ -400,19 +403,12 @@ export default function DailyLog() {
       </div>
 
       {showModeSwitcher && (
-        <QuickModeSwitcher
-          currentCycleType={cycleType}
-          latestCycle={latestCycle}
-          onClose={() => setShowModeSwitcher(false)}
-        />
+       <QuickModeSwitcher
+         currentCycleType={cycleType}
+         latestCycle={latestCycle}
+         onClose={() => setShowModeSwitcher(false)}
+       />
       )}
-
-      {/* Quick Log Buttons */}
-      <QuickLogButtons
-        selectedDate={selectedDate}
-        existingEntry={existingEntry}
-        cycleType={cycleType}
-      />
 
       {/* Progress Bar */}
       <div className="bg-card rounded-2xl border border-border/50 p-3 space-y-2">
@@ -428,6 +424,13 @@ export default function DailyLog() {
         </div>
         <p className="text-[10px] text-muted-foreground italic text-center">Rate how you felt today — be honest, there are no wrong answers.</p>
       </div>
+
+      {/* Quick Log Buttons */}
+      <QuickLogButtons
+        selectedDate={selectedDate}
+        existingEntry={existingEntry}
+        cycleType={cycleType}
+      />
 
       {/* MENSTRUAL MODE */}
       {isMenstrual && (

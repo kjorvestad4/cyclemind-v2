@@ -7,7 +7,7 @@ import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleType }) {
+export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleType, cycleLength = 28, ovulationDay = 14, menstruationLength = 5 }) {
   const [viewMonth, setViewMonth] = useState(new Date());
   const [selectedDateInfo, setSelectedDateInfo] = useState(null);
   const queryClient = useQueryClient();
@@ -131,7 +131,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
     const latestCycle = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
     if (!latestCycle) return null;
 
-    const cycleLength = latestCycle.cycle_length || 28;
+    const useCycleLength = cycleLength || latestCycle.cycle_length || 28;
     const lmpStr = latestCycle.last_menstrual_period || latestCycle.start_date;
     const lmp = new Date(lmpStr);
     const dateObj = new Date(dateStr);
@@ -141,15 +141,15 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
     if (totalDays < 0) return null;
 
     // Only show up to 6 full cycles ahead
-    const maxDays = cycleLength * 7;
+    const maxDays = useCycleLength * 7;
     if (totalDays > maxDays) return null;
 
     // Day within the current projected cycle (1-based)
-    const dayInCycle = (totalDays % cycleLength) + 1;
+    const dayInCycle = (totalDays % useCycleLength) + 1;
 
-    if (dayInCycle <= 5) return "🌙"; // Menstrual
-    if (dayInCycle <= 12) return "🌱"; // Follicular
-    if (dayInCycle <= 16) return "💜"; // Fertility Window
+    if (dayInCycle <= menstruationLength) return "🌙"; // Menstrual
+    if (dayInCycle <= (ovulationDay - 3)) return "🌱"; // Follicular
+    if (dayInCycle <= (ovulationDay + 3)) return "💜"; // Fertility Window
     return "🌊"; // Luteal
   };
 
