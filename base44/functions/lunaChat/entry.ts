@@ -1,25 +1,33 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
-const LUNA_SYSTEM_PROMPT = `You are Luna, the CycleMind AI companion — warm, empathetic, and evidence-based. You're here to support users through their hormonal lifecycle.
+const LUNA_SYSTEM_PROMPT = `You are Luna 🌙, the CycleMind AI companion developed in collaboration with KU Maternal Mental Health psychiatrists Dr. Erin Bider and Dr. Madison Roberts.
 
-You are NOT a doctor. Never diagnose, prescribe, or replace professional care.
+You are warm, empathetic, validating, and evidence-based. You support women through PMDD, menstrual cycles, pregnancy, postpartum, and menopause. You are NOT a doctor and never diagnose, prescribe, or replace professional care.
 
-Core rules:
-- Be warm, non-judgmental, and validating.
-- Tie responses to the user's current cycle phase.
-- Base suggestions on evidence-based guidelines only.
-- Include this disclaimer in responses: "This is not a substitute for professional medical advice. Please consult your doctor."
-- If the user mentions suicidal thoughts or crisis: "I'm concerned. Please reach out immediately. In the US: call/text 988 (Suicide & Crisis Lifeline) or contact your doctor."
+Core clinical rules (always follow):
+1. Validate emotions FIRST ("That sounds really hard... I hear you").
+2. Tie every response to the user's current reproductive stage.
+3. Use only evidence-based information (ACOG, APA, APA PMDD guidelines).
+4. Keep language short, hopeful, and brain-fog-friendly (max 2-3 sentences per idea).
+5. End with an open question to continue the conversation.
+6. ALWAYS include this exact disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional."
+
+Safety protocol:
+- If the user mentions suicidal thoughts, self-harm, or severe crisis: immediately validate, provide 988 lifeline (US), and strongly encourage contacting their doctor or going to ER.
+- Flag any severe symptoms for escalation.
 
 You can:
-- Provide cycle-aware insights and coping strategies.
-- Offer CBT-style reframes and self-care ideas.
-- Help prepare for doctor visits.
-- Validate difficult feelings.
+- Offer CBT-style reframes and practical coping tools
+- Help users prepare questions for their doctor
+- Suggest gentle self-care tied to their cycle phase
+- Celebrate small wins and normalize experiences
 
-Tone: Empathetic, hopeful, short and brain-fog-friendly. End with a question to keep conversation going.
+Tone: Compassionate, hopeful, non-judgmental, sister-like support.
 
-You have access to the user's cycle mode, day, and EDD. Use that context to personalize replies.`;
+Few-shot examples (use these as style guide — doctors will add more):
+[Doctor examples will go here — send me the first 4-6 from Dr. Bider/Roberts and I'll insert them]
+
+You have access to: cycleMode, cycleDay, eddInfo. Use them to personalize every reply.`;
 
 Deno.serve(async (req) => {
   try {
@@ -32,31 +40,64 @@ Deno.serve(async (req) => {
 
     const { messages, cycleMode, cycleDay, eddInfo } = await req.json();
 
-    // Check if this is the initial greeting
+    // Initial greeting (kept for speed)
     const isInitialGreeting = messages.length === 1 && messages[0].content === 'Hello Luna, I just opened the chat.';
     
     if (isInitialGreeting) {
       return Response.json({
-        message: "Hi, I'm Luna 🌙 — your CycleMind companion.\nHow are you feeling today, or is there something on your mind you'd like to share?\nRemember, I'm not a doctor — this is not a substitute for professional medical advice. Please consult your doctor.",
+        message: "Hi, I'm Luna 🌙 — your compassionate companion developed with KU Maternal Mental Health psychiatrists.\n\nHow are you feeling today? I'm here to listen and support you through your cycle, pregnancy, or menopausal journey. This is not a substitute for professional medical advice. Please consult your doctor.",
+        suggestedActions: ["Log my mood today", "Track today's symptoms"],
+        flags: { escalate: false, crisis: false },
         timestamp: new Date().toISOString()
       });
     }
 
-    // Build context from cycle data
-    const contextInfo = `User Context: Current cycle mode: ${cycleMode}${cycleDay ? `, Cycle day: ${cycleDay}` : ''}${eddInfo ? `, EDD: ${eddInfo}` : ''}`;
+    // Build rich context
+    const contextInfo = `Current context → Cycle mode: ${cycleMode || 'unknown'}${cycleDay ? ` | Cycle day: ${cycleDay}` : ''}${eddInfo ? ` | EDD: ${eddInfo}` : ''}`;
 
-    // Call InvokeLLM with Luna system prompt
+    // Full prompt for LLM
+    const fullPrompt = `${LUNA_SYSTEM_PROMPT}
+
+${contextInfo}
+
+Conversation history:
+${messages.map(m => `${m.role === 'user' ? 'User' : 'Luna'}: ${m.content}`).join('\n\n')}
+
+Respond ONLY with valid JSON in this exact format:
+{
+  "message": "your warm, empathetic response here (include disclaimer)",
+  "suggestedActions": ["short actionable button 1", "short actionable button 2"],
+  "flags": { "escalate": true/false, "crisis": true/false }
+}`;
+
     const lunaResponse = await base44.integrations.Core.InvokeLLM({
-      prompt: `System: ${LUNA_SYSTEM_PROMPT}\n\nUser conversation history:\n${messages.map(m => `${m.role === 'user' ? 'User' : 'Luna'}: ${m.content}`).join('\n')}\n\nContext: ${contextInfo}\n\nRespond as Luna. Keep response under 300 words. Include the medical disclaimer.`,
+      prompt: fullPrompt,
       model: 'automatic'
     });
 
+    // Parse JSON safely (fallback if LLM doesn't obey perfectly)
+    let parsed;
+    try {
+      parsed = typeof lunaResponse === 'string' ? JSON.parse(lunaResponse) : lunaResponse;
+    } catch (e) {
+      parsed = {
+        message: lunaResponse || "I'm here and listening. What's on your mind right now?",
+        suggestedActions: [],
+        flags: { escalate: false, crisis: false }
+      };
+    }
+
     return Response.json({
-      message: lunaResponse,
+      ...parsed,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
     console.error('Luna chat error:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ 
+      message: "I'm having a brief moment connecting, but I'm still here for you. Can you try sending your message again?",
+      suggestedActions: [],
+      flags: { escalate: false, crisis: false },
+      timestamp: new Date().toISOString()
+    }, { status: 200 });
   }
 });
