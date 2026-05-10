@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { CalendarDays, PenLine, BarChart3, BookOpen, User, ChevronLeft, LogOut } from "lucide-react";
+import { LayoutDashboard, PenLine, BarChart3, BookOpen, User, ChevronLeft, LogOut } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
 import { getCycleDay } from "@/lib/symptoms";
@@ -8,7 +8,7 @@ import { format } from "date-fns";
 import LunaButton from "@/components/luna/LunaButton";
 
 const NAV_ITEMS = [
-  { path: "/dashboard", icon: CalendarDays, label: "Dashboard" },
+  { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { path: "/log", icon: PenLine, label: "Log" },
   { path: "/insights", icon: BarChart3, label: "Insights" },
   { path: "/resources", icon: BookOpen, label: "Resources" },
