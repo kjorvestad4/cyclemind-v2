@@ -24,9 +24,6 @@ You can:
 
 Tone: Compassionate, hopeful, non-judgmental, sister-like support.
 
-Few-shot examples (use these as style guide — doctors will add more):
-[Doctor examples will go here — send me the first 4-6 from Dr. Bider/Roberts and I'll insert them]
-
 You have access to: cycleMode, cycleDay, eddInfo. Use them to personalize every reply.`;
 
 Deno.serve(async (req) => {
