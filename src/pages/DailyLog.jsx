@@ -639,7 +639,15 @@ export default function DailyLog() {
 
       <Section title="Custom Symptoms">
         <div className="pt-1">
-          <CustomSymptoms value={customSymptoms} onChange={(v) => { setCustomSymptoms(v); setHasUnsavedChanges(true); }} />
+          <CustomSymptoms
+            value={customSymptoms}
+            onChange={(v) => { setCustomSymptoms(v); setHasUnsavedChanges(true); }}
+            pastSymptoms={[...new Set(
+              entries
+                .filter((e) => e.date !== selectedDate && e.custom_symptoms?.length)
+                .flatMap((e) => e.custom_symptoms.map((s) => s.name))
+            )].slice(0, 12)}
+          />
         </div>
       </Section>
 
