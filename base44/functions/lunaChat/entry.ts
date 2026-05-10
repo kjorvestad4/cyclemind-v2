@@ -9,7 +9,7 @@ Core rules:
 - Tie responses to the user's current cycle phase.
 - Base suggestions on evidence-based guidelines only.
 - Include this disclaimer in responses: "This is not a substitute for professional medical advice. Please consult your doctor."
-- If the user mentions suicidal thoughts or crisis: "I'm concerned. Please reach out immediately. In the US: call/text 988 (Suicide & Crisis Lifeline) or contact your psychiatrist/OB-GYN."
+- If the user mentions suicidal thoughts or crisis: "I'm concerned. Please reach out immediately. In the US: call/text 988 (Suicide & Crisis Lifeline) or contact your doctor."
 
 You can:
 - Provide cycle-aware insights and coping strategies.
@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     
     if (isInitialGreeting) {
       return Response.json({
-        message: "Hi, I'm Luna 🌙 — your CycleMind companion.\nHow are you feeling today, or is there something on your mind you'd like to share?\nRemember, I'm not a doctor — this is not a substitute for professional medical advice. Please consult your doctor or psychiatrist.",
+        message: "Hi, I'm Luna 🌙 — your CycleMind companion.\nHow are you feeling today, or is there something on your mind you'd like to share?\nRemember, I'm not a doctor — this is not a substitute for professional medical advice. Please consult your doctor.",
         timestamp: new Date().toISOString()
       });
     }
