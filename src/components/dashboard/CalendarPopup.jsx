@@ -150,7 +150,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
     if (dayInCycle <= menstruationLength) return "🌙"; // Menstrual
     if (dayInCycle <= (ovulationDay - 3)) return "🌱"; // Follicular
     if (dayInCycle <= (ovulationDay + 3)) return "🌸"; // Fertility Window
-    return "🌊"; // Luteal
+    return "🍂"; // Luteal
   };
 
   // Extract key data from entry for rich markers
@@ -614,7 +614,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                 <span>🌙 Menstrual</span>
                 <span>🌱 Follicular</span>
                 <span>🌸 Fertility Window</span>
-                <span>🌊 Luteal</span>
+                <span>🍂 Luteal</span>
               </div>
             </div>
           )}
