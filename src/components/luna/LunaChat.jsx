@@ -3,19 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus } from 'lucide-react';
+import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { format } from 'date-fns';
 
 // Actions that should navigate to the log page instead of sending a chat message
-const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log'];
+const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log', 'journal your feelings', 'journal', 'write in your journal', 'log your feelings'];
 
 export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [savedSymptomIndexes, setSavedSymptomIndexes] = useState(new Set());
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -93,7 +94,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
     handleSend(action);
   };
 
-  const saveSymptoms = async (symptoms) => {
+  const saveSymptoms = async (symptoms, msgIdx) => {
     try {
       const today = format(new Date(), 'yyyy-MM-dd');
       const existing = await base44.entities.DailyEntry.filter({ date: today });
@@ -108,6 +109,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
       } else {
         await base44.entities.DailyEntry.create({ date: today, custom_symptoms: newSymptoms });
       }
+      setSavedSymptomIndexes(prev => new Set([...prev, msgIdx]));
       toast.success(`${symptoms.length} symptom(s) saved to today's log!`);
     } catch (err) {
       console.error(err);
@@ -180,13 +182,19 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
                         <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">{s}</span>
                       ))}
                     </div>
-                    <Button
-                      size="sm"
-                      className="text-xs rounded-2xl h-7 gap-1 bg-purple-600 hover:bg-purple-700 text-white"
-                      onClick={() => saveSymptoms(msg.detectedSymptoms)}
-                    >
-                      <Plus className="w-3 h-3" /> Save to today's log
-                    </Button>
+                    {savedSymptomIndexes.has(idx) ? (
+                      <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
+                        <CheckCircle2 className="w-4 h-4" /> Saved to today's log!
+                      </div>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="text-xs rounded-2xl h-7 gap-1 bg-purple-600 hover:bg-purple-700 text-white"
+                        onClick={() => saveSymptoms(msg.detectedSymptoms, idx)}
+                      >
+                        <Plus className="w-3 h-3" /> Save to today's log
+                      </Button>
+                    )}
                   </div>
                 )}
 
