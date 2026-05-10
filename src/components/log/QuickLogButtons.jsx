@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Droplet, Heart, Flower2, Loader2, Shield, ShieldOff } from "lucide-react";
+import { Droplet, Heart, Sparkles, Loader2, Shield, ShieldOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -223,7 +223,7 @@ export default function QuickLogButtons({
               : "bg-card border-2 border-border text-muted-foreground hover:border-amber-500/50"
           }`}
         >
-          {loadingState.ovulation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Flower2 className="h-4 w-4" />}
+          {loadingState.ovulation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
           <span className="text-[11px]">{isOvulationActive ? "Detected" : "Ovulation"}</span>
         </Button>
       </div>
