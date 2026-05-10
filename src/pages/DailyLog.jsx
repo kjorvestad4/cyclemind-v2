@@ -418,6 +418,13 @@ export default function DailyLog() {
 
       {/* Progress Bar — premium only */}
       {!isFreeUser && <div className="bg-card rounded-2xl border border-border/50 p-3 space-y-2">
+        <p className="text-[11px] font-semibold text-primary/80">
+          {isPregnancy ? "🤰 Pregnancy Symptom Tracker" :
+           isPostpartum ? "🍼 Postpartum Recovery Tracker" :
+           cycleType === "perimenopause" ? "🌊 Perimenopause Symptom Tracker" :
+           cycleType === "menopause" ? "🔥 Menopause Symptom Tracker" :
+           "🌙 PMDD / Menstrual Symptom Tracker"}
+        </p>
         <div className="flex justify-between text-xs">
           <span className="text-muted-foreground">{filledCount}/{activeKeys.length} symptoms rated</span>
           <span className="font-bold text-foreground">Score: {totalScore}/{maxScore}</span>
