@@ -9,7 +9,37 @@ import ReactMarkdown from 'react-markdown';
 import { format } from 'date-fns';
 
 // Actions that should navigate to the log page instead of sending a chat message
-const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log', 'journal your feelings', 'journal', 'write in your journal', 'log your feelings'];
+const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log'];
+// Actions that should navigate to the journal section of the log page
+const JOURNAL_ACTIONS = ['journal your feelings', 'journal', 'write in your journal', 'log your feelings', 'start a journaling session', 'start journaling', 'journaling session', 'open journal'];
+
+const SESSION_KEY = 'luna_chat_session';
+const SESSION_TTL_MS = 7 * 60 * 1000; // 7 minutes
+
+function loadSession() {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const { messages, savedIndexes, timestamp } = JSON.parse(raw);
+    if (Date.now() - timestamp > SESSION_TTL_MS) {
+      sessionStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return { messages, savedIndexes: new Set(savedIndexes) };
+  } catch {
+    return null;
+  }
+}
+
+function saveSession(messages, savedIndexes) {
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+      messages,
+      savedIndexes: [...savedIndexes],
+      timestamp: Date.now()
+    }));
+  } catch {}
+}
 
 export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
   const navigate = useNavigate();
@@ -18,13 +48,31 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
   const [loading, setLoading] = useState(false);
   const [savedSymptomIndexes, setSavedSymptomIndexes] = useState(new Set());
   const messagesEndRef = useRef(null);
+  const initializedRef = useRef(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Initial greeting
+  // Persist session whenever messages or savedIndexes change
   useEffect(() => {
+    if (messages.length > 0) {
+      saveSession(messages, savedSymptomIndexes);
+    }
+  }, [messages, savedSymptomIndexes]);
+
+  // Initial greeting — restore session or fetch greeting
+  useEffect(() => {
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+
+    const session = loadSession();
+    if (session && session.messages.length > 0) {
+      setMessages(session.messages);
+      setSavedSymptomIndexes(session.savedIndexes);
+      return;
+    }
+
     const sendGreeting = async () => {
       setLoading(true);
       try {
@@ -53,7 +101,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
       }
     };
     sendGreeting();
-  }, [cycleMode, cycleDay, eddInfo]);
+  }, []);
 
   const handleSend = useCallback(async (userMessage = input.trim()) => {
     if (!userMessage || loading) return;
@@ -61,12 +109,18 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setLoading(true);
 
+    // Collect all symptoms already saved so Luna won't re-detect them
+    const alreadySavedSymptoms = messages
+      .filter((m, i) => m.detectedSymptoms?.length > 0 && savedSymptomIndexes.has(i))
+      .flatMap(m => m.detectedSymptoms);
+
     try {
       const response = await base44.functions.invoke('lunaChat', {
         messages: [...messages, { role: 'user', content: userMessage }],
         cycleMode,
         cycleDay,
         eddInfo,
+        alreadySavedSymptoms,
       });
 
       const botReply = response.data;
@@ -86,9 +140,15 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
   }, [input, messages, loading, cycleMode, cycleDay, eddInfo]);
 
   const handleSuggestedAction = (action) => {
-    if (LOG_ACTIONS.includes(action.toLowerCase())) {
+    const lc = action.toLowerCase();
+    if (LOG_ACTIONS.includes(lc)) {
       onClose();
       navigate('/log');
+      return;
+    }
+    if (JOURNAL_ACTIONS.some(j => lc.includes(j))) {
+      onClose();
+      navigate('/log#journal');
       return;
     }
     handleSend(action);

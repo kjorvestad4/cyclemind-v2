@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -52,10 +52,10 @@ function getTrimester(week) {
   return "third";
 }
 
-function Section({ title, subtitle, children, defaultOpen = false, badge }) {
+function Section({ title, subtitle, children, defaultOpen = false, badge, sectionRef }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
+    <div ref={sectionRef} className="rounded-2xl border border-border/60 bg-card overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-muted/30 transition-colors"
@@ -80,9 +80,17 @@ export default function DailyLog() {
   const urlParams = new URLSearchParams(window.location.search);
   const initialDate = urlParams.get("date") || format(new Date(), "yyyy-MM-dd");
   const [user, setUser] = useState(null);
+  const journalRef = useRef(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  // Scroll to journal section if navigated with #journal
+  useEffect(() => {
+    if (window.location.hash === '#journal' && journalRef.current) {
+      setTimeout(() => journalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+    }
   }, []);
 
   const [selectedDate, setSelectedDate] = useState(initialDate);
@@ -651,7 +659,7 @@ export default function DailyLog() {
         </div>
       </Section>
 
-      <Section title="Journal Entry">
+      <Section title="Journal Entry" sectionRef={journalRef} defaultOpen={window.location.hash === '#journal'}>
         <div className="pt-1 space-y-3">
           <Textarea
             placeholder={
