@@ -519,6 +519,8 @@ export default function DailyLog() {
           <EpdsScale
             responses={epdsResponses}
             isPostpartum={false}
+            trimester={trimester}
+            entries={entries}
             onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); }}
           />
           <MoodScales

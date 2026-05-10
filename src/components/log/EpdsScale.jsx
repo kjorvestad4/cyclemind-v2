@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
+import { ChevronDown, ChevronUp, AlertTriangle, Bell } from "lucide-react";
 
 const EPDS_QUESTIONS = [
   {
@@ -120,12 +120,19 @@ function epdsInterpretation(score) {
   return { label: "High concern — seek support soon", color: "text-destructive" };
 }
 
-export default function EpdsScale({ responses = {}, onComplete, isPostpartum }) {
+// Returns true if the entries array has an EPDS score for the given trimester
+function hasEpdsForTrimester(entries = [], trimester) {
+  if (!trimester || !entries.length) return false;
+  return entries.some((e) => e.trimester === trimester && e.epds_score > 0);
+}
+
+export default function EpdsScale({ responses = {}, onComplete, isPostpartum, trimester, entries = [] }) {
   const [open, setOpen] = useState(false);
 
   const total = Object.values(responses).reduce((s, v) => s + (v || 0), 0);
   const answered = Object.keys(responses).length;
   const complete = answered === 10;
+  const doneThisTrimester = isPostpartum ? true : hasEpdsForTrimester(entries, trimester);
   const q10val = responses["q10"];
   const showQ10Alert = q10val > 0;
   const interp = complete ? epdsInterpretation(total) : null;
@@ -136,8 +143,19 @@ export default function EpdsScale({ responses = {}, onComplete, isPostpartum }) 
     onComplete(nextTotal, next);
   };
 
+  const trimesterLabel = trimester === "first" ? "1st" : trimester === "second" ? "2nd" : trimester === "third" ? "3rd" : null;
+  const showNudge = !isPostpartum && trimester && !doneThisTrimester && !complete;
+
   return (
-    <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
+    <div className={`rounded-2xl border bg-card overflow-hidden ${showNudge ? "border-pink-300 dark:border-pink-800" : "border-border/60"}`}>
+      {showNudge && (
+        <div className="flex items-start gap-2.5 px-4 py-3 bg-pink-50 dark:bg-pink-950/30 border-b border-pink-200 dark:border-pink-800">
+          <Bell className="w-4 h-4 text-pink-500 shrink-0 mt-0.5" />
+          <p className="text-xs text-pink-700 dark:text-pink-300 font-medium leading-snug">
+            ACOG recommends an EPDS screening each trimester. You haven't completed one this {trimesterLabel} trimester yet — tap below to start.
+          </p>
+        </div>
+      )}
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-muted/30 transition-colors"
