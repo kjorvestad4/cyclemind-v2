@@ -69,7 +69,8 @@ Respond ONLY with valid JSON in this exact format:
 }
 
 For "detectedSymptoms": extract any specific symptoms the user mentions (e.g. "headache", "bloating", "anxiety", "fatigue"). Return an empty array if none are mentioned. Keep each symptom short (1-3 words).
-IMPORTANT: The following symptoms have ALREADY been saved to the user's log — do NOT include them in detectedSymptoms again: ${alreadySavedSymptoms.length > 0 ? alreadySavedSymptoms.join(', ') : 'none'}. Also do not mention asking the user to log these symptoms as they are already saved.`;
+IMPORTANT: The following symptoms have ALREADY been saved to the user's log — do NOT include them in detectedSymptoms again: ${alreadySavedSymptoms.length > 0 ? alreadySavedSymptoms.join(', ') : 'none'}. Also do not mention asking the user to log these symptoms as they are already saved.
+For "suggestedActions": if you want to suggest the user logs symptoms or their mood, ALWAYS use exactly "Track today's symptoms" as the button text — never "Log my mood today" or other variations.`;
 
     const parsed = await base44.integrations.Core.InvokeLLM({
       prompt: fullPrompt,

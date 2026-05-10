@@ -9,7 +9,7 @@ import ReactMarkdown from 'react-markdown';
 import { format } from 'date-fns';
 
 // Actions that should navigate to the log page instead of sending a chat message
-const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log'];
+const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log', 'log my mood today', 'log today', 'log my symptoms', 'log symptoms today', 'track my symptoms today'];
 // Actions that should navigate to the journal section of the log page
 const JOURNAL_ACTIONS = ['journal your feelings', 'journal', 'write in your journal', 'log your feelings', 'start a journaling session', 'start journaling', 'journaling session', 'open journal'];
 
