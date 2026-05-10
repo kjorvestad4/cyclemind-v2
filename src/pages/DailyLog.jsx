@@ -88,8 +88,15 @@ export default function DailyLog() {
 
   // Scroll to journal section if navigated with #journal
   useEffect(() => {
-    if (window.location.hash === '#journal' && journalRef.current) {
-      setTimeout(() => journalRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+    if (window.location.hash === '#journal') {
+      // Try scrolling after content loads
+      setTimeout(() => {
+        if (journalRef.current) {
+          journalRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+      }, 800);
     }
   }, []);
 
