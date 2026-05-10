@@ -148,7 +148,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
     }
     if (JOURNAL_ACTIONS.some(j => lc.includes(j))) {
       onClose();
-      navigate('/log#journal');
+      window.location.href = '/log#journal';
       return;
     }
     handleSend(action);
