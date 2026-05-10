@@ -1,12 +1,18 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Send, Loader2, Moon, AlertCircle } from 'lucide-react';
+import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import { format } from 'date-fns';
+
+// Actions that should navigate to the log page instead of sending a chat message
+const LOG_ACTIONS = ['log my mood today', 'track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log'];
 
 export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -67,7 +73,8 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
         role: 'assistant',
         content: botReply.message,
         suggestedActions: botReply.suggestedActions || [],
-        flags: botReply.flags || { escalate: false, crisis: false }
+        flags: botReply.flags || { escalate: false, crisis: false },
+        detectedSymptoms: botReply.detectedSymptoms || []
       }]);
     } catch (err) {
       console.error(err);
@@ -78,7 +85,34 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
   }, [input, messages, loading, cycleMode, cycleDay, eddInfo]);
 
   const handleSuggestedAction = (action) => {
+    if (LOG_ACTIONS.includes(action.toLowerCase())) {
+      onClose();
+      navigate('/log');
+      return;
+    }
     handleSend(action);
+  };
+
+  const saveSymptoms = async (symptoms) => {
+    try {
+      const today = format(new Date(), 'yyyy-MM-dd');
+      const existing = await base44.entities.DailyEntry.filter({ date: today });
+      const entry = existing[0];
+      const newSymptoms = symptoms.map(name => ({ name, severity: 3 }));
+      if (entry) {
+        const merged = [...(entry.custom_symptoms || [])];
+        newSymptoms.forEach(s => {
+          if (!merged.find(e => e.name.toLowerCase() === s.name.toLowerCase())) merged.push(s);
+        });
+        await base44.entities.DailyEntry.update(entry.id, { custom_symptoms: merged });
+      } else {
+        await base44.entities.DailyEntry.create({ date: today, custom_symptoms: newSymptoms });
+      }
+      toast.success(`${symptoms.length} symptom(s) saved to today's log!`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Couldn't save symptoms. Please try again.");
+    }
   };
 
   return (
@@ -119,17 +153,40 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
                 {/* Suggested Actions */}
                 {msg.role === 'assistant' && msg.suggestedActions?.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-4">
-                    {msg.suggestedActions.map((action, i) => (
-                      <Button
-                        key={i}
-                        variant="outline"
-                        size="sm"
-                        className="text-xs rounded-2xl border-purple-200 hover:bg-purple-50"
-                        onClick={() => handleSuggestedAction(action)}
-                      >
-                        {action}
-                      </Button>
-                    ))}
+                    {msg.suggestedActions.map((action, i) => {
+                      const isLogAction = LOG_ACTIONS.includes(action.toLowerCase());
+                      return (
+                        <Button
+                          key={i}
+                          variant="outline"
+                          size="sm"
+                          className={`text-xs rounded-2xl ${isLogAction ? 'border-purple-400 bg-purple-50 text-purple-700 hover:bg-purple-100' : 'border-purple-200 hover:bg-purple-50'}`}
+                          onClick={() => handleSuggestedAction(action)}
+                        >
+                          {isLogAction && <ExternalLink className="w-3 h-3 mr-1" />}
+                          {action}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Detected Symptoms — offer to save */}
+                {msg.role === 'assistant' && msg.detectedSymptoms?.length > 0 && (
+                  <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 rounded-2xl">
+                    <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2">Symptoms I noticed you mentioned:</p>
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {msg.detectedSymptoms.map((s, i) => (
+                        <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">{s}</span>
+                      ))}
+                    </div>
+                    <Button
+                      size="sm"
+                      className="text-xs rounded-2xl h-7 gap-1 bg-purple-600 hover:bg-purple-700 text-white"
+                      onClick={() => saveSymptoms(msg.detectedSymptoms)}
+                    >
+                      <Plus className="w-3 h-3" /> Save to today's log
+                    </Button>
                   </div>
                 )}
 

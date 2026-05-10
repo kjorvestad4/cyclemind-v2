@@ -64,25 +64,31 @@ Respond ONLY with valid JSON in this exact format:
 {
   "message": "your warm, empathetic response here (include disclaimer)",
   "suggestedActions": ["short actionable button 1", "short actionable button 2"],
-  "flags": { "escalate": true/false, "crisis": true/false }
-}`;
+  "flags": { "escalate": true/false, "crisis": true/false },
+  "detectedSymptoms": ["symptom1", "symptom2"]
+}
 
-    const lunaResponse = await base44.integrations.Core.InvokeLLM({
+For "detectedSymptoms": extract any specific symptoms the user mentions (e.g. "headache", "bloating", "anxiety", "fatigue"). Return an empty array if none are mentioned. Keep each symptom short (1-3 words).`;
+
+    const parsed = await base44.integrations.Core.InvokeLLM({
       prompt: fullPrompt,
-      model: 'automatic'
+      model: 'automatic',
+      response_json_schema: {
+        type: 'object',
+        properties: {
+          message: { type: 'string' },
+          suggestedActions: { type: 'array', items: { type: 'string' } },
+          flags: {
+            type: 'object',
+            properties: {
+              escalate: { type: 'boolean' },
+              crisis: { type: 'boolean' }
+            }
+          },
+          detectedSymptoms: { type: 'array', items: { type: 'string' } }
+        }
+      }
     });
-
-    // Parse JSON safely (fallback if LLM doesn't obey perfectly)
-    let parsed;
-    try {
-      parsed = typeof lunaResponse === 'string' ? JSON.parse(lunaResponse) : lunaResponse;
-    } catch (e) {
-      parsed = {
-        message: lunaResponse || "I'm here and listening. What's on your mind right now?",
-        suggestedActions: [],
-        flags: { escalate: false, crisis: false }
-      };
-    }
 
     return Response.json({
       ...parsed,
