@@ -9,7 +9,7 @@ import ReactMarkdown from 'react-markdown';
 import { format } from 'date-fns';
 
 // Actions that should navigate to the log page instead of sending a chat message
-const LOG_ACTIONS = ['log my mood today', 'track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log'];
+const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log'];
 
 export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
   const navigate = useNavigate();

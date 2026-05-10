@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
     if (isInitialGreeting) {
       return Response.json({
         message: "Hi, I'm Luna 🌙 — your compassionate CycleMind companion.\n\nHow are you feeling today? I'm here to listen and support you through your cycle, pregnancy, or menopausal journey. This is not a substitute for professional medical advice. Please consult your doctor.",
-        suggestedActions: ["Log my mood today", "Track today's symptoms"],
+        suggestedActions: ["Track today's symptoms"],
         flags: { escalate: false, crisis: false },
         timestamp: new Date().toISOString()
       });
