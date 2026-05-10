@@ -30,7 +30,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
         });
         setMessages([{
           role: 'assistant',
-          content: response.data.message || "Hello. Is there any specific feelings or situation on your mind that you'd like to talk about? Remember this is not a substitute for professional medical advice. Please consult your doctor."
+          content: response.data.message || "Hi, I'm Luna 🌙 — your CycleMind companion.\nHow are you feeling today, or is there something on your mind you'd like to share?\nRemember, I'm not a doctor — this is not a substitute for professional medical advice. Please consult your doctor or psychiatrist."
         }]);
         setInitialGreeting(false);
       } catch (err) {
