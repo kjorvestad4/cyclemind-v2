@@ -65,7 +65,7 @@ export default function Billing() {
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate(-1)}
             className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
