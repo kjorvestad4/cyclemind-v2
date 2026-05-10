@@ -19,6 +19,7 @@ const TIERS = [
       { name: "Menopause tracking", included: false },
       { name: "Advanced scales (PHQ-9, GAD-7)", included: false },
       { name: "Doctor sharing", included: false },
+      { name: "Luna AI companion 🌙", included: false },
     ],
   },
   {
