@@ -41,7 +41,7 @@ const PHASE_LABELS = {
 const CYCLE_TYPE_BADGES = {
   pregnancy: { label: "🤰 Pregnancy", color: "bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300" },
   postpartum: { label: "🍼 Postpartum", color: "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300" },
-  perimenopause: { label: "🌊 Perimenopause", color: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300" },
+  perimenopause: { label: "🔦 Perimenopause", color: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300" },
   menopause: { label: "🔥 Menopause", color: "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300" },
 };
 
@@ -387,7 +387,7 @@ export default function DailyLog() {
           <p className="text-sm font-bold text-foreground">
             {isPostpartum && `🍼 Postpartum${latestCycle?.start_date ? ` · Day ${Math.max(1, Math.floor((new Date(selectedDate) - new Date(latestCycle.start_date)) / 86400000) + 1)}` : " Mode"}`}
             {isPregnancy && `🤰 Pregnancy${pregnancyWeek ? ` · Week ${pregnancyWeek}` : " Mode"}`}
-            {isMenopause && cycleType === "perimenopause" && "🌊 Perimenopause Mode"}
+            {isMenopause && cycleType === "perimenopause" && "🔦 Perimenopause Mode"}
             {isMenopause && cycleType === "menopause" && "🔥 Menopause Mode"}
             {isMenstrual && "🌙 Menstrual / PMDD Tracking"}
           </p>
@@ -421,7 +421,7 @@ export default function DailyLog() {
         <p className="text-[11px] font-semibold text-primary/80">
           {isPregnancy ? "🤰 Pregnancy Symptom Tracker" :
            isPostpartum ? "🍼 Postpartum Recovery Tracker" :
-           cycleType === "perimenopause" ? "🌊 Perimenopause Symptom Tracker" :
+           cycleType === "perimenopause" ? "🔦 Perimenopause Symptom Tracker" :
            cycleType === "menopause" ? "🔥 Menopause Symptom Tracker" :
            "🌙 PMDD / Menstrual Symptom Tracker"}
         </p>

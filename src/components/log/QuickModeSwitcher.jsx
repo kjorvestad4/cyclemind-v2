@@ -15,7 +15,7 @@ const MODES = [
   { id: "menstrual", emoji: "🌙", label: "Menstrual / PMDD", color: "border-primary/40 bg-primary/5", activeColor: "border-primary bg-primary/10", fields: ["lmp", "cycle_length"] },
   { id: "pregnancy", emoji: "🤰", label: "Pregnancy", color: "border-pink-200 bg-pink-50/50 dark:border-pink-900 dark:bg-pink-950/20", activeColor: "border-pink-400 bg-pink-50 dark:border-pink-600 dark:bg-pink-950/40", fields: ["lmp", "ovulation"] },
   { id: "postpartum", emoji: "🍼", label: "Postpartum", color: "border-purple-200 bg-purple-50/50 dark:border-purple-900 dark:bg-purple-950/20", activeColor: "border-purple-400 bg-purple-50 dark:border-purple-600 dark:bg-purple-950/40", fields: ["birth_date"] },
-  { id: "perimenopause", emoji: "🌊", label: "Perimenopause", color: "border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20", activeColor: "border-amber-400 bg-amber-50 dark:border-amber-600 dark:bg-amber-950/40", fields: ["lmp", "hrt_type"] },
+  { id: "perimenopause", emoji: "🔦", label: "Perimenopause", color: "border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20", activeColor: "border-amber-400 bg-amber-50 dark:border-amber-600 dark:bg-amber-950/40", fields: ["lmp", "hrt_type"] },
   { id: "menopause", emoji: "🔥", label: "Menopause", color: "border-orange-200 bg-orange-50/50 dark:border-orange-900 dark:bg-orange-950/20", activeColor: "border-orange-400 bg-orange-50 dark:border-orange-600 dark:bg-orange-950/40", fields: ["lmp", "hrt_type"] },
 ];
 
