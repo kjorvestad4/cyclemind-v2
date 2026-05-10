@@ -121,7 +121,7 @@ function Sparkline({ entries, cycleType }) {
 
 // ── Main card ─────────────────────────────────────────────────────────────────
 
-export default function TodaySeverityCard({ entries, cycleType }) {
+export default function TodaySeverityCard({ entries, cycleType, isFreeUser }) {
   const navigate = useNavigate();
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const todayEntry = entries.find((e) => e.date === todayStr);
@@ -131,6 +131,10 @@ export default function TodaySeverityCard({ entries, cycleType }) {
   const hasData = score !== null;
   const barPct = hasData ? Math.min(100, (score / max) * 100) : 0;
 
+  // Hide DRSP card for free-tier users in menstrual mode
+  const isMenstrualDrsp = !["pregnancy","postpartum","menopause","perimenopause"].includes(cycleType);
+  if (isFreeUser && isMenstrualDrsp) return null;
+
   return (
     <button
       onClick={() => navigate(`/log?date=${todayStr}`)}
@@ -139,9 +143,14 @@ export default function TodaySeverityCard({ entries, cycleType }) {
       <div className="flex items-start justify-between gap-4">
         {/* Score block */}
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
-            {label || "Today's Score"}
-          </p>
+          <div className="flex items-center gap-2 mb-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              {label || "Today's Score"}
+            </p>
+            {isMenstrualDrsp && !isFreeUser && (
+              <span className="text-[9px] font-medium text-primary/70 bg-primary/10 px-1.5 py-0.5 rounded-full">PMDD symptom tracker</span>
+            )}
+          </div>
 
           {hasData ? (
             <div className="space-y-1">

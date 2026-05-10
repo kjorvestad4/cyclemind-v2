@@ -167,7 +167,7 @@ export default function Dashboard() {
         )}
 
         {/* Today's Severity Card — primary CTA, clickable to /log */}
-        <TodaySeverityCard entries={entries} cycleType={cycleType} />
+        <TodaySeverityCard entries={entries} cycleType={cycleType} isFreeUser={isFreeUser} />
 
         {/* Secondary log button */}
         {todayEntry && (
