@@ -36,6 +36,7 @@ const TIERS = [
       { name: "Menopause tracking", included: true },
       { name: "Advanced scales (PHQ-9, GAD-7)", included: true },
       { name: "Doctor sharing", included: true },
+      { name: "Luna AI companion 🌙", included: true, highlight: true },
     ],
     highlighted: true,
   },
@@ -113,6 +114,12 @@ export default function Billing() {
                       <span className="text-muted-foreground text-sm">{tier.period}</span>
                     )}
                   </div>
+                  {tier.highlighted && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground line-through">$119.88/year</span>
+                      <span className="text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-2 py-0.5 rounded-full">$100/year — Save 17%</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Features */}
@@ -127,7 +134,7 @@ export default function Billing() {
                       <span
                         className={`text-sm ${
                           feature.included
-                            ? "text-foreground"
+                            ? feature.highlight ? "text-primary font-semibold" : "text-foreground"
                             : "text-muted-foreground line-through"
                         }`}
                       >
