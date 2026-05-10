@@ -315,6 +315,7 @@ export default function DailyLog() {
     setSelectedDate(format(d, "yyyy-MM-dd"));
   };
 
+  const isFreeUser = getUserTier(user) === TIERS.FREE;
   const activeKeys = isPregnancy ? PREG_SYMPTOM_KEYS : isPostpartum ? PP_SYMPTOM_KEYS : isMenopause ? MENO_SYMPTOM_KEYS : ALL_SYMPTOMS.map(s => s.key);
   const filledCount = activeKeys.filter((k) => (scores[k] || 0) > 0).length;
   const totalScore = isMenstrual ? calculateDayTotal({ ...scores }) : activeKeys.reduce((s, k) => s + (scores[k] || 0), 0);
@@ -415,8 +416,8 @@ export default function DailyLog() {
        />
       )}
 
-      {/* Progress Bar */}
-      <div className="bg-card rounded-2xl border border-border/50 p-3 space-y-2">
+      {/* Progress Bar — premium only */}
+      {!isFreeUser && <div className="bg-card rounded-2xl border border-border/50 p-3 space-y-2">
         <div className="flex justify-between text-xs">
           <span className="text-muted-foreground">{filledCount}/{activeKeys.length} symptoms rated</span>
           <span className="font-bold text-foreground">Score: {totalScore}/{maxScore}</span>
@@ -428,7 +429,7 @@ export default function DailyLog() {
           />
         </div>
         <p className="text-[10px] text-muted-foreground italic text-center">Rate how you felt today — be honest, there are no wrong answers.</p>
-      </div>
+      </div>}
 
       {/* Quick Log Buttons */}
       <QuickLogButtons
