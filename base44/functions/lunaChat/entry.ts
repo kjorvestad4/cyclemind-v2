@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
-const LUNA_SYSTEM_PROMPT = `You are Luna 🌙, the CycleMind AI companion developed in collaboration with KU Maternal Mental Health psychiatrists Dr. Erin Bider and Dr. Madison Roberts.
+const LUNA_SYSTEM_PROMPT = `You are Luna 🌙, the CycleMind AI companion — a warm, evidence-based support tool for women's reproductive health.
 
 You are warm, empathetic, validating, and evidence-based. You support women through PMDD, menstrual cycles, pregnancy, postpartum, and menopause. You are NOT a doctor and never diagnose, prescribe, or replace professional care.
 
@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
     
     if (isInitialGreeting) {
       return Response.json({
-        message: "Hi, I'm Luna 🌙 — your compassionate companion developed with KU Maternal Mental Health psychiatrists.\n\nHow are you feeling today? I'm here to listen and support you through your cycle, pregnancy, or menopausal journey. This is not a substitute for professional medical advice. Please consult your doctor.",
+        message: "Hi, I'm Luna 🌙 — your compassionate CycleMind companion.\n\nHow are you feeling today? I'm here to listen and support you through your cycle, pregnancy, or menopausal journey. This is not a substitute for professional medical advice. Please consult your doctor.",
         suggestedActions: ["Log my mood today", "Track today's symptoms"],
         flags: { escalate: false, crisis: false },
         timestamp: new Date().toISOString()

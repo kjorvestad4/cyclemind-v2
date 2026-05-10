@@ -93,7 +93,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
             </div>
             <div>
               <h3 className="font-serif text-lg font-semibold">Luna</h3>
-              <p className="text-xs text-muted-foreground">Powered by KU Maternal Mental Health</p>
+              <p className="text-xs text-muted-foreground">Your compassionate cycle companion</p>
             </div>
           </div>
           <button onClick={onClose} aria-label="Close chat">
