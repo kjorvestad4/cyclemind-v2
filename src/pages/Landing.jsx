@@ -302,7 +302,7 @@ export default function Landing() {
                 icon: <Stethoscope className="w-6 h-6" />,
                 badge: "Founding Team",
                 title: "Designed by 3 Psychiatrists",
-                desc: "Two are Maternal Mental Health Specialists. CycleMind isn't a wellness app — it's a clinical tool built by the doctors who treat these conditions.",
+                desc: "All three are Women's Mental Health Psychiatrists. CycleMind isn't a wellness app — it's a clinical tool built by the doctors who treat these conditions.",
                 color: "teal"
               },
               {
@@ -410,17 +410,17 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14 space-y-3">
             <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Our Team</span>
-            <h2 className="font-serif text-4xl font-bold text-gray-900">Developed by psychiatrists specializing in reproductive mental health</h2>
+            <h2 className="font-serif text-4xl font-bold text-gray-900">Developed by Women's Mental Health Psychiatrists</h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              CycleMind was co-created by three board-certified psychiatrists — two of whom are Maternal Mental Health Specialists — who have spent their careers treating the exact conditions this app addresses.
+              CycleMind was co-created by three board-certified Women's Mental Health Psychiatrists who have spent their careers treating the exact conditions this app addresses.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { initials: "A.N.", role: "Psychiatrist & Co-Founder", specialty: "Reproductive & Maternal Mental Health Specialist", bio: "Board-certified psychiatrist with specialized training in perinatal mental health, PMDD, and hormonal mood disorders across the reproductive lifecycle." },
-              { initials: "S.M.", role: "Psychiatrist & Co-Founder", specialty: "Maternal Mental Health Specialist", bio: "Expert in postpartum depression, pregnancy-related anxiety, and complex psychiatric care for women navigating major hormonal transitions." },
-              { initials: "R.K.", role: "Psychiatrist & Co-Founder", specialty: "Women's Mental Health", bio: "Clinician and researcher focused on the intersection of hormonal health and psychiatric outcomes, driving CycleMind's clinical methodology." },
+              { initials: "A.N.", role: "Psychiatrist & Co-Founder", specialty: "Women's Mental Health Psychiatrist", bio: "Board-certified psychiatrist with specialized training in perinatal mental health, PMDD, and hormonal mood disorders across the reproductive lifecycle." },
+              { initials: "S.M.", role: "Psychiatrist & Co-Founder", specialty: "Women's Mental Health Psychiatrist", bio: "Expert in postpartum depression, pregnancy-related anxiety, and complex psychiatric care for women navigating major hormonal transitions." },
+              { initials: "R.K.", role: "Psychiatrist & Co-Founder", specialty: "Women's Mental Health Psychiatrist", bio: "Clinician and researcher focused on the intersection of hormonal health and psychiatric outcomes, driving CycleMind's clinical methodology." },
             ].map(({ initials, role, specialty, bio }) => (
               <div key={initials} className="rounded-3xl border border-gray-100 bg-gray-50 p-8 space-y-4 text-center">
                 <div className="w-20 h-20 rounded-full bg-teal-600 flex items-center justify-center mx-auto text-white font-bold text-xl font-serif shadow-md">
@@ -514,7 +514,7 @@ export default function Landing() {
                 {[
                   "Everything in Free",
                   "All 5 lifecycle modes (Pregnancy, Postpartum, Peri/Menopause)",
-                  "Luna AI Companion (trained by Maternal Mental Health Psychiatrists)",
+                  "Luna AI Companion (trained by Women's Mental Health Psychiatrists)",
                   "Clinical-grade PDF reports for your doctor",
                   "Shareable doctor links with access controls",
                   "EPDS postpartum depression screening",
@@ -574,7 +574,7 @@ export default function Landing() {
               <p className="text-sm leading-relaxed max-w-xs">
                 The only clinically-designed hormonal mental health tracker built by psychiatrists who specialize in exactly what you're going through.
               </p>
-              <p className="text-xs text-gray-500">Developed by 3 Board-Certified Psychiatrists · 2 Maternal Mental Health Specialists</p>
+              <p className="text-xs text-gray-500">Developed by 3 Board-Certified Women's Mental Health Psychiatrists</p>
             </div>
 
             <div className="space-y-3">
