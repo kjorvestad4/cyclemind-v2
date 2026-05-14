@@ -225,7 +225,7 @@ export default function Landing() {
                 { n: "2", title: "No single clinical test.", body: "PMDD diagnosis requires 2+ cycles of prospective DRSP tracking — something most patients and providers have never heard of." },
                 { n: "3", title: "Stigma and normalization.", body: '"Just PMS" dismisses real suffering. Patients internalize shame and don\'t seek help.' },
                 { n: "4", title: "Misdiagnosis.", body: "Without cycle context, PMDD looks like depression or anxiety — leading to incorrect treatment." },
-                { n: "5", title: "Provider knowledge gaps.", body: "OB/GYNs rarely ask about mood. Psychiatrists rarely ask about cycle. The connection falls between specialties." },
+                { n: "5", title: "Provider knowledge gaps.", body: "OB/GYNs rarely ask about mood. Psychiatrists rarely ask about cycles. The connection falls between specialties." },
               ].map(({ n, title, body }) => (
                 <div key={n} className="flex gap-3 text-sm text-gray-600">
                   <span className="text-teal-600 font-bold text-base mt-0.5">{n}.</span>
