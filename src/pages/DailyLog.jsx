@@ -25,7 +25,7 @@ import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import QuickLogButtons from "@/components/log/QuickLogButtons";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
 import CycleBanners from "@/components/dashboard/CycleBanners";
-import { MRSScale, PCL5Scale, FSFIScale } from "@/components/log/AdditionalScales";
+import { MRSScale } from "@/components/log/AdditionalScales";
 import EDDDisplay from "@/components/pregnancy/EDDDisplay";
 import { SYMPTOM_CATEGORIES, ALL_SYMPTOMS, getCycleDay, calculateDayTotal } from "@/lib/symptoms";
 import { calculateEDD } from "@/lib/eddCalculation";
@@ -515,6 +515,12 @@ export default function DailyLog() {
                 gad7Responses={gad7Responses}
                 onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
                 onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+                showPCL5={!isFreeUser}
+                pcl5Responses={pcl5Responses}
+                onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); }}
+                showFSFI={!isFreeUser}
+                fsfiResponses={fsfiResponses}
+                onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); }}
               />
             </>
           ) : (
@@ -563,6 +569,12 @@ export default function DailyLog() {
             hidePhq9={true}
             onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
             onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+            showPCL5={!isFreeUser}
+            pcl5Responses={pcl5Responses}
+            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); }}
+            showFSFI={!isFreeUser}
+            fsfiResponses={fsfiResponses}
+            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); }}
           />
           <Section title="Spotting / Bleeding" subtitle="Note any spotting — always inform your healthcare provider if unexpected">
             <div className="pt-1">
@@ -601,6 +613,12 @@ export default function DailyLog() {
             hidePhq9={true}
             onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
             onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+            showPCL5={!isFreeUser}
+            pcl5Responses={pcl5Responses}
+            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); }}
+            showFSFI={!isFreeUser}
+            fsfiResponses={fsfiResponses}
+            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); }}
           />
           <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — classic mood/symptom grid for comparison">
             <div className="pt-2">
@@ -633,6 +651,12 @@ export default function DailyLog() {
             gad7Responses={gad7Responses}
             onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
             onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+            showPCL5={!isFreeUser}
+            pcl5Responses={pcl5Responses}
+            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); }}
+            showFSFI={!isFreeUser}
+            fsfiResponses={fsfiResponses}
+            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); }}
           />
           {cycleType === "perimenopause" && (
             <>
@@ -692,22 +716,6 @@ export default function DailyLog() {
           />
         </div>
       </Section>
-
-      {/* PCL-5 Trauma Scale — Premium, all modes */}
-      {!isFreeUser && (
-        <PCL5Scale
-          responses={pcl5Responses}
-          onComplete={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); }}
-        />
-      )}
-
-      {/* FSFI — Premium, all modes */}
-      {!isFreeUser && (
-        <FSFIScale
-          responses={fsfiResponses}
-          onComplete={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); }}
-        />
-      )}
 
       <Section title="Journal Entry" sectionRef={journalRef} defaultOpen={window.location.hash === '#journal'}>
         <div className="pt-1 space-y-3">
