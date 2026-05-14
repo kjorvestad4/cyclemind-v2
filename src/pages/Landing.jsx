@@ -1,200 +1,588 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Check, Brain, Heart, Activity, TrendingUp, BarChart3 } from 'lucide-react';
+import {
+  Brain, Heart, BarChart3, Shield, Sparkles, Users,
+  CheckCircle, ArrowRight, Star, Moon, Activity, FileText,
+  ChevronDown, Menu, X, Stethoscope, Award, MessageCircle
+} from 'lucide-react';
 
 export default function Landing() {
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleStartApp = () => {
-    navigate('/welcome');
+  const scrollTo = (id) => {
+    setMobileMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/50">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="font-serif text-2xl font-bold text-foreground">CycleMind</h1>
-          <Button variant="outline" onClick={() => navigate('/about')}>
-            Learn More
-          </Button>
+    <div className="min-h-screen bg-white text-gray-900 font-sans">
+
+      {/* ── NAV ── */}
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
+        <div className="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between">
+          <span className="font-serif text-2xl font-bold text-teal-700">CycleMind</span>
+
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
+            <button onClick={() => scrollTo('how-it-works')} className="hover:text-teal-700 transition-colors">How it Works</button>
+            <button onClick={() => scrollTo('team')} className="hover:text-teal-700 transition-colors">Our Team</button>
+            <button onClick={() => scrollTo('about')} className="hover:text-teal-700 transition-colors">About</button>
+            <button onClick={() => scrollTo('contact')} className="hover:text-teal-700 transition-colors">Contact</button>
+          </div>
+
+          <div className="hidden md:flex items-center gap-3">
+            <Button variant="outline" size="sm" onClick={() => navigate('/welcome')} className="border-teal-600 text-teal-700 hover:bg-teal-50">
+              Sign In
+            </Button>
+            <Button size="sm" onClick={() => navigate('/welcome')} className="bg-teal-600 hover:bg-teal-700 text-white">
+              Start Free
+            </Button>
+          </div>
+
+          <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-t border-gray-100 px-5 py-4 space-y-3 text-sm font-medium text-gray-700">
+            <button onClick={() => scrollTo('how-it-works')} className="block w-full text-left py-2">How it Works</button>
+            <button onClick={() => scrollTo('team')} className="block w-full text-left py-2">Our Team</button>
+            <button onClick={() => scrollTo('about')} className="block w-full text-left py-2">About</button>
+            <button onClick={() => scrollTo('contact')} className="block w-full text-left py-2">Contact</button>
+            <Button onClick={() => navigate('/welcome')} className="w-full bg-teal-600 hover:bg-teal-700 text-white mt-2">
+              Start Free
+            </Button>
+          </div>
+        )}
       </nav>
 
-      {/* Hero Section */}
-      <section className="max-w-6xl mx-auto px-4 py-20 space-y-8 text-center">
-        <div className="space-y-4">
-          <h2 className="font-serif text-5xl font-bold text-foreground leading-tight">
-            Track Your Cycle with Clinical Precision
+      {/* ── HERO ── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-teal-50 via-white to-purple-50 pt-20 pb-28 px-5">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Left copy */}
+            <div className="space-y-7">
+              <div className="inline-flex items-center gap-2 bg-teal-100 text-teal-800 rounded-full px-4 py-1.5 text-sm font-semibold">
+                <Stethoscope className="w-4 h-4" />
+                Developed by 3 Psychiatrists
+              </div>
+
+              <h1 className="font-serif text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
+                For cycles that have<br />
+                <span className="text-teal-700">a mind of their own.</span>
+              </h1>
+
+              <p className="text-lg text-gray-600 leading-relaxed max-w-lg">
+                CycleMind is the only clinically-designed app that tracks hormonal mental health across your entire reproductive lifecycle — built by psychiatrists who specialize in exactly what you're going through.
+              </p>
+
+              {/* Beta offer */}
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm">
+                <span className="font-bold text-amber-800">🎉 Beta Offer:</span>{' '}
+                <span className="text-amber-700">Early users get <strong>3 months of Premium free</strong> + lock in founder pricing forever.</span>
+              </div>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                {/* App Store — coming soon */}
+                <button className="relative flex items-center gap-3 bg-black text-white rounded-xl px-5 py-3.5 hover:bg-gray-800 transition-colors">
+                  <span className="text-2xl">🍎</span>
+                  <div className="text-left">
+                    <div className="text-[10px] opacity-70 uppercase tracking-wide">Coming Soon to</div>
+                    <div className="text-sm font-semibold">App Store</div>
+                  </div>
+                  <span className="absolute -top-2 -right-2 bg-amber-400 text-black text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">Beta</span>
+                </button>
+
+                {/* Google Play — coming soon */}
+                <button className="relative flex items-center gap-3 bg-black text-white rounded-xl px-5 py-3.5 hover:bg-gray-800 transition-colors">
+                  <span className="text-2xl">▶</span>
+                  <div className="text-left">
+                    <div className="text-[10px] opacity-70 uppercase tracking-wide">Coming Soon to</div>
+                    <div className="text-sm font-semibold">Google Play</div>
+                  </div>
+                  <span className="absolute -top-2 -right-2 bg-amber-400 text-black text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">Beta</span>
+                </button>
+              </div>
+
+              <Button
+                onClick={() => navigate('/welcome')}
+                size="lg"
+                className="bg-teal-600 hover:bg-teal-700 text-white h-12 px-8 text-base rounded-xl w-full sm:w-auto"
+              >
+                Start Tracking Today — It's Free <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+
+            {/* Right mockup */}
+            <div className="relative flex justify-center">
+              <div className="relative w-72 h-[580px] bg-gray-900 rounded-[48px] shadow-2xl overflow-hidden border-4 border-gray-800 flex flex-col">
+                {/* Status bar */}
+                <div className="h-8 bg-gray-900 flex items-center justify-between px-6">
+                  <span className="text-white text-[10px]">9:41</span>
+                  <div className="flex gap-1">
+                    <div className="w-3 h-1.5 bg-white rounded-sm opacity-70" />
+                    <div className="w-3 h-1.5 bg-white rounded-sm opacity-70" />
+                  </div>
+                </div>
+                {/* App screen */}
+                <div className="flex-1 bg-gradient-to-b from-teal-50 to-purple-50 p-4 space-y-3 overflow-hidden">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Moon className="w-5 h-5 text-teal-700" />
+                    <span className="font-serif font-bold text-teal-800 text-sm">CycleMind</span>
+                  </div>
+                  <div className="bg-white rounded-xl p-3 shadow-sm">
+                    <p className="text-xs text-gray-500 mb-1">Today · Cycle Day 18</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-teal-800">Luteal Phase</span>
+                      <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">Moderate</span>
+                    </div>
+                  </div>
+                  {['Mood Swings', 'Anxiety', 'Bloating', 'Fatigue'].map((s, i) => (
+                    <div key={s} className="bg-white rounded-xl p-3 shadow-sm flex items-center justify-between">
+                      <span className="text-xs text-gray-700">{s}</span>
+                      <div className="flex gap-1">
+                        {[1,2,3,4,5,6].map(n => (
+                          <div key={n} className={`w-3 h-3 rounded-sm ${n <= [4,3,3,5][i] ? 'bg-teal-500' : 'bg-gray-100'}`} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  <div className="bg-purple-100 rounded-xl p-3 flex items-center gap-2">
+                    <Moon className="w-4 h-4 text-purple-600" />
+                    <span className="text-xs text-purple-700 font-medium">Luna sees a pattern — tap to chat</span>
+                  </div>
+                </div>
+              </div>
+              {/* Floating badges */}
+              <div className="absolute -left-6 top-24 bg-white rounded-2xl shadow-xl p-3 flex items-center gap-2 border border-teal-100">
+                <Award className="w-5 h-5 text-teal-600" />
+                <span className="text-xs font-semibold text-gray-800">Physician-Designed</span>
+              </div>
+              <div className="absolute -right-4 bottom-32 bg-white rounded-2xl shadow-xl p-3 flex items-center gap-2 border border-purple-100">
+                <Shield className="w-5 h-5 text-purple-600" />
+                <span className="text-xs font-semibold text-gray-800">Clinical-Grade</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll cue */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce text-gray-400">
+          <ChevronDown className="w-5 h-5" />
+        </div>
+      </section>
+
+      {/* ── WHY CYCLEMIND ── */}
+      <section id="about" className="py-24 px-5 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-14 space-y-3">
+            <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Why CycleMind?</span>
+            <h2 className="font-serif text-4xl font-bold text-gray-900">Built for how hormones actually affect your mind</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Hormonal changes don't just affect your body — they profoundly shape your emotions, cognition, and mental wellbeing. Until now, no app tracked this with real clinical precision.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <Brain className="w-7 h-7" />,
+                title: "See Your Patterns",
+                desc: "Understand how your cycle drives your emotions and symptoms before your next appointment — with validated clinical tools like the DRSP, PHQ-9, GAD-7, and EPDS.",
+                color: "teal"
+              },
+              {
+                icon: <MessageCircle className="w-7 h-7" />,
+                title: "Better Conversations with Your Provider",
+                desc: "Arrive at appointments with objective, clinical-grade data instead of trying to recall weeks of symptoms. Your doctor sees the full picture.",
+                color: "purple"
+              },
+              {
+                icon: <Heart className="w-7 h-7" />,
+                title: "Finally Feel Understood",
+                desc: "Your experience is real, measurable, and documented. CycleMind validates what you've been living through — across every reproductive stage.",
+                color: "rose"
+              }
+            ].map(({ icon, title, desc, color }) => (
+              <div key={title} className={`rounded-3xl p-8 space-y-4 border ${
+                color === 'teal' ? 'bg-teal-50 border-teal-100' :
+                color === 'purple' ? 'bg-purple-50 border-purple-100' :
+                'bg-rose-50 border-rose-100'
+              }`}>
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                  color === 'teal' ? 'bg-teal-600 text-white' :
+                  color === 'purple' ? 'bg-purple-600 text-white' :
+                  'bg-rose-500 text-white'
+                }`}>
+                  {icon}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+                <p className="text-gray-600 leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ── */}
+      <section id="how-it-works" className="py-24 px-5 bg-gray-50">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14 space-y-3">
+            <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">How it Works</span>
+            <h2 className="font-serif text-4xl font-bold text-gray-900">From daily log to doctor visit — in four steps</h2>
+          </div>
+
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { step: "1", icon: <Activity className="w-6 h-6" />, title: "Track Daily", desc: "Log symptoms, mood, and vitals in under 2 minutes using validated clinical scales." },
+              { step: "2", icon: <TrendingUpIcon />, title: "See Your Patterns", desc: "CycleMind surfaces insights — PMDD patterns, luteal severity, and personalized trends." },
+              { step: "3", icon: <FileText className="w-6 h-6" />, title: "Generate a Report", desc: "Create a clinical-grade PDF or shareable link ready to hand to your provider." },
+              { step: "4", icon: <Users className="w-6 h-6" />, title: "Have Better Appointments", desc: "Arrive with objective data. Feel heard. Get the diagnosis and treatment you deserve." },
+            ].map(({ step, icon, title, desc }) => (
+              <div key={step} className="relative bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4 text-center">
+                <div className="w-10 h-10 rounded-full bg-teal-600 text-white font-bold text-lg flex items-center justify-center mx-auto">
+                  {step}
+                </div>
+                <div className="text-teal-600 flex justify-center">{icon}</div>
+                <h3 className="font-bold text-gray-900">{title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── KEY FEATURES ── */}
+      <section className="py-24 px-5 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-14 space-y-3">
+            <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Key Features</span>
+            <h2 className="font-serif text-4xl font-bold text-gray-900">Everything you need. Nothing you don't.</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                icon: <Stethoscope className="w-6 h-6" />,
+                badge: "Founding Team",
+                title: "Designed by 3 Psychiatrists",
+                desc: "Two are Maternal Mental Health Specialists. CycleMind isn't a wellness app — it's a clinical tool built by the doctors who treat these conditions.",
+                color: "teal"
+              },
+              {
+                icon: <BarChart3 className="w-6 h-6" />,
+                badge: "Validated Scales",
+                title: "Evidence-Based Psychometrics",
+                desc: "Uses DRSP (the gold standard for PMDD), EPDS, PHQ-9, and GAD-7 — the same tools your psychiatrist uses.",
+                color: "purple"
+              },
+              {
+                icon: <FileText className="w-6 h-6" />,
+                badge: "Share with Your Doctor",
+                title: "Clinical-Grade Reports",
+                desc: "Generate a detailed PDF or shareable link your provider can actually use to inform your care.",
+                color: "blue"
+              },
+              {
+                icon: <Award className="w-6 h-6" />,
+                badge: "First of Its Kind",
+                title: "The Only PMDD App Using DRSP",
+                desc: "Designed by physicians for both patients and clinicians. No other app tracks PMDD with the rigor CycleMind does.",
+                color: "amber"
+              },
+              {
+                icon: <Activity className="w-6 h-6" />,
+                badge: "5 Modes",
+                title: "Full Reproductive Lifecycle",
+                desc: "PMDD/Menstrual, Pregnancy, Postpartum, Perimenopause, and Menopause — seamlessly switch as your life changes.",
+                color: "rose"
+              },
+              {
+                icon: <Moon className="w-6 h-6" />,
+                badge: "Premium",
+                title: "Luna — AI Companion",
+                desc: "An empathetic AI chatbot trained under the guidance of Maternal Mental Health Psychiatrists to support you between appointments.",
+                color: "violet"
+              },
+            ].map(({ icon, badge, title, desc, color }) => (
+              <div key={title} className="group bg-white rounded-3xl border border-gray-100 shadow-sm p-7 space-y-4 hover:shadow-md hover:border-teal-200 transition-all">
+                <div className="flex items-start justify-between">
+                  <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${
+                    color === 'teal' ? 'bg-teal-100 text-teal-700' :
+                    color === 'purple' ? 'bg-purple-100 text-purple-700' :
+                    color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                    color === 'amber' ? 'bg-amber-100 text-amber-700' :
+                    color === 'rose' ? 'bg-rose-100 text-rose-700' :
+                    'bg-violet-100 text-violet-700'
+                  }`}>
+                    {icon}
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${
+                    color === 'teal' ? 'bg-teal-50 text-teal-600' :
+                    color === 'purple' ? 'bg-purple-50 text-purple-600' :
+                    color === 'blue' ? 'bg-blue-50 text-blue-600' :
+                    color === 'amber' ? 'bg-amber-50 text-amber-600' :
+                    color === 'rose' ? 'bg-rose-50 text-rose-600' :
+                    'bg-violet-50 text-violet-600'
+                  }`}>{badge}</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── WHO IT'S FOR ── */}
+      <section className="py-24 px-5 bg-gradient-to-br from-teal-700 to-teal-900 text-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-14 space-y-3">
+            <span className="text-teal-300 font-semibold text-sm uppercase tracking-widest">Built for Real Life</span>
+            <h2 className="font-serif text-4xl font-bold">Who CycleMind is for</h2>
+            <p className="text-teal-200 text-lg max-w-xl mx-auto">
+              Wherever you are in your reproductive journey, CycleMind adapts to support you.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[
+              { emoji: "🌙", title: "PMDD & Menstrual Health", points: ["DRSP daily tracking", "Luteal vs follicular analysis", "PMDD pattern detection", "Doctor-ready reports"] },
+              { emoji: "🤰", title: "Pregnancy", points: ["Trimester-specific symptoms", "EPDS screening", "Fetal movement tracking", "PHQ-9 & GAD-7"] },
+              { emoji: "🌸", title: "Postpartum", points: ["Recovery symptom tracking", "Postpartum depression screening", "Sleep & fatigue logging", "Clinical summaries"] },
+              { emoji: "🔥", title: "Perimenopause & Menopause", points: ["Hot flash tracking", "HRT monitoring", "Brain fog & mood trends", "Mental health screening"] },
+            ].map(({ emoji, title, points }) => (
+              <div key={title} className="bg-white/10 backdrop-blur rounded-3xl border border-white/10 p-6 space-y-4 hover:bg-white/15 transition-colors">
+                <span className="text-3xl">{emoji}</span>
+                <h3 className="font-bold text-white text-lg">{title}</h3>
+                <ul className="space-y-2">
+                  {points.map(p => (
+                    <li key={p} className="flex items-start gap-2 text-sm text-teal-200">
+                      <CheckCircle className="w-4 h-4 text-teal-400 flex-shrink-0 mt-0.5" />
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TEAM ── */}
+      <section id="team" className="py-24 px-5 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14 space-y-3">
+            <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Our Team</span>
+            <h2 className="font-serif text-4xl font-bold text-gray-900">Developed by psychiatrists specializing in reproductive mental health</h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              CycleMind was co-created by three board-certified psychiatrists — two of whom are Maternal Mental Health Specialists — who have spent their careers treating the exact conditions this app addresses.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { initials: "A.N.", role: "Psychiatrist & Co-Founder", specialty: "Reproductive & Maternal Mental Health Specialist", bio: "Board-certified psychiatrist with specialized training in perinatal mental health, PMDD, and hormonal mood disorders across the reproductive lifecycle." },
+              { initials: "S.M.", role: "Psychiatrist & Co-Founder", specialty: "Maternal Mental Health Specialist", bio: "Expert in postpartum depression, pregnancy-related anxiety, and complex psychiatric care for women navigating major hormonal transitions." },
+              { initials: "R.K.", role: "Psychiatrist & Co-Founder", specialty: "Women's Mental Health", bio: "Clinician and researcher focused on the intersection of hormonal health and psychiatric outcomes, driving CycleMind's clinical methodology." },
+            ].map(({ initials, role, specialty, bio }) => (
+              <div key={initials} className="rounded-3xl border border-gray-100 bg-gray-50 p-8 space-y-4 text-center">
+                <div className="w-20 h-20 rounded-full bg-teal-600 flex items-center justify-center mx-auto text-white font-bold text-xl font-serif shadow-md">
+                  {initials}
+                </div>
+                <div>
+                  <p className="font-bold text-gray-900">{role}</p>
+                  <p className="text-teal-700 text-sm font-semibold mt-0.5">{specialty}</p>
+                </div>
+                <p className="text-sm text-gray-500 leading-relaxed">{bio}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ── */}
+      <section className="py-24 px-5 bg-gray-50">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14 space-y-3">
+            <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Beta Users</span>
+            <h2 className="font-serif text-4xl font-bold text-gray-900">What early users are saying</h2>
+            <p className="text-gray-500 text-sm">Feedback from our ongoing beta testing program.</p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[
+              { quote: "Easy to use.", context: "Beta Tester" },
+              { quote: "Has tracking tools and insights not available on any other app.", context: "Beta Tester" },
+              { quote: "AI chatbot is really helpful!", context: "Beta Tester" },
+              { quote: "Clinical Reports are superb!", context: "Beta Tester" },
+            ].map(({ quote, context }, i) => (
+              <div key={i} className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4">
+                <div className="flex gap-0.5">
+                  {[1,2,3,4,5].map(s => <Star key={s} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
+                </div>
+                <p className="text-gray-800 font-medium leading-relaxed">"{quote}"</p>
+                <p className="text-xs text-gray-400">{context}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-center text-sm text-gray-400 mt-8 italic">More testimonials coming as our beta program expands. Join now to be part of it.</p>
+        </div>
+      </section>
+
+      {/* ── FREE VS PREMIUM ── */}
+      <section className="py-24 px-5 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-14 space-y-3">
+            <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Plans</span>
+            <h2 className="font-serif text-4xl font-bold text-gray-900">Free vs Premium</h2>
+            <p className="text-gray-600">Start free. Unlock everything when you're ready.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Free */}
+            <div className="rounded-3xl border border-gray-200 p-8 space-y-5">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900">Free</h3>
+                <p className="text-gray-500 text-sm mt-1">Everything you need to get started</p>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  "Daily symptom logging (DRSP, mood, vitals)",
+                  "Menstrual mode tracking",
+                  "Interactive cycle calendar",
+                  "PHQ-9 & GAD-7 mental health screening",
+                  "Basic insights & trends",
+                  "Medication & journal logging",
+                ].map(f => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-gray-700">
+                    <CheckCircle className="w-4 h-4 text-teal-500 flex-shrink-0 mt-0.5" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Button variant="outline" onClick={() => navigate('/welcome')} className="w-full border-teal-600 text-teal-700 hover:bg-teal-50">
+                Start Free
+              </Button>
+            </div>
+
+            {/* Premium */}
+            <div className="rounded-3xl border-2 border-teal-500 bg-gradient-to-br from-teal-50 to-purple-50 p-8 space-y-5 relative">
+              <span className="absolute -top-3 left-6 bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Beta: 3 months free</span>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900">Premium</h3>
+                <p className="text-gray-500 text-sm mt-1">The full clinical experience</p>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  "Everything in Free",
+                  "All 5 lifecycle modes (Pregnancy, Postpartum, Peri/Menopause)",
+                  "Luna AI Companion (trained by Maternal Mental Health Psychiatrists)",
+                  "Clinical-grade PDF reports for your doctor",
+                  "Shareable doctor links with access controls",
+                  "EPDS postpartum depression screening",
+                  "Advanced PMDD pattern analysis",
+                  "Unlimited history & trend insights",
+                ].map(f => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-gray-700">
+                    <CheckCircle className="w-4 h-4 text-teal-600 fill-teal-100 flex-shrink-0 mt-0.5" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Button onClick={() => navigate('/welcome')} className="w-full bg-teal-600 hover:bg-teal-700 text-white">
+                Get 3 Months Free →
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FINAL CTA ── */}
+      <section className="py-24 px-5 bg-gradient-to-br from-teal-700 to-purple-800 text-white text-center">
+        <div className="max-w-3xl mx-auto space-y-6">
+          <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight">
+            You deserve to be understood.
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Comprehensive symptom tracking for menstrual health, pregnancy, postpartum recovery, and menopause—designed for clinicians and patients.
+          <p className="text-lg text-teal-200 leading-relaxed">
+            Start tracking today — free, clinically-designed, and built by psychiatrists who believe your symptoms are real.
           </p>
-        </div>
-
-        <div className="pt-4">
-          <Button onClick={handleStartApp} size="lg" className="h-12 px-8 text-base">
-            Try CycleMind Today →
-          </Button>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section className="max-w-6xl mx-auto px-4 py-16">
-        <h3 className="text-2xl font-semibold text-center mb-12">Powerful Features</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <FeatureCard
-            icon={<Brain className="w-6 h-6" />}
-            title="DRSP Symptom Tracking"
-            description="Track 34 daily symptoms using the validated Daily Record of Severity of Problems"
-          />
-          <FeatureCard
-            icon={<Heart className="w-6 h-6" />}
-            title="Mental Health Screening"
-            description="Integrated PHQ-9, GAD-7, and EPDS assessments for mood and anxiety monitoring"
-          />
-          <FeatureCard
-            icon={<Activity className="w-6 h-6" />}
-            title="Multi-Mode Tracking"
-            description="Customize tracking for menstrual, pregnancy, postpartum, perimenopause, and menopause modes"
-          />
-          <FeatureCard
-            icon={<TrendingUp className="w-6 h-6" />}
-            title="Clinical Insights"
-            description="Automated analysis identifying PMDD patterns, luteal phase severity, and diagnostic indicators"
-          />
-          <FeatureCard
-            icon={<BarChart3 className="w-6 h-6" />}
-            title="Doctor Share Links"
-            description="Generate secure, time-limited links to share anonymized data with your healthcare provider"
-          />
-          <FeatureCard
-            icon={<Heart className="w-6 h-6" />}
-            title="Vitals & Intimacy Logging"
-            description="Track heart rate, blood pressure, temperature, weight, and sexual activity with protection status"
-          />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              onClick={() => navigate('/welcome')}
+              size="lg"
+              className="bg-white text-teal-800 hover:bg-teal-50 h-12 px-8 text-base font-semibold rounded-xl"
+            >
+              Start Tracking Today — Free <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
+            <Button
+              onClick={() => navigate('/about')}
+              variant="outline"
+              size="lg"
+              className="border-white/50 text-white hover:bg-white/10 h-12 px-8 text-base rounded-xl"
+            >
+              Learn More
+            </Button>
+          </div>
+          <p className="text-teal-300 text-sm">No credit card required. Beta users get 3 months Premium free.</p>
         </div>
       </section>
 
-      {/* Screenshots Section */}
-      <section className="max-w-6xl mx-auto px-4 py-16 space-y-8">
-        <div className="text-center space-y-2">
-          <h3 className="text-2xl font-semibold">Intuitive Interface</h3>
-          <p className="text-muted-foreground">Beautiful, responsive design optimized for daily tracking</p>
-        </div>
+      {/* ── FOOTER ── */}
+      <footer id="contact" className="bg-gray-900 text-gray-400 py-12 px-5">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-8 mb-10">
+            <div className="md:col-span-2 space-y-3">
+              <span className="font-serif text-xl font-bold text-white">CycleMind</span>
+              <p className="text-sm leading-relaxed max-w-xs">
+                The only clinically-designed hormonal mental health tracker built by psychiatrists who specialize in exactly what you're going through.
+              </p>
+              <p className="text-xs text-gray-500">Developed by 3 Board-Certified Psychiatrists · 2 Maternal Mental Health Specialists</p>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <ScreenshotCard
-            title="Daily Log"
-            description="Log symptoms, vitals, medications, and mood screens in one place"
-            emoji="📝"
-          />
-          <ScreenshotCard
-            title="Interactive Calendar"
-            description="Visualize your cycle patterns with color-coded severity indicators"
-            emoji="📅"
-          />
-          <ScreenshotCard
-            title="Clinical Insights"
-            description="Get PMDD diagnostic indicators and phase-based analysis"
-            emoji="📊"
-          />
-        </div>
-      </section>
+            <div className="space-y-3">
+              <p className="text-white font-semibold text-sm">App</p>
+              <div className="space-y-2 text-sm">
+                <button onClick={() => scrollTo('how-it-works')} className="block hover:text-white transition-colors">How it Works</button>
+                <button onClick={() => scrollTo('team')} className="block hover:text-white transition-colors">Our Team</button>
+                <button onClick={() => navigate('/billing')} className="block hover:text-white transition-colors">Pricing</button>
+                <button onClick={() => navigate('/about')} className="block hover:text-white transition-colors">About</button>
+              </div>
+            </div>
 
-      {/* Use Cases */}
-      <section className="max-w-6xl mx-auto px-4 py-16 space-y-8">
-        <h3 className="text-2xl font-semibold text-center">For Every Stage</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <UseCase
-            title="PMDD & Menstrual Health"
-            features={["DRSP daily tracking", "Luteal vs follicular comparison", "Doctor share links", "Diagnostic pattern detection"]}
-          />
-          <UseCase
-            title="Pregnancy & Postpartum"
-            features={["Pregnancy symptom tracking", "EPDS depression screening", "Postpartum recovery metrics", "Fetal movement monitoring"]}
-          />
-          <UseCase
-            title="Perimenopause & Menopause"
-            features={["Hot flash tracking", "Symptom burden analysis", "Mental health screening", "HRT monitoring"]}
-          />
-          <UseCase
-            title="Clinical Providers"
-            features={["Patient data synthesis", "Pattern recognition", "Validated screening tools", "Secure patient sharing"]}
-          />
-        </div>
-      </section>
+            <div className="space-y-3">
+              <p className="text-white font-semibold text-sm">Contact & Legal</p>
+              <div className="space-y-2 text-sm">
+                <a href="mailto:hello@cyclemind.app" className="block hover:text-white transition-colors">hello@cyclemind.app</a>
+                <span className="block text-gray-500 cursor-not-allowed" title="Coming soon">Privacy Policy (coming soon)</span>
+                <span className="block text-gray-500 cursor-not-allowed" title="Coming soon">Terms of Use (coming soon)</span>
+              </div>
+            </div>
+          </div>
 
-      {/* CTA Section */}
-      <section className="max-w-4xl mx-auto px-4 py-20 text-center space-y-6">
-        <h3 className="text-3xl font-semibold">Ready to Track Your Health?</h3>
-        <p className="text-lg text-muted-foreground">
-          Start your free account and take control of your cycle health with CycleMind.
-        </p>
-        <Button onClick={handleStartApp} size="lg" className="h-12 px-8 text-base">
-          Try CycleMind Today →
-        </Button>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-border/50 py-8 bg-muted/30">
-        <div className="max-w-6xl mx-auto px-4 space-y-4 text-center">
-          <p className="text-sm text-muted-foreground">
-            Based on the Daily Record of Severity of Problems (DRSP), PHQ-9, GAD-7, and EPDS.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            CycleMind is an informational tool. Always consult with a qualified healthcare provider for medical advice.
-          </p>
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => navigate('/about')}
-            className="text-primary hover:text-primary/80"
-          >
-            Learn about the need for better tracking →
-          </Button>
+          <div className="border-t border-gray-800 pt-8 space-y-2 text-xs text-gray-500">
+            <p>CycleMind uses validated psychometric tools (DRSP, EPDS, PHQ-9, GAD-7) and follows HIPAA-aligned practices for data privacy.</p>
+            <p>CycleMind is an informational and tracking tool. It does not provide medical diagnoses or replace professional healthcare. Always consult a qualified healthcare provider.</p>
+            <p className="pt-2">© {new Date().getFullYear()} CycleMind. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>
   );
 }
 
-function FeatureCard({ icon, title, description }) {
+// tiny inline icon to avoid import issues
+function TrendingUpIcon() {
   return (
-    <div className="bg-card rounded-2xl border border-border/50 p-6 space-y-3 hover:border-primary/30 transition-colors">
-      <div className="text-primary">{icon}</div>
-      <h4 className="font-semibold text-foreground">{title}</h4>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
-  );
-}
-
-function ScreenshotCard({ title, description, emoji }) {
-  return (
-    <div className="bg-card rounded-2xl border border-border/50 overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="bg-gradient-to-br from-primary/10 to-primary/5 h-40 flex items-center justify-center text-5xl">
-        {emoji}
-      </div>
-      <div className="p-6 space-y-2">
-        <h4 className="font-semibold text-foreground">{title}</h4>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </div>
-    </div>
-  );
-}
-
-function UseCase({ title, features }) {
-  return (
-    <div className="bg-card rounded-2xl border border-border/50 p-6 space-y-4">
-      <h4 className="font-semibold text-lg text-foreground">{title}</h4>
-      <ul className="space-y-2">
-        {features.map((feature, i) => (
-          <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Check className="w-4 h-4 text-primary flex-shrink-0" />
-            {feature}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+      <polyline points="17 6 23 6 23 12" />
+    </svg>
   );
 }
