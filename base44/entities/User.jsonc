@@ -52,6 +52,16 @@
     "display_name": {
       "type": "string",
       "description": "User's preferred display name entered during onboarding or profile edit"
+    },
+    "luteal_med_reminder": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user wants a luteal phase medication dosing reminder shown in the app"
+    },
+    "research_opt_in": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user has opted in to contribute de-identified data to research (HIPAA-compliant)"
     }
   },
   "required": []

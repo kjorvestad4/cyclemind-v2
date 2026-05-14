@@ -18,6 +18,7 @@ import TodaySeverityCard from "@/components/dashboard/TodaySeverityCard";
 import { StreakWidget, RecentInsightsWidget, NextMilestoneWidget, QuickLinksRow } from "@/components/dashboard/UniversalWidgets";
 import OnboardingNudge from "@/components/dashboard/OnboardingNudge";
 import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBanner";
+import CycleBanners from "@/components/dashboard/CycleBanners";
 
 function getGreeting() {
   return "Hello";
@@ -147,6 +148,15 @@ export default function Dashboard() {
         {isModeRestricted && (
           <UpgradeBanner feature={`${cycleType.charAt(0).toUpperCase() + cycleType.slice(1)} Tracking`} />
         )}
+
+        {/* Cycle-aware smart banners */}
+        <CycleBanners
+          user={user}
+          cycles={cycles}
+          entries={entries}
+          cycleType={cycleType}
+          cycleDay={cycleDay}
+        />
 
         {/* Mode Banner */}
         <ModeBanner

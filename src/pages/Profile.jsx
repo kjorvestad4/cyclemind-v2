@@ -305,6 +305,8 @@ export default function Profile() {
   const [menstruationLength, setMenstruationLength] = useState(5);
   const [notifDaily, setNotifDaily] = useState(true);
   const [notifMode, setNotifMode] = useState(true);
+  const [lutealMedReminder, setLutealMedReminder] = useState(false);
+  const [researchOptIn, setResearchOptIn] = useState(false);
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [fullName, setFullName] = useState("");
@@ -318,6 +320,8 @@ export default function Profile() {
       if (u?.menstruation_length) setMenstruationLength(u.menstruation_length);
       if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
       setFullName(u?.display_name || u?.full_name || "");
+      if (u?.luteal_med_reminder !== undefined) setLutealMedReminder(!!u.luteal_med_reminder);
+      if (u?.research_opt_in !== undefined) setResearchOptIn(!!u.research_opt_in);
     }).catch(() => {});
   }, []);
 
@@ -396,6 +400,24 @@ export default function Profile() {
     mutationFn: () => base44.auth.updateMe({ cycle_length: cycleLength, ovulation_day: ovulationDay, menstruation_length: menstruationLength }),
     onSuccess: () => toast.success("Settings saved!"),
   });
+
+  const savePrefToggle = async (key, value) => {
+    try {
+      await base44.auth.updateMe({ [key]: value });
+    } catch {
+      toast.error("Could not save preference.");
+    }
+  };
+
+  const handleLutealToggle = (val) => {
+    setLutealMedReminder(val);
+    savePrefToggle("luteal_med_reminder", val);
+  };
+
+  const handleResearchToggle = (val) => {
+    setResearchOptIn(val);
+    savePrefToggle("research_opt_in", val);
+  };
 
   const latestCycle = cycles.length > 0
     ? [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0]
@@ -591,6 +613,15 @@ export default function Profile() {
             </div>
             <Toggle checked={notifMode} onChange={setNotifMode} />
           </div>
+          {isMenstrual && (
+            <div className="flex items-center justify-between py-3">
+              <div>
+                <p className="text-sm font-medium">💊 Luteal Phase Medication Reminder</p>
+                <p className="text-[11px] text-muted-foreground">Shows a gentle in-app reminder during your luteal phase to stay consistent with medications (SSRIs, supplements, etc.)</p>
+              </div>
+              <Toggle checked={lutealMedReminder} onChange={handleLutealToggle} />
+            </div>
+          )}
         </div>
 
         {/* Appearance */}
@@ -628,6 +659,22 @@ export default function Profile() {
                 Your health data is stored privately and never shared with third parties. No ads. No data selling. Doctor share links are read-only, time-limited, and revocable at any time.
               </p>
             </div>
+          </div>
+
+          {/* Research Opt-In */}
+          <div className="rounded-xl border border-border/60 bg-card p-3 space-y-2">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1">
+                <p className="text-sm font-medium">🔬 Contribute to Research</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                  Opt-in to contribute <strong>de-identified, aggregated</strong> data to reproductive mental health research (HIPAA-compliant). Your name and contact info are never included. You can withdraw at any time.
+                </p>
+              </div>
+              <Toggle checked={researchOptIn} onChange={handleResearchToggle} />
+            </div>
+            {researchOptIn && (
+              <p className="text-[10px] text-primary font-medium">✓ Thank you for supporting research into PMDD and women's mental health.</p>
+            )}
           </div>
         </div>
       </Section>

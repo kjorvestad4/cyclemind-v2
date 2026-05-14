@@ -24,6 +24,8 @@ import VitalsTracking from "@/components/log/VitalsTracking";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import QuickLogButtons from "@/components/log/QuickLogButtons";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
+import CycleBanners from "@/components/dashboard/CycleBanners";
+import { MRSScale, PCL5Scale, FSFIScale } from "@/components/log/AdditionalScales";
 import EDDDisplay from "@/components/pregnancy/EDDDisplay";
 import { SYMPTOM_CATEGORIES, ALL_SYMPTOMS, getCycleDay, calculateDayTotal } from "@/lib/symptoms";
 import { calculateEDD } from "@/lib/eddCalculation";
@@ -122,6 +124,12 @@ export default function DailyLog() {
   const [cervicalMucus, setCervicalMucus] = useState("");
   const [intimacyLogged, setIntimacyLogged] = useState(false);
   const [vitals, setVitals] = useState({});
+  const [mrsScore, setMrsScore] = useState(0);
+  const [mrsResponses, setMrsResponses] = useState({});
+  const [pcl5Score, setPcl5Score] = useState(0);
+  const [pcl5Responses, setPcl5Responses] = useState({});
+  const [fsfiScore, setFsfiScore] = useState(0);
+  const [fsfiResponses, setFsfiResponses] = useState({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [autoSaveTimer, setAutoSaveTimer] = useState(null);
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
@@ -455,6 +463,15 @@ export default function DailyLog() {
         <p className="text-[10px] text-muted-foreground italic text-center">Rate how you felt today — be honest, there are no wrong answers.</p>
       </div>}
 
+      {/* Cycle-aware smart banners */}
+      <CycleBanners
+        user={user}
+        cycles={cycles}
+        entries={entries}
+        cycleType={cycleType}
+        cycleDay={cycleDay}
+      />
+
       {/* Quick Log Buttons */}
       <QuickLogButtons
         selectedDate={selectedDate}
@@ -633,6 +650,14 @@ export default function DailyLog() {
             </>
           )}
 
+          {/* MRS — Menopause Rating Scale */}
+          {!isFreeUser && (
+            <MRSScale
+              responses={mrsResponses}
+              onComplete={(total, responses) => { setMrsScore(total); setMrsResponses(responses); setHasUnsavedChanges(true); }}
+            />
+          )}
+
           {/* Collapsible DRSP for menopause — hidden by default */}
           <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — classic PMDD/PMS symptom grid for comparison">
             <div className="pt-2">
@@ -667,6 +692,22 @@ export default function DailyLog() {
           />
         </div>
       </Section>
+
+      {/* PCL-5 Trauma Scale — Premium, all modes */}
+      {!isFreeUser && (
+        <PCL5Scale
+          responses={pcl5Responses}
+          onComplete={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); }}
+        />
+      )}
+
+      {/* FSFI — Premium, all modes */}
+      {!isFreeUser && (
+        <FSFIScale
+          responses={fsfiResponses}
+          onComplete={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); }}
+        />
+      )}
 
       <Section title="Journal Entry" sectionRef={journalRef} defaultOpen={window.location.hash === '#journal'}>
         <div className="pt-1 space-y-3">

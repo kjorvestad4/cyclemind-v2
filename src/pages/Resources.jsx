@@ -31,6 +31,33 @@ const SECTION_HOTLINES = {
 // ── Resource content ──────────────────────────────────────────────────────────
 
 const ALL_RESOURCES = [
+  // ── MENSTRUAL CYCLES — General Education ──
+  {
+    id: "mc-acog-basics",
+    tab: "menstrual",
+    icon: BookOpen,
+    title: "ACOG — Understanding Your Menstrual Cycle",
+    tag: "Education",
+    tagColor: "bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300",
+    body: "A comprehensive patient FAQ from the American College of Obstetricians and Gynecologists covering normal cycle length, what irregular periods mean, and when to see a doctor.",
+    links: [
+      { label: "ACOG Menstrual Cycles FAQ", url: "https://www.acog.org/womens-health/faqs/abnormal-uterine-bleeding" },
+      { label: "ACOG Period Problems", url: "https://www.acog.org/womens-health/faqs/your-menstrual-cycle" },
+    ],
+  },
+  {
+    id: "mc-iapmd-tracker",
+    tab: "menstrual",
+    icon: Heart,
+    title: "IAPMD — Why Track Your Cycle?",
+    tag: "Education",
+    tagColor: "bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-950",
+    body: "IAPMD explains why prospective daily tracking (like what CycleMind provides) is essential for PMDD diagnosis and treatment monitoring. Tracking two full cycles is required for DSM-5 PMDD diagnosis.",
+    links: [
+      { label: "IAPMD: Tracking Your Symptoms", url: "https://iapmd.org/about-pmdd" },
+    ],
+  },
+
   // ── MENSTRUAL / PMDD ──
   {
     id: "pmdd-iapmd",
@@ -217,6 +244,45 @@ const ALL_RESOURCES = [
     tag: "Self-Care",
     tagColor: "bg-secondary text-secondary-foreground",
     body: "Lochia (postpartum bleeding) typically lasts 4–6 weeks. Perineal or incision pain usually improves significantly by 6 weeks. Breast engorgement peaks day 3–5. Urinary incontinence affects 1 in 3 postpartum women — pelvic floor physiotherapy is highly effective. Always flag symptoms that concern you to your midwife or healthcare provider.",
+  },
+
+  // ── PERIMENOPAUSE — General Education ──
+  {
+    id: "peri-nams-what-is",
+    tab: "menopause",
+    icon: BookOpen,
+    title: "NAMS — What is Perimenopause?",
+    tag: "Education",
+    tagColor: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
+    body: "The North American Menopause Society explains the perimenopause transition: what it is, when it starts (typically mid-40s), how long it lasts, and what symptoms to expect. Includes guidance on irregular periods, hot flashes, and mood changes.",
+    links: [
+      { label: "NAMS: Understanding Perimenopause", url: "https://menopause.org/patient-education/menopause-faqs-understanding-the-transition" },
+    ],
+  },
+  {
+    id: "peri-acog-guide",
+    tab: "menopause",
+    icon: Shield,
+    title: "ACOG — Menopause & Perimenopause Guide",
+    tag: "Education",
+    tagColor: "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300",
+    body: "ACOG's patient-facing guide on perimenopause and menopause: what's normal, diagnosis, hormone therapy decisions, and alternatives. Explains when periods become irregular and what workup may be needed.",
+    links: [
+      { label: "ACOG Menopause FAQ", url: "https://www.acog.org/womens-health/faqs/the-menopause-years" },
+    ],
+  },
+  {
+    id: "peri-british-meno-society",
+    tab: "menopause",
+    icon: Heart,
+    title: "British Menopause Society — Patient Hub",
+    tag: "Education",
+    tagColor: "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300",
+    body: "Comprehensive patient education from the BMS covering perimenopause symptoms, HRT options, mental health during the menopause transition, and lifestyle interventions. Includes downloadable resources.",
+    links: [
+      { label: "BMS Patient Hub", url: "https://thebms.org.uk/patients/" },
+      { label: "BMS: Menopause & Mental Health", url: "https://thebms.org.uk/publications/tools-for-clinicians/bms-menopause-and-mental-health/" },
+    ],
   },
 
   // ── PERI/MENOPAUSE ──
