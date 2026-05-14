@@ -179,53 +179,84 @@ export default function Landing() {
 
       {/* ── WHY CYCLEMIND ── */}
       <section id="about" className="py-24 px-5 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-14 space-y-3">
-            <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Why CycleMind?</span>
-            <h2 className="font-serif text-4xl font-bold text-gray-900">Built for how hormones actually affect your mind</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Hormonal changes don't just affect your body — they profoundly shape your emotions, cognition, and mental wellbeing. Until now, no app tracked this with real clinical precision.
-            </p>
+        <div className="max-w-7xl mx-auto space-y-20">
+
+          {/* Value props */}
+          <div>
+            <div className="text-center mb-14 space-y-3">
+              <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Why CycleMind?</span>
+              <h2 className="font-serif text-4xl font-bold text-gray-900">Built for how hormones actually affect your mind</h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Hormonal changes don't just affect your body — they profoundly shape your emotions, cognition, and mental wellbeing. Until now, no app tracked this with real clinical precision.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { icon: <Brain className="w-7 h-7" />, title: "See Your Patterns", desc: "Understand how your cycle drives your emotions and symptoms before your next appointment — with validated clinical tools like the DRSP, PHQ-9, GAD-7, and EPDS.", color: "teal" },
+                { icon: <MessageCircle className="w-7 h-7" />, title: "Better Conversations with Your Provider", desc: "Arrive at appointments with objective, clinical-grade data instead of trying to recall weeks of symptoms. Your doctor sees the full picture.", color: "purple" },
+                { icon: <Heart className="w-7 h-7" />, title: "Finally Feel Understood", desc: "Your experience is real, measurable, and documented. CycleMind validates what you've been living through — across every reproductive stage.", color: "rose" }
+              ].map(({ icon, title, desc, color }) => (
+                <div key={title} className={`rounded-3xl p-8 space-y-4 border ${color === 'teal' ? 'bg-teal-50 border-teal-100' : color === 'purple' ? 'bg-purple-50 border-purple-100' : 'bg-rose-50 border-rose-100'}`}>
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${color === 'teal' ? 'bg-teal-600 text-white' : color === 'purple' ? 'bg-purple-600 text-white' : 'bg-rose-500 text-white'}`}>{icon}</div>
+                  <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Brain className="w-7 h-7" />,
-                title: "See Your Patterns",
-                desc: "Understand how your cycle drives your emotions and symptoms before your next appointment — with validated clinical tools like the DRSP, PHQ-9, GAD-7, and EPDS.",
-                color: "teal"
-              },
-              {
-                icon: <MessageCircle className="w-7 h-7" />,
-                title: "Better Conversations with Your Provider",
-                desc: "Arrive at appointments with objective, clinical-grade data instead of trying to recall weeks of symptoms. Your doctor sees the full picture.",
-                color: "purple"
-              },
-              {
-                icon: <Heart className="w-7 h-7" />,
-                title: "Finally Feel Understood",
-                desc: "Your experience is real, measurable, and documented. CycleMind validates what you've been living through — across every reproductive stage.",
-                color: "rose"
-              }
-            ].map(({ icon, title, desc, color }) => (
-              <div key={title} className={`rounded-3xl p-8 space-y-4 border ${
-                color === 'teal' ? 'bg-teal-50 border-teal-100' :
-                color === 'purple' ? 'bg-purple-50 border-purple-100' :
-                'bg-rose-50 border-rose-100'
-              }`}>
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                  color === 'teal' ? 'bg-teal-600 text-white' :
-                  color === 'purple' ? 'bg-purple-600 text-white' :
-                  'bg-rose-500 text-white'
-                }`}>
-                  {icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">{title}</h3>
-                <p className="text-gray-600 leading-relaxed">{desc}</p>
+          {/* The Problem */}
+          <div className="grid md:grid-cols-2 gap-12 items-start">
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <span className="text-orange-500 font-semibold text-sm uppercase tracking-widest">The Problem</span>
+                <h3 className="font-serif text-3xl font-bold text-gray-900">PMDD & undiagnosed menstrual mood disorders</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  PMDD affects 5–8% of menstruating women — up to 18 million people in the U.S. alone. Yet the majority remain undiagnosed, dismissed, or misdiagnosed as depression or bipolar disorder.
+                </p>
               </div>
-            ))}
+              <div className="bg-red-50 border border-red-100 rounded-2xl p-5 text-sm text-gray-700 leading-relaxed">
+                <strong className="text-red-700">The human cost:</strong> Untreated PMDD leads to lost productivity, relationship strain, impaired work and school performance, and in severe cases, suicidal ideation. With the right diagnosis and treatment, most patients recover dramatically.
+              </div>
+            </div>
+            <div className="space-y-3">
+              {[
+                { n: "1", title: "No visible markers.", body: "Mood and anxiety changes are internal and subjective — easy to dismiss." },
+                { n: "2", title: "No single clinical test.", body: "PMDD diagnosis requires 2+ cycles of prospective DRSP tracking — something most patients and providers have never heard of." },
+                { n: "3", title: "Stigma and normalization.", body: '"Just PMS" dismisses real suffering. Patients internalize shame and don\'t seek help.' },
+                { n: "4", title: "Misdiagnosis.", body: "Without cycle context, PMDD looks like depression or anxiety — leading to incorrect treatment." },
+                { n: "5", title: "Provider knowledge gaps.", body: "OB/GYNs rarely ask about mood. Psychiatrists rarely ask about cycle. The connection falls between specialties." },
+              ].map(({ n, title, body }) => (
+                <div key={n} className="flex gap-3 text-sm text-gray-600">
+                  <span className="text-teal-600 font-bold text-base mt-0.5">{n}.</span>
+                  <span><strong className="text-gray-900">{title}</strong> {body}</span>
+                </div>
+              ))}
+            </div>
           </div>
+
+          {/* Clinical Evidence */}
+          <div className="bg-teal-50 border border-teal-100 rounded-3xl p-10 space-y-6">
+            <div className="text-center space-y-2">
+              <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Built on Clinical Evidence</span>
+              <h3 className="font-serif text-3xl font-bold text-gray-900">The same tools your psychiatrist uses</h3>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { abbr: "DRSP", full: "Daily Record of Severity of Problems", note: "Gold standard for PMDD diagnosis per DSM-5 (Endicott, Nee & Harrison, 2006)" },
+                { abbr: "PHQ-9", full: "Patient Health Questionnaire", note: "Validated depression screening (Kroenke & Spitzer, 2001)" },
+                { abbr: "GAD-7", full: "Generalized Anxiety Disorder Scale", note: "Gold-standard anxiety screening (Spitzer et al., 2006)" },
+                { abbr: "EPDS", full: "Edinburgh Postnatal Depression Scale", note: "Standard perinatal depression screening (Cox et al., 1987)" },
+              ].map(({ abbr, full, note }) => (
+                <div key={abbr} className="bg-white rounded-2xl border border-teal-100 p-5 space-y-2">
+                  <span className="text-2xl font-bold text-teal-700">{abbr}</span>
+                  <p className="text-sm font-semibold text-gray-800">{full}</p>
+                  <p className="text-xs text-gray-500">{note}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -522,7 +553,7 @@ export default function Landing() {
               Start Tracking Today — Free <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
             <Button
-              onClick={() => navigate('/about')}
+              onClick={() => scrollTo('about')}
               variant="outline"
               size="lg"
               className="border-white/50 text-white hover:bg-white/10 h-12 px-8 text-base rounded-xl"
@@ -552,7 +583,7 @@ export default function Landing() {
                 <button onClick={() => scrollTo('how-it-works')} className="block hover:text-white transition-colors">How it Works</button>
                 <button onClick={() => scrollTo('team')} className="block hover:text-white transition-colors">Our Team</button>
                 <button onClick={() => navigate('/billing')} className="block hover:text-white transition-colors">Pricing</button>
-                <button onClick={() => navigate('/about')} className="block hover:text-white transition-colors">About</button>
+                <button onClick={() => scrollTo('about')} className="block hover:text-white transition-colors">About</button>
               </div>
             </div>
 
