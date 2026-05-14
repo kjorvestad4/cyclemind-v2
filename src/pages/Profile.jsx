@@ -328,7 +328,11 @@ export default function Profile() {
         date_of_birth: dateOfBirth || null,
         display_name: fullName || null,
       });
-      setUser((prev) => ({ ...prev, date_of_birth: dateOfBirth, display_name: fullName }));
+      // Re-fetch to confirm what actually persisted
+      const updated = await base44.auth.me();
+      setUser(updated);
+      setFullName(updated?.display_name || updated?.full_name || "");
+      setDateOfBirth(updated?.date_of_birth || "");
       toast.success("Profile saved!");
     } catch (e) {
       toast.error("Could not save profile. Please make sure you're logged in.");
