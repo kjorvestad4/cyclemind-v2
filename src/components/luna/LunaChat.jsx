@@ -51,6 +51,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
   const [savedSymptomIndexes, setSavedSymptomIndexes] = useState(new Set());
   const [isListening, setIsListening] = useState(false);
   const [voiceTranscript, setVoiceTranscript] = useState('');
+  const voiceTranscriptRef = useRef('');
   const messagesEndRef = useRef(null);
   const initializedRef = useRef(false);
   const recognitionRef = useRef(null);
@@ -221,7 +222,6 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognitionRef.current = new SpeechRecognition();
-    recognitionRef.current.continuous = recognitionRef.current;
     recognitionRef.current.continuous = true;
     recognitionRef.current.interimResults = true;
 
@@ -236,6 +236,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
         interimTranscript += event.results[i][0].transcript;
       }
       setVoiceTranscript(interimTranscript);
+      voiceTranscriptRef.current = interimTranscript;
     };
 
     recognitionRef.current.onerror = (event) => {
@@ -257,9 +258,11 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
       setIsListening(false);
       // Automatically process the transcript after a brief delay
       setTimeout(() => {
-        if (voiceTranscript.trim()) {
-          handleSend(voiceTranscript.trim());
+        const transcript = voiceTranscriptRef.current.trim();
+        if (transcript) {
+          handleSend(transcript);
           setVoiceTranscript('');
+          voiceTranscriptRef.current = '';
         }
       }, 500);
     }
