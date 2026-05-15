@@ -21,9 +21,10 @@ export default function LunaNotificationBadge({ onClick }) {
   if (isLoading || unreadCount === 0) return null;
 
   return (
-    <button
-      onClick={onClick}
-      className="absolute -top-1 -right-1 z-10"
+    <div
+      onClick={(e) => { e.stopPropagation(); onClick(e); }}
+      className="absolute -top-1 -right-1 z-10 cursor-pointer"
+      role="button"
       aria-label={`${unreadCount} Luna alerts`}
     >
       <div className={cn(
@@ -34,6 +35,6 @@ export default function LunaNotificationBadge({ onClick }) {
       )}>
         {unreadCount}
       </div>
-    </button>
+    </div>
   );
 }

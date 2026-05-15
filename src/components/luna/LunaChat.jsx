@@ -114,17 +114,26 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
   const handleSend = useCallback(async (userMessage = input.trim()) => {
     if (!userMessage || loading) return;
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setLoading(true);
 
+    // Use functional update to get latest messages without stale closure
+    let currentMessages;
+    setMessages(prev => {
+      currentMessages = prev;
+      return [...prev, { role: 'user', content: userMessage }];
+    });
+
+    // Small delay to ensure currentMessages is set from the state updater
+    await new Promise(resolve => setTimeout(resolve, 0));
+
     // Collect all symptoms already saved so Luna won't re-detect them
-    const alreadySavedSymptoms = messages
+    const alreadySavedSymptoms = (currentMessages || [])
       .filter((m, i) => m.detectedSymptoms?.length > 0 && savedSymptomIndexes.has(i))
       .flatMap(m => m.detectedSymptoms);
 
     try {
       const response = await base44.functions.invoke('lunaChat', {
-        messages: [...messages, { role: 'user', content: userMessage }],
+        messages: [...(currentMessages || []), { role: 'user', content: userMessage }],
         cycleMode,
         cycleDay,
         eddInfo,
@@ -144,11 +153,12 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
       }]);
     } catch (err) {
       console.error(err);
+      setMessages(prev => prev.filter(m => m.content !== userMessage || m.role !== 'user'));
       toast.error("Luna is taking a brief moment. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, [input, messages, loading, cycleMode, cycleDay, eddInfo]);
+  }, [input, loading, cycleMode, cycleDay, eddInfo, fertilityMode, menopauseStage, savedSymptomIndexes]);
 
   const handleSuggestedAction = (action) => {
     const lc = action.toLowerCase();
@@ -362,7 +372,9 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
                     <p className="text-xs font-semibold text-teal-700 dark:text-teal-300 mb-2">Symptoms I noticed you mentioned:</p>
                     <div className="flex flex-wrap gap-1.5 mb-2">
                       {msg.detectedSymptoms.map((s, i) => (
-                        <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300">{s}</span>
+                        <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300">
+                          {typeof s === 'string' ? s : s.name}
+                        </span>
                       ))}
                     </div>
                     {savedSymptomIndexes.has(idx) ? (
