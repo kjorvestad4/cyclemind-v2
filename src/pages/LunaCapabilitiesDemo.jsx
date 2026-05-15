@@ -171,7 +171,7 @@ export default function LunaCapabilitiesDemo() {
             <Button onClick={processJournal} disabled={isProcessing || !journalText.trim()}>
               {isProcessing ? "Processing..." : "Auto-Code Journal"}
             </Button>
-            <Button variant="outline" onClick={() => setJournalText("This week has been really tough. I'm so irritable with my partner, crying over small things. My breasts are sore and I feel bloated. Can't sleep well either.")}>
+            <Button variant="outline" onClick={() => setJournalText("This week has been really tough. I'm so irritable with my partner, crying over small things. My breasts are sore and I feel bloated. Can't sleep well either.")} className="text-slate-900 dark:text-slate-950 font-medium">
               Use Example Text
             </Button>
           </div>
@@ -373,7 +373,7 @@ export default function LunaCapabilitiesDemo() {
             <Button onClick={testLunaChat} disabled={isProcessing || !lunaMessage.trim()}>
               {isProcessing ? "Luna is thinking..." : "Send to Luna"}
             </Button>
-            <Button variant="outline" onClick={() => setLunaMessage("I've been feeling really moody and bloated this week, is this normal for my cycle phase?")}>
+            <Button variant="outline" onClick={() => setLunaMessage("I've been feeling really moody and bloated this week, is this normal for my cycle phase?")} className="text-slate-900 dark:text-slate-950 font-medium">
               Use Example Text
             </Button>
           </div>
