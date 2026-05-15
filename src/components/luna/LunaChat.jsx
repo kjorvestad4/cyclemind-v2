@@ -476,6 +476,10 @@ function NotificationsPanel({ onClose }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["luna-alerts"] });
+      toast.success("Alert marked as read");
+    },
+    onError: () => {
+      toast.error("Failed to mark alert as read");
     },
   });
 
@@ -558,9 +562,10 @@ function NotificationsPanel({ onClose }) {
                       {!alert.is_read && (
                         <button
                           onClick={() => markAsReadMutation.mutate(alert.id)}
-                          className="text-xs text-teal-600 dark:text-teal-400 hover:underline font-medium"
+                          disabled={markAsReadMutation.isPending}
+                          className="text-xs text-teal-600 dark:text-teal-400 hover:underline font-medium disabled:opacity-50"
                         >
-                          Mark as read
+                          {markAsReadMutation.isPending ? "Marking..." : "Mark as read"}
                         </button>
                       )}
                     </div>
