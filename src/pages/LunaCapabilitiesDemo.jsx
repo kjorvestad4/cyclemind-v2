@@ -117,9 +117,9 @@ export default function LunaCapabilitiesDemo() {
     setIsProcessing(true);
     try {
       const response = await base44.functions.invoke("lunaChat", {
-        message: lunaMessage
+        messages: [{ role: "user", content: lunaMessage }]
       });
-      setLunaResponse(response.data.response);
+      setLunaResponse(response.data.message);
       toast.success("Luna responded! See below.");
     } catch (error) {
       toast.error("Failed to chat with Luna");
