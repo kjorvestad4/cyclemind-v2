@@ -412,7 +412,7 @@ export default function Landing() {
             <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Our Team</span>
             <h2 className="font-serif text-4xl font-bold text-gray-900">Developed by Women's Mental Health Psychiatrists</h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              CycleMind was co-created by three board-certified Women's Mental Health Psychiatrists who have spent their careers treating the exact conditions this app addresses.
+              CycleMind was co-created by three board-certified physicians who have spent their careers treating the exact conditions this app addresses.
             </p>
           </div>
 
