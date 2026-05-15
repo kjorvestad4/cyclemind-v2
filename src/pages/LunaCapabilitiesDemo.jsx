@@ -213,7 +213,7 @@ export default function LunaCapabilitiesDemo() {
                         </button>
                       ))}
                     </div>
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                    <div className="flex justify-between text-xs text-black mt-1">
                       <span>None</span>
                       <span>Severe</span>
                     </div>
