@@ -57,15 +57,7 @@ export default function AppLayout() {
       >
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            {!isRoot && (
-              <button
-                onClick={() => navigate(-1)}
-                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors shrink-0"
-                aria-label="Go back"
-              >
-                <ChevronLeft className="w-5 h-5 text-foreground" />
-              </button>
-            )}
+
             <Link to="/dashboard" className="flex items-center gap-2 py-1 px-1 -mx-1 rounded-lg">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                 <span className="text-primary text-sm">🌙</span>
