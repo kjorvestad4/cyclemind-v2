@@ -32,30 +32,50 @@ export default function VoiceLoggingButton({ onLogComplete, cycleType }) {
     recognition.onstart = () => {
       setIsListening(true);
       setTranscript("");
+      console.log("Speech recognition started");
     };
 
     recognition.onresult = (event) => {
-      let finalTranscript = "";
+      let interimTranscript = "";
+      let finalTranscript = transcript;
+      
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
+        const transcriptPart = event.results[i][0].transcript;
+        console.log("Recognition result:", transcriptPart, "Is final:", event.results[i].isFinal);
+        
         if (event.results[i].isFinal) {
-          finalTranscript += transcript + " ";
+          finalTranscript += transcriptPart + " ";
+        } else {
+          interimTranscript += transcriptPart;
         }
       }
-      setTranscript(finalTranscript);
+      
+      // Show both final and interim results
+      const displayTranscript = finalTranscript + interimTranscript;
+      setTranscript(displayTranscript);
+      console.log("Full transcript:", displayTranscript);
     };
 
     recognition.onerror = (event) => {
-      toast.error(`Voice recognition error: ${event.error}`);
+      console.error("Speech recognition error:", event.error);
+      toast.error(`Voice recognition error: ${event.error}. Please allow microphone access and try again.`);
       setIsListening(false);
     };
 
     recognition.onend = () => {
+      console.log("Speech recognition ended");
       setIsListening(false);
     };
 
-    recognition.start();
-    window.currentRecognition = recognition;
+    try {
+      recognition.start();
+      window.currentRecognition = recognition;
+      toast.info("Listening... Speak now");
+    } catch (error) {
+      console.error("Failed to start recognition:", error);
+      toast.error("Failed to start voice recognition. Please check microphone permissions.");
+      setIsListening(false);
+    }
   };
 
   const stopListening = () => {
