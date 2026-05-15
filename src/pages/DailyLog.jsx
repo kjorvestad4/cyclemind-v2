@@ -396,20 +396,15 @@ export default function DailyLog() {
               <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0" onClick={() => changeDate("next")}>
               <ChevronRight className="w-5 h-5" />
               </Button>
+              <Button
+                variant="default"
+                size="icon"
+                className="h-10 w-10 rounded-xl shrink-0 shadow-md"
+                onClick={() => setShowCalendar(true)}
+              >
+                <CalendarIcon className="w-5 h-5" />
+              </Button>
               </div>
-
-      {/* Calendar Button — top right, matches Dashboard */}
-      <div className="flex items-start justify-between gap-3 -mt-2">
-        <div className="flex-1" />
-        <Button
-          variant="default"
-          size="icon"
-          className="h-11 w-11 rounded-xl shrink-0 shadow-md"
-          onClick={() => setShowCalendar(true)}
-        >
-          <CalendarIcon className="w-5 h-5" />
-        </Button>
-      </div>
 
       {/* Mode Banner */}
       <div className={`rounded-2xl border-2 p-3.5 flex items-center justify-between gap-3 ${
