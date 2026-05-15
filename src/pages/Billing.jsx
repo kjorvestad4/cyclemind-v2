@@ -12,15 +12,36 @@ const TIERS = [
     description: "Essential tracking",
     features: [
       { name: "Menstrual cycle tracking", included: true },
-      { name: "Daily symptom logging", included: true },
+      { name: "Daily symptom logging (mood, vitals)", included: true },
       { name: "Basic insights", included: true },
       { name: "Pregnancy tracking", included: false },
       { name: "Postpartum support", included: false },
       { name: "Menopause tracking", included: false },
+      { name: "DRSP symptom tracking", included: false },
       { name: "Advanced scales (PHQ-9, GAD-7)", included: false },
       { name: "Doctor sharing", included: false },
       { name: "Luna AI companion 🌙", included: false },
     ],
+  },
+  {
+    id: "founders",
+    name: "Founder's Plan",
+    price: "$6.99",
+    period: "/month",
+    description: "Limited: First 100 customers, locked for life",
+    features: [
+      { name: "Everything in Free", included: true },
+      { name: "All 5 lifecycle modes", included: true },
+      { name: "DRSP symptom tracking (clinical-grade)", included: true, highlight: true },
+      { name: "Luna AI companion 🌙", included: true, highlight: true },
+      { name: "Clinical-grade PDF reports", included: true },
+      { name: "Shareable doctor links", included: true },
+      { name: "EPDS postpartum screening", included: true },
+      { name: "Advanced PMDD pattern analysis", included: true },
+      { name: "Unlimited history & trends", included: true },
+    ],
+    highlighted: true,
+    badge: "Founders: 3 months free, then $6.99/mo",
   },
   {
     id: "premium",
@@ -29,17 +50,16 @@ const TIERS = [
     period: "/month",
     description: "Full access to all features",
     features: [
-      { name: "Menstrual cycle tracking", included: true },
-      { name: "Daily symptom logging", included: true },
-      { name: "Basic insights", included: true },
-      { name: "Pregnancy tracking", included: true },
-      { name: "Postpartum support", included: true },
-      { name: "Menopause tracking", included: true },
-      { name: "Advanced scales (PHQ-9, GAD-7)", included: true },
-      { name: "Doctor sharing", included: true },
+      { name: "Everything in Free", included: true },
+      { name: "All 5 lifecycle modes", included: true },
+      { name: "DRSP symptom tracking (clinical-grade)", included: true },
       { name: "Luna AI companion 🌙", included: true, highlight: true },
+      { name: "Clinical-grade PDF reports", included: true },
+      { name: "Shareable doctor links", included: true },
+      { name: "EPDS postpartum screening", included: true },
+      { name: "Advanced PMDD pattern analysis", included: true },
+      { name: "Unlimited history & trends", included: true },
     ],
-    highlighted: true,
   },
 ];
 
@@ -105,6 +125,11 @@ export default function Billing() {
                     {tier.highlighted && <Crown className="w-5 h-5 text-primary" />}
                   </div>
                   <p className="text-sm text-muted-foreground">{tier.description}</p>
+                  {tier.badge && (
+                    <span className="inline-block text-xs font-bold bg-primary text-primary-foreground px-3 py-1 rounded-full">
+                      {tier.badge}
+                    </span>
+                  )}
                 </div>
 
                 {/* Price */}
@@ -115,7 +140,12 @@ export default function Billing() {
                       <span className="text-muted-foreground text-sm">{tier.period}</span>
                     )}
                   </div>
-                  {tier.highlighted && (
+                  {tier.id === "founders" && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">First 100 customers only</span>
+                    </div>
+                  )}
+                  {tier.id === "premium" && (
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-muted-foreground line-through">$119.88/year</span>
                       <span className="text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-2 py-0.5 rounded-full">$100/year — Save 17%</span>
@@ -152,8 +182,17 @@ export default function Billing() {
                   </Button>
                 ) : (
                   <Button onClick={handleUpgrade} className="w-full h-10 gap-2 rounded-xl">
-                    <Crown className="w-4 h-4" />
-                    Upgrade Now
+                    {tier.id === "founders" ? (
+                      <>
+                        <Crown className="w-4 h-4" />
+                        Claim Founder's Pricing
+                      </>
+                    ) : (
+                      <>
+                        <Crown className="w-4 h-4" />
+                        Upgrade to Premium
+                      </>
+                    )}
                   </Button>
                 )}
               </div>

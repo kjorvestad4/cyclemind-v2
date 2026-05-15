@@ -472,8 +472,8 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14 space-y-3">
             <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Plans</span>
-            <h2 className="font-serif text-4xl font-bold text-gray-900">Free vs Premium</h2>
-            <p className="text-gray-600">Start free. Unlock everything when you're ready.</p>
+            <h2 className="font-serif text-4xl font-bold text-gray-900">Free vs Founder's Plan</h2>
+            <p className="text-gray-600">Start free. Lock in founder's pricing for life.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -488,7 +488,6 @@ export default function Landing() {
                   "Daily symptom logging (mood, vitals)",
                   "Menstrual mode tracking",
                   "Interactive cycle calendar",
-                  "PHQ-9 & GAD-7 mental health screening",
                   "Basic insights & trends",
                   "Medication & journal logging",
                 ].map(f => (
@@ -503,19 +502,19 @@ export default function Landing() {
               </Button>
             </div>
 
-            {/* Premium */}
+            {/* Founder's Plan */}
             <div className="rounded-3xl border-2 border-teal-500 bg-gradient-to-br from-teal-50 to-purple-50 p-8 space-y-5 relative">
-              <span className="absolute -top-3 left-6 bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Beta: 3 months free</span>
+              <span className="absolute -top-3 left-6 bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Founders: First 100 only</span>
               <div>
-                <h3 className="text-2xl font-bold text-gray-900">Premium</h3>
-                <p className="text-gray-500 text-sm mt-1">The full clinical experience</p>
+                <h3 className="text-2xl font-bold text-gray-900">Founder's Plan</h3>
+                <p className="text-gray-500 text-sm mt-1">3 months free, then $6.99/mo locked for life</p>
               </div>
               <ul className="space-y-3">
                 {[
                   "Everything in Free",
                   "All 5 lifecycle modes (Pregnancy, Postpartum, Peri/Menopause)",
                   "DRSP symptom tracking (clinical-grade)",
-                  "Luna AI Companion (trained by Women's Mental Health Psychiatrists)",
+                  "Luna AI Companion (trained by psychiatrists)",
                   "Clinical-grade PDF reports for your doctor",
                   "Shareable doctor links with access controls",
                   "EPDS postpartum depression screening",
@@ -528,8 +527,8 @@ export default function Landing() {
                   </li>
                 ))}
               </ul>
-              <Button onClick={() => navigate('/welcome')} className="w-full bg-teal-600 hover:bg-teal-700 text-white">
-                Get 3 Months Free →
+              <Button onClick={() => navigate('/billing')} className="w-full bg-teal-600 hover:bg-teal-700 text-white">
+                Claim Founder's Pricing →
               </Button>
             </div>
           </div>
@@ -562,7 +561,7 @@ export default function Landing() {
               Learn More
             </Button>
           </div>
-          <p className="text-teal-300 text-sm">No credit card required. Beta users get 3 months Premium free.</p>
+          <p className="text-teal-300 text-sm">No credit card required. Founders get 3 months free, then $6.99/mo locked for life.</p>
         </div>
       </section>
 
@@ -575,7 +574,7 @@ export default function Landing() {
               <p className="text-sm leading-relaxed max-w-xs">
                 The only clinically-designed hormonal mental health tracker built by psychiatrists who specialize in exactly what you're going through.
               </p>
-              <p className="text-xs text-gray-500">Developed by 3 Board-Certified Women's Mental Health Psychiatrists</p>
+              <p className="text-xs text-gray-500">Developed by 3 Board-Certified Physicians</p>
             </div>
 
             <div className="space-y-3">
