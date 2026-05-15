@@ -63,12 +63,15 @@ export default function QuickLogButtons({
           (new Date(selectedDate) - new Date(latestCycle.start_date)) >= (21 * 24 * 60 * 60 * 1000);
         
         if (shouldCreateNewCycle && latestCycle) {
-          // Update the previous cycle's end_date to yesterday
+          // Calculate actual cycle length from start_date to today
+          const actualLength = Math.round((new Date(selectedDate) - new Date(latestCycle.start_date)) / (1000 * 60 * 60 * 24));
+          
+          // Update the previous cycle's end_date and actual cycle length
           const yesterday = new Date(selectedDate);
           yesterday.setDate(yesterday.getDate() - 1);
           await base44.entities.Cycle.update(latestCycle.id, { 
             end_date: format(yesterday, 'yyyy-MM-dd'),
-            cycle_length: Math.round((new Date(selectedDate) - new Date(latestCycle.start_date)) / (1000 * 60 * 60 * 24))
+            cycle_length: actualLength
           });
         }
         
