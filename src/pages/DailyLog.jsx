@@ -219,7 +219,9 @@ export default function DailyLog() {
       setFetalMovementFelt(false); setFetalMovementCount(0);
       setOvulationTest(""); setOvulationDate(""); setCervicalMucus("");
       setIntimacyLogged(false);
-      setVitals({});
+      // Carry height forward from most recent entry that has one
+      const previousHeight = entries.find(e => e.height)?.height || null;
+      setVitals(previousHeight ? { height: previousHeight } : {});
     }
     setHasUnsavedChanges(false);
   }, [selectedDate, existingEntry?.id]);
