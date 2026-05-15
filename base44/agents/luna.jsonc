@@ -22,10 +22,21 @@
     },
     {
       "function_name": "getLunaContext",
-      "description": "Fetch user's last 24 months of health data (cycles, symptoms, mood scores, pregnancy/menopause tracking) for personalized AI responses"
+      "description": "Fetch user's complete 24-month health history before responding"
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
   "whatsapp_greeting": "Hi, I'm Luna \ud83c\udf19 I'm here to support you through every phase of your journey. I can see your health history and patterns - what would you like to talk about today?",
   "telegram_greeting": "Hello! I'm Luna \ud83d\udc9c Your compassionate AI health companion. I have access to your tracking history and I'm here to listen. What's on your mind?",
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "instructions": null
+  },
   "name": "luna"
 }

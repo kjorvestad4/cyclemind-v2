@@ -1,0 +1,87 @@
+{
+  "name": "Prediction",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user this prediction belongs to"
+    },
+    "prediction_type": {
+      "type": "string",
+      "enum": [
+        "cycle",
+        "pmdd_risk",
+        "insight_report"
+      ],
+      "description": "Type of prediction"
+    },
+    "next_period_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Predicted next period start date (for cycle predictions)"
+    },
+    "ovulation_window_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Start of predicted ovulation window"
+    },
+    "ovulation_window_end": {
+      "type": "string",
+      "format": "date",
+      "description": "End of predicted ovulation window"
+    },
+    "confidence_score": {
+      "type": "number",
+      "description": "Confidence score 0-100"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "description": "PMDD risk level"
+    },
+    "top_trigger_symptoms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Top trigger symptoms identified"
+    },
+    "historical_accuracy": {
+      "type": "number",
+      "description": "Historical prediction accuracy percentage"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Personalized summary text"
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Actionable recommendations (up to 3)"
+    },
+    "explanation": {
+      "type": "string",
+      "description": "Detailed explanation of the prediction"
+    },
+    "data_points_analyzed": {
+      "type": "number",
+      "description": "Number of historical data points used"
+    },
+    "generated_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date this prediction was generated"
+    }
+  },
+  "required": [
+    "user_id",
+    "prediction_type",
+    "generated_date"
+  ]
+}
