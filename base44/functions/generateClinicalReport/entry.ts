@@ -295,45 +295,47 @@ Deno.serve(async (req) => {
       const maxCount = Math.max(...topSymptoms.map(s => s.daysReported));
       
       topSymptoms.forEach((symptom, i) => {
-        if (yPosition > 230) {
+        if (yPosition > 240) {
           doc.addPage();
           yPosition = 20;
         }
 
-        const rowHeight = 16;
+        const rowHeight = 12;
         const barHeight = 6;
-        const barY = yPosition + 2;
-        const textY = yPosition + barHeight / 2 + 2 + 2; // vertically centered in bar
+        const barX = 70;
+        const barMaxWidth = 100;
+        const barY = yPosition;
+        const textY = yPosition + 5;
 
-        // Symptom name (left, vertically centered with bar)
+        // Symptom name
         doc.setFontSize(8);
         doc.setTextColor(colors.text);
         doc.setFont('helvetica', 'normal');
-        doc.text(symptom.name.substring(0, 18), 15, textY);
+        doc.text(symptom.name.substring(0, 20), 15, textY);
 
         // Bar background
         doc.setFillColor('#F1F5F9');
-        doc.roundedRect(80, barY, 100, barHeight, 2, 2, 'F');
+        doc.rect(barX, barY, barMaxWidth, barHeight, 'F');
 
         // Bar fill
-        const barWidth = maxCount > 0 ? (symptom.daysReported / maxCount) * 100 : 0;
+        const barWidth = maxCount > 0 ? Math.max(1, (symptom.daysReported / maxCount) * barMaxWidth) : 0;
         if (barWidth > 0) {
           doc.setFillColor(i < 3 ? colors.primary : i < 5 ? colors.secondary : colors.accent);
-          doc.roundedRect(80, barY, barWidth, barHeight, 2, 2, 'F');
+          doc.rect(barX, barY, barWidth, barHeight, 'F');
         }
 
-        // Count label right of bar
-        doc.setFontSize(8);
+        // Count label
+        doc.setFontSize(7);
         doc.setTextColor(colors.text);
         doc.setFont('helvetica', 'bold');
-        doc.text(`${symptom.daysReported}d`, 183, textY);
+        doc.text(`${symptom.daysReported}d`, 173, textY);
 
         // Avg severity
         if (symptom.avgSeverity) {
           doc.setFontSize(7);
           doc.setTextColor(colors.lightText);
           doc.setFont('helvetica', 'normal');
-          doc.text(`avg ${symptom.avgSeverity}/6`, 195, textY);
+          doc.text(`avg ${symptom.avgSeverity}/6`, 182, textY);
         }
 
         yPosition += rowHeight;
