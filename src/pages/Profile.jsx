@@ -595,7 +595,7 @@ export default function Profile() {
                 onClick={() => setShowSharePanel(!showSharePanel)}
               />
               <div className="pt-3">
-                <PdfReportButton cycles={cycles} entries={entries} analysis={{}} user={user} />
+                <PdfReportButton />
               </div>
             </>
           )}
