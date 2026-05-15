@@ -56,10 +56,10 @@ export default function AppLayout() {
   }, [user]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
       <header
-        className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50"
+        className="shrink-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
@@ -109,10 +109,12 @@ export default function AppLayout() {
       {/* Main Content */}
       <main
         ref={mainRef}
-        className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 pb-28 overflow-y-auto"
-        style={{ height: "calc(100vh - 56px - env(safe-area-inset-top))", overscrollBehavior: "none" }}
+        className="flex-1 min-h-0 overflow-y-auto"
+        style={{ overscrollBehavior: "none" }}
       >
-        <Outlet />
+        <div className="max-w-2xl mx-auto w-full px-4 py-6 pb-6">
+          <Outlet />
+        </div>
       </main>
 
       {/* Luna AI Button */}
@@ -120,7 +122,7 @@ export default function AppLayout() {
 
       {/* Bottom Navigation */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border/50 shadow-lg"
+        className="shrink-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border/50 shadow-lg"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="max-w-lg mx-auto flex justify-around py-2 px-2">
