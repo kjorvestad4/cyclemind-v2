@@ -159,7 +159,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
       window.location.href = '/log#journal';
       return;
     }
-    if (lc === 'generate doctor report') {
+    if (lc === 'generate clinical report') {
       handleGenerateReport();
       return;
     }
@@ -191,13 +191,22 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
 
   const handleGenerateReport = async () => {
     try {
-      const response = await base44.functions.invoke('generateDoctorReport', {
-        includeJournal: true,
-        includeMedications: true,
-        includeScreening: true
-      });
-      toast.success('Doctor report generated! Check your downloads.');
+      const response = await base44.functions.invoke('generateClinicalReport', { days: 90 });
+      
+      // Create blob and trigger download
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `CycleMind_Clinical_Summary_${format(new Date(), 'yyyy-MM-dd')}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Clinical report downloaded! Check your downloads.');
     } catch (err) {
+      console.error(err);
       toast.error('Failed to generate report');
     }
   };
@@ -210,6 +219,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = recognitionRef.current;
     recognitionRef.current.continuous = true;
     recognitionRef.current.interimResults = true;
 
@@ -251,21 +261,21 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-md h-[640px] rounded-3xl bg-gradient-to-b from-purple-50 via-white to-pink-50 dark:from-purple-950 dark:via-slate-900 dark:to-pink-950 shadow-2xl flex flex-col border border-purple-200 dark:border-purple-900 overflow-hidden" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-md h-[640px] rounded-3xl bg-gradient-to-b from-teal-50 via-white to-blue-50 dark:from-teal-950 dark:via-slate-900 dark:to-blue-950 shadow-2xl flex flex-col border border-teal-200 dark:border-teal-900 overflow-hidden" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
         <div className="px-5 py-4 border-b flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-blue-600 flex items-center justify-center shadow">
               <Moon className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="font-serif text-lg font-semibold">Luna</h3>
+              <h3 className="font-serif text-lg font-semibold text-teal-900 dark:text-teal-100">Luna</h3>
               <p className="text-xs text-muted-foreground">Your compassionate cycle companion</p>
             </div>
           </div>
           <button onClick={onClose} aria-label="Close chat">
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
           </button>
         </div>
 
@@ -274,7 +284,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[80%] rounded-3xl px-5 py-3.5 text-[15px] leading-relaxed shadow-sm ${
-                msg.role === 'user' ? 'bg-purple-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 border border-purple-100 dark:border-purple-900 rounded-bl-none'
+                msg.role === 'user' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 border border-teal-100 dark:border-teal-900 rounded-bl-none'
               }`}>
                 {msg.role === 'assistant' ? (
                   <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
@@ -289,14 +299,22 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
                   <div className="flex flex-wrap gap-2 mt-4">
                     {msg.suggestedActions.map((action, i) => {
                       const isLogAction = LOG_ACTIONS.includes(action.toLowerCase());
+                      const isReportAction = action.toLowerCase() === 'generate clinical report';
                       return (
                         <Button
                           key={i}
                           variant="outline"
                           size="sm"
-                          className={`text-xs rounded-2xl ${isLogAction ? 'border-purple-400 bg-purple-50 text-purple-700 hover:bg-purple-100' : 'border-purple-200 hover:bg-purple-50'}`}
+                          className={`text-xs rounded-2xl ${
+                            isReportAction 
+                              ? 'border-teal-400 bg-teal-50 text-teal-700 hover:bg-teal-100 dark:bg-teal-950/50 dark:text-teal-300'
+                              : isLogAction 
+                                ? 'border-blue-400 bg-blue-50 text-blue-700 hover:bg-blue-100' 
+                                : 'border-teal-200 hover:bg-teal-50 dark:border-teal-800 dark:hover:bg-teal-950/30'
+                          }`}
                           onClick={() => handleSuggestedAction(action)}
                         >
+                          {isReportAction && <FileDown className="w-3 h-3 mr-1" />}
                           {isLogAction && <ExternalLink className="w-3 h-3 mr-1" />}
                           {action}
                         </Button>
@@ -307,11 +325,11 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
 
                 {/* Detected Symptoms — offer to save */}
                 {msg.role === 'assistant' && msg.detectedSymptoms?.length > 0 && (
-                  <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 rounded-2xl">
-                    <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2">Symptoms I noticed you mentioned:</p>
+                  <div className="mt-3 p-3 bg-teal-50 dark:bg-teal-950/50 border border-teal-200 dark:border-teal-800 rounded-2xl">
+                    <p className="text-xs font-semibold text-teal-700 dark:text-teal-300 mb-2">Symptoms I noticed you mentioned:</p>
                     <div className="flex flex-wrap gap-1.5 mb-2">
                       {msg.detectedSymptoms.map((s, i) => (
-                        <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">{s}</span>
+                        <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300">{s}</span>
                       ))}
                     </div>
                     {savedSymptomIndexes.has(idx) ? (
@@ -321,7 +339,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
                     ) : (
                       <Button
                         size="sm"
-                        className="text-xs rounded-2xl h-7 gap-1 bg-purple-600 hover:bg-purple-700 text-white"
+                        className="text-xs rounded-2xl h-7 gap-1 bg-teal-600 hover:bg-teal-700 text-white"
                         onClick={() => saveSymptoms(msg.detectedSymptoms, idx)}
                       >
                         <Plus className="w-3 h-3" /> Save to today's log
@@ -345,8 +363,8 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
 
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-white dark:bg-slate-800 border rounded-3xl rounded-bl-none px-5 py-3.5">
-                <Loader2 className="w-5 h-5 animate-spin text-purple-600" />
+              <div className="bg-white dark:bg-slate-800 border border-teal-100 dark:border-teal-900 rounded-3xl rounded-bl-none px-5 py-3.5">
+                <Loader2 className="w-5 h-5 animate-spin text-teal-600" />
               </div>
             </div>
           )}
@@ -381,10 +399,10 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
             variant="outline"
             size="icon"
             onClick={isListening ? stopVoiceRecording : startVoiceRecording}
-            className={`rounded-full ${isListening ? 'bg-red-500 text-white hover:bg-red-600' : ''}`}
+            className={`rounded-full ${isListening ? 'bg-red-500 text-white hover:bg-red-600' : 'border-teal-300 hover:bg-teal-50'}`}
             disabled={loading}
           >
-            {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-teal-600" />}
           </Button>
           <Input
             placeholder={isListening ? 'Recording...' : 'How are you feeling today?'}
@@ -394,7 +412,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
             disabled={loading || isListening}
             className="flex-1"
           />
-          <Button onClick={() => handleSend()} disabled={loading || !input.trim()} size="icon" className="rounded-full">
+          <Button onClick={() => handleSend()} disabled={loading || !input.trim()} size="icon" className="rounded-full bg-teal-600 hover:bg-teal-700">
             <Send className="w-4 h-4" />
           </Button>
         </div>

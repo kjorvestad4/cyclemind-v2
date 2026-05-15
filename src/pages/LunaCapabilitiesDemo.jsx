@@ -81,13 +81,11 @@ export default function LunaCapabilitiesDemo() {
     }
   };
 
-  // Demo 5: Doctor Report
-  const testDoctorReport = async () => {
+  // Demo 5: Clinical Report
+  const testClinicalReport = async () => {
     try {
-      const response = await base44.functions.invoke("generateDoctorReport", {
-        includeJournal: true,
-        includeMedications: true,
-        includeScreening: true
+      const response = await base44.functions.invoke("generateClinicalReport", {
+        days: 90
       });
       
       // Create blob and trigger download
@@ -95,16 +93,16 @@ export default function LunaCapabilitiesDemo() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `cycle-health-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      link.download = `CycleMind_Clinical_Summary_${new Date().toISOString().split('T')[0]}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       
-      toast.success("Doctor report downloaded! Check your downloads folder.");
-      setTestResults((prev) => ({ ...prev, doctorReport: "Generated successfully" }));
+      toast.success("Clinical report downloaded! Check your downloads folder.");
+      setTestResults((prev) => ({ ...prev, clinicalReport: "Generated successfully" }));
     } catch (error) {
-      console.error("Doctor report error:", error);
+      console.error("Clinical report error:", error);
       toast.error(error.response?.data?.error || "Failed to generate report");
     }
   };
@@ -357,22 +355,30 @@ export default function LunaCapabilitiesDemo() {
         </CardContent>
       </Card>
 
-      {/* Demo 5: Doctor Report */}
-      <Card className="border-blue-200 bg-blue-50">
+      {/* Demo 5: Clinical Report */}
+      <Card className="border-teal-200 bg-gradient-to-br from-teal-50 to-blue-50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-slate-950 font-bold text-lg">
-            <FileDown className="w-5 h-5 text-blue-600" />
-            5. Shared-Care Doctor Report
+            <FileDown className="w-5 h-5 text-teal-600" />
+            5. CycleMind Clinical Summary
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Generate HIPAA-style PDF summary (last 90 days) with cycles, symptoms, mood scores, and trends.
+            Generate pristine 2-page clinical PDF with key metrics, symptom trends, predictions, and raw data for your healthcare provider.
           </p>
-          <Button onClick={testDoctorReport} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={testClinicalReport} className="bg-teal-600 hover:bg-teal-700">
             <FileDown className="w-4 h-4 mr-2" />
-            Generate Test Report
+            Generate Clinical Report
           </Button>
+          {testResults.clinicalReport && (
+            <div className="bg-white rounded-lg p-3 border border-teal-200">
+              <div className="flex items-center gap-2 text-sm text-teal-700">
+                <Check className="w-4 h-4" />
+                <span>Report generated successfully!</span>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -439,7 +445,7 @@ export default function LunaCapabilitiesDemo() {
               <li>✓ Voice-to-symptom logging & journal auto-coding</li>
               <li>✓ Fertility guidance with conception probability</li>
               <li>✓ Menopause trajectory with STRAW+10 staging</li>
-              <li>✓ Doctor report generation on request</li>
+              <li>✓ CycleMind Clinical Summary PDF for healthcare providers</li>
               <li>✓ Proactive alerts for high-risk phases</li>
             </ul>
           </div>
