@@ -694,7 +694,15 @@ export default function DailyLog() {
       {/* SHARED SECTIONS */}
       <Section title="Medications Taken Today">
         <div className="pt-1">
-          <MedicationsTaken value={medications} onChange={(v) => { setMedications(v); setHasUnsavedChanges(true); }} />
+          <MedicationsTaken
+            value={medications}
+            onChange={(v) => { setMedications(v); setHasUnsavedChanges(true); }}
+            previousDayMeds={(() => {
+              const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
+              const yesterday = format(subDays(parseLocalDate(selectedDate), 1), "yyyy-MM-dd");
+              return entries.find((e) => e.date === yesterday)?.medications_taken || [];
+            })()}
+          />
         </div>
       </Section>
 
