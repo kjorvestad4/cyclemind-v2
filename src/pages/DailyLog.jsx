@@ -393,9 +393,6 @@ export default function DailyLog() {
                 )}
               </div>
               </div>
-              <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0" onClick={() => changeDate("next")}>
-              <ChevronRight className="w-5 h-5" />
-              </Button>
               <Button
                 variant="default"
                 size="icon"
@@ -403,6 +400,9 @@ export default function DailyLog() {
                 onClick={() => setShowCalendar(true)}
               >
                 <CalendarIcon className="w-5 h-5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0" onClick={() => changeDate("next")}>
+              <ChevronRight className="w-5 h-5" />
               </Button>
               </div>
 
