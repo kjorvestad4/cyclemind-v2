@@ -18,7 +18,7 @@ const NAV_ITEMS = [
 export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const isRoot = location.pathname === "/";
+  const isRoot = location.pathname === "/" || location.pathname === "/dashboard";
   const mainRef = useScrollPosition(location.pathname);
   const [user, setUser] = useState(null);
   const [cycleData, setCycleData] = useState({ mode: 'menstrual', day: null, edd: null });
