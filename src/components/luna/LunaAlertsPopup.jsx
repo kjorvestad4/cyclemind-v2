@@ -42,21 +42,17 @@ export default function LunaAlertsPopup({ onClose }) {
     },
   });
 
-  const clearAllMutation = useMutation({
-    mutationFn: async () => {
+  const handleClearAll = async () => {
+    try {
       const unreadAlerts = alerts.filter(a => !a.is_read);
       for (const alert of unreadAlerts) {
         await base44.entities.LunaAlert.update(alert.id, { is_read: true });
       }
-    },
-    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["luna-alerts"] });
       toast.success("All alerts cleared");
-    },
-  });
-
-  const handleClearAll = () => {
-    clearAllMutation.mutate();
+    } catch (error) {
+      toast.error("Failed to clear alerts");
+    }
   };
 
   const handleAlertClick = (alert) => {
@@ -104,8 +100,7 @@ export default function LunaAlertsPopup({ onClose }) {
             {alerts.some(a => !a.is_read) && (
               <button
                 onClick={handleClearAll}
-                disabled={clearAllMutation.isPending}
-                className="text-xs text-red-600 dark:text-red-400 hover:underline font-medium disabled:opacity-50"
+                className="text-xs text-red-600 dark:text-red-400 hover:underline font-medium"
               >
                 Clear All
               </button>
