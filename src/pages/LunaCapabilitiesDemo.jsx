@@ -183,14 +183,14 @@ export default function LunaCapabilitiesDemo() {
             </Button>
           </div>
 
-          {codedResult && (
+          {codedResult && codedResult.detectedSymptoms && (
             <div className="bg-white rounded-lg p-4 space-y-3 border border-purple-200">
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-green-500" />
                 <span className="text-sm font-semibold text-slate-800">Detected Symptoms (rate 1-6):</span>
               </div>
               <div className="space-y-2">
-                {codedResult.detectedSymptoms.map((sym, i) => (
+                {codedResult.detectedSymptoms && codedResult.detectedSymptoms.map((sym, i) => (
                   <div key={i} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
                       <Check className="w-4 h-4 text-green-500 inline mr-1" />
