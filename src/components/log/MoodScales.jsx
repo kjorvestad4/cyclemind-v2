@@ -222,10 +222,6 @@ export default function MoodScales({
 
       {open && (
         <div className="px-4 pb-5 space-y-3">
-          <p className="text-xs text-muted-foreground italic bg-muted/40 rounded-xl p-3">
-            Over the <strong>past 2 weeks</strong>, how often have you been bothered by any of the following problems?
-          </p>
-
           {/* PHQ-9 — hidden in perinatal mode */}
           {!hidePhq9 && (
             <ScaleSection
@@ -235,6 +231,9 @@ export default function MoodScales({
               scoreColor={phqSev?.color}
             >
               <div className="space-y-0 pt-1">
+                <p className="text-xs text-muted-foreground italic bg-muted/40 rounded-xl p-3 mb-2">
+                  Over the <strong>past 2 weeks</strong>, how often have you been bothered by any of the following problems?
+                </p>
                 {PHQ9.map((q) => (
                   <ScaleQuestion key={q.key} q={q} value={phq9Responses[q.key] ?? null} onChange={handlePHQ} />
                 ))}
@@ -260,6 +259,9 @@ export default function MoodScales({
             scoreColor={gadSev?.color}
           >
             <div className="space-y-0 pt-1">
+              <p className="text-xs text-muted-foreground italic bg-muted/40 rounded-xl p-3 mb-2">
+                Over the <strong>past 2 weeks</strong>, how often have you been bothered by any of the following problems?
+              </p>
               {GAD7.map((q) => (
                 <ScaleQuestion key={q.key} q={q} value={gad7Responses[q.key] ?? null} onChange={handleGAD} />
               ))}
