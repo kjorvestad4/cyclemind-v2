@@ -192,9 +192,9 @@ export default function LunaCapabilitiesDemo() {
               <div className="space-y-2">
                 {codedResult.detectedSymptoms && codedResult.detectedSymptoms.map((sym, i) => (
                   <div key={i} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <Check className="w-4 h-4 text-green-500 inline mr-1" />
-                      <span className="text-sm font-medium text-slate-800 dark:text-slate-200 capitalize">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Check className="w-4 h-4 text-green-500 shrink-0" />
+                      <span className="text-sm font-medium text-black dark:text-black capitalize">
                         {sym.name.replace(/_/g, ' ')}
                       </span>
                     </div>
