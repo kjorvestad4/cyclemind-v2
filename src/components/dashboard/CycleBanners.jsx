@@ -36,6 +36,7 @@ function predictOvulation(cycles, entries) {
   const cycleLength = latest.cycle_length || 28;
   const today = todayLocal();
 
+
   // Check if there's a logged LH surge or positive ovulation test recently
   const recentEntries = entries?.filter(e => {
     const daysAgo = differenceInDays(todayLocal(), parseLocalDate(e.date));
