@@ -129,9 +129,14 @@ export default function LunaCapabilitiesDemo() {
           <p className="text-sm text-muted-foreground">
             Click the microphone, speak your symptoms, and Luna will auto-extract and code them using DSM-5 PMDD criteria.
           </p>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-3">
             <VoiceLoggingButton onLogComplete={handleVoiceLogComplete} />
-            <Badge variant="secondary">Try saying: "I've been feeling really anxious and overwhelmed lately, with bad bloating and breast tenderness"</Badge>
+            <div className="bg-white/80 dark:bg-slate-800/80 border border-teal-200 dark:border-teal-800 rounded-lg p-3">
+              <p className="text-xs font-semibold text-teal-700 dark:text-teal-300 mb-1">Try saying:</p>
+              <p className="text-sm text-slate-700 dark:text-slate-300 italic">
+                "I've been feeling really anxious and overwhelmed lately, with bad bloating and breast tenderness"
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -148,40 +153,56 @@ export default function LunaCapabilitiesDemo() {
           <p className="text-sm text-muted-foreground">
             Paste or write a journal entry. Luna will extract symptoms, assign severity (1-6), and detect PMDD patterns.
           </p>
-          <Textarea
-            value={journalText}
-            onChange={(e) => setJournalText(e.target.value)}
-            placeholder="Example: 'This week has been really tough. I'm so irritable with my partner, crying over small things. My breasts are sore and I feel bloated. Can't sleep well either.'"
-            className="min-h-[100px]"
-          />
+          <div className="space-y-2">
+            <div className="bg-white/80 dark:bg-slate-800/80 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+              <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-1">Example:</p>
+              <p className="text-sm text-slate-700 dark:text-slate-300 italic">
+                This week has been really tough. I'm so irritable with my partner, crying over small things. My breasts are sore and I feel bloated. Can't sleep well either.
+              </p>
+            </div>
+            <Textarea
+              value={journalText}
+              onChange={(e) => setJournalText(e.target.value)}
+              placeholder="Paste or write your journal entry here..."
+              className="min-h-[100px] bg-white dark:bg-slate-900"
+            />
+          </div>
           <div className="flex gap-2">
             <Button onClick={processJournal} disabled={isProcessing || !journalText.trim()}>
               {isProcessing ? "Processing..." : "Auto-Code Journal"}
             </Button>
             <Button variant="outline" onClick={() => setJournalText("This week has been really tough. I'm so irritable with my partner, crying over small things. My breasts are sore and I feel bloated. Can't sleep well either.")}>
-              Use Example
+              Use Example Text
             </Button>
           </div>
 
           {codedResult && (
-            <div className="bg-white rounded-lg p-4 space-y-3">
+            <div className="bg-white rounded-lg p-4 space-y-3 border border-purple-200">
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-green-500" />
-                <span className="text-sm font-semibold">Coded Symptoms:</span>
+                <span className="text-sm font-semibold text-slate-800">Coded Symptoms:</span>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {Object.entries(codedResult.codedSymptoms)
                   .filter(([_, value]) => value > 0)
                   .map(([key, value]) => (
-                    <div key={key} className="text-xs bg-muted rounded p-2">
-                      <span className="font-medium">{key.replace(/_/g, ' ')}:</span> {value}/6
+                    <div key={key} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-slate-800 dark:text-slate-200 capitalize">
+                          {key.replace(/_/g, ' ')}
+                        </span>
+                        <Badge variant="secondary" className="ml-2 bg-white dark:bg-slate-800">
+                          <span className="text-sm font-bold text-purple-700 dark:text-purple-300">{value}</span>
+                          <span className="text-xs text-muted-foreground ml-0.5">/6</span>
+                        </Badge>
+                      </div>
                     </div>
                   ))}
               </div>
-              <div className="flex gap-2 items-start bg-amber-50 border border-amber-200 rounded p-2">
+              <div className="flex gap-2 items-start bg-amber-50 border border-amber-200 rounded-lg p-3">
                 <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                <p className="text-[10px] text-amber-700">
-                  This is AI-generated pattern recognition and not a substitute for professional medical advice.
+                <p className="text-xs text-amber-800">
+                  <strong>Disclaimer:</strong> This is AI-generated pattern recognition and not a substitute for professional medical advice.
                 </p>
               </div>
             </div>
@@ -206,29 +227,36 @@ export default function LunaCapabilitiesDemo() {
             Test Fertility Guidance
           </Button>
           {testResults.fertility && (
-            <div className="bg-white rounded-lg p-4 space-y-3 text-xs">
+            <div className="bg-white rounded-lg p-4 space-y-3 border border-pink-200">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-muted-foreground">Conception Probability</p>
-                  <p className="font-semibold text-lg">{testResults.fertility.conceptionProbability}%</p>
+                <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
+                  <p className="text-xs text-pink-700 dark:text-pink-300 font-semibold mb-1">Conception Probability</p>
+                  <p className="text-2xl font-bold text-pink-600 dark:text-pink-400">{testResults.fertility.conceptionProbability}%</p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">Cycle Day</p>
-                  <p className="font-semibold">{testResults.fertility.currentCycleDay}</p>
+                <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
+                  <p className="text-xs text-pink-700 dark:text-pink-300 font-semibold mb-1">Cycle Day</p>
+                  <p className="text-2xl font-bold text-slate-800 dark:text-slate-200">{testResults.fertility.currentCycleDay}</p>
                 </div>
               </div>
               {testResults.fertility.fertilityWindow && (
-                <div>
-                  <p className="text-muted-foreground">Fertility Window</p>
-                  <p className="font-medium">{new Date(testResults.fertility.fertilityWindow.start).toLocaleDateString()} - {new Date(testResults.fertility.fertilityWindow.end).toLocaleDateString()}</p>
+                <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
+                  <p className="text-xs text-pink-700 dark:text-pink-300 font-semibold mb-1">Fertility Window</p>
+                  <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                    {new Date(testResults.fertility.fertilityWindow.start).toLocaleDateString()} 
+                    <span className="mx-2 text-muted-foreground">→</span> 
+                    {new Date(testResults.fertility.fertilityWindow.end).toLocaleDateString()}
+                  </p>
                 </div>
               )}
               {testResults.fertility.tips && testResults.fertility.tips.length > 0 && (
-                <div>
-                  <p className="text-muted-foreground mb-2">Evidence-Based Tips:</p>
-                  <ul className="list-disc list-inside space-y-1">
+                <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
+                  <p className="text-xs text-pink-700 dark:text-pink-300 font-semibold mb-2">Evidence-Based Tips:</p>
+                  <ul className="space-y-2">
                     {testResults.fertility.tips.slice(0, 3).map((tip, i) => (
-                      <li key={i}>{tip}</li>
+                      <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2">
+                        <Check className="w-4 h-4 text-pink-600 shrink-0 mt-0.5" />
+                        <span>{tip}</span>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -255,29 +283,37 @@ export default function LunaCapabilitiesDemo() {
             Test Menopause Trajectory
           </Button>
           {testResults.menopause && (
-            <div className="bg-white rounded-lg p-4 space-y-3 text-xs">
-              <div className="flex items-center gap-2">
-                <Badge variant={testResults.menopause.stage.includes("Early") ? "default" : "secondary"}>
+            <div className="bg-white rounded-lg p-4 space-y-3 border border-purple-200">
+              <div className="flex flex-wrap items-center gap-3 pb-3 border-b border-purple-100">
+                <Badge variant={testResults.menopause.stage.includes("Early") ? "default" : "secondary"} className="text-sm px-3 py-1">
                   {testResults.menopause.stage}
                 </Badge>
-                <span className="text-muted-foreground">Months since last period: {testResults.menopause.monthsSinceLastPeriod || "N/A"}</span>
+                <div className="bg-purple-50 dark:bg-purple-950/30 rounded-lg px-3 py-1.5 border border-purple-200 dark:border-purple-800">
+                  <span className="text-xs text-purple-700 dark:text-purple-300 font-semibold">Months since last period: </span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{testResults.menopause.monthsSinceLastPeriod || "N/A"}</span>
+                </div>
               </div>
               {testResults.menopause.topSymptoms && testResults.menopause.topSymptoms.length > 0 && (
-                <div>
-                  <p className="text-muted-foreground mb-2">Top Symptoms:</p>
+                <div className="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-3 border border-purple-200 dark:border-purple-800">
+                  <p className="text-xs text-purple-700 dark:text-purple-300 font-semibold mb-2">Top Symptoms:</p>
                   <div className="flex flex-wrap gap-2">
                     {testResults.menopause.topSymptoms.map((symptom, i) => (
-                      <Badge key={i} variant="secondary">{symptom}</Badge>
+                      <Badge key={i} variant="secondary" className="bg-white dark:bg-slate-800 text-sm px-3 py-1">
+                        {symptom}
+                      </Badge>
                     ))}
                   </div>
                 </div>
               )}
               {testResults.menopause.recommendations && testResults.menopause.recommendations.length > 0 && (
-                <div>
-                  <p className="text-muted-foreground mb-2">Recommendations:</p>
-                  <ul className="list-disc list-inside space-y-1">
+                <div className="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-3 border border-purple-200 dark:border-purple-800">
+                  <p className="text-xs text-purple-700 dark:text-purple-300 font-semibold mb-2">Recommendations:</p>
+                  <ul className="space-y-2">
                     {testResults.menopause.recommendations.slice(0, 3).map((rec, i) => (
-                      <li key={i}>{rec}</li>
+                      <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2">
+                        <Check className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
+                        <span>{rec}</span>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -319,31 +355,41 @@ export default function LunaCapabilitiesDemo() {
           <p className="text-sm text-muted-foreground">
             Send a message to Luna and see her clinical insights with RAG-powered analysis:
           </p>
-          <Textarea
-            value={lunaMessage}
-            onChange={(e) => setLunaMessage(e.target.value)}
-            placeholder="Try: 'I've been feeling really moody and bloated this week, is this normal for my cycle phase?' or 'Can you analyze my symptoms and tell me if I might have PMDD?'"
-            className="min-h-[80px]"
-          />
+          <div className="space-y-2">
+            <div className="bg-white/80 dark:bg-slate-800/80 border border-teal-200 dark:border-teal-800 rounded-lg p-3">
+              <p className="text-xs font-semibold text-teal-700 dark:text-teal-300 mb-1">Try asking:</p>
+              <p className="text-sm text-slate-700 dark:text-slate-300 italic">
+                I've been feeling really moody and bloated this week, is this normal for my cycle phase?
+              </p>
+            </div>
+            <Textarea
+              value={lunaMessage}
+              onChange={(e) => setLunaMessage(e.target.value)}
+              placeholder="Type your message to Luna here..."
+              className="min-h-[80px] bg-white dark:bg-slate-900"
+            />
+          </div>
           <div className="flex gap-2">
             <Button onClick={testLunaChat} disabled={isProcessing || !lunaMessage.trim()}>
               {isProcessing ? "Luna is thinking..." : "Send to Luna"}
             </Button>
             <Button variant="outline" onClick={() => setLunaMessage("I've been feeling really moody and bloated this week, is this normal for my cycle phase?")}>
-              Use Example
+              Use Example Text
             </Button>
           </div>
 
           {lunaResponse && (
-            <div className="bg-white rounded-lg p-4 space-y-3">
+            <div className="bg-white rounded-lg p-4 space-y-3 border border-teal-200">
               <div className="flex items-start gap-3">
-                <Sparkles className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
+                <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                </div>
                 <div className="space-y-3 flex-1">
-                  <div className="prose prose-sm max-w-none">
-                    <p className="text-sm leading-relaxed">{lunaResponse}</p>
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <p className="text-sm leading-relaxed text-slate-800 dark:text-slate-200">{lunaResponse}</p>
                   </div>
-                  <div className="bg-amber-50 border border-amber-200 rounded p-2">
-                    <p className="text-[10px] text-amber-700">
+                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                    <p className="text-xs text-amber-800 dark:text-amber-200">
                       <strong>Disclaimer:</strong> This is AI-generated pattern recognition and not a substitute for professional medical advice. Please discuss with your psychiatrist.
                     </p>
                   </div>
