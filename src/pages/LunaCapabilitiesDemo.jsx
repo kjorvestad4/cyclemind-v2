@@ -310,8 +310,8 @@ export default function LunaCapabilitiesDemo() {
                   {testResults.menopause?.stage || "N/A"}
                 </Badge>
                 <div className="bg-purple-50 dark:bg-purple-950/30 rounded-lg px-3 py-1.5 border border-purple-200 dark:border-purple-800">
-                  <span className="text-xs text-purple-700 dark:text-purple-300 font-semibold">Months since last period: </span>
-                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{testResults.menopause.monthsSinceLastPeriod || "N/A"}</span>
+                  <span className="text-xs text-black font-semibold">Months since last period: </span>
+                  <span className="text-sm font-bold text-black">{testResults.menopause.monthsSinceLastPeriod || "N/A"}</span>
                 </div>
               </div>
               {testResults.menopause.topSymptoms && testResults.menopause.topSymptoms.length > 0 &&
