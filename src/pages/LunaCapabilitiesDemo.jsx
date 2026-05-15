@@ -60,7 +60,7 @@ export default function LunaCapabilitiesDemo() {
     try {
       const response = await base44.functions.invoke("getFertilityGuidance", {});
       console.log("Fertility Guidance:", response.data);
-      setTestResults(prev => ({ ...prev, fertility: response.data }));
+      setTestResults((prev) => ({ ...prev, fertility: response.data }));
       toast.success("Fertility guidance generated! See results below.");
       setActiveDemo("fertility");
     } catch (error) {
@@ -73,7 +73,7 @@ export default function LunaCapabilitiesDemo() {
     try {
       const response = await base44.functions.invoke("getMenopauseTrajectory", {});
       console.log("Menopause Trajectory:", response.data);
-      setTestResults(prev => ({ ...prev, menopause: response.data }));
+      setTestResults((prev) => ({ ...prev, menopause: response.data }));
       toast.success("Menopause trajectory generated! See results below.");
       setActiveDemo("menopause");
     } catch (error) {
@@ -90,7 +90,7 @@ export default function LunaCapabilitiesDemo() {
         includeScreening: true
       });
       toast.success("Doctor report generated! Check your downloads folder.");
-      setTestResults(prev => ({ ...prev, doctorReport: "Generated successfully" }));
+      setTestResults((prev) => ({ ...prev, doctorReport: "Generated successfully" }));
     } catch (error) {
       toast.error("Failed to generate report");
     }
@@ -171,8 +171,8 @@ export default function LunaCapabilitiesDemo() {
               value={journalText}
               onChange={(e) => setJournalText(e.target.value)}
               placeholder="Paste or write your journal entry here..."
-              className="min-h-[100px] bg-white dark:bg-slate-900"
-            />
+              className="min-h-[100px] bg-white dark:bg-slate-900" />
+            
           </div>
           <div className="flex gap-2">
             <Button onClick={processJournal} disabled={isProcessing || !journalText.trim()}>
@@ -183,15 +183,15 @@ export default function LunaCapabilitiesDemo() {
             </Button>
           </div>
 
-          {codedResult && codedResult.detectedSymptoms && (
-            <div className="bg-white rounded-lg p-4 space-y-3 border border-purple-200">
+          {codedResult && codedResult.detectedSymptoms &&
+          <div className="bg-white rounded-lg p-4 space-y-3 border border-purple-200">
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-green-500" />
                 <span className="text-sm font-semibold text-slate-800">Detected Symptoms (rate 1-6):</span>
               </div>
               <div className="space-y-2">
-                {codedResult.detectedSymptoms && codedResult.detectedSymptoms.map((sym, i) => (
-                  <div key={i} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+                {codedResult.detectedSymptoms && codedResult.detectedSymptoms.map((sym, i) =>
+              <div key={i} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
                     <div className="flex items-center gap-2 mb-2">
                       <Check className="w-4 h-4 text-green-500 shrink-0" />
                       <span className="text-sm font-medium text-black dark:text-black capitalize">
@@ -199,26 +199,26 @@ export default function LunaCapabilitiesDemo() {
                       </span>
                     </div>
                     <div className="flex gap-1">
-                      {[1, 2, 3, 4, 5, 6].map((severity) => (
-                        <button
-                          key={severity}
-                          onClick={() => setUserSeverities(prev => ({ ...prev, [sym.field]: severity }))}
-                          className={`flex-1 py-2 text-sm font-semibold rounded transition-colors ${
-                            userSeverities[sym.field] === severity
-                              ? severity <= 2 ? 'bg-green-500 text-white' : severity <= 4 ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white'
-                              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                          }`}
-                        >
+                      {[1, 2, 3, 4, 5, 6].map((severity) =>
+                  <button
+                    key={severity}
+                    onClick={() => setUserSeverities((prev) => ({ ...prev, [sym.field]: severity }))}
+                    className={`flex-1 py-2 text-sm font-semibold rounded transition-colors ${
+                    userSeverities[sym.field] === severity ?
+                    severity <= 2 ? 'bg-green-500 text-white' : severity <= 4 ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white' :
+                    'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`
+                    }>
+                    
                           {severity}
                         </button>
-                      ))}
+                  )}
                     </div>
                     <div className="flex justify-between text-xs text-black mt-1">
                       <span>None</span>
                       <span>Severe</span>
                     </div>
                   </div>
-                ))}
+              )}
               </div>
               <div className="flex gap-2 items-start bg-amber-50 border border-amber-200 rounded-lg p-3">
                 <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
@@ -227,7 +227,7 @@ export default function LunaCapabilitiesDemo() {
                 </p>
               </div>
             </div>
-          )}
+          }
         </CardContent>
       </Card>
 
@@ -247,11 +247,11 @@ export default function LunaCapabilitiesDemo() {
             <Heart className="w-4 h-4 mr-2" />
             Test Fertility Guidance
           </Button>
-          {testResults.fertility && (
-            <div className="bg-white rounded-lg p-4 space-y-3 border border-pink-200">
+          {testResults.fertility &&
+          <div className="bg-white rounded-lg p-4 space-y-3 border border-pink-200">
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
-                  <p className="text-xs text-pink-700 dark:text-pink-300 font-semibold mb-1">Conception Probability</p>
+                  <p className="text-xs dark:text-pink-300 font-semibold mb-1 text-[hsl(var(--foreground))]">Conception Probability</p>
                   <p className="text-2xl font-bold text-black">{testResults.fertility.conceptionProbability}%</p>
                 </div>
                 <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
@@ -259,8 +259,8 @@ export default function LunaCapabilitiesDemo() {
                   <p className="text-2xl font-bold text-black">{testResults.fertility.currentCycleDay}</p>
                 </div>
               </div>
-              {testResults.fertility.fertilityWindow && (
-                <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
+              {testResults.fertility.fertilityWindow &&
+            <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
                   <p className="text-xs text-pink-700 dark:text-pink-300 font-semibold mb-1">Fertility Window</p>
                   <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
                     {new Date(testResults.fertility.fertilityWindow.start).toLocaleDateString()} 
@@ -268,22 +268,22 @@ export default function LunaCapabilitiesDemo() {
                     {new Date(testResults.fertility.fertilityWindow.end).toLocaleDateString()}
                   </p>
                 </div>
-              )}
-              {testResults.fertility.tips && testResults.fertility.tips.length > 0 && (
-                <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
+            }
+              {testResults.fertility.tips && testResults.fertility.tips.length > 0 &&
+            <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
                   <p className="text-xs text-pink-700 dark:text-pink-300 font-semibold mb-2">Evidence-Based Tips:</p>
                   <ul className="space-y-2">
-                    {testResults.fertility.tips.slice(0, 3).map((tip, i) => (
-                      <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2">
+                    {testResults.fertility.tips.slice(0, 3).map((tip, i) =>
+                <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2">
                         <Check className="w-4 h-4 text-pink-600 shrink-0 mt-0.5" />
                         <span>{tip}</span>
                       </li>
-                    ))}
+                )}
                   </ul>
                 </div>
-              )}
+            }
             </div>
-          )}
+          }
         </CardContent>
       </Card>
 
@@ -303,8 +303,8 @@ export default function LunaCapabilitiesDemo() {
             <TrendingUp className="w-4 h-4 mr-2" />
             Test Menopause Trajectory
           </Button>
-          {testResults.menopause && (
-            <div className="bg-white rounded-lg p-4 space-y-3 border border-purple-200">
+          {testResults.menopause &&
+          <div className="bg-white rounded-lg p-4 space-y-3 border border-purple-200">
               <div className="flex flex-wrap items-center gap-3 pb-3 border-b border-purple-100">
                 <Badge variant={testResults.menopause.stage.includes("Early") ? "default" : "secondary"} className="text-sm px-3 py-1">
                   {testResults.menopause.stage}
@@ -314,33 +314,33 @@ export default function LunaCapabilitiesDemo() {
                   <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{testResults.menopause.monthsSinceLastPeriod || "N/A"}</span>
                 </div>
               </div>
-              {testResults.menopause.topSymptoms && testResults.menopause.topSymptoms.length > 0 && (
-                <div className="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-3 border border-purple-200 dark:border-purple-800">
+              {testResults.menopause.topSymptoms && testResults.menopause.topSymptoms.length > 0 &&
+            <div className="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-3 border border-purple-200 dark:border-purple-800">
                   <p className="text-xs text-purple-700 dark:text-purple-300 font-semibold mb-2">Top Symptoms:</p>
                   <div className="flex flex-wrap gap-2">
-                    {testResults.menopause.topSymptoms.map((symptom, i) => (
-                      <Badge key={i} variant="secondary" className="bg-white dark:bg-slate-800 text-sm px-3 py-1">
+                    {testResults.menopause.topSymptoms.map((symptom, i) =>
+                <Badge key={i} variant="secondary" className="bg-white dark:bg-slate-800 text-sm px-3 py-1">
                         {symptom}
                       </Badge>
-                    ))}
+                )}
                   </div>
                 </div>
-              )}
-              {testResults.menopause.recommendations && testResults.menopause.recommendations.length > 0 && (
-                <div className="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-3 border border-purple-200 dark:border-purple-800">
+            }
+              {testResults.menopause.recommendations && testResults.menopause.recommendations.length > 0 &&
+            <div className="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-3 border border-purple-200 dark:border-purple-800">
                   <p className="text-xs text-purple-700 dark:text-purple-300 font-semibold mb-2">Recommendations:</p>
                   <ul className="space-y-2">
-                    {testResults.menopause.recommendations.slice(0, 3).map((rec, i) => (
-                      <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2">
+                    {testResults.menopause.recommendations.slice(0, 3).map((rec, i) =>
+                <li key={i} className="text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2">
                         <Check className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
                         <span>{rec}</span>
                       </li>
-                    ))}
+                )}
                   </ul>
                 </div>
-              )}
+            }
             </div>
-          )}
+          }
         </CardContent>
       </Card>
 
@@ -387,8 +387,8 @@ export default function LunaCapabilitiesDemo() {
               value={lunaMessage}
               onChange={(e) => setLunaMessage(e.target.value)}
               placeholder="Type your message to Luna here..."
-              className="min-h-[80px] bg-white dark:bg-slate-900"
-            />
+              className="min-h-[80px] bg-white dark:bg-slate-900" />
+            
           </div>
           <div className="flex gap-2">
             <Button onClick={testLunaChat} disabled={isProcessing || !lunaMessage.trim()}>
@@ -399,8 +399,8 @@ export default function LunaCapabilitiesDemo() {
             </Button>
           </div>
 
-          {lunaResponse && (
-            <div className="bg-white rounded-lg p-4 space-y-3 border border-teal-200">
+          {lunaResponse &&
+          <div className="bg-white rounded-lg p-4 space-y-3 border border-teal-200">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center shrink-0">
                   <Sparkles className="w-4 h-4 text-teal-600 dark:text-teal-400" />
@@ -417,7 +417,7 @@ export default function LunaCapabilitiesDemo() {
                 </div>
               </div>
             </div>
-          )}
+          }
 
           <div className="bg-teal-50 border border-teal-200 rounded p-3 mt-4">
             <p className="text-xs font-semibold text-teal-800 mb-2">Luna's Capabilities:</p>
@@ -432,6 +432,6 @@ export default function LunaCapabilitiesDemo() {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
+
 }
