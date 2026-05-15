@@ -12,6 +12,7 @@ export default function LunaCapabilitiesDemo() {
   const [journalText, setJournalText] = useState("");
   const [codedResult, setcodedResult] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [userSeverities, setUserSeverities] = useState({});
   const [activeDemo, setActiveDemo] = useState(null);
   const [testResults, setTestResults] = useState({});
   const [lunaMessage, setLunaMessage] = useState("");
@@ -38,7 +39,13 @@ export default function LunaCapabilitiesDemo() {
 
       if (response.data.success) {
         setcodedResult(response.data);
-        toast.success(`Auto-coded ${Object.keys(response.data.codedSymptoms).filter(k => response.data.codedSymptoms[k] > 0).length} symptoms`);
+        // Initialize all detected symptoms with severity 3 (moderate)
+        const initialSeverities = {};
+        response.data.detectedSymptoms.forEach((sym, i) => {
+          initialSeverities[sym.field] = 3;
+        });
+        setUserSeverities(initialSeverities);
+        toast.success(`Detected ${response.data.detectedSymptoms.length} symptoms - please rate severity`);
       }
     } catch (error) {
       toast.error("Failed to process journal");
@@ -180,24 +187,38 @@ export default function LunaCapabilitiesDemo() {
             <div className="bg-white rounded-lg p-4 space-y-3 border border-purple-200">
               <div className="flex items-center gap-2">
                 <Check className="w-4 h-4 text-green-500" />
-                <span className="text-sm font-semibold text-slate-800">Coded Symptoms:</span>
+                <span className="text-sm font-semibold text-slate-800">Detected Symptoms (rate 1-6):</span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {Object.entries(codedResult.codedSymptoms)
-                  .filter(([_, value]) => value > 0)
-                  .map(([key, value]) => (
-                    <div key={key} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-slate-800 dark:text-slate-200 capitalize">
-                          {key.replace(/_/g, ' ')}
-                        </span>
-                        <Badge variant="secondary" className="ml-2 bg-white dark:bg-slate-800">
-                          <span className="text-sm font-bold text-purple-700 dark:text-purple-300">{value}</span>
-                          <span className="text-xs text-muted-foreground ml-0.5">/6</span>
-                        </Badge>
-                      </div>
+              <div className="space-y-2">
+                {codedResult.detectedSymptoms.map((sym, i) => (
+                  <div key={i} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <Check className="w-4 h-4 text-green-500 inline mr-1" />
+                      <span className="text-sm font-medium text-slate-800 dark:text-slate-200 capitalize">
+                        {sym.name.replace(/_/g, ' ')}
+                      </span>
                     </div>
-                  ))}
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5, 6].map((severity) => (
+                        <button
+                          key={severity}
+                          onClick={() => setUserSeverities(prev => ({ ...prev, [sym.field]: severity }))}
+                          className={`flex-1 py-2 text-sm font-semibold rounded transition-colors ${
+                            userSeverities[sym.field] === severity
+                              ? severity <= 2 ? 'bg-green-500 text-white' : severity <= 4 ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white'
+                              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                          }`}
+                        >
+                          {severity}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>None</span>
+                      <span>Severe</span>
+                    </div>
+                  </div>
+                ))}
               </div>
               <div className="flex gap-2 items-start bg-amber-50 border border-amber-200 rounded-lg p-3">
                 <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />

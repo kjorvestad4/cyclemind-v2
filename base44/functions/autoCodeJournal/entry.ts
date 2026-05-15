@@ -15,64 +15,48 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'No journal text provided' }, { status: 400 });
     }
 
-    // Use LLM to extract and code symptoms from journal text
+    // Use LLM to extract symptoms from journal text (without severity - user will assign)
     const response = await base44.integrations.Core.InvokeLLM({
       prompt: `You are a clinical assistant analyzing a journal entry for mental health and menstrual cycle symptoms.
       
-Analyze the journal text and extract symptoms based on DRSP (Daily Record of Severity of Problems) criteria.
-Assign severity scores 1-6 based on the intensity described (1=none, 2=mild, 3=moderate, 4=moderately severe, 5=severe, 6=extreme).
+Analyze the journal text and identify which symptoms are present. DO NOT assign severity scores - the user will do that.
 
 Journal text: "${journalText}"
 
 Return a JSON object with this exact structure:
 {
-  "codedSymptoms": {
-    "mood_swings": 0-6,
-    "irritability": 0-6,
-    "anxiety": 0-6,
-    "depression": 0-6,
-    "overwhelmed": 0-6,
-    "concentration": 0-6,
-    "lethargic": 0-6,
-    "insomnia": 0-6,
-    "breast_tender": 0-6,
-    "bloating": 0-6,
-    "headache": 0-6,
-    "pain": 0-6,
-    "acne": 0-6
-  },
+  "detectedSymptoms": [
+    {"name": "symptom name", "field": "drsp_field_name"}
+  ],
   "sentiment": "positive|neutral|negative",
   "pmdd_indicators": ["list of PMDD indicators found"],
   "summary": "brief clinical summary"
 }
 
-Only assign non-zero scores to symptoms that are actually mentioned or strongly implied. Use context clues for severity.`,
+Detect symptoms from this list and map to DRSP fields:
+- mood_swings, irritability, anxiety, depression, overwhelmed, concentration, lethargic, insomnia
+- breast_tender, bloating, headache, pain, acne
+
+Only include symptoms that are actually mentioned or strongly implied.`,
       response_json_schema: {
         type: "object",
         properties: {
-          codedSymptoms: {
-            type: "object",
-            properties: {
-              mood_swings: { type: "number" },
-              irritability: { type: "number" },
-              anxiety: { type: "number" },
-              depression: { type: "number" },
-              overwhelmed: { type: "number" },
-              concentration: { type: "number" },
-              lethargic: { type: "number" },
-              insomnia: { type: "number" },
-              breast_tender: { type: "number" },
-              bloating: { type: "number" },
-              headache: { type: "number" },
-              pain: { type: "number" },
-              acne: { type: "number" }
+          detectedSymptoms: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                name: { type: "string" },
+                field: { type: "string" }
+              },
+              required: ["name", "field"]
             }
           },
           sentiment: { type: "string" },
           pmdd_indicators: { type: "array", items: { type: "string" } },
           summary: { type: "string" }
         },
-        required: ["codedSymptoms", "sentiment", "pmdd_indicators", "summary"]
+        required: ["detectedSymptoms", "sentiment", "pmdd_indicators", "summary"]
       }
     });
 
