@@ -159,7 +159,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
       window.location.href = '/log#journal';
       return;
     }
-    if (lc === 'generate clinical report') {
+    if (lc === 'generate clinical report' || lc === 'generate doctor report') {
       handleGenerateReport();
       return;
     }

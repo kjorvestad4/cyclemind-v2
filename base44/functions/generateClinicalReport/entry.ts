@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 import { jsPDF } from 'npm:jspdf@4.0.0';
-import { differenceInDays, format, parseISO, startOfDay } from 'npm:date-fns@3.6.0';
+import { differenceInDays, format, parseISO, startOfDay, subDays } from 'npm:date-fns@3.6.0';
 
 Deno.serve(async (req) => {
   try {
@@ -15,8 +15,7 @@ Deno.serve(async (req) => {
 
     // Fetch date range
     const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
+    const startDate = subDays(endDate, days);
 
     // Fetch all user data
     const cycles = await base44.entities.Cycle.filter({ user_id: user.id });
@@ -37,12 +36,13 @@ Deno.serve(async (req) => {
 
     const avgCycleLength = relevantCycles.length > 0
       ? Math.round(relevantCycles.reduce((sum, c) => sum + (c.cycle_length || 28), 0) / relevantCycles.length)
-      : null;
+      : 28;
 
     const cycleLengths = relevantCycles.map(c => c.cycle_length || 28);
-    const cycleVariability = cycleLengths.length > 1
-      ? Math.round((Math.max(...cycleLengths) - Math.min(...cycleLengths)) / avgCycleLength * 100)
+    const cycleSD = cycleLengths.length > 1
+      ? Math.sqrt(cycleLengths.reduce((sum, len) => sum + Math.pow(len - avgCycleLength, 2), 0) / cycleLengths.length)
       : 0;
+    const cycleVariability = cycleLengths.length > 1 ? Math.round(cycleSD) : 0;
 
     // Get latest cycle for context
     const latestCycle = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
@@ -61,51 +61,80 @@ Deno.serve(async (req) => {
       .filter(p => p.prediction_type === 'pmdd_risk')
       .sort((a, b) => new Date(b.generated_date) - new Date(a.generated_date))[0];
 
-    const pmddRiskLevel = pmddPrediction?.risk_level || 'Unknown';
+    const pmddRiskLevel = pmddPrediction?.risk_level || 'Not Assessed';
     const pmddAccuracy = pmddPrediction?.historical_accuracy || null;
+    const pmddConfidence = pmddPrediction?.confidence_score || null;
 
-    // Symptom analysis
+    // Comprehensive symptom analysis
     const symptomCounts = {};
     const symptomSeverities = {};
+    const follicularSymptoms = {};
+    const lutealSymptoms = {};
     
     recentEntries.forEach(e => {
+      const cycleDay = e.cycle_day || 1;
+      const isLuteal = cycleDay > 14;
+      const isFollicular = cycleDay <= 14;
+      
       Object.entries(e).forEach(([key, value]) => {
-        if ((key.startsWith('s_') || key.startsWith('m_') || key.startsWith('p_') || key.startsWith('pp_')) && value >= 3) {
+        if ((key.startsWith('s_') || key.startsWith('m_') || key.startsWith('p_') || key.startsWith('pp_')) && typeof value === 'number' && value >= 1) {
           symptomCounts[key] = (symptomCounts[key] || 0) + 1;
           symptomSeverities[key] = symptomSeverities[key] || [];
           symptomSeverities[key].push(value);
+          
+          if (isLuteal) {
+            lutealSymptoms[key] = (lutealSymptoms[key] || 0) + (value >= 3 ? 1 : 0);
+          }
+          if (isFollicular) {
+            follicularSymptoms[key] = (follicularSymptoms[key] || 0) + (value >= 3 ? 1 : 0);
+          }
         }
       });
     });
 
     const topSymptoms = Object.entries(symptomCounts)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+      .slice(0, 8)
       .map(([symptom, count]) => ({
         name: symptom.replace(/^[smp]_/, '').replace(/_/g, ' '),
         daysReported: count,
         avgSeverity: symptomSeverities[symptom] 
           ? (symptomSeverities[symptom].reduce((a, b) => a + b, 0) / symptomSeverities[symptom].length).toFixed(1)
-          : null
+          : null,
+        lutealCount: lutealSymptoms[symptom] || 0,
+        follicularCount: follicularSymptoms[symptom] || 0
       }));
 
     // Calculate symptom burden score
     const totalSymptomDays = recentEntries.filter(e => 
       Object.entries(e).some(([k, v]) => 
-        (k.startsWith('s_') || k.startsWith('m_')) && v >= 3
+        (k.startsWith('s_') || k.startsWith('m_')) && typeof v === 'number' && v >= 3
       )
     ).length;
-    const symptomBurdenScore = Math.round((totalSymptomDays / recentEntries.length) * 100) || 0;
+    const symptomBurdenScore = recentEntries.length ? Math.round((totalSymptomDays / recentEntries.length) * 100) : 0;
     const symptomBurdenTrend = symptomBurdenScore > 60 ? 'high' : symptomBurdenScore > 30 ? 'moderate' : 'low';
 
     // Fertility/Menopause context
-    const fertilityWindow = latestCycle?.cycle_type === 'pregnancy' ? null : 
-      predictions.find(p => p.prediction_type === 'cycle')?.ovulation_window_start;
-    
+    const cyclePrediction = predictions.find(p => p.prediction_type === 'cycle');
+    const fertilityWindow = latestCycle?.cycle_type === 'pregnancy' ? null : cyclePrediction?.ovulation_window_start;
+    const fertilityWindowEnd = latestCycle?.cycle_type === 'pregnancy' ? null : cyclePrediction?.ovulation_window_end;
     const edd = latestCycle?.cycle_type === 'pregnancy' ? latestCycle.estimated_due_date : null;
     const pregnancyWeek = latestCycle?.pregnancy_week;
     const menopauseStage = latestCycle?.cycle_type === 'menopause' ? 'Menopause' : 
                            latestCycle?.cycle_type === 'perimenopause' ? 'Perimenopause' : null;
+
+    // Calculate luteal vs follicular comparison
+    const lutealSymptomCount = Object.values(lutealSymptoms).reduce((a, b) => a + b, 0);
+    const follicularSymptomCount = Object.values(follicularSymptoms).reduce((a, b) => a + b, 0);
+    const lutealAvgSeverity = lutealSymptomCount > 0 ? (lutealSymptomCount / Object.keys(lutealSymptoms).length).toFixed(1) : '0';
+    const follicularAvgSeverity = follicularSymptomCount > 0 ? (follicularSymptomCount / Object.keys(follicularSymptoms).length).toFixed(1) : '0';
+
+    // Mood correlation with symptoms
+    const entriesWithMoodAndSymptoms = recentEntries.filter(e => 
+      (e.phq9_score || e.gad7_score) && 
+      Object.entries(e).some(([k, v]) => (k.startsWith('s_') || k.startsWith('m_')) && v >= 3)
+    );
+    const moodCorrelationPercent = recentEntries.length ? Math.round((entriesWithMoodAndSymptoms.length / recentEntries.length) * 100) : 0;
 
     // Generate PDF
     const doc = new jsPDF();
@@ -117,9 +146,13 @@ Deno.serve(async (req) => {
       accent: '#10B981',       // Sage green
       warning: '#D97706',      // Warm amber
       bg: '#F8FAFC',           // Soft gray
-      text: '#1E293B'          // Dark slate
+      text: '#1E293B',         // Dark slate
+      lightText: '#64748B',    // Light slate
+      border: '#E2E8F0'        // Light border
     };
 
+    // === PAGE 1 ===
+    
     // HEADER
     doc.setFillColor(colors.primary);
     doc.rect(0, 0, 210, 25, 'F');
@@ -141,59 +174,108 @@ Deno.serve(async (req) => {
     doc.setFontSize(10);
     doc.setTextColor(255);
     doc.text(`Patient: ${user.full_name || 'Anonymous'}`, 15, 31);
-    doc.text(`Report Date: ${format(new Date(), 'MMM d, yyyy')}`, 105, 31, { align: 'center' });
-    doc.text(`Period: ${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d')}`, 195, 31, { align: 'right' });
+    doc.text(`Report Generated: ${format(new Date(), 'MMM d, yyyy')}`, 105, 31, { align: 'center' });
+    doc.text(`Data Period: ${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d')}`, 195, 31, { align: 'right' });
 
     let yPosition = 48;
 
-    // KEY METRICS SECTION
+    // KEY METRICS SECTION - 8 cards
     doc.setFontSize(14);
     doc.setTextColor(colors.text);
     doc.setFont('helvetica', 'bold');
     doc.text('Key Metrics at a Glance', 15, yPosition);
     yPosition += 8;
 
-    // Metrics cards
     const metrics = [
-      { label: 'Avg Cycle Length', value: avgCycleLength ? `${avgCycleLength} days` : 'N/A', sub: `Variability: ${cycleVariability}%` },
-      { label: 'PMDD Risk', value: pmddRiskLevel, sub: pmddAccuracy ? `Accuracy: ${pmddAccuracy}%` : '' },
-      { label: 'Current Phase', value: menopauseStage || (latestCycle?.phase || 'N/A'), sub: latestCycle?.cycle_type === 'pregnancy' ? `Week ${pregnancyWeek}` : '' },
-      { label: 'Symptom Burden', value: `${symptomBurdenScore}%`, sub: `Trend: ${symptomBurdenTrend}` }
+      { 
+        label: 'Avg Cycle Length', 
+        value: `${avgCycleLength} days`, 
+        sub: `SD: \u00b1${cycleVariability} days`,
+        color: colors.primary
+      },
+      { 
+        label: 'PMDD Risk Level', 
+        value: pmddRiskLevel, 
+        sub: pmddAccuracy ? `Accuracy: ${pmddAccuracy}%` : pmddConfidence ? `Confidence: ${pmddConfidence}%` : '',
+        color: pmddRiskLevel === 'high' ? colors.warning : colors.secondary
+      },
+      { 
+        label: 'Current Phase', 
+        value: menopauseStage || latestCycle?.phase || 'N/A', 
+        sub: latestCycle?.cycle_type === 'pregnancy' ? `Week ${pregnancyWeek}` : `Day ${latestCycle ? Math.floor((new Date() - new Date(latestCycle.start_date)) / (1000 * 60 * 60 * 24)) : 'N/A'}`,
+        color: colors.accent
+      },
+      { 
+        label: 'Symptom Burden', 
+        value: `${symptomBurdenScore}%`, 
+        sub: `Trend: ${symptomBurdenTrend.toUpperCase()}`,
+        color: symptomBurdenTrend === 'high' ? colors.warning : colors.bg
+      },
+      { 
+        label: 'Avg PHQ-9 Score', 
+        value: avgPHQ9 || 'Not tracked', 
+        sub: avgPHQ9 ? (parseFloat(avgPHQ9) >= 10 ? 'Moderate-Severe' : 'Minimal-Mild') : '',
+        color: avgPHQ9 && parseFloat(avgPHQ9) >= 10 ? colors.warning : colors.bg
+      },
+      { 
+        label: 'Avg GAD-7 Score', 
+        value: avgGAD7 || 'Not tracked', 
+        sub: avgGAD7 ? (parseFloat(avgGAD7) >= 10 ? 'Moderate-Severe' : 'Minimal-Mild') : '',
+        color: avgGAD7 && parseFloat(avgGAD7) >= 10 ? colors.warning : colors.bg
+      },
+      { 
+        label: 'Fertility Window', 
+        value: fertilityWindow ? format(parseISO(fertilityWindow), 'MMM d') : (edd ? 'Pregnant' : 'Not predicted'), 
+        sub: fertilityWindowEnd ? `to ${format(parseISO(fertilityWindowEnd), 'MMM d')}` : (edd ? `Due ${format(parseISO(edd), 'MMM d, yyyy')}` : ''),
+        color: colors.secondary
+      },
+      { 
+        label: 'Mood-Symptom Link', 
+        value: `${moodCorrelationPercent}%`, 
+        sub: 'symptom days with mood elevation',
+        color: moodCorrelationPercent > 70 ? colors.warning : colors.bg
+      }
     ];
 
     const cardWidth = 90;
-    const cardHeight = 28;
+    const cardHeight = 26;
     const gap = 10;
 
     metrics.forEach((metric, i) => {
       const x = i % 2 === 0 ? 15 : 15 + cardWidth + gap;
-      const y = yPosition + Math.floor(i / 2) * (cardHeight + 8);
+      const y = yPosition + Math.floor(i / 2) * (cardHeight + 6);
 
-      // Card background
-      doc.setFillColor(i === 3 && symptomBurdenTrend === 'high' ? colors.warning : colors.bg);
+      // Card background with subtle border
+      doc.setFillColor(metric.color === colors.warning ? '#FEF3C7' : metric.color === colors.primary ? '#F0FDFA' : metric.color === colors.secondary ? '#EFF6FF' : metric.color === colors.accent ? '#ECFDF5' : colors.bg);
       doc.roundedRect(x, y, cardWidth, cardHeight, 3, 3, 'F');
+      
+      // Left accent border
+      doc.setDrawColor(metric.color);
+      doc.setLineWidth(3);
+      doc.line(x, y, x, y + cardHeight);
       
       // Label
       doc.setFontSize(8);
-      doc.setTextColor('#64748B');
+      doc.setTextColor(colors.lightText);
       doc.setFont('helvetica', 'normal');
-      doc.text(metric.label, x + 3, y + 5);
+      doc.text(metric.label, x + 5, y + 5);
       
       // Value
-      doc.setFontSize(13);
+      doc.setFontSize(12);
       doc.setTextColor(colors.text);
       doc.setFont('helvetica', 'bold');
-      doc.text(metric.value, x + 3, y + 13);
+      doc.text(metric.value, x + 5, y + 12);
       
       // Subtitle
       if (metric.sub) {
         doc.setFontSize(7);
-        doc.setTextColor('#94A3B8');
-        doc.text(metric.sub, x + 3, y + 21);
+        doc.setTextColor(colors.lightText);
+        doc.setFont('helvetica', 'normal');
+        doc.text(metric.sub, x + 5, y + 20);
       }
     });
 
-    yPosition += (Math.ceil(metrics.length / 2) * (cardHeight + 8)) + 5;
+    yPosition += (Math.ceil(metrics.length / 2) * (cardHeight + 6)) + 5;
 
     // CYCLE & SYMPTOM TRENDS
     doc.setFontSize(14);
@@ -202,165 +284,266 @@ Deno.serve(async (req) => {
     doc.text('Cycle & Symptom Trends', 15, yPosition);
     yPosition += 8;
 
-    // Top symptoms with bars
+    // Top 8 symptoms with detailed bars
     if (topSymptoms.length > 0) {
       doc.setFontSize(9);
       doc.setTextColor(colors.text);
       doc.setFont('helvetica', 'normal');
-      doc.text('Top 5 Symptoms (Frequency & Avg Severity)', 15, yPosition);
+      doc.text('Top 8 Symptoms by Frequency (with Average Severity)', 15, yPosition);
       yPosition += 6;
 
       const maxCount = Math.max(...topSymptoms.map(s => s.daysReported));
       
       topSymptoms.forEach((symptom, i) => {
-        if (yPosition > 240) {
+        if (yPosition > 230) {
           doc.addPage();
           yPosition = 20;
         }
 
-        const barWidth = (symptom.daysReported / maxCount) * 120;
-        const barHeight = 6;
+        const barWidth = (symptom.daysReported / maxCount) * 130;
+        const barHeight = 7;
         
         // Symptom name
         doc.setFontSize(9);
         doc.setTextColor(colors.text);
+        doc.setFont('helvetica', 'medium');
         doc.text(symptom.name, 20, yPosition + 5);
         
         // Bar background
-        doc.setFillColor('#E2E8F0');
-        doc.roundedRect(80, yPosition + 1, 120, barHeight, 2, 2, 'F');
+        doc.setFillColor('#F1F5F9');
+        doc.roundedRect(85, yPosition + 1, 130, barHeight, 2, 2, 'F');
         
-        // Bar fill
-        doc.setFillColor(i < 3 ? colors.primary : colors.secondary);
-        doc.roundedRect(80, yPosition + 1, barWidth, barHeight, 2, 2, 'F');
+        // Bar fill with gradient effect
+        doc.setFillColor(i < 3 ? colors.primary : i < 5 ? colors.secondary : colors.accent);
+        doc.roundedRect(85, yPosition + 1, barWidth, barHeight, 2, 2, 'F');
         
         // Count and severity
         doc.setFontSize(8);
         doc.setTextColor(colors.text);
-        doc.text(`${symptom.daysReported} days`, 205, yPosition + 5, { align: 'right' });
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${symptom.daysReported} days`, 220, yPosition + 5, { align: 'right' });
         
         if (symptom.avgSeverity) {
-          doc.setTextColor('#64748B');
-          doc.text(`(avg: ${symptom.avgSeverity}/6)`, 205, yPosition + 9, { align: 'right' });
+          doc.setTextColor(colors.lightText);
+          doc.setFont('helvetica', 'normal');
+          doc.text(`(avg: ${symptom.avgSeverity}/6)`, 220, yPosition + 9, { align: 'right' });
         }
         
-        yPosition += 10;
+        // Phase comparison
+        if (symptom.lutealCount > 0 || symptom.follicularCount > 0) {
+          doc.setFontSize(7);
+          doc.setTextColor(colors.lightText);
+          doc.text(`Luteal: ${symptom.lutealCount}d | Follicular: ${symptom.follicularCount}d`, 85, yPosition + 13);
+        }
+        
+        yPosition += 11;
       });
       
       yPosition += 3;
     }
 
+    // Phase comparison table
+    doc.setFontSize(9);
+    doc.setTextColor(colors.text);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Luteal vs Follicular Phase Comparison', 15, yPosition);
+    yPosition += 6;
+
+    doc.setFillColor(colors.bg);
+    doc.roundedRect(15, yPosition, 180, 20, 3, 3, 'F');
+    
+    doc.setFontSize(8);
+    doc.setTextColor(colors.text);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Follicular Phase (Days 1-14): ${follicularSymptomCount} symptom days reported`, 20, yPosition + 6);
+    doc.text(`Luteal Phase (Days 15+): ${lutealSymptomCount} symptom days reported`, 20, yPosition + 11);
+    
+    const phaseDifference = lutealSymptomCount - follicularSymptomCount;
+    const phasePercent = follicularSymptomCount > 0 ? Math.round((phaseDifference / follicularSymptomCount) * 100) : 0;
+    doc.setTextColor(phasePercent > 50 ? colors.warning : colors.lightText);
+    doc.text(phasePercent > 50 
+      ? `Note: ${phasePercent}% more symptoms reported in luteal phase (suggests possible PMDD pattern)`
+      : 'Symptom distribution relatively even across phases', 
+      20, yPosition + 16);
+    
+    yPosition += 26;
+
     // Mood correlation callout
-    if (avgPHQ9 || avgGAD7) {
+    if (avgPHQ9 || avgGAD7 || avgEPDS) {
       doc.setFillColor(colors.bg);
-      doc.roundedRect(15, yPosition, 180, 15, 3, 3, 'F');
+      doc.roundedRect(15, yPosition, 180, 18, 3, 3, 'F');
       
       doc.setFontSize(8);
-      doc.setTextColor(colors.text);
+      doc.setTextColor(colors.secondary);
       doc.setFont('helvetica', 'bold');
-      doc.text('Mood Correlation:', 18, yPosition + 5);
+      doc.text('Mood Correlation Analysis:', 18, yPosition + 6);
       
       doc.setFont('helvetica', 'normal');
+      doc.setTextColor(colors.text);
       const correlations = [];
-      if (avgPHQ9) correlations.push(`PHQ-9 avg: ${avgPHQ9}`);
-      if (avgGAD7) correlations.push(`GAD-7 avg: ${avgGAD7}`);
-      if (avgEPDS) correlations.push(`EPDS avg: ${avgEPDS}`);
+      if (avgPHQ9) correlations.push(`PHQ-9 avg ${avgPHQ9}`);
+      if (avgGAD7) correlations.push(`GAD-7 avg ${avgGAD7}`);
+      if (avgEPDS) correlations.push(`EPDS avg ${avgEPDS}`);
       
-      doc.text(correlations.join(' | '), 70, yPosition + 5);
-      doc.setTextColor('#64748B');
-      doc.text('Higher symptom days correlate with elevated mood scores', 18, yPosition + 10);
+      doc.text(correlations.join(' | '), 95, yPosition + 6);
+      doc.setTextColor(colors.lightText);
+      doc.text(`Mood elevation present in ${moodCorrelationPercent}% of high-symptom days`, 18, yPosition + 12);
       
-      yPosition += 20;
+      yPosition += 23;
     }
+
+    // === PAGE 2 ===
+    doc.addPage();
+    yPosition = 20;
 
     // PREDICTIONS & INSIGHTS
-    if (yPosition > 200) {
-      doc.addPage();
-      yPosition = 20;
-    }
-
     doc.setFontSize(14);
     doc.setTextColor(colors.text);
     doc.setFont('helvetica', 'bold');
-    doc.text('Predictions & Insights', 15, yPosition);
+    doc.text('Predictions & Clinical Insights', 15, yPosition);
     yPosition += 8;
 
-    const cyclePrediction = predictions.find(p => p.prediction_type === 'cycle');
-    
+    // Cycle predictions
     if (cyclePrediction) {
+      doc.setFillColor(colors.bg);
+      doc.roundedRect(15, yPosition, 180, 22, 3, 3, 'F');
+      
       doc.setFontSize(9);
-      doc.setTextColor(colors.text);
+      doc.setTextColor(colors.secondary);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Cycle Predictions:', 18, yPosition + 6);
+      
       doc.setFont('helvetica', 'normal');
+      doc.setTextColor(colors.text);
+      doc.setFontSize(8);
       
       if (cyclePrediction.next_period_start) {
-        doc.text(`Next Period: ${format(parseISO(cyclePrediction.next_period_start), 'MMM d, yyyy')} (Confidence: ${cyclePrediction.confidence_score || 80}%)`, 20, yPosition);
-        yPosition += 6;
+        doc.text(`Next Expected Period: ${format(parseISO(cyclePrediction.next_period_start), 'MMM d, yyyy')} (Confidence: ${cyclePrediction.confidence_score || 75}%)`, 18, yPosition + 12);
       }
       
       if (cyclePrediction.ovulation_window_start && cyclePrediction.ovulation_window_end) {
-        doc.text(`Fertile Window: ${format(parseISO(cyclePrediction.ovulation_window_start), 'MMM d')} - ${format(parseISO(cyclePrediction.ovulation_window_end), 'MMM d')}`, 20, yPosition);
-        yPosition += 6;
+        doc.text(`Next Fertile Window: ${format(parseISO(cyclePrediction.ovulation_window_start), 'MMM d')} to ${format(parseISO(cyclePrediction.ovulation_window_end), 'MMM d, yyyy')}`, 18, yPosition + 17);
       }
+      
+      yPosition += 28;
     }
 
     // PMDD preparation
-    if (pmddRiskLevel && pmddRiskLevel !== 'Unknown') {
-      doc.setFillColor(pmddRiskLevel === 'high' ? '#FEF3C7' : colors.bg);
-      doc.roundedRect(15, yPosition, 180, 12, 3, 3, 'F');
+    if (pmddPrediction && pmddPrediction.risk_level) {
+      doc.setFillColor(pmddRiskLevel === 'high' ? '#FEF3C7' : pmddRiskLevel === 'medium' ? '#FFFBEB' : colors.bg);
+      doc.roundedRect(15, yPosition, 180, 18, 3, 3, 'F');
       
       doc.setFontSize(8);
       doc.setTextColor(pmddRiskLevel === 'high' ? colors.warning : colors.text);
       doc.setFont('helvetica', 'bold');
-      doc.text(`PMDD Risk: ${pmddRiskLevel.toUpperCase()}`, 18, yPosition + 5);
+      doc.text(`PMDD Risk: ${pmddRiskLevel.toUpperCase()}${pmddConfidence ? ` (${pmddConfidence}% confidence)` : ''}`, 18, yPosition + 6);
       
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(colors.text);
-      doc.text('Preparation: Track symptoms daily, consider lifestyle modifications, discuss with provider', 90, yPosition + 5);
+      doc.text('Recommended: Daily symptom tracking, stress reduction, discuss treatment options with provider', 18, yPosition + 12);
       
-      yPosition += 16;
+      yPosition += 24;
     }
 
-    // Clinician Note box
-    doc.setFillColor(colors.bg);
-    doc.roundedRect(15, yPosition, 180, 25, 3, 3, 'F');
+    // Menopause trajectory
+    if (menopauseStage) {
+      doc.setFillColor(colors.bg);
+      doc.roundedRect(15, yPosition, 180, 15, 3, 3, 'F');
+      
+      doc.setFontSize(8);
+      doc.setTextColor(colors.secondary);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${menopauseStage} Stage:`, 18, yPosition + 5);
+      
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(colors.text);
+      doc.text('Track symptom patterns, discuss HRT options with provider, monitor bone and cardiovascular health', 18, yPosition + 10);
+      
+      yPosition += 20;
+    }
+
+    // Clinician Note box - CLEAN TEXT ONLY
+    doc.setFillColor('#F8FAFC');
+    doc.setDrawColor(colors.primary);
+    doc.setLineWidth(1);
+    doc.roundedRect(15, yPosition, 180, 35, 3, 3, 'F');
     
-    doc.setFontSize(9);
+    doc.setFontSize(10);
     doc.setTextColor(colors.secondary);
     doc.setFont('helvetica', 'bold');
-    doc.text('CLINICIAN NOTE - Luna Pattern Summary', 18, yPosition + 6);
+    doc.text('CLINICIAN NOTE - Luna Pattern Analysis', 18, yPosition + 7);
     
     doc.setFontSize(8);
     doc.setTextColor(colors.text);
     doc.setFont('helvetica', 'normal');
     
+    // Generate clean, plain text summary (NO markdown, NO symbols)
     const clinicianNotes = [];
-    if (symptomBurdenScore > 50) clinicianNotes.push('• Moderate-high symptom burden reported');
-    if (cycleVariability > 20) clinicianNotes.push('• Notable cycle length variability');
-    if (avgPHQ9 >= 10 || avgGAD7 >= 10) clinicianNotes.push('• Elevated mood screening scores');
-    if (topSymptoms.length > 0) clinicianNotes.push(`• Primary symptoms: ${topSymptoms.slice(0, 2).map(s => s.name).join(', ')}`);
+    
+    if (symptomBurdenScore > 50) {
+      clinicianNotes.push('Patient reports moderate to high symptom burden with symptoms present on over half of tracked days.');
+    }
+    
+    if (cycleVariability > 5) {
+      clinicianNotes.push(`Cycle length shows notable variability with standard deviation of ${cycleVariability} days.`);
+    }
+    
+    if (avgPHQ9 && parseFloat(avgPHQ9) >= 10) {
+      clinicianNotes.push(`PHQ-9 scores average ${avgPHQ9}, indicating moderate depressive symptoms that warrant clinical attention.`);
+    }
+    
+    if (avgGAD7 && parseFloat(avgGAD7) >= 10) {
+      clinicianNotes.push(`GAD-7 scores average ${avgGAD7}, suggesting moderate anxiety symptoms.`);
+    }
+    
+    if (topSymptoms.length > 0) {
+      const topTwo = topSymptoms.slice(0, 2).map(s => `${s.name} (reported ${s.daysReported} days, avg severity ${s.avgSeverity}/6)`).join(' and ');
+      clinicianNotes.push(`Most frequently reported symptoms are ${topTwo}.`);
+    }
+    
+    if (phasePercent > 50) {
+      clinicianNotes.push(`Symptom reporting shows luteal phase predominance with ${phasePercent}% more symptoms in the luteal phase, consistent with possible premenstrual pattern.`);
+    }
+    
+    if (moodCorrelationPercent > 70) {
+      clinicianNotes.push(`Strong correlation between symptom days and elevated mood screening scores, with mood elevation present in ${moodCorrelationPercent}% of high-symptom days.`);
+    }
     
     const noteText = clinicianNotes.length > 0 
       ? clinicianNotes.join(' ')
-      : 'Patient shows consistent tracking patterns. Review symptom trends and mood correlations for clinical insights.';
+      : 'Patient demonstrates consistent tracking patterns over the reporting period. Review detailed symptom trends and mood correlations for additional clinical context. Consider discussing symptom management strategies and screening results during consultation.';
     
-    const splitNotes = doc.splitTextToSize(noteText, 170);
-    doc.text(splitNotes, 18, yPosition + 12);
+    const splitNotes = doc.splitTextToSize(noteText, 172);
+    doc.text(splitNotes, 18, yPosition + 14);
     
-    yPosition += 32;
+    yPosition += 42;
 
     // FOR YOUR DOCTOR SECTION
-    if (yPosition > 220) {
-      doc.addPage();
-      yPosition = 20;
-    }
-
     doc.setFontSize(14);
     doc.setTextColor(colors.text);
     doc.setFont('helvetica', 'bold');
     doc.text('For Your Doctor', 15, yPosition);
     yPosition += 8;
 
-    // Raw data summary table header
+    // Summary statistics
+    doc.setFillColor(colors.bg);
+    doc.roundedRect(15, yPosition, 180, 18, 3, 3, 'F');
+    
+    doc.setFontSize(8);
+    doc.setTextColor(colors.text);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Total Days Tracked: ${recentEntries.length}`, 20, yPosition + 6);
+    doc.text(`Days with Symptoms: ${totalSymptomDays}`, 70, yPosition + 6);
+    doc.text(`Most Common Symptom: ${topSymptoms[0]?.name || 'N/A'}`, 130, yPosition + 6);
+    doc.text(`Cycle Irregularity: ${cycleVariability > 7 ? 'Yes' : 'No'}`, 20, yPosition + 12);
+    
+    if (pmddPrediction?.top_trigger_symptoms?.length > 0) {
+      doc.text(`PMDD Criteria Met: ${pmddPrediction.top_trigger_symptoms.slice(0, 3).join(', ')}`, 70, yPosition + 12);
+    }
+    
+    yPosition += 24;
+
+    // Raw data table header
     doc.setFontSize(8);
     doc.setTextColor(255);
     doc.setFont('helvetica', 'bold');
@@ -369,21 +552,22 @@ Deno.serve(async (req) => {
     doc.setFillColor(colors.primary);
     doc.rect(15, tableY, 180, 6, 'F');
     doc.text('Date', 18, tableY + 4);
-    doc.text('Top Symptoms', 45, tableY + 4);
-    doc.text('Severity', 120, tableY + 4);
-    doc.text('Notes', 145, tableY + 4);
+    doc.text('Cycle Day', 45, tableY + 4);
+    doc.text('Top Symptoms', 70, tableY + 4);
+    doc.text('Max Severity', 145, tableY + 4);
+    doc.text('Mood Score', 175, tableY + 4);
 
-    // Table rows (last 10 entries with symptoms)
+    // Table rows (last 15 entries with symptoms)
     const entriesWithSymptoms = recentEntries
-      .filter(e => Object.entries(e).some(([k, v]) => (k.startsWith('s_') || k.startsWith('m_')) && v >= 3))
-      .slice(-10);
+      .filter(e => Object.entries(e).some(([k, v]) => (k.startsWith('s_') || k.startsWith('m_')) && typeof v === 'number' && v >= 3))
+      .slice(-15);
 
-    doc.setFontSize(7);
+    doc.setFontSize(6);
     doc.setTextColor(colors.text);
     doc.setFont('helvetica', 'normal');
 
     entriesWithSymptoms.forEach((entry, i) => {
-      const rowY = tableY + 7 + (i * 8);
+      const rowY = tableY + 7 + (i * 6);
       
       if (rowY > 270) {
         doc.addPage();
@@ -391,42 +575,47 @@ Deno.serve(async (req) => {
         doc.rect(15, 20, 180, 6, 'F');
         doc.setTextColor(255);
         doc.text('Date', 18, 24);
-        doc.text('Top Symptoms', 45, 24);
-        doc.text('Severity', 120, 24);
-        doc.text('Notes', 145, 24);
+        doc.text('Cycle Day', 45, 24);
+        doc.text('Top Symptoms', 70, 24);
+        doc.text('Max Severity', 145, 24);
+        doc.text('Mood Score', 175, 24);
         doc.setTextColor(colors.text);
       }
 
       const entryDate = format(parseISO(entry.date), 'MM/dd');
+      const cycleDay = entry.cycle_day || '-';
       const entrySymptoms = Object.entries(entry)
-        .filter(([k, v]) => (k.startsWith('s_') || k.startsWith('m_')) && v >= 3)
+        .filter(([k, v]) => (k.startsWith('s_') || k.startsWith('m_')) && typeof v === 'number' && v >= 3)
         .slice(0, 2)
         .map(([k]) => k.replace(/^[smp]_/, '').replace(/_/g, ' '))
         .join(', ');
       
       const maxSeverity = Math.max(...Object.entries(entry)
-        .filter(([k, v]) => (k.startsWith('s_') || k.startsWith('m_')) && v >= 3)
+        .filter(([k, v]) => (k.startsWith('s_') || k.startsWith('m_')) && typeof v === 'number' && v >= 3)
         .map(([, v]) => v), 0);
+      
+      const moodScore = entry.phq9_score || entry.gad7_score || entry.epds_score || '-';
 
       doc.text(entryDate, 18, rowY + 3);
-      doc.text(entrySymptoms.substring(0, 18) + (entrySymptoms.length > 18 ? '...' : ''), 45, rowY + 3);
-      doc.text(maxSeverity ? `${maxSeverity}/6` : '-', 120, rowY + 3);
-      doc.text(entry.journal_entry ? entry.journal_entry.substring(0, 15) + '...' : '-', 145, rowY + 3);
+      doc.text(cycleDay.toString(), 45, rowY + 3);
+      doc.text(entrySymptoms.substring(0, 22) + (entrySymptoms.length > 22 ? '...' : ''), 70, rowY + 3);
+      doc.text(maxSeverity ? `${maxSeverity}/6` : '-', 145, rowY + 3);
+      doc.text(moodScore.toString(), 175, rowY + 3);
     });
 
-    yPosition = tableY + 7 + (entriesWithSymptoms.length * 8) + 10;
+    yPosition = tableY + 7 + (entriesWithSymptoms.length * 6) + 10;
 
-    // DSM-5 PMDD criteria match
+    // DSM-5 PMDD alignment
     if (pmddPrediction && pmddPrediction.top_trigger_symptoms?.length > 0) {
       doc.setFontSize(9);
       doc.setTextColor(colors.text);
       doc.setFont('helvetica', 'bold');
-      doc.text('DSM-5 PMDD Criteria Match:', 15, yPosition);
+      doc.text('DSM-5 PMDD Criteria Alignment:', 15, yPosition);
       
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8);
-      doc.setTextColor('#64748B');
-      doc.text(pmddPrediction.top_trigger_symptoms.slice(0, 5).join(', '), 15, yPosition + 5);
+      doc.setTextColor(colors.lightText);
+      doc.text(pmddPrediction.top_trigger_symptoms.slice(0, 6).join(', '), 15, yPosition + 5);
       yPosition += 12;
     }
 
@@ -439,24 +628,24 @@ Deno.serve(async (req) => {
 
     doc.setDrawColor('#CBD5E1');
     doc.setLineWidth(0.5);
-    for (let i = 0; i < 4; i++) {
-      doc.line(15, yPosition + (i * 8), 195, yPosition + (i * 8));
+    for (let i = 0; i < 5; i++) {
+      doc.line(15, yPosition + (i * 9), 195, yPosition + (i * 9));
     }
 
-    yPosition += 40;
+    yPosition += 52;
 
     // FOOTER with disclaimer
     doc.setFontSize(7);
-    doc.setTextColor('#94A3B8');
+    doc.setTextColor(colors.lightText);
     doc.setFont('helvetica', 'italic');
-    doc.text('This report was generated by Luna, an AI companion in the CycleMind app. It is not a substitute for professional medical advice. All interpretations should be reviewed by a qualified healthcare provider.', 105, 285, { align: 'center' });
+    doc.text('This report was generated by Luna, the CycleMind AI clinical companion. It is not a substitute for professional medical advice, diagnosis, or treatment. All interpretations and clinical decisions should be made by a qualified healthcare provider.', 105, 285, { align: 'center' });
 
     // Page numbers
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(8);
-      doc.setTextColor('#94A3B8');
+      doc.setTextColor(colors.lightText);
       doc.setFont('helvetica', 'normal');
       doc.text(`Page ${i} of ${pageCount}`, 195, 290, { align: 'right' });
     }
