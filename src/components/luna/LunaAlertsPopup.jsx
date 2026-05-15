@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { X, Bell, AlertCircle, Calendar, TrendingUp, MessageCircle, FileDown, Baby, Flame, Trash2 } from "lucide-react";
+import { X, Bell, AlertCircle, Calendar, TrendingUp, MessageCircle, FileDown, Baby, Flame, RefreshCw, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -13,12 +13,14 @@ const alertIcons = {
   pattern_insight: TrendingUp,
   fertility_window: Baby,
   menopause_milestone: Flame,
+  irregular_cycle: RefreshCw,
+  positive_progress: Star,
 };
 
 const alertColors = {
-  high: "bg-red-50 border-red-200 text-red-800 dark:bg-red-950/30 dark:border-red-900 dark:text-red-300",
-  medium: "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/30 dark:border-amber-900 dark:text-amber-300",
-  low: "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950/30 dark:border-blue-900 dark:text-blue-300",
+  high: "bg-teal-50 border-teal-200 text-teal-900 dark:bg-teal-950/30 dark:border-teal-900 dark:text-teal-200",
+  medium: "bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-950/30 dark:border-blue-900 dark:text-blue-200",
+  low: "bg-sage-50 border-slate-200 text-slate-700 dark:bg-slate-800/50 dark:border-slate-700 dark:text-slate-300",
 };
 
 export default function LunaAlertsPopup({ onClose }) {
@@ -161,10 +163,16 @@ export default function LunaAlertsPopup({ onClose }) {
                   Generate Report
                 </Button>
               )}
-              {(selectedAlert.alert_type === "luteal_phase" || selectedAlert.alert_type === "pattern_insight") && (
+              {(selectedAlert.alert_type === "luteal_phase" || selectedAlert.alert_type === "pattern_insight" || selectedAlert.alert_type === "positive_progress") && (
                 <Button onClick={onClose} size="sm" className="flex-1" variant="outline">
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Chat with Luna
+                </Button>
+              )}
+              {selectedAlert.alert_type === "irregular_cycle" && (
+                <Button onClick={handleGenerateReport} size="sm" className="flex-1">
+                  <FileDown className="w-4 h-4 mr-2" />
+                  Generate Report
                 </Button>
               )}
               <Button onClick={onClose} size="sm" variant="outline" className="flex-1">
