@@ -10,6 +10,15 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Check if user has Luna notifications enabled
+    if (user.luna_notifications === false) {
+      return Response.json({ 
+        unreadCount: 0,
+        alerts: [],
+        message: 'Luna notifications are disabled'
+      });
+    }
+
     // Get recent data
     const cycles = await base44.entities.Cycle.filter({ created_by: user.email }, "-start_date", 10);
     const entries = await base44.entities.DailyEntry.filter({ created_by: user.email }, "-date", 30);

@@ -305,6 +305,7 @@ export default function Profile() {
   const [menstruationLength, setMenstruationLength] = useState(5);
   const [notifDaily, setNotifDaily] = useState(true);
   const [notifMode, setNotifMode] = useState(true);
+  const [lunaNotifications, setLunaNotifications] = useState(true);
   const [lutealMedReminder, setLutealMedReminder] = useState(false);
   const [fertilityMode, setFertilityMode] = useState(false);
   const [researchOptIn, setResearchOptIn] = useState(false);
@@ -324,6 +325,7 @@ export default function Profile() {
       if (u?.luteal_med_reminder !== undefined) setLutealMedReminder(!!u.luteal_med_reminder);
       if (u?.fertility_mode !== undefined) setFertilityMode(!!u.fertility_mode);
       if (u?.research_opt_in !== undefined) setResearchOptIn(!!u.research_opt_in);
+      if (u?.luna_notifications !== undefined) setLunaNotifications(!!u.luna_notifications);
     }).catch(() => {});
   }, []);
 
@@ -424,6 +426,11 @@ export default function Profile() {
   const handleResearchToggle = (val) => {
     setResearchOptIn(val);
     savePrefToggle("research_opt_in", val);
+  };
+
+  const handleLunaNotificationsToggle = (val) => {
+    setLunaNotifications(val);
+    savePrefToggle("luna_notifications", val);
   };
 
   const latestCycle = cycles.length > 0
@@ -619,6 +626,13 @@ export default function Profile() {
               <p className="text-[11px] text-muted-foreground">Reminders for EPDS check, fetal movement, etc.</p>
             </div>
             <Toggle checked={notifMode} onChange={setNotifMode} />
+          </div>
+          <div className="flex items-center justify-between py-3 border-b border-border/30">
+            <div>
+              <p className="text-sm font-medium">🌙 Luna Notifications</p>
+              <p className="text-[11px] text-muted-foreground">AI-powered insights, patterns, and supportive check-ins</p>
+            </div>
+            <Toggle checked={lunaNotifications} onChange={handleLunaNotificationsToggle} />
           </div>
           {isMenstrual && (
             <>
