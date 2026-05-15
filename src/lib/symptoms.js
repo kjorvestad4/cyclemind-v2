@@ -83,18 +83,23 @@ export function calculateDayTotal(entry) {
   return ALL_SYMPTOMS.reduce((sum, s) => sum + (entry[s.key] || 0), 0);
 }
 
+// Parse "yyyy-MM-dd" as local date to avoid UTC timezone shift
+function parseLocalDate(str) {
+  if (!str) return null;
+  const [y, m, d] = str.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 export function getCycleDay(date, cycles) {
   if (!cycles || cycles.length === 0) return null;
-  const sorted = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
-  const target = new Date(date);
-  target.setHours(0, 0, 0, 0);
-  
+  const sorted = [...cycles].sort((a, b) => parseLocalDate(b.start_date) - parseLocalDate(a.start_date));
+  const target = parseLocalDate(typeof date === "string" ? date : date.toISOString().slice(0, 10));
+
   for (const cycle of sorted) {
-    const start = new Date(cycle.start_date);
-    start.setHours(0, 0, 0, 0);
+    const start = parseLocalDate(cycle.start_date);
+    if (!start) continue;
     if (target >= start) {
-      const diffTime = target - start;
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const diffDays = Math.round((target - start) / (1000 * 60 * 60 * 24));
       return diffDays + 1;
     }
   }

@@ -1,5 +1,11 @@
 import { Settings } from "lucide-react";
-import { differenceInDays, format } from "date-fns";
+import { format } from "date-fns";
+
+const parseLocal = (str) => {
+  if (!str) return null;
+  const [y, m, d] = str.split("-").map(Number);
+  return new Date(y, m - 1, d);
+};
 
 const PHASE_LABELS = {
   menstrual: "Menstrual Phase",
@@ -23,13 +29,15 @@ export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode }) {
   const isMenopause = cycleType === "menopause" || cycleType === "perimenopause";
   const isMenstrual = !isPregnancy && !isPostpartum && !isMenopause;
 
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+
   const pregnancyWeek = latestCycle?.pregnancy_week
     || (latestCycle?.last_menstrual_period
-      ? Math.floor(differenceInDays(new Date(), new Date(latestCycle.last_menstrual_period)) / 7)
+      ? Math.floor((today - parseLocal(latestCycle.last_menstrual_period)) / (1000 * 60 * 60 * 24 * 7))
       : null);
 
   const postpartumDay = isPostpartum && latestCycle?.start_date
-    ? Math.max(1, differenceInDays(new Date(), new Date(latestCycle.start_date)) + 1)
+    ? Math.max(1, Math.round((today - parseLocal(latestCycle.start_date)) / (1000 * 60 * 60 * 24)) + 1)
     : null;
 
   const phase = isMenstrual ? getPhase(cycleDay) : null;
@@ -54,7 +62,7 @@ export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode }) {
           {isPregnancy && pregnancyWeek && (
             <p className="text-[11px] text-muted-foreground mt-0.5">
               {pregnancyWeek <= 12 ? "1st trimester" : pregnancyWeek <= 27 ? "2nd trimester" : "3rd trimester"}
-              {latestCycle?.estimated_due_date ? ` · Due ${format(new Date(latestCycle.estimated_due_date), "MMM d, yyyy")}` : ""}
+              {latestCycle?.estimated_due_date ? ` · Due ${format(parseLocal(latestCycle.estimated_due_date), "MMM d, yyyy")}` : ""}
             </p>
           )}
           {isMenstrual && phase && (
