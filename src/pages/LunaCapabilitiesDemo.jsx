@@ -426,7 +426,7 @@ export default function LunaCapabilitiesDemo() {
                 </div>
                 <div className="space-y-3 flex-1">
                   <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <p className="text-sm leading-relaxed text-slate-800 dark:text-slate-200">{lunaResponse}</p>
+                    <p className="text-sm leading-relaxed text-black">{lunaResponse}</p>
                   </div>
                   <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
                     <p className="text-xs text-amber-800 dark:text-amber-200">
