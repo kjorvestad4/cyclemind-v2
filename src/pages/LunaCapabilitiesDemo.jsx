@@ -89,10 +89,23 @@ export default function LunaCapabilitiesDemo() {
         includeMedications: true,
         includeScreening: true
       });
-      toast.success("Doctor report generated! Check your downloads folder.");
+      
+      // Create blob and trigger download
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `cycle-health-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("Doctor report downloaded! Check your downloads folder.");
       setTestResults((prev) => ({ ...prev, doctorReport: "Generated successfully" }));
     } catch (error) {
-      toast.error("Failed to generate report");
+      console.error("Doctor report error:", error);
+      toast.error(error.response?.data?.error || "Failed to generate report");
     }
   };
 
