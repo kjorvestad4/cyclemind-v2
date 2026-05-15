@@ -505,14 +505,21 @@ function NotificationsPanel({ onClose }) {
     fertility_window: Plus,
     menopause_milestone: Moon,
     irregular_cycle: AlertCircle,
-    positive_progress: Moon,
+    positive_progress: CheckCircle2,
   };
 
+  // Color by alert_type category
   const alertColors = {
-    high: "bg-red-50 border-red-200 text-red-800 dark:bg-red-950/30 dark:border-red-900 dark:text-red-300",
-    medium: "bg-teal-50 border-teal-200 text-teal-900 dark:bg-teal-950/30 dark:border-teal-800 dark:text-teal-200",
-    low: "bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-950/30 dark:border-blue-900 dark:text-blue-200",
+    luteal_phase:        "bg-purple-50 border-purple-200 text-purple-900 dark:bg-purple-950/30 dark:border-purple-800 dark:text-purple-200",
+    severe_symptoms:     "bg-red-50 border-red-200 text-red-900 dark:bg-red-950/30 dark:border-red-800 dark:text-red-200",
+    log_reminder:        "bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-200",
+    pattern_insight:     "bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-950/30 dark:border-blue-800 dark:text-blue-200",
+    fertility_window:    "bg-pink-50 border-pink-200 text-pink-900 dark:bg-pink-950/30 dark:border-pink-800 dark:text-pink-200",
+    menopause_milestone: "bg-orange-50 border-orange-200 text-orange-900 dark:bg-orange-950/30 dark:border-orange-800 dark:text-orange-200",
+    irregular_cycle:     "bg-yellow-50 border-yellow-200 text-yellow-900 dark:bg-yellow-950/30 dark:border-yellow-800 dark:text-yellow-200",
+    positive_progress:   "bg-emerald-50 border-emerald-200 text-emerald-900 dark:bg-emerald-950/30 dark:border-emerald-800 dark:text-emerald-200",
   };
+  const defaultAlertColor = "bg-teal-50 border-teal-200 text-teal-900 dark:bg-teal-950/30 dark:border-teal-800 dark:text-teal-200";
 
   return (
     <div className="flex flex-col h-full">
@@ -558,7 +565,7 @@ function NotificationsPanel({ onClose }) {
         ) : (
           filteredAlerts.map((alert) => {
             const Icon = alertIcons[alert.alert_type] || Bell;
-            const colorClass = alertColors[alert.severity];
+            const colorClass = alertColors[alert.alert_type] || defaultAlertColor;
             
             return (
               <div
