@@ -267,12 +267,12 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-md h-[640px] rounded-3xl bg-gradient-to-b from-teal-50 via-white to-blue-50 dark:from-teal-950 dark:via-slate-900 dark:to-blue-950 shadow-2xl flex flex-col border border-teal-200 dark:border-teal-900 overflow-hidden" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-md h-[640px] rounded-3xl bg-gradient-to-b from-slate-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950 shadow-2xl flex flex-col border border-teal-300 dark:border-teal-900 overflow-hidden" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
         <div className="px-5 py-4 border-b flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur" style={{ paddingTop: `calc(1rem + env(safe-area-inset-top))` }}>
           <div className="flex items-center gap-3 flex-1">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-blue-600 flex items-center justify-center shadow">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-700 to-blue-800 flex items-center justify-center shadow">
               <Moon className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -510,12 +510,14 @@ function NotificationsPanel({ onClose }) {
     pattern_insight: Moon,
     fertility_window: Plus,
     menopause_milestone: Moon,
+    irregular_cycle: AlertCircle,
+    positive_progress: Moon,
   };
 
   const alertColors = {
     high: "bg-red-50 border-red-200 text-red-800 dark:bg-red-950/30 dark:border-red-900 dark:text-red-300",
-    medium: "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/30 dark:border-amber-900 dark:text-amber-300",
-    low: "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950/30 dark:border-blue-900 dark:text-blue-300",
+    medium: "bg-teal-50 border-teal-200 text-teal-900 dark:bg-teal-950/30 dark:border-teal-800 dark:text-teal-200",
+    low: "bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-950/30 dark:border-blue-900 dark:text-blue-200",
   };
 
   return (

@@ -14,7 +14,9 @@
         "log_reminder",
         "pattern_insight",
         "fertility_window",
-        "menopause_milestone"
+        "menopause_milestone",
+        "irregular_cycle",
+        "positive_progress"
       ],
       "description": "Type of alert"
     },

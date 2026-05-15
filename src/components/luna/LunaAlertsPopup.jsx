@@ -18,9 +18,9 @@ const alertIcons = {
 };
 
 const alertColors = {
-  high: "bg-teal-50 border-teal-200 text-teal-900 dark:bg-teal-950/30 dark:border-teal-900 dark:text-teal-200",
-  medium: "bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-950/30 dark:border-blue-900 dark:text-blue-200",
-  low: "bg-sage-50 border-slate-200 text-slate-700 dark:bg-slate-800/50 dark:border-slate-700 dark:text-slate-300",
+  high: "bg-red-50 border-red-200 text-red-900 dark:bg-red-950/30 dark:border-red-900 dark:text-red-200",
+  medium: "bg-teal-50 border-teal-200 text-teal-900 dark:bg-teal-950/30 dark:border-teal-800 dark:text-teal-200",
+  low: "bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-950/30 dark:border-blue-900 dark:text-blue-200",
 };
 
 export default function LunaAlertsPopup({ onClose }) {
@@ -88,7 +88,7 @@ export default function LunaAlertsPopup({ onClose }) {
         {/* Header */}
         <div className="px-5 py-4 border-b flex items-center justify-between bg-slate-50 dark:bg-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-purple-500 flex items-center justify-center shadow">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-700 to-blue-800 flex items-center justify-center shadow">
               <Bell className="w-5 h-5 text-white" />
             </div>
             <div>
