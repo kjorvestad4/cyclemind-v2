@@ -8,7 +8,7 @@
  */
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { differenceInDays, addDays, format, parseISO } from "date-fns";
+import { differenceInDays, addDays, format } from "date-fns";
 import { Bell, AlertCircle, Sparkles } from "lucide-react";
 import { getUserTier, TIERS } from "@/lib/freemium";
 import { getCycleDay } from "@/lib/symptoms";
@@ -21,6 +21,8 @@ function isInLutealPhase(cycleDay, cycleLength) {
 }
 
 // ── Predict ovulation from history ───────────────────────────────────────────
+const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
+
 function predictOvulation(cycles, entries) {
   if (!cycles || cycles.length === 0) return null;
 
@@ -31,13 +33,14 @@ function predictOvulation(cycles, entries) {
 
   // Check if there's a logged LH surge or positive ovulation test recently
   const recentEntries = entries?.filter(e => {
-    const daysAgo = differenceInDays(today, parseISO(e.date));
+    const daysAgo = differenceInDays(today, parseLocalDate(e.date));
     return daysAgo <= 7 && (e.ovulation_test === "Positive" || e.ovulation_test === "LH Surge");
   }) || [];
   if (recentEntries.length > 0) return null; // Already ovulated/surging — no prediction needed
 
-  // Calculate predicted ovulation day from start_date
-  const cycleStart = parseISO(latest.start_date);
+  // Calculate predicted ovulation day from start_date (use LMP if available)
+  const refDate = latest.last_menstrual_period || latest.start_date;
+  const cycleStart = parseLocalDate(refDate);
   const ovulationDayNum = Math.max(10, cycleLength - 14);
   const predictedOvDate = addDays(cycleStart, ovulationDayNum - 1);
   const daysUntilOv = differenceInDays(predictedOvDate, today);
@@ -60,7 +63,8 @@ function checkMissedPeriod(cycles) {
   if (latest.cycle_type !== "menstrual" && latest.cycle_type !== "perimenopause") return false;
 
   const cycleLength = latest.cycle_length || 28;
-  const cycleStart = parseISO(latest.start_date);
+  const refDate = latest.last_menstrual_period || latest.start_date;
+  const cycleStart = parseLocalDate(refDate);
   const expectedNextPeriod = addDays(cycleStart, cycleLength);
   const today = new Date();
   const daysLate = differenceInDays(today, expectedNextPeriod);
