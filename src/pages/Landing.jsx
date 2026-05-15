@@ -302,7 +302,7 @@ export default function Landing() {
                 icon: <Stethoscope className="w-6 h-6" />,
                 badge: "Founding Team",
                 title: "Designed by Psychiatrists",
-                desc: "All three are Women's Mental Health Psychiatrists. CycleMind isn't a wellness app — it's a clinical tool built by the doctors who treat these conditions.",
+                desc: "Designed by Women's Mental Health Psychiatrists. CycleMind isn't a wellness app — it's a clinical tool built by the doctors who treat these conditions.",
                 color: "teal"
               },
               {
