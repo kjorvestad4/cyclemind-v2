@@ -109,8 +109,8 @@ export default function AppLayout() {
       {/* Main Content */}
       <main
         ref={mainRef}
-        className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 pb-24 overflow-y-auto"
-        style={{ maxHeight: "calc(100vh - 140px)" }}
+        className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 pb-28 overflow-y-auto"
+        style={{ height: "calc(100vh - 56px - env(safe-area-inset-top))", overscrollBehavior: "none" }}
       >
         <Outlet />
       </main>
@@ -120,10 +120,10 @@ export default function AppLayout() {
 
       {/* Bottom Navigation */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-lg border-t border-border/50"
+        className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border/50 shadow-lg"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        <div className="max-w-2xl mx-auto flex justify-around py-2 px-2">
+        <div className="max-w-lg mx-auto flex justify-around py-2 px-2">
           {NAV_ITEMS.map(({ path, icon: Icon, label }) => {
             const isActive = location.pathname === path;
             return (
