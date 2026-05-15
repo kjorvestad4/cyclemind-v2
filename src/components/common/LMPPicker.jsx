@@ -7,9 +7,15 @@ import { Calendar, X } from "lucide-react";
 
 export default function LMPPicker({ value, onChange, label = "Last Menstrual Period", showClear = true }) {
   const [showCalendar, setShowCalendar] = useState(false);
+  // Parse "yyyy-MM-dd" as LOCAL date to avoid UTC timezone shift
+  const parseLocal = (str) => {
+    if (!str) return null;
+    const [y, m, d] = str.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  };
+
   const [calendarMonth, setCalendarMonth] = useState(() => {
-    if (value) return new Date(value);
-    return new Date();
+    return parseLocal(value) || new Date();
   });
 
   const handleDateSelect = (day) => {
@@ -58,6 +64,8 @@ export default function LMPPicker({ value, onChange, label = "Last Menstrual Per
             const val = e.target.value.trim();
             if (val === "" || /^\d{4}-\d{2}-\d{2}$/.test(val)) {
               onChange(val);
+              const parsed = parseLocal(val);
+              if (parsed) setCalendarMonth(parsed);
             }
           }}
           className="h-10 text-base flex-1"
