@@ -190,7 +190,7 @@ Deno.serve(async (req) => {
       { 
         label: 'Avg Cycle Length', 
         value: `${avgCycleLength} days`, 
-        sub: `SD: +/-${cycleVariability} days`,
+        sub: cycleVariability > 0 ? `Variability: ${cycleVariability} days` : 'Consistent cycle length',
         color: colors.primary
       },
       { 
