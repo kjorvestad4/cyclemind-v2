@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2, Mic, MicOff, FileDown, Bell, Eye, EyeOff } from 'lucide-react';
+// Loader2 kept for NotificationsPanel
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { format } from 'date-fns';
@@ -67,7 +68,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
     }
   }, [messages, savedSymptomIndexes]);
 
-  // Initial greeting — restore session or fetch greeting
+  // Initial greeting — fully local, zero network call
   useEffect(() => {
     if (initializedRef.current) return;
     initializedRef.current = true;
@@ -79,36 +80,18 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
       return;
     }
 
-    const sendGreeting = async () => {
-      setLoading(true);
-      try {
-        const response = await base44.functions.invoke('lunaChat', {
-          messages: [{ role: 'user', content: 'Hello Luna, I just opened the chat.' }],
-          cycleMode,
-          cycleDay,
-          eddInfo,
-          fertilityMode,
-          menopauseStage,
-        });
-        setMessages([{
-          role: 'assistant',
-          content: response.data.message,
-          suggestedActions: response.data.suggestedActions || [],
-          flags: response.data.flags || { escalate: false, crisis: false }
-        }]);
-      } catch (err) {
-        console.error(err);
-        setMessages([{
-          role: 'assistant',
-          content: "Hi! I'm Luna 🌙 — your compassionate companion. What's on your mind today?",
-          suggestedActions: [],
-          flags: { escalate: false, crisis: false }
-        }]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    sendGreeting();
+    let greeting = "Hi, I'm Luna 🌙 — your CycleMind companion. How are you feeling today?";
+    if (fertilityMode) greeting += " I'm here to support your fertility journey.";
+    else if (menopauseStage) greeting += ` I'm here to support you through menopause (${menopauseStage}).`;
+    else if (cycleDay) greeting += ` You're on cycle day ${cycleDay} — I'm here to listen.`;
+    greeting += "\n\n*This is not a substitute for professional medical advice. Please consult your doctor.*";
+
+    setMessages([{
+      role: 'assistant',
+      content: greeting,
+      suggestedActions: ["Track today's symptoms", "Cycle phase tips", "I need support"],
+      flags: { escalate: false, crisis: false }
+    }]);
   }, []);
 
   const handleSend = useCallback(async (userMessage = input.trim()) => {
@@ -116,24 +99,18 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
     setInput('');
     setLoading(true);
 
-    // Use functional update to get latest messages without stale closure
-    let currentMessages;
-    setMessages(prev => {
-      currentMessages = prev;
-      return [...prev, { role: 'user', content: userMessage }];
-    });
-
-    // Small delay to ensure currentMessages is set from the state updater
-    await new Promise(resolve => setTimeout(resolve, 0));
+    // Capture messages synchronously before state update
+    const currentMessages = messages;
+    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
 
     // Collect all symptoms already saved so Luna won't re-detect them
-    const alreadySavedSymptoms = (currentMessages || [])
+    const alreadySavedSymptoms = currentMessages
       .filter((m, i) => m.detectedSymptoms?.length > 0 && savedSymptomIndexes.has(i))
       .flatMap(m => m.detectedSymptoms);
 
     try {
       const response = await base44.functions.invoke('lunaChat', {
-        messages: [...(currentMessages || []), { role: 'user', content: userMessage }],
+        messages: [...currentMessages, { role: 'user', content: userMessage }],
         cycleMode,
         cycleDay,
         eddInfo,
@@ -153,12 +130,12 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
       }]);
     } catch (err) {
       console.error(err);
-      setMessages(prev => prev.filter(m => m.content !== userMessage || m.role !== 'user'));
+      setMessages(prev => prev.filter(m => !(m.content === userMessage && m.role === 'user')));
       toast.error("Luna is taking a brief moment. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, [input, loading, cycleMode, cycleDay, eddInfo, fertilityMode, menopauseStage, savedSymptomIndexes]);
+  }, [input, loading, messages, cycleMode, cycleDay, eddInfo, fertilityMode, menopauseStage, savedSymptomIndexes]);
 
   const handleSuggestedAction = (action) => {
     const lc = action.toLowerCase();
@@ -408,8 +385,10 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
 
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-white dark:bg-slate-800 border border-teal-100 dark:border-teal-900 rounded-3xl rounded-bl-none px-5 py-3.5">
-                <Loader2 className="w-5 h-5 animate-spin text-teal-600" />
+              <div className="bg-white dark:bg-slate-800 border border-teal-100 dark:border-teal-900 rounded-3xl rounded-bl-none px-5 py-4 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-teal-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 rounded-full bg-teal-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 rounded-full bg-teal-400 animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
           )}
