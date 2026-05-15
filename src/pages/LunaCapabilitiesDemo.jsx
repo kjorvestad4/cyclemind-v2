@@ -306,8 +306,8 @@ export default function LunaCapabilitiesDemo() {
           {testResults.menopause &&
           <div className="bg-white rounded-lg p-4 space-y-3 border border-purple-200">
               <div className="flex flex-wrap items-center gap-3 pb-3 border-b border-purple-100">
-                <Badge variant={testResults.menopause.stage.includes("Early") ? "default" : "secondary"} className="text-sm px-3 py-1">
-                  {testResults.menopause.stage}
+                <Badge variant={testResults.menopause?.stage?.includes("Early") ? "default" : "secondary"} className="text-sm px-3 py-1">
+                  {testResults.menopause?.stage || "N/A"}
                 </Badge>
                 <div className="bg-purple-50 dark:bg-purple-950/30 rounded-lg px-3 py-1.5 border border-purple-200 dark:border-purple-800">
                   <span className="text-xs text-purple-700 dark:text-purple-300 font-semibold">Months since last period: </span>
