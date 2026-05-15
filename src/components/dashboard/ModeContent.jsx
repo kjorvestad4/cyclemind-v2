@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { differenceInDays, format, subDays } from "date-fns";
 import { TrendingUp, Baby, Flame, Waves, AlertCircle, CheckCircle2 } from "lucide-react";
 import { ALL_SYMPTOMS, calculateDayTotal } from "@/lib/symptoms";
@@ -87,6 +87,10 @@ function MenstrualContent({ entries, cycleDay, latestCycle }) {
 
 // Pregnancy content
 function PregnancyContent({ latestCycle, entries }) {
+  const navigate = useNavigate();
+  const edd = latestCycle?.estimated_due_date;
+  const eddPassed = edd && new Date(edd) < new Date();
+
   const pregnancyWeek = latestCycle?.pregnancy_week
     || (latestCycle?.last_menstrual_period
       ? Math.floor(differenceInDays(new Date(), new Date(latestCycle.last_menstrual_period)) / 7)
@@ -105,6 +109,17 @@ function PregnancyContent({ latestCycle, entries }) {
 
   return (
     <div className="space-y-3">
+      {/* Past EDD warning */}
+      {eddPassed && (
+        <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-2xl p-4 flex gap-3 items-start">
+          <AlertCircle className="w-5 h-5 text-purple-500 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-purple-800 dark:text-purple-200">Your due date has passed</p>
+            <p className="text-xs text-purple-600 dark:text-purple-400 mt-0.5">Welcome to the other side! If you've had your baby, switch to Postpartum mode to continue tracking your recovery.</p>
+            <button onClick={() => navigate('/profile')} className="mt-2 text-xs font-semibold text-purple-700 dark:text-purple-300 underline">Switch to Postpartum mode →</button>
+          </div>
+        </div>
+      )}
       <EDDDisplay
         lmp={latestCycle?.last_menstrual_period}
         ovulationDate={latestCycle?.ovulation_date}
@@ -144,6 +159,7 @@ function PregnancyContent({ latestCycle, entries }) {
           <div>
             <p className="text-sm font-semibold">{fetalFelt ? "Movement felt today ✓" : "Log fetal movement today"}</p>
             <p className="text-[11px] text-muted-foreground">{fetalFelt ? `${todayEntry?.fetal_movement_count || 0} kicks logged` : "Tap 'Log Today' to record kick counts"}</p>
+            <p className="text-[10px] text-muted-foreground italic mt-0.5">ACOG guideline: 10 movements within 2 hours is reassuring.</p>
           </div>
         </div>
       )}

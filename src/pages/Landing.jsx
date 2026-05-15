@@ -591,8 +591,8 @@ export default function Landing() {
               <p className="text-white font-semibold text-sm">Contact & Legal</p>
               <div className="space-y-2 text-sm">
                 <a href="mailto:hello@cyclemind.app" className="block hover:text-white transition-colors">hello@cyclemind.app</a>
-                <span className="block text-gray-500 cursor-not-allowed" title="Coming soon">Privacy Policy (coming soon)</span>
-                <span className="block text-gray-500 cursor-not-allowed" title="Coming soon">Terms of Use (coming soon)</span>
+                <button onClick={() => navigate('/privacy')} className="block hover:text-white transition-colors text-left">Privacy Policy</button>
+                <button onClick={() => navigate('/terms')} className="block hover:text-white transition-colors text-left">Terms of Use</button>
               </div>
             </div>
           </div>

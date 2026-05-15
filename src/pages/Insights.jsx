@@ -119,6 +119,17 @@ export default function Insights() {
         )}
       </div>
 
+      {/* 2-cycle guidance banner */}
+      {hasData && cycles.length < 2 && (
+        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-2xl p-4 flex gap-3 items-start">
+          <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">Keep logging for full PMDD analysis</p>
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">DSM-5 requires 2+ full cycles of prospective daily data to identify PMDD patterns. You're on cycle 1 — great start!</p>
+          </div>
+        </div>
+      )}
+
       {!hasData && (
         <div className="bg-card rounded-2xl border border-border/50 p-10 text-center space-y-3">
           <Info className="w-10 h-10 text-primary mx-auto" />
@@ -398,8 +409,8 @@ function DiagnosticFlags({ analysis }) {
 
 function FlagCard({ ok, title, note }) {
   return (
-    <div className={`rounded-xl border p-3.5 flex gap-3 items-start ${ok ? "border-primary/30 bg-primary/5" : "border-border/40 bg-card"}`}>
-      {ok ? <AlertTriangle className="w-4 h-4 text-primary shrink-0 mt-0.5" /> : <CheckCircle className="w-4 h-4 text-chart-2 shrink-0 mt-0.5" />}
+    <div className={`rounded-xl border p-3.5 flex gap-3 items-start ${ok ? "border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950/40" : "border-border/40 bg-card"}`}>
+      {ok ? <AlertTriangle className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" /> : <CheckCircle className="w-4 h-4 text-chart-2 shrink-0 mt-0.5" />}
       <div>
         <p className="text-sm font-semibold">{title}</p>
         <p className="text-xs text-muted-foreground mt-0.5">{note}</p>

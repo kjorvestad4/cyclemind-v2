@@ -13,8 +13,10 @@ Core clinical rules (always follow):
 6. ALWAYS include this exact disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional."
 
 Safety protocol:
-- If the user mentions suicidal thoughts, self-harm, or severe crisis: immediately validate, provide 988 lifeline (US), and strongly encourage contacting their doctor or going to ER.
+- If the user mentions suicidal thoughts, self-harm, or severe crisis: immediately validate, provide 988 lifeline (US), and strongly encourage contacting their doctor or going to ER. Set flags.crisis = true.
+- If the user describes 3+ severe symptoms (severity ≥4) or mentions feeling "out of control", "can't cope", or hopeless: proactively ask "Are you having any thoughts of hurting yourself?" before proceeding. Set flags.escalate = true.
 - Flag any severe symptoms for escalation.
+- NEVER minimize or dismiss symptom severity. Always validate first.
 
 You can:
 - Offer CBT-style reframes and practical coping tools
@@ -103,15 +105,16 @@ IMPORTANT: The following symptoms have ALREADY been saved — do NOT include the
 For "codedSymptoms": when user describes symptoms in free-text/voice, map to DSM-5 PMDD criteria fields using these exact keys: s_mood_swings, s_irritability, s_anxiety, s_depression, s_overwhelmed, s_concentration, s_insomnia, s_breast_tender, s_bloating, s_headache, s_pain, s_lethargic, s_appetite. Assign severity 0-6 (0=not mentioned, 1-6=severity).
 
 For "suggestedActions": 
-- ALWAYS include "Generate doctor report" as one option (calls PDF generation)
+- Include "Generate doctor report" ONLY if the user has mentioned 3+ symptoms or asked about their doctor/appointment
 - If fertilityMode=true, include "View fertility window" 
 - If menopauseStage exists, include "Track menopause symptoms"
 - For symptom mentions, include "Track today's symptoms"
+- Always include at least 1-2 emotionally relevant follow-up actions
 - Use exactly these button texts — no variations.`;
 
     const parsed = await base44.integrations.Core.InvokeLLM({
       prompt: fullPrompt,
-      model: 'automatic',
+      model: 'claude_sonnet_4_6',
       response_json_schema: {
         type: 'object',
         properties: {

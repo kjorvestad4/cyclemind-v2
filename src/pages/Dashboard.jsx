@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { PenLine, Check, Calendar as CalendarIcon, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Button } from "@/components/ui/button";
 import { calculateDayTotal, ALL_SYMPTOMS, getCycleDay } from "@/lib/symptoms";
@@ -21,7 +22,10 @@ import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBan
 import CycleBanners from "@/components/dashboard/CycleBanners";
 
 function getGreeting() {
-  return "Hello";
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
 }
 
 export default function Dashboard() {
@@ -48,8 +52,9 @@ export default function Dashboard() {
             const latest = cycles[0];
             if (latest.cycle_type && latest.cycle_type !== "menstrual") {
               base44.entities.Cycle.update(latest.id, { cycle_type: "menstrual" }).then(() => {
-                queryClient.invalidateQueries({ queryKey: ["cycles"] });
-              });
+                  queryClient.invalidateQueries({ queryKey: ["cycles"] });
+                  toast.info("Switched to Menstrual mode — upgrade to Premium to unlock all lifecycle modes.");
+                });
             }
           }
         });
@@ -101,7 +106,7 @@ export default function Dashboard() {
   const isModeRestricted = isFreeUser && cycleType !== 'menstrual';
 
   return (
-    <div className="space-y-5 pb-40 relative">
+    <div className="space-y-5 relative">
       {/* Pull-to-refresh indicator */}
       {isPulling && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all">
@@ -112,7 +117,7 @@ export default function Dashboard() {
         </div>
       )}
       
-      <div className="space-y-5 pb-40">
+      <div className="space-y-5 pb-24">
         <CalendarPopup
           isOpen={showCalendar}
           onClose={() => setShowCalendar(false)}
@@ -149,6 +154,17 @@ export default function Dashboard() {
         {/* Upgrade Banner for Restricted Mode */}
         {isModeRestricted && (
           <UpgradeBanner feature={`${cycleType.charAt(0).toUpperCase() + cycleType.slice(1)} Tracking`} />
+        )}
+
+        {/* PMDD 2-cycle educational nudge */}
+        {isMenstrual && cycles.length < 2 && entries.length > 0 && (
+          <div className="bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-2xl p-4 flex gap-3 items-start">
+            <span className="text-lg shrink-0">📋</span>
+            <div>
+              <p className="text-sm font-semibold text-teal-800 dark:text-teal-200">Keep logging — PMDD analysis needs 2 cycles</p>
+              <p className="text-xs text-teal-600 dark:text-teal-400 mt-0.5">DSM-5 requires prospective daily tracking across 2 full cycles for a PMDD pattern. You're building your first — great start!</p>
+            </div>
+          </div>
         )}
 
         {/* Cycle-aware smart banners */}

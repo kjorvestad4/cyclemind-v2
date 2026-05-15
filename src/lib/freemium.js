@@ -23,10 +23,10 @@ export const FEATURES = {
   PERIMENOPAUSE_MODE: { tier: TIERS.PREMIUM, name: 'Perimenopause Tracking' },
   MENOPAUSE_MODE: { tier: TIERS.PREMIUM, name: 'Menopause Tracking' },
 
-  // Scales
+  // Scales — PHQ-9 and GAD-7 are safety screening tools, free for all users
   DRSP_SCALE: { tier: TIERS.PREMIUM, name: 'Full DRSP Symptom Tracking' },
-  PHQ9_SCALE: { tier: TIERS.PREMIUM, name: 'PHQ-9 Depression Screening' },
-  GAD7_SCALE: { tier: TIERS.PREMIUM, name: 'GAD-7 Anxiety Screening' },
+  PHQ9_SCALE: { tier: TIERS.FREE, name: 'PHQ-9 Depression Screening' },
+  GAD7_SCALE: { tier: TIERS.FREE, name: 'GAD-7 Anxiety Screening' },
   EPDS_SCALE: { tier: TIERS.PREMIUM, name: 'EPDS Postpartum Depression Screening' },
 
   // Insights
