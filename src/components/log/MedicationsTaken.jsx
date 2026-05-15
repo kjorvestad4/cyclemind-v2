@@ -36,9 +36,43 @@ const ANTIDEPRESSANTS = [
   "Desipramine (Norpramin)",
 ];
 
+const MOOD_STABILIZERS = [
+  "Lithium (Lithobid)",
+  "Valproate (Depakote)",
+  "Lamotrigine (Lamictal)",
+  "Carbamazepine (Tegretol)",
+  "Oxcarbazepine (Trileptal)",
+  "Gabapentin (Neurontin)",
+  "Topiramate (Topamax)",
+];
+
+const ANTIPSYCHOTICS = [
+  // Atypical (2nd gen)
+  "Aripiprazole (Abilify)",
+  "Quetiapine (Seroquel)",
+  "Olanzapine (Zyprexa)",
+  "Risperidone (Risperdal)",
+  "Lurasidone (Latuda)",
+  "Ziprasidone (Geodon)",
+  "Clozapine (Clozaril)",
+  "Asenapine (Saphris)",
+  "Iloperidone (Fanapt)",
+  "Cariprazine (Vraylar)",
+  "Brexpiprazole (Rexulti)",
+  "Paliperidone (Invega)",
+  // Typical (1st gen)
+  "Haloperidol (Haldol)",
+  "Chlorpromazine (Thorazine)",
+  "Perphenazine (Trilafon)",
+  "Fluphenazine (Prolixin)",
+  "Thioridazine (Mellaril)",
+];
+
 const SUGGESTED_MEDS = [
   "Prenatal Vitamin",
   "Antidepressant",
+  "Mood Stabilizer",
+  "Antipsychotic",
   "Hormonal Birth Control",
   "Hormone Replacement Therapy",
   "NSAIDs/Pain Relief",
@@ -54,6 +88,8 @@ const SUGGESTED_MEDS = [
 export default function MedicationsTaken({ value = [], onChange }) {
   const [custom, setCustom] = useState("");
   const [showAntidepressants, setShowAntidepressants] = useState(false);
+  const [showMoodStabilizers, setShowMoodStabilizers] = useState(false);
+  const [showAntipsychotics, setShowAntipsychotics] = useState(false);
 
   const toggle = (med) => {
     if (value.includes(med)) {
@@ -64,10 +100,12 @@ export default function MedicationsTaken({ value = [], onChange }) {
   };
 
   const hasAnyAntidepressant = value.some((m) => ANTIDEPRESSANTS.includes(m));
+  const hasAnyMoodStabilizer = value.some((m) => MOOD_STABILIZERS.includes(m));
+  const hasAnyAntipsychotic = value.some((m) => ANTIPSYCHOTICS.includes(m));
 
-  const handleAntidepressantClick = () => {
-    setShowAntidepressants((prev) => !prev);
-  };
+  const handleAntidepressantClick = () => setShowAntidepressants((prev) => !prev);
+  const handleMoodStabilizerClick = () => setShowMoodStabilizers((prev) => !prev);
+  const handleAntipsychoticClick = () => setShowAntipsychotics((prev) => !prev);
 
   const addCustom = () => {
     const trimmed = custom.trim();
@@ -77,7 +115,7 @@ export default function MedicationsTaken({ value = [], onChange }) {
     setCustom("");
   };
 
-  const allKnownMeds = [...SUGGESTED_MEDS, ...ANTIDEPRESSANTS];
+  const allKnownMeds = [...SUGGESTED_MEDS, ...ANTIDEPRESSANTS, ...MOOD_STABILIZERS, ...ANTIPSYCHOTICS];
   const customEntries = value.filter((m) => !allKnownMeds.includes(m));
 
   return (
@@ -86,30 +124,34 @@ export default function MedicationsTaken({ value = [], onChange }) {
         {SUGGESTED_MEDS.map((med) => {
           if (med === "Antidepressant") {
             return (
-              <button
-                key={med}
-                onClick={handleAntidepressantClick}
-                className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 flex items-center gap-1 ${
-                  hasAnyAntidepressant
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card border-border text-muted-foreground hover:bg-muted"
-                }`}
-              >
+              <button key={med} onClick={handleAntidepressantClick}
+                className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 flex items-center gap-1 ${hasAnyAntidepressant ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
                 Antidepressant
                 {showAntidepressants ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
               </button>
             );
           }
+          if (med === "Mood Stabilizer") {
+            return (
+              <button key={med} onClick={handleMoodStabilizerClick}
+                className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 flex items-center gap-1 ${hasAnyMoodStabilizer ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
+                Mood Stabilizer
+                {showMoodStabilizers ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              </button>
+            );
+          }
+          if (med === "Antipsychotic") {
+            return (
+              <button key={med} onClick={handleAntipsychoticClick}
+                className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 flex items-center gap-1 ${hasAnyAntipsychotic ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
+                Antipsychotic
+                {showAntipsychotics ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              </button>
+            );
+          }
           return (
-            <button
-              key={med}
-              onClick={() => toggle(med)}
-              className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 ${
-                value.includes(med)
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-card border-border text-muted-foreground hover:bg-muted"
-              }`}
-            >
+            <button key={med} onClick={() => toggle(med)}
+              className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 ${value.includes(med) ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
               {med}
             </button>
           );
@@ -135,6 +177,48 @@ export default function MedicationsTaken({ value = [], onChange }) {
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Mood Stabilizer sublist */}
+      {showMoodStabilizers && (
+        <div className="rounded-xl border border-border/60 bg-muted/20 p-3 space-y-2">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Select mood stabilizer(s)</p>
+          <div className="flex flex-wrap gap-1.5">
+            {MOOD_STABILIZERS.map((ms) => (
+              <button key={ms} onClick={() => toggle(ms)}
+                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${value.includes(ms) ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
+                {ms}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Antipsychotic sublist */}
+      {showAntipsychotics && (
+        <div className="rounded-xl border border-border/60 bg-muted/20 p-3 space-y-2">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Select antipsychotic(s)</p>
+          <div className="flex flex-wrap gap-1.5">
+            {ANTIPSYCHOTICS.map((ap) => (
+              <button key={ap} onClick={() => toggle(ap)}
+                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${value.includes(ap) ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
+                {ap}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Selected mood stabilizers & antipsychotics summary */}
+      {value.filter((m) => MOOD_STABILIZERS.includes(m) || ANTIPSYCHOTICS.includes(m)).length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {value.filter((m) => MOOD_STABILIZERS.includes(m) || ANTIPSYCHOTICS.includes(m)).map((med) => (
+            <span key={med} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-primary text-primary-foreground">
+              {med}
+              <button onClick={() => toggle(med)} className="hover:opacity-70"><X className="w-3 h-3" /></button>
+            </span>
+          ))}
         </div>
       )}
 
