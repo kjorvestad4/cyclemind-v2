@@ -201,6 +201,28 @@ export default function Dashboard() {
           cycleDay={cycleDay}
         />
 
+        {/* Cycle History Widget */}
+        {isMenstrual && cycles.length > 1 && (
+          <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Cycle History</p>
+            <div className="space-y-2">
+              {[...cycles]
+                .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
+                .slice(0, 3)
+                .map((cycle, i) => (
+                  <div key={cycle.id} className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {i === 0 ? 'Last cycle' : i === 1 ? '2 cycles ago' : '3 cycles ago'}
+                    </span>
+                    <span className="font-semibold text-foreground">
+                      {cycle.cycle_length ? `${cycle.cycle_length} days` : '–'}
+                    </span>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
         {/* Universal widgets */}
         <StreakWidget entries={entries} />
         <RecentInsightsWidget entries={entries} />

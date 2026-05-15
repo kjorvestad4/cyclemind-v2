@@ -43,7 +43,7 @@ function MenstrualContent({ entries, cycleDay, latestCycle }) {
 
   return (
     <div className="space-y-3">
-      {/* Cycle phase bar */}
+      {/* Cycle phase bar with actual length */}
       {cycleDay && (
         <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Cycle Phase</p>
@@ -55,6 +55,12 @@ function MenstrualContent({ entries, cycleDay, latestCycle }) {
           <div className="flex justify-between text-[10px] text-muted-foreground px-0.5">
             <span>Day 1</span><span>Day 14</span><span>Day {latestCycle?.cycle_length || 28}</span>
           </div>
+          {latestCycle?.cycle_length && (
+            <div className="flex items-center justify-between text-xs pt-2 border-t border-border/30">
+              <span className="text-muted-foreground">Last cycle length:</span>
+              <span className="font-bold text-primary">{latestCycle.cycle_length} days</span>
+            </div>
+          )}
         </div>
       )}
 
