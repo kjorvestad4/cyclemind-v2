@@ -244,9 +244,6 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
 
     recognitionRef.current.onend = () => {
       setIsListening(false);
-      if (voiceTranscript.trim()) {
-        setInput(voiceTranscript);
-      }
     };
 
     recognitionRef.current.start();
@@ -256,6 +253,13 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       setIsListening(false);
+      // Automatically process the transcript after a brief delay
+      setTimeout(() => {
+        if (voiceTranscript.trim()) {
+          handleSend(voiceTranscript.trim());
+          setVoiceTranscript('');
+        }
+      }, 500);
     }
   };
 
