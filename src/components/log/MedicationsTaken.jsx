@@ -147,6 +147,7 @@ const SUGGESTED_MEDS = [
   "Antipsychotic",
   "Metformin",
   "GLP-1",
+  "Menopause Medications",
   "Calcium",
   "Vitamin B6",
   "Magnesium",
@@ -154,6 +155,35 @@ const SUGGESTED_MEDS = [
   "Melatonin",
   "Spironolactone",
   "Other Supplement",
+];
+
+const MENOPAUSE_MEDS = [
+  // SSRIs/SNRIs for vasomotor (non-antidepressant use)
+  "Paroxetine (Brisdelle) — for hot flashes",
+  "Fezolinetant (Veozah) — non-hormonal hot flash treatment",
+  // Vaginal estrogen (local, not systemic)
+  "Vaginal Estradiol cream (Estrace cream)",
+  "Vaginal Estradiol ring (Estring)",
+  "Vaginal Estradiol tablet (Vagifem / Yuvafem)",
+  "Ospemifene (Osphena) — for vaginal dryness/dyspareunia",
+  "Prasterone / DHEA vaginal (Intrarosa)",
+  // Bone health
+  "Alendronate (Fosamax) — bisphosphonate",
+  "Risedronate (Actonel) — bisphosphonate",
+  "Ibandronate (Boniva) — bisphosphonate",
+  "Zoledronic acid (Reclast) — bisphosphonate",
+  "Denosumab (Prolia) — bone density",
+  "Raloxifene (Evista) — SERM for bone/breast",
+  // Cholesterol / cardiovascular
+  "Statin (e.g. Atorvastatin / Rosuvastatin)",
+  // Sleep
+  "Zolpidem (Ambien)",
+  "Eszopiclone (Lunesta)",
+  "Suvorexant (Belsomra)",
+  // Other
+  "Clonidine — for hot flashes",
+  "Gabapentin (Neurontin) — for hot flashes/sleep",
+  "Black Cohosh supplement",
 ];
 
 const ALL_KNOWN_MEDS = [
@@ -165,6 +195,7 @@ const ALL_KNOWN_MEDS = [
   ...MOOD_STABILIZERS,
   ...ANTIPSYCHOTICS,
   ...GLP1S,
+  ...MENOPAUSE_MEDS,
 ];
 
 function SubList({ title, items, value, onToggle }) {
@@ -194,6 +225,7 @@ export default function MedicationsTaken({ value = [], onChange, previousDayMeds
   const [showMoodStabilizers, setShowMoodStabilizers] = useState(false);
   const [showAntipsychotics, setShowAntipsychotics] = useState(false);
   const [showGlp1, setShowGlp1] = useState(false);
+  const [showMenopause, setShowMenopause] = useState(false);
 
   const toggle = (med) => {
     if (value.includes(med)) onChange(value.filter((m) => m !== med));
@@ -218,11 +250,13 @@ export default function MedicationsTaken({ value = [], onChange, previousDayMeds
   const hasAnyMoodStabilizer = value.some((m) => MOOD_STABILIZERS.includes(m));
   const hasAnyAntipsychotic = value.some((m) => ANTIPSYCHOTICS.includes(m));
   const hasAnyGlp1 = value.some((m) => GLP1S.includes(m));
+  const hasAnyMenopause = value.some((m) => MENOPAUSE_MEDS.includes(m));
 
   const customEntries = value.filter((m) => !ALL_KNOWN_MEDS.includes(m));
   const sublistSelected = value.filter((m) =>
     HORMONAL_BIRTH_CONTROLS.includes(m) || HRTS.includes(m) || NSAIDS.includes(m) ||
-    ANTIDEPRESSANTS.includes(m) || MOOD_STABILIZERS.includes(m) || ANTIPSYCHOTICS.includes(m) || GLP1S.includes(m)
+    HORMONAL_BIRTH_CONTROLS.includes(m) || HRTS.includes(m) || NSAIDS.includes(m) ||
+    ANTIDEPRESSANTS.includes(m) || MOOD_STABILIZERS.includes(m) || ANTIPSYCHOTICS.includes(m) || GLP1S.includes(m) || MENOPAUSE_MEDS.includes(m)
   );
 
   const dropdownButton = (label, show, setShow, hasAny) => (
@@ -254,6 +288,7 @@ export default function MedicationsTaken({ value = [], onChange, previousDayMeds
           if (med === "Mood Stabilizer") return dropdownButton(med, showMoodStabilizers, setShowMoodStabilizers, hasAnyMoodStabilizer);
           if (med === "Antipsychotic") return dropdownButton(med, showAntipsychotics, setShowAntipsychotics, hasAnyAntipsychotic);
           if (med === "GLP-1") return dropdownButton(med, showGlp1, setShowGlp1, hasAnyGlp1);
+          if (med === "Menopause Medications") return dropdownButton(med, showMenopause, setShowMenopause, hasAnyMenopause);
           return (
             <button key={med} onClick={() => toggle(med)}
               className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 ${value.includes(med) ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
@@ -271,6 +306,7 @@ export default function MedicationsTaken({ value = [], onChange, previousDayMeds
       {showMoodStabilizers && <SubList title="Select mood stabilizer(s)" items={MOOD_STABILIZERS} value={value} onToggle={toggle} />}
       {showAntipsychotics && <SubList title="Select antipsychotic(s)" items={ANTIPSYCHOTICS} value={value} onToggle={toggle} />}
       {showGlp1 && <SubList title="Select GLP-1 medication" items={GLP1S} value={value} onToggle={toggle} />}
+      {showMenopause && <SubList title="Select menopause medication" items={MENOPAUSE_MEDS} value={value} onToggle={toggle} />}
 
       {/* Selected sublist items */}
       {sublistSelected.length > 0 && (
