@@ -131,10 +131,10 @@ export default function GuidedTour() {
         />
       )}
 
-      {/* Tooltip — always anchored just above the bottom nav */}
+      {/* Tooltip — moves up when Luna button is highlighted so it doesn't cover it */}
       <div
         className="fixed left-4 right-4 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-teal-300 dark:border-teal-700 p-5"
-        style={{ zIndex: 10000, bottom: 90 }}
+        style={{ zIndex: 10000, bottom: current.target === "tour-luna-button" ? 180 : 90 }}
       >
         {/* Close button */}
         <button
