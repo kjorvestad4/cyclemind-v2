@@ -15,21 +15,21 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'No transcript provided' }, { status: 400 });
     }
 
-    // Use LLM to extract symptoms from the transcript
+    // Use LLM to extract symptoms from the transcript (without severity - user will assign)
     const response = await base44.integrations.Core.InvokeLLM({
       prompt: `You are a clinical assistant extracting symptoms from a user's voice transcript about their menstrual cycle, mood, and health.
       
-Extract symptoms and map them to the DRSP (Daily Record of Severity of Problems) scale with severity 1-6 (1=none, 6=severe).
+Extract all symptoms mentioned. DO NOT assign severity - the user will do that.
 
 Transcript: "${audioTranscript}"
 
 Return a JSON object with this exact structure:
 {
   "emotional_symptoms": [
-    {"name": "symptom name", "severity": 1-6}
+    {"name": "symptom name"}
   ],
   "physical_symptoms": [
-    {"name": "symptom name", "severity": 1-6}
+    {"name": "symptom name}
   ],
   "journal_note": "brief summary of what the user shared, or null if nothing notable"
 }
@@ -37,7 +37,7 @@ Return a JSON object with this exact structure:
 Emotional symptoms can include: mood swings, irritability, anxiety, depression, feeling overwhelmed, difficulty concentrating, fatigue, appetite changes, sleep issues, etc.
 Physical symptoms can include: breast tenderness, bloating, headaches, joint pain, cramping, acne, weight gain, etc.
 
-Only include symptoms that are actually mentioned. Use severity based on intensity words (e.g., "really", "very", "bad" = higher severity).`,
+Only include symptoms that are actually mentioned. Return symptom names only - no severity scores.`,
       response_json_schema: {
         type: "object",
         properties: {
@@ -46,10 +46,9 @@ Only include symptoms that are actually mentioned. Use severity based on intensi
             items: {
               type: "object",
               properties: {
-                name: { type: "string" },
-                severity: { type: "number" }
+                name: { type: "string" }
               },
-              required: ["name", "severity"]
+              required: ["name"]
             }
           },
           physical_symptoms: {
@@ -57,10 +56,9 @@ Only include symptoms that are actually mentioned. Use severity based on intensi
             items: {
               type: "object",
               properties: {
-                name: { type: "string" },
-                severity: { type: "number" }
+                name: { type: "string" }
               },
-              required: ["name", "severity"]
+              required: ["name"]
             }
           },
           journal_note: { type: ["string", "null"] }

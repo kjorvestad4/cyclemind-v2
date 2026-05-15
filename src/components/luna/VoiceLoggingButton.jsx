@@ -13,6 +13,7 @@ export default function VoiceLoggingButton({ onLogComplete, cycleType }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [extractedData, setExtractedData] = useState(null);
+  const [userSeverities, setUserSeverities] = useState({});
 
   const navigate = useNavigate();
 
@@ -99,11 +100,17 @@ export default function VoiceLoggingButton({ onLogComplete, cycleType }) {
 
       if (response.data.success) {
         setExtractedData(response.data);
+        // Initialize all symptoms with severity 3 (moderate)
+        const initialSeverities = {};
+        response.data.extractedSymptoms.emotional_symptoms.forEach((sym, i) => {
+          initialSeverities[`emotional_${i}`] = 3;
+        });
+        response.data.extractedSymptoms.physical_symptoms.forEach((sym, i) => {
+          initialSeverities[`physical_${i}`] = 3;
+        });
+        setUserSeverities(initialSeverities);
         setShowResult(true);
-        toast.success(`Extracted ${response.data.extractedSymptoms.emotional_symptoms.length + response.data.extractedSymptoms.physical_symptoms.length} symptoms`);
-        
-        // Auto-save to DailyEntry if user confirms
-        onLogComplete?.(response.data.mappedEntry);
+        toast.success(`Extracted ${response.data.extractedSymptoms.emotional_symptoms.length + response.data.extractedSymptoms.physical_symptoms.length} symptoms - please rate severity`);
       }
     } catch (error) {
       toast.error("Failed to process voice log");
@@ -117,16 +124,38 @@ export default function VoiceLoggingButton({ onLogComplete, cycleType }) {
     if (!extractedData) return;
 
     try {
+      // Build mapped entry with user-assigned severities
+      const mappedEntry = {
+        date: new Date().toISOString().split('T')[0],
+        journal_entry: extractedData.extractedSymptoms.journal_note || transcript,
+        // Map user-rated emotional symptoms
+        s_mood_swings: userSeverities['emotional_0'] || 0,
+        s_irritability: userSeverities['emotional_1'] || 0,
+        s_anxiety: userSeverities['emotional_2'] || 0,
+        s_depression: userSeverities['emotional_3'] || 0,
+        s_overwhelmed: userSeverities['emotional_4'] || 0,
+        s_concentration: userSeverities['emotional_5'] || 0,
+        s_lethargic: userSeverities['emotional_6'] || 0,
+        s_insomnia: userSeverities['emotional_7'] || 0,
+        // Map user-rated physical symptoms
+        s_breast_tender: userSeverities['physical_0'] || 0,
+        s_bloating: userSeverities['physical_1'] || 0,
+        s_headache: userSeverities['physical_2'] || 0,
+        s_pain: userSeverities['physical_3'] || 0,
+        s_acne: userSeverities['physical_4'] || 0,
+      };
+
       // Navigate to daily log with pre-filled data
       navigate("/log", { 
         state: { 
-          prefillData: extractedData.mappedEntry,
+          prefillData: mappedEntry,
           voiceTranscript: transcript 
         } 
       });
       setShowResult(false);
       setTranscript("");
       setExtractedData(null);
+      setUserSeverities({});
     } catch (error) {
       toast.error("Failed to save to daily log");
     }
@@ -190,12 +219,32 @@ export default function VoiceLoggingButton({ onLogComplete, cycleType }) {
               </div>
 
               <div className="space-y-2">
-                <p className="font-semibold text-sm">Emotional Symptoms:</p>
+                <p className="font-semibold text-sm">Emotional Symptoms (rate 1-6):</p>
                 {extractedData.extractedSymptoms.emotional_symptoms.map((sym, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm">
-                    <Check className="w-4 h-4 text-green-500" />
-                    <span>{sym.name}</span>
-                    <Badge variant="secondary">Severity: {sym.severity}/10</Badge>
+                  <div key={i} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <Check className="w-4 h-4 text-green-500 inline mr-1" />
+                      <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{sym.name}</span>
+                    </div>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5, 6].map((severity) => (
+                        <button
+                          key={severity}
+                          onClick={() => setUserSeverities(prev => ({ ...prev, [`emotional_${i}`]: severity }))}
+                          className={`flex-1 py-2 text-sm font-semibold rounded transition-colors ${
+                            userSeverities[`emotional_${i}`] === severity
+                              ? severity <= 2 ? 'bg-green-500 text-white' : severity <= 4 ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white'
+                              : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                          }`}
+                        >
+                          {severity}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>None</span>
+                      <span>Severe</span>
+                    </div>
                   </div>
                 ))}
                 {extractedData.extractedSymptoms.emotional_symptoms.length === 0 && (
@@ -204,12 +253,32 @@ export default function VoiceLoggingButton({ onLogComplete, cycleType }) {
               </div>
 
               <div className="space-y-2">
-                <p className="font-semibold text-sm">Physical Symptoms:</p>
+                <p className="font-semibold text-sm">Physical Symptoms (rate 1-6):</p>
                 {extractedData.extractedSymptoms.physical_symptoms.map((sym, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm">
-                    <Check className="w-4 h-4 text-green-500" />
-                    <span>{sym.name}</span>
-                    <Badge variant="secondary">Severity: {sym.severity}/10</Badge>
+                  <div key={i} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <Check className="w-4 h-4 text-green-500 inline mr-1" />
+                      <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{sym.name}</span>
+                    </div>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5, 6].map((severity) => (
+                        <button
+                          key={severity}
+                          onClick={() => setUserSeverities(prev => ({ ...prev, [`physical_${i}`]: severity }))}
+                          className={`flex-1 py-2 text-sm font-semibold rounded transition-colors ${
+                            userSeverities[`physical_${i}`] === severity
+                              ? severity <= 2 ? 'bg-green-500 text-white' : severity <= 4 ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white'
+                              : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                          }`}
+                        >
+                          {severity}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>None</span>
+                      <span>Severe</span>
+                    </div>
                   </div>
                 ))}
                 {extractedData.extractedSymptoms.physical_symptoms.length === 0 && (
