@@ -42,8 +42,8 @@ function predictOvulation(cycles, entries) {
   const predictedOvDate = addDays(cycleStart, ovulationDayNum - 1);
   const daysUntilOv = differenceInDays(predictedOvDate, today);
 
-  // Show prediction window: 3 days before to 1 day before predicted ovulation
-  if (daysUntilOv >= 1 && daysUntilOv <= 3) {
+  // Show prediction window: 3 days before to day of predicted ovulation
+  if (daysUntilOv >= 0 && daysUntilOv <= 3) {
     return {
       date: format(predictedOvDate, "MMM d"),
       daysUntil: daysUntilOv,
@@ -83,7 +83,7 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
 
   const cycleLength = latestCycle?.cycle_length || user?.cycle_length || 28;
   const lutealActive = (isMenstrual || isPeri) && user?.luteal_med_reminder && isInLutealPhase(cycleDay, cycleLength);
-  const ovulationPrediction = isPremium && (isMenstrual || isPeri) ? predictOvulation(cycles, entries) : null;
+  const ovulationPrediction = (isMenstrual || isPeri) ? predictOvulation(cycles, entries) : null;
   const missedPeriod = (isMenstrual || isPeri) ? checkMissedPeriod(cycles) : null;
 
   if (!lutealActive && !ovulationPrediction && !missedPeriod) return null;
@@ -111,7 +111,7 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
             <p className="text-sm font-semibold text-foreground">🌸 Approaching Ovulation</p>
             <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
               You may be approaching ovulation and entering your fertility window — predicted around{" "}
-              <strong>{ovulationPrediction.date}</strong> ({ovulationPrediction.daysUntil === 1 ? "tomorrow" : `in ${ovulationPrediction.daysUntil} days`}). Log an ovulation test in your daily log to confirm.
+              <strong>{ovulationPrediction.date}</strong> ({ovulationPrediction.daysUntil === 0 ? "today" : ovulationPrediction.daysUntil === 1 ? "tomorrow" : `in ${ovulationPrediction.daysUntil} days`}). Log an ovulation test in your daily log to confirm.
             </p>
             <button
               onClick={() => navigate("/log")}
