@@ -49,6 +49,41 @@ export default function QuickLogButtons({
   const bleedingMutation = useMutation({
     mutationFn: async () => {
       const newIntensity = isBleedingActive ? 0 : 2;
+      
+      // If starting a new period (not clearing), check if we need to create a new cycle
+      if (newIntensity === 2 && !isBleedingActive) {
+        // Fetch all cycles to check if this is a new cycle start
+        const allCycles = await base44.entities.Cycle.filter({ created_by: existingEntry?.created_by || (await base44.auth.me()).email }, "-start_date", 50);
+        const latestCycle = allCycles.length > 0 ? [...allCycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0] : null;
+        
+        // Only create new cycle if:
+        // 1. No cycle exists, OR
+        // 2. It's been 21+ days since last cycle start (typical cycle range is 21-35 days)
+        const shouldCreateNewCycle = !latestCycle || 
+          (new Date(selectedDate) - new Date(latestCycle.start_date)) >= (21 * 24 * 60 * 60 * 1000);
+        
+        if (shouldCreateNewCycle && latestCycle) {
+          // Update the previous cycle's end_date to yesterday
+          const yesterday = new Date(selectedDate);
+          yesterday.setDate(yesterday.getDate() - 1);
+          await base44.entities.Cycle.update(latestCycle.id, { 
+            end_date: format(yesterday, 'yyyy-MM-dd'),
+            cycle_length: Math.round((new Date(selectedDate) - new Date(latestCycle.start_date)) / (1000 * 60 * 60 * 24))
+          });
+        }
+        
+        if (shouldCreateNewCycle || !latestCycle) {
+          // Create new cycle starting today
+          await base44.entities.Cycle.create({
+            start_date: selectedDate,
+            cycle_type: cycleType || 'menstrual',
+            phase: 'menstrual',
+            last_menstrual_period: selectedDate
+          });
+        }
+      }
+      
+      // Update/create daily entry with bleeding intensity
       if (existingEntry?.id) {
         await base44.entities.DailyEntry.update(existingEntry.id, { bleeding_intensity: newIntensity });
       } else {
@@ -59,7 +94,8 @@ export default function QuickLogButtons({
     onSuccess: (_data, _vars, context) => {
       const wasActive = isBleedingActive;
       invalidate();
-      toast.success(wasActive ? "Period cleared ✓" : "Period logged ✓");
+      queryClient.invalidateQueries({ queryKey: ["cycles"] });
+      toast.success(wasActive ? "Period cleared ✓" : "Period logged ✓ New cycle started!");
     },
     onError: (_err, _vars, context) => { rollback(context); toast.error("Failed to save"); },
   });
