@@ -466,7 +466,7 @@ function NotificationsPanel({ onClose }) {
       const response = await base44.functions.invoke("generateLunaAlerts", {});
       return response.data;
     },
-    refetchInterval: 30000,
+    staleTime: 60000,
   });
   const [showRead, setShowRead] = useState(false);
 
@@ -474,12 +474,29 @@ function NotificationsPanel({ onClose }) {
     mutationFn: async (alertId) => {
       await base44.entities.LunaAlert.update(alertId, { is_read: true });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["luna-alerts"] });
-      toast.success("Alert marked as read");
+    onMutate: async (alertId) => {
+      await queryClient.cancelQueries({ queryKey: ["luna-alerts"] });
+      const previousData = queryClient.getQueryData(["luna-alerts"]);
+      
+      queryClient.setQueryData(["luna-alerts"], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          alerts: oldData.alerts.map(a => 
+            a.id === alertId ? { ...a, is_read: true } : a
+          ),
+          unreadCount: Math.max(0, oldData.unreadCount - 1)
+        };
+      });
+      
+      return { previousData };
     },
-    onError: () => {
+    onError: (err, alertId, context) => {
+      queryClient.setQueryData(["luna-alerts"], context.previousData);
       toast.error("Failed to mark alert as read");
+    },
+    onSuccess: () => {
+      toast.success("Alert marked as read");
     },
   });
 

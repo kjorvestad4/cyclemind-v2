@@ -11,7 +11,8 @@ export default function LunaNotificationBadge({ onClick }) {
       const response = await base44.functions.invoke("generateLunaAlerts", {});
       return response.data;
     },
-    refetchInterval: 30000, // Check every 30 seconds
+    staleTime: 60000, // Don't refetch within 1 minute
+    refetchInterval: false, // Disable automatic polling
   });
 
   const unreadCount = alertData?.unreadCount || 0;
