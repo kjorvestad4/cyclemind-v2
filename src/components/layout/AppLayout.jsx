@@ -79,10 +79,11 @@ export default function AppLayout() {
             </p>
             <button
               onClick={() => base44.auth.logout("/welcome")}
-              className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors"
+              className="flex flex-col items-center gap-0.5 hover:bg-muted rounded-xl px-2 py-1 transition-colors"
               aria-label="Sign out"
             >
               <LogOut className="w-4 h-4 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground font-medium">Sign out</span>
             </button>
           </div>
         </div>
