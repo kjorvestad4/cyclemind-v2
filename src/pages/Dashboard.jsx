@@ -78,8 +78,10 @@ export default function Dashboard() {
     },
   });
 
+  const parseLocal = (str) => { if (!str) return null; const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
+
   const latestCycle = cycles.length > 0
-    ? [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0]
+    ? [...cycles].sort((a, b) => parseLocal(b.start_date) - parseLocal(a.start_date))[0]
     : null;
 
   const cycleType = latestCycle?.cycle_type

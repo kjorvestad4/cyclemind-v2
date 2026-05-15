@@ -96,10 +96,11 @@ export function getCycleDay(date, cycles) {
   const target = parseLocalDate(typeof date === "string" ? date : date.toISOString().slice(0, 10));
 
   for (const cycle of sorted) {
-    const start = parseLocalDate(cycle.start_date);
-    if (!start) continue;
-    if (target >= start) {
-      const diffDays = Math.round((target - start) / (1000 * 60 * 60 * 24));
+    // Prefer last_menstrual_period as the cycle start reference (more accurate for menstrual mode)
+    const ref = parseLocalDate(cycle.last_menstrual_period || cycle.start_date);
+    if (!ref) continue;
+    if (target >= ref) {
+      const diffDays = Math.round((target - ref) / (1000 * 60 * 60 * 24));
       return diffDays + 1;
     }
   }
