@@ -23,17 +23,22 @@ function isInLutealPhase(cycleDay, cycleLength) {
 // ── Predict ovulation from history ───────────────────────────────────────────
 const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
 
+function todayLocal() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
 function predictOvulation(cycles, entries) {
   if (!cycles || cycles.length === 0) return null;
 
   const sorted = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
   const latest = sorted[0];
   const cycleLength = latest.cycle_length || 28;
-  const today = new Date();
+  const today = todayLocal();
 
   // Check if there's a logged LH surge or positive ovulation test recently
   const recentEntries = entries?.filter(e => {
-    const daysAgo = differenceInDays(today, parseLocalDate(e.date));
+    const daysAgo = differenceInDays(todayLocal(), parseLocalDate(e.date));
     return daysAgo <= 7 && (e.ovulation_test === "Positive" || e.ovulation_test === "LH Surge");
   }) || [];
   if (recentEntries.length > 0) return null; // Already ovulated/surging — no prediction needed
@@ -45,8 +50,8 @@ function predictOvulation(cycles, entries) {
   const predictedOvDate = addDays(cycleStart, ovulationDayNum - 1);
   const daysUntilOv = differenceInDays(predictedOvDate, today);
 
-  // Show prediction window: 3 days before to day of predicted ovulation
-  if (daysUntilOv >= 0 && daysUntilOv <= 3) {
+  // Show prediction window: 4 days before to day of predicted ovulation
+  if (daysUntilOv >= 0 && daysUntilOv <= 4) {
     return {
       date: format(predictedOvDate, "MMM d"),
       daysUntil: daysUntilOv,
@@ -66,8 +71,7 @@ function checkMissedPeriod(cycles) {
   const refDate = latest.last_menstrual_period || latest.start_date;
   const cycleStart = parseLocalDate(refDate);
   const expectedNextPeriod = addDays(cycleStart, cycleLength);
-  const today = new Date();
-  const daysLate = differenceInDays(today, expectedNextPeriod);
+  const daysLate = differenceInDays(todayLocal(), expectedNextPeriod);
 
   // Show if 5+ days late
   return daysLate >= 5 ? { daysLate } : false;
@@ -87,7 +91,7 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
 
   const cycleLength = latestCycle?.cycle_length || user?.cycle_length || 28;
   const lutealActive = (isMenstrual || isPeri) && user?.luteal_med_reminder && isInLutealPhase(cycleDay, cycleLength);
-  const ovulationPrediction = (isMenstrual || isPeri) ? predictOvulation(cycles, entries) : null;
+  const ovulationPrediction = (isMenstrual || isPeri || !cycleType) ? predictOvulation(cycles, entries) : null;
   const missedPeriod = (isMenstrual || isPeri) ? checkMissedPeriod(cycles) : null;
 
   if (!lutealActive && !ovulationPrediction && !missedPeriod) return null;
