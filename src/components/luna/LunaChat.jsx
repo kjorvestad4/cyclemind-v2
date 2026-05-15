@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2, Mic, MicOff, FileDown } from 'lucide-react';
+import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2, Mic, MicOff, FileDown, Bell } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { format } from 'date-fns';
+import { useQuery } from '@tanstack/react-query';
 
 // Actions that should navigate to the log page instead of sending a chat message
 const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log', 'log my mood today', 'log today', 'log my symptoms', 'log symptoms today', 'track my symptoms today'];
@@ -43,6 +44,7 @@ function saveSession(messages, savedIndexes) {
 
 export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, menopauseStage, onClose }) {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('chat'); // 'chat' or 'notifications'
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -269,7 +271,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
         
         {/* Header */}
         <div className="px-5 py-4 border-b flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-1">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-blue-600 flex items-center justify-center shadow">
               <Moon className="w-5 h-5 text-white" />
             </div>
@@ -278,25 +280,49 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
               <p className="text-xs text-muted-foreground">Your compassionate cycle companion</p>
             </div>
           </div>
-          <button onClick={onClose} aria-label="Close chat">
-            <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setActiveTab('chat')}
+              className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${
+                activeTab === 'chat'
+                  ? 'bg-teal-600 text-white'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              }`}
+            >
+              Chat
+            </button>
+            <button
+              onClick={() => setActiveTab('notifications')}
+              className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${
+                activeTab === 'notifications'
+                  ? 'bg-teal-600 text-white'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              }`}
+            >
+              Notifications
+            </button>
+            <button onClick={onClose} aria-label="Close chat">
+              <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+            </button>
+          </div>
         </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-6">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] rounded-3xl px-5 py-3.5 text-[15px] leading-relaxed shadow-sm ${
-                msg.role === 'user' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 border border-teal-100 dark:border-teal-900 rounded-bl-none'
-              }`}>
-                {msg.role === 'assistant' ? (
-                  <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
-                    {msg.content}
-                  </ReactMarkdown>
-                ) : (
-                  <p>{msg.content}</p>
-                )}
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto">
+          {activeTab === 'chat' && (
+            <div className="p-5 space-y-6">
+              {messages.map((msg, idx) => (
+                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] rounded-3xl px-5 py-3.5 text-[15px] leading-relaxed shadow-sm ${
+                    msg.role === 'user' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 border border-teal-100 dark:border-teal-900 rounded-bl-none'
+                  }`}>
+                    {msg.role === 'assistant' ? (
+                      <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
+                        {msg.content}
+                      </ReactMarkdown>
+                    ) : (
+                      <p>{msg.content}</p>
+                    )}
 
                 {/* Suggested Actions */}
                 {msg.role === 'assistant' && msg.suggestedActions?.length > 0 && (
@@ -373,6 +399,12 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
             </div>
           )}
           <div ref={messagesEndRef} />
+            </div>
+          )}
+
+          {activeTab === 'notifications' && (
+            <NotificationsPanel onClose={onClose} />
+          )}
         </div>
 
         {/* Disclaimer */}
@@ -421,6 +453,76 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
           </Button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Notifications Panel Component
+function NotificationsPanel({ onClose }) {
+  const { data: alertData, isLoading } = useQuery({
+    queryKey: ["luna-alerts"],
+    queryFn: async () => {
+      const response = await base44.functions.invoke("generateLunaAlerts", {});
+      return response.data;
+    },
+    refetchInterval: 30000,
+  });
+
+  const alerts = alertData?.alerts || [];
+
+  const alertIcons = {
+    luteal_phase: AlertCircle,
+    severe_symptoms: AlertCircle,
+    log_reminder: Bell,
+    pattern_insight: Moon,
+    fertility_window: Plus,
+    menopause_milestone: Moon,
+  };
+
+  const alertColors = {
+    high: "bg-red-50 border-red-200 text-red-800 dark:bg-red-950/30 dark:border-red-900 dark:text-red-300",
+    medium: "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/30 dark:border-amber-900 dark:text-amber-300",
+    low: "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950/30 dark:border-blue-900 dark:text-blue-300",
+  };
+
+  return (
+    <div className="p-5 space-y-3">
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
+        </div>
+      ) : alerts.length === 0 ? (
+        <div className="text-center py-12">
+          <Bell className="w-12 h-12 mx-auto text-slate-300 mb-3" />
+          <p className="text-slate-600 dark:text-slate-400">No alerts right now</p>
+          <p className="text-xs text-muted-foreground mt-1">Luna will notify you when she spots patterns or important updates</p>
+        </div>
+      ) : (
+        alerts.map((alert) => {
+          const Icon = alertIcons[alert.alert_type] || Bell;
+          const colorClass = alertColors[alert.severity];
+          
+          return (
+            <div
+              key={alert.id}
+              className={`p-4 rounded-2xl border transition-all ${colorClass} ${!alert.is_read ? "ring-2 ring-teal-500/30" : "opacity-80"}`}
+            >
+              <div className="flex items-start gap-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${alert.severity === "high" ? "bg-white/50" : "bg-white/30"}`}>
+                  <Icon className="w-4 h-4" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold mb-1">{alert.title}</p>
+                  <p className="text-xs leading-relaxed opacity-90">{alert.message}</p>
+                  <p className="text-[10px] mt-2 opacity-70">
+                    {format(new Date(alert.created_date), "MMM d, yyyy")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
+        })
+      )}
     </div>
   );
 }
