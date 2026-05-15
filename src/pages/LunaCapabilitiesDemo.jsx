@@ -120,7 +120,7 @@ export default function LunaCapabilitiesDemo() {
       {/* Demo 1: Voice Logging */}
       <Card className="border-teal-200 bg-teal-50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
+          <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-lg">
             <Mic className="w-5 h-5 text-teal-600" />
             1. Voice-to-Symptom Logging
           </CardTitle>
@@ -144,7 +144,7 @@ export default function LunaCapabilitiesDemo() {
       {/* Demo 2: Journal Auto-Coding */}
       <Card className="border-purple-200 bg-purple-50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
+          <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-lg">
             <FileText className="w-5 h-5 text-purple-600" />
             2. Journal Sentiment + Auto-Coding
           </CardTitle>
@@ -213,7 +213,7 @@ export default function LunaCapabilitiesDemo() {
       {/* Demo 3: Fertility Guidance */}
       <Card className="border-pink-200 bg-pink-50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
+          <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-lg">
             <Heart className="w-5 h-5 text-pink-600" />
             3. Fertility / Conception Mode
           </CardTitle>
@@ -269,7 +269,7 @@ export default function LunaCapabilitiesDemo() {
       {/* Demo 4: Menopause Trajectory */}
       <Card className="border-purple-200 bg-purple-50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
+          <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-lg">
             <TrendingUp className="w-5 h-5 text-purple-600" />
             4. Menopause Symptom Trajectory
           </CardTitle>
@@ -326,7 +326,7 @@ export default function LunaCapabilitiesDemo() {
       {/* Demo 5: Doctor Report */}
       <Card className="border-blue-200 bg-blue-50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
+          <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-lg">
             <FileDown className="w-5 h-5 text-blue-600" />
             5. Shared-Care Doctor Report
           </CardTitle>
@@ -345,11 +345,11 @@ export default function LunaCapabilitiesDemo() {
       {/* Luna Chat Integration */}
       <Card className="border-teal-200 bg-gradient-to-br from-teal-50 to-purple-50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-slate-800 dark:text-slate-100">
+          <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-lg">
             <Sparkles className="w-5 h-5 text-teal-600" />
             6. Luna Chat - Test Live Conversation
           </CardTitle>
-          <CardDescription className="text-slate-600 dark:text-slate-300">Test Luna's clinical superagent capabilities in real-time</CardDescription>
+          <CardDescription className="text-slate-700 dark:text-slate-300 font-medium">Test Luna's clinical superagent capabilities in real-time</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
