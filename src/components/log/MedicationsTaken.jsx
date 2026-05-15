@@ -2,36 +2,96 @@ import { useState } from "react";
 import { X, Plus, ChevronDown, ChevronUp, RotateCcw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
+const HORMONAL_BIRTH_CONTROLS = [
+  // Combined oral
+  "Combined Oral Contraceptive Pill (COC)",
+  "Ethinyl Estradiol / Norethindrone (Loestrin)",
+  "Ethinyl Estradiol / Levonorgestrel (Seasonique)",
+  "Ethinyl Estradiol / Drospirenone (Yaz / Yasmin)",
+  "Ethinyl Estradiol / Norgestimate (Ortho Tri-Cyclen)",
+  // Progestin-only
+  "Progestin-Only Pill (Mini-Pill)",
+  "Norethindrone (Camila / Errin)",
+  // IUDs
+  "Hormonal IUD (Mirena / Kyleena / Liletta / Skyla)",
+  // Injectables
+  "Depo-Provera (Medroxyprogesterone injection)",
+  // Implant
+  "Nexplanon (Etonogestrel implant)",
+  // Patch / Ring
+  "Xulane (Contraceptive patch)",
+  "NuvaRing (Etonogestrel / Ethinyl estradiol ring)",
+  // Emergency
+  "Plan B / Levonorgestrel (Emergency contraception)",
+  "Ella (Ulipristal acetate)",
+];
+
+const HRTS = [
+  // Estrogen-only
+  "Estradiol patch (Vivelle-Dot / Climara)",
+  "Estradiol gel (EstroGel / Divigel)",
+  "Estradiol spray (Evamist)",
+  "Oral Estradiol (Estrace)",
+  "Conjugated Estrogens (Premarin)",
+  // Combined E+P
+  "Oral Estradiol / Norethindrone (Activella)",
+  "Oral Conjugated Estrogens / Medroxyprogesterone (Prempro)",
+  "Estradiol / Levonorgestrel patch (Climara Pro)",
+  // Progesterone / Progestins
+  "Oral Progesterone (Prometrium)",
+  "Progesterone gel (Crinone / Prochieve)",
+  "Medroxyprogesterone (Provera)",
+  "Norethindrone acetate (Aygestin)",
+  // Testosterone / DHEA / Tibolone
+  "Testosterone (compounded cream / AndroGel)",
+  "DHEA / Prasterone (Intrarosa)",
+  "Tibolone (Livial)",
+];
+
+const NSAIDS = [
+  // OTC
+  "Ibuprofen (Advil / Motrin)",
+  "Naproxen (Aleve)",
+  "Aspirin",
+  "Acetaminophen (Tylenol)",
+  // Rx NSAIDs
+  "Celecoxib (Celebrex)",
+  "Meloxicam (Mobic)",
+  "Diclofenac (Voltaren)",
+  "Indomethacin (Indocin)",
+  "Ketorolac (Toradol)",
+  "Nabumetone (Relafen)",
+  "Piroxicam (Feldene)",
+  "Etodolac (Lodine)",
+  // Prescription analgesics
+  "Tramadol (Ultram)",
+  "Cyclobenzaprine (Flexeril)",
+];
+
 const ANTIDEPRESSANTS = [
-  // SSRIs
   "Sertraline (Zoloft)",
   "Fluoxetine (Prozac)",
   "Escitalopram (Lexapro)",
   "Citalopram (Celexa)",
   "Paroxetine (Paxil)",
   "Fluvoxamine (Luvox)",
-  // SNRIs
   "Venlafaxine (Effexor)",
   "Desvenlafaxine (Pristiq)",
   "Duloxetine (Cymbalta)",
   "Levomilnacipran (Fetzima)",
-  // Atypicals
   "Bupropion (Wellbutrin)",
   "Mirtazapine (Remeron)",
   "Trazodone (Desyrel)",
   "Vilazodone (Viibryd)",
   "Vortioxetine (Trintellix)",
-  // TCAs
   "Amitriptyline (Elavil)",
   "Nortriptyline (Pamelor)",
   "Imipramine (Tofranil)",
   "Clomipramine (Anafranil)",
   "Desipramine (Norpramin)",
-  // MAOIs
   "Phenelzine (Nardil)",
   "Tranylcypromine (Parnate)",
   "Selegiline (Emsam)",
-  // Other
   "Nefazodone (Serzone)",
   "Gepirone (Exxua)",
 ];
@@ -47,7 +107,6 @@ const MOOD_STABILIZERS = [
 ];
 
 const ANTIPSYCHOTICS = [
-  // Atypical (2nd gen)
   "Aripiprazole (Abilify)",
   "Quetiapine (Seroquel)",
   "Olanzapine (Zyprexa)",
@@ -60,7 +119,6 @@ const ANTIPSYCHOTICS = [
   "Cariprazine (Vraylar)",
   "Brexpiprazole (Rexulti)",
   "Paliperidone (Invega)",
-  // Typical (1st gen)
   "Haloperidol (Haldol)",
   "Chlorpromazine (Thorazine)",
   "Perphenazine (Trilafon)",
@@ -78,16 +136,17 @@ const GLP1S = [
   "Lixisenatide (Adlyxin)",
 ];
 
+// New ordered list
 const SUGGESTED_MEDS = [
   "Prenatal Vitamin",
+  "Hormonal Birth Control",
+  "Hormone Replacement Therapy",
+  "NSAIDs/Pain Relief",
   "Antidepressant",
   "Mood Stabilizer",
   "Antipsychotic",
   "Metformin",
   "GLP-1",
-  "Hormonal Birth Control",
-  "Hormone Replacement Therapy",
-  "NSAIDs/Pain Relief",
   "Calcium",
   "Vitamin B6",
   "Magnesium",
@@ -97,8 +156,16 @@ const SUGGESTED_MEDS = [
   "Other Supplement",
 ];
 
-const DROPDOWN_MEDS = ["Antidepressant", "Mood Stabilizer", "Antipsychotic", "GLP-1"];
-const ALL_KNOWN_MEDS = [...SUGGESTED_MEDS, ...ANTIDEPRESSANTS, ...MOOD_STABILIZERS, ...ANTIPSYCHOTICS, ...GLP1S];
+const ALL_KNOWN_MEDS = [
+  ...SUGGESTED_MEDS,
+  ...HORMONAL_BIRTH_CONTROLS,
+  ...HRTS,
+  ...NSAIDS,
+  ...ANTIDEPRESSANTS,
+  ...MOOD_STABILIZERS,
+  ...ANTIPSYCHOTICS,
+  ...GLP1S,
+];
 
 function SubList({ title, items, value, onToggle }) {
   return (
@@ -120,6 +187,9 @@ function SubList({ title, items, value, onToggle }) {
 
 export default function MedicationsTaken({ value = [], onChange, previousDayMeds = [] }) {
   const [custom, setCustom] = useState("");
+  const [showHBC, setShowHBC] = useState(false);
+  const [showHRT, setShowHRT] = useState(false);
+  const [showNSAIDs, setShowNSAIDs] = useState(false);
   const [showAntidepressants, setShowAntidepressants] = useState(false);
   const [showMoodStabilizers, setShowMoodStabilizers] = useState(false);
   const [showAntipsychotics, setShowAntipsychotics] = useState(false);
@@ -132,8 +202,7 @@ export default function MedicationsTaken({ value = [], onChange, previousDayMeds
 
   const copyFromPreviousDay = () => {
     if (!previousDayMeds.length) return;
-    const merged = [...new Set([...value, ...previousDayMeds])];
-    onChange(merged);
+    onChange([...new Set([...value, ...previousDayMeds])]);
   };
 
   const addCustom = () => {
@@ -142,6 +211,9 @@ export default function MedicationsTaken({ value = [], onChange, previousDayMeds
     setCustom("");
   };
 
+  const hasAnyHBC = value.some((m) => HORMONAL_BIRTH_CONTROLS.includes(m));
+  const hasAnyHRT = value.some((m) => HRTS.includes(m));
+  const hasAnyNSAID = value.some((m) => NSAIDS.includes(m));
   const hasAnyAntidepressant = value.some((m) => ANTIDEPRESSANTS.includes(m));
   const hasAnyMoodStabilizer = value.some((m) => MOOD_STABILIZERS.includes(m));
   const hasAnyAntipsychotic = value.some((m) => ANTIPSYCHOTICS.includes(m));
@@ -149,7 +221,15 @@ export default function MedicationsTaken({ value = [], onChange, previousDayMeds
 
   const customEntries = value.filter((m) => !ALL_KNOWN_MEDS.includes(m));
   const sublistSelected = value.filter((m) =>
+    HORMONAL_BIRTH_CONTROLS.includes(m) || HRTS.includes(m) || NSAIDS.includes(m) ||
     ANTIDEPRESSANTS.includes(m) || MOOD_STABILIZERS.includes(m) || ANTIPSYCHOTICS.includes(m) || GLP1S.includes(m)
+  );
+
+  const dropdownButton = (label, show, setShow, hasAny) => (
+    <button key={label} onClick={() => setShow(p => !p)}
+      className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 flex items-center gap-1 ${hasAny ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
+      {label} {show ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+    </button>
   );
 
   return (
@@ -157,10 +237,8 @@ export default function MedicationsTaken({ value = [], onChange, previousDayMeds
 
       {/* Continue from previous day */}
       {previousDayMeds.length > 0 && (
-        <button
-          onClick={copyFromPreviousDay}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold border-2 border-dashed border-primary/40 text-primary bg-primary/5 hover:bg-primary/10 transition-all active:scale-95"
-        >
+        <button onClick={copyFromPreviousDay}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold border-2 border-dashed border-primary/40 text-primary bg-primary/5 hover:bg-primary/10 transition-all active:scale-95">
           <RotateCcw className="w-3.5 h-3.5" />
           Continue from previous day ({previousDayMeds.length} medication{previousDayMeds.length > 1 ? "s" : ""})
         </button>
@@ -169,38 +247,13 @@ export default function MedicationsTaken({ value = [], onChange, previousDayMeds
       {/* Main buttons */}
       <div className="flex flex-wrap gap-2">
         {SUGGESTED_MEDS.map((med) => {
-          if (med === "Antidepressant") {
-            return (
-              <button key={med} onClick={() => setShowAntidepressants(p => !p)}
-                className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 flex items-center gap-1 ${hasAnyAntidepressant ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
-                Antidepressant {showAntidepressants ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-              </button>
-            );
-          }
-          if (med === "Mood Stabilizer") {
-            return (
-              <button key={med} onClick={() => setShowMoodStabilizers(p => !p)}
-                className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 flex items-center gap-1 ${hasAnyMoodStabilizer ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
-                Mood Stabilizer {showMoodStabilizers ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-              </button>
-            );
-          }
-          if (med === "Antipsychotic") {
-            return (
-              <button key={med} onClick={() => setShowAntipsychotics(p => !p)}
-                className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 flex items-center gap-1 ${hasAnyAntipsychotic ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
-                Antipsychotic {showAntipsychotics ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-              </button>
-            );
-          }
-          if (med === "GLP-1") {
-            return (
-              <button key={med} onClick={() => setShowGlp1(p => !p)}
-                className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 flex items-center gap-1 ${hasAnyGlp1 ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
-                GLP-1 {showGlp1 ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-              </button>
-            );
-          }
+          if (med === "Hormonal Birth Control") return dropdownButton(med, showHBC, setShowHBC, hasAnyHBC);
+          if (med === "Hormone Replacement Therapy") return dropdownButton(med, showHRT, setShowHRT, hasAnyHRT);
+          if (med === "NSAIDs/Pain Relief") return dropdownButton(med, showNSAIDs, setShowNSAIDs, hasAnyNSAID);
+          if (med === "Antidepressant") return dropdownButton(med, showAntidepressants, setShowAntidepressants, hasAnyAntidepressant);
+          if (med === "Mood Stabilizer") return dropdownButton(med, showMoodStabilizers, setShowMoodStabilizers, hasAnyMoodStabilizer);
+          if (med === "Antipsychotic") return dropdownButton(med, showAntipsychotics, setShowAntipsychotics, hasAnyAntipsychotic);
+          if (med === "GLP-1") return dropdownButton(med, showGlp1, setShowGlp1, hasAnyGlp1);
           return (
             <button key={med} onClick={() => toggle(med)}
               className={`px-3 py-2 rounded-xl text-xs font-medium border-2 transition-all active:scale-95 ${value.includes(med) ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:bg-muted"}`}>
@@ -211,6 +264,9 @@ export default function MedicationsTaken({ value = [], onChange, previousDayMeds
       </div>
 
       {/* Sublists */}
+      {showHBC && <SubList title="Select hormonal birth control" items={HORMONAL_BIRTH_CONTROLS} value={value} onToggle={toggle} />}
+      {showHRT && <SubList title="Select hormone replacement therapy" items={HRTS} value={value} onToggle={toggle} />}
+      {showNSAIDs && <SubList title="Select NSAID / pain relief" items={NSAIDS} value={value} onToggle={toggle} />}
       {showAntidepressants && <SubList title="Select antidepressant(s)" items={ANTIDEPRESSANTS} value={value} onToggle={toggle} />}
       {showMoodStabilizers && <SubList title="Select mood stabilizer(s)" items={MOOD_STABILIZERS} value={value} onToggle={toggle} />}
       {showAntipsychotics && <SubList title="Select antipsychotic(s)" items={ANTIPSYCHOTICS} value={value} onToggle={toggle} />}
