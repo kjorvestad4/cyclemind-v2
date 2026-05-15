@@ -52,7 +52,7 @@ const TIERS = [
     features: [
       { name: "Everything in Free", included: true },
       { name: "All 5 lifecycle modes", included: true },
-      { name: "DRSP symptom tracking (clinical-grade)", included: true },
+      { name: "DRSP symptom tracking (clinical-grade)", included: true, highlight: true },
       { name: "Luna AI companion 🌙", included: true, highlight: true },
       { name: "Clinical-grade PDF reports", included: true },
       { name: "Shareable doctor links", included: true },

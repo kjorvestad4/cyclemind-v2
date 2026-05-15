@@ -514,7 +514,7 @@ export default function Landing() {
                   "Everything in Free",
                   "All 5 lifecycle modes (Pregnancy, Postpartum, Peri/Menopause)",
                   "DRSP symptom tracking (clinical-grade)",
-                  "Luna AI Companion (trained by psychiatrists)",
+                  "Luna AI Companion (trained by board-certified physicians)",
                   "Clinical-grade PDF reports for your doctor",
                   "Shareable doctor links with access controls",
                   "EPDS postpartum depression screening",
