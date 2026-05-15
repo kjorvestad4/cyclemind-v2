@@ -7,13 +7,14 @@ import { getCycleDay } from "@/lib/symptoms";
 import { format } from "date-fns";
 import LunaButton from "@/components/luna/LunaButton";
 import { useAuth } from "@/lib/AuthContext";
+import GuidedTour from "@/components/common/GuidedTour";
 
 const NAV_ITEMS = [
-  { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { path: "/log", icon: PenLine, label: "Log" },
-  { path: "/insights", icon: BarChart3, label: "Insights" },
-  { path: "/resources", icon: BookOpen, label: "Resources" },
-  { path: "/profile", icon: User, label: "Profile" },
+  { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard", tourId: "tour-dashboard" },
+  { path: "/log", icon: PenLine, label: "Log", tourId: "tour-log" },
+  { path: "/insights", icon: BarChart3, label: "Insights", tourId: "tour-insights" },
+  { path: "/resources", icon: BookOpen, label: "Resources", tourId: "tour-resources" },
+  { path: "/profile", icon: User, label: "Profile", tourId: "tour-profile" },
 ];
 
 const PAGE_TITLES = {
@@ -118,7 +119,10 @@ export default function AppLayout() {
       </main>
 
       {/* Luna AI Button */}
-      <LunaButton user={user} cycleMode={cycleData.mode} cycleDay={cycleData.day} eddInfo={cycleData.edd} />
+      <div id="tour-luna">
+        <LunaButton user={user} cycleMode={cycleData.mode} cycleDay={cycleData.day} eddInfo={cycleData.edd} />
+      </div>
+      <GuidedTour />
 
       {/* Bottom Navigation */}
       <nav
@@ -126,11 +130,12 @@ export default function AppLayout() {
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="max-w-lg mx-auto flex justify-around py-2 px-2">
-          {NAV_ITEMS.map(({ path, icon: Icon, label }) => {
+          {NAV_ITEMS.map(({ path, icon: Icon, label, tourId }) => {
             const isActive = location.pathname === path;
             return (
               <button
                 key={path}
+                id={tourId}
                 onClick={() => {
                   if (isActive) {
                     // Re-click on active tab: scroll to top
