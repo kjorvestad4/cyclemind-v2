@@ -252,11 +252,11 @@ export default function LunaCapabilitiesDemo() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
                   <p className="text-xs text-pink-700 dark:text-pink-300 font-semibold mb-1">Conception Probability</p>
-                  <p className="text-2xl font-bold text-pink-600 dark:text-pink-400">{testResults.fertility.conceptionProbability}%</p>
+                  <p className="text-2xl font-bold text-black">{testResults.fertility.conceptionProbability}%</p>
                 </div>
                 <div className="bg-pink-50 dark:bg-pink-950/30 rounded-lg p-3 border border-pink-200 dark:border-pink-800">
                   <p className="text-xs text-pink-700 dark:text-pink-300 font-semibold mb-1">Cycle Day</p>
-                  <p className="text-2xl font-bold text-slate-800 dark:text-slate-200">{testResults.fertility.currentCycleDay}</p>
+                  <p className="text-2xl font-bold text-black">{testResults.fertility.currentCycleDay}</p>
                 </div>
               </div>
               {testResults.fertility.fertilityWindow && (
