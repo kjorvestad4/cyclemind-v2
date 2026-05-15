@@ -16,6 +16,7 @@ import Welcome from '@/pages/Welcome';
 import DoctorShareView from '@/pages/DoctorShareView';
 import Landing from '@/pages/Landing';
 import Billing from '@/pages/Billing';
+import LunaCapabilitiesDemo from '@/pages/LunaCapabilitiesDemo';
 
 const pageVariants = {
   initial: { opacity: 0, x: 24 },
@@ -34,6 +35,7 @@ const AnimatedOutlet = () => {
         {/* Landing Pages */}
         <Route path="/landing" element={<Landing />} />
         <Route path="/billing" element={<Billing />} />
+        <Route path="/luna-demo" element={<LunaCapabilitiesDemo />} />
 
         {/* Welcome + Onboarding */}
         <Route path="/welcome" element={<Welcome />} />
