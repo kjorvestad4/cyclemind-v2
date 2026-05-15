@@ -9,9 +9,11 @@ export default function Welcome() {
     >
       <div className="flex flex-col items-center space-y-8 text-center max-w-md w-full">
         <div className="space-y-4">
-          <div className="w-20 h-20 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto">
-            <span className="text-4xl">🌙</span>
-          </div>
+          <img
+            src="https://media.base44.com/images/public/69fb50354d2f1f828f13182f/1f6e3c73e_generated_image.png"
+            alt="CycleMind"
+            className="w-20 h-20 rounded-2xl object-cover mx-auto shadow-md"
+          />
           <h1 className="font-serif text-3xl font-semibold text-foreground">Welcome to CycleMind</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
             The app that supports your full hormonal journey — from PMDD to pregnancy to menopause.

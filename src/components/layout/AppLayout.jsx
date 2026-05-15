@@ -67,9 +67,11 @@ export default function AppLayout() {
             /* Brand logo on top-level pages */
             <>
               <Link to="/dashboard" className="flex items-center gap-2 py-1 px-1 -mx-1 rounded-lg min-w-0">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <span className="text-primary text-sm">🌙</span>
-                </div>
+                <img
+                  src="https://media.base44.com/images/public/69fb50354d2f1f828f13182f/1f6e3c73e_generated_image.png"
+                  alt="CycleMind"
+                  className="w-8 h-8 rounded-xl object-cover shrink-0"
+                />
                 <h1 className="font-serif text-lg font-semibold text-foreground">CycleMind</h1>
               </Link>
               <div className="flex items-center gap-2 shrink-0">
