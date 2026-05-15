@@ -139,6 +139,27 @@ function ScoreBadge({ score, max, thresholds }) {
   );
 }
 
+function ScaleSection({ title, score, scoreLabel, scoreColor, children, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="rounded-xl border border-border/50 overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-3 py-2.5 bg-muted/30 hover:bg-muted/50 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <p className="text-xs font-bold uppercase tracking-wider text-foreground">{title}</p>
+          {score > 0 && scoreLabel && (
+            <span className={`text-[10px] font-semibold ${scoreColor}`}>{score} — {scoreLabel}</span>
+          )}
+        </div>
+        {open ? <ChevronUp className="w-3.5 h-3.5 text-muted-foreground shrink-0" /> : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
+      </button>
+      {open && <div className="px-3 pb-3">{children}</div>}
+    </div>
+  );
+}
+
 export default function MoodScales({
   phq9Responses = {}, gad7Responses = {}, onPHQ9Change, onGAD7Change, hidePhq9 = false,
   pcl5Responses = {}, onPCL5Change,
@@ -200,118 +221,124 @@ export default function MoodScales({
       </button>
 
       {open && (
-        <div className="px-4 pb-5 space-y-6">
+        <div className="px-4 pb-5 space-y-3">
           <p className="text-xs text-muted-foreground italic bg-muted/40 rounded-xl p-3">
             Over the <strong>past 2 weeks</strong>, how often have you been bothered by any of the following problems?
           </p>
 
           {/* PHQ-9 — hidden in perinatal mode */}
           {!hidePhq9 && (
-            <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-bold uppercase tracking-wider text-foreground">PHQ-9 · Depression Screening</p>
-                {phqTotal > 0 && (
-                  <span className={`text-xs font-semibold ${phqSev?.color}`}>{phqTotal}/27 — {phqSev?.text}</span>
+            <ScaleSection
+              title="PHQ-9 · Depression Screening"
+              score={phqTotal}
+              scoreLabel={phqSev?.text}
+              scoreColor={phqSev?.color}
+            >
+              <div className="space-y-0 pt-1">
+                {PHQ9.map((q) => (
+                  <ScaleQuestion key={q.key} q={q} value={phq9Responses[q.key] ?? null} onChange={handlePHQ} />
+                ))}
+                {phqTotal >= 10 && (
+                  <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mt-2">
+                    <p className="text-xs text-amber-800 dark:text-amber-200">⚠ Score {phqTotal}/27 suggests moderate-to-severe depression. Consider sharing this with your healthcare provider.</p>
+                  </div>
+                )}
+                {(phq9Responses.q9 === 2 || phq9Responses.q9 === 3) && (
+                  <div className="bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-700 rounded-xl p-3 mt-2">
+                    <p className="text-xs text-red-800 dark:text-red-200 font-semibold">🆘 You indicated thoughts of self-harm. Please reach out to a crisis line or healthcare provider. If in the US, call or text 988.</p>
+                  </div>
                 )}
               </div>
-              {PHQ9.map((q) => (
-                <ScaleQuestion key={q.key} q={q} value={phq9Responses[q.key] ?? null} onChange={handlePHQ} />
-              ))}
-              {phqTotal >= 10 && (
-                <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mt-2">
-                  <p className="text-xs text-amber-800 dark:text-amber-200">⚠ Score {phqTotal}/27 suggests moderate-to-severe depression. Consider sharing this with your healthcare provider.</p>
-                </div>
-              )}
-              {(phq9Responses.q9 === 2 || phq9Responses.q9 === 3) && (
-                <div className="bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-700 rounded-xl p-3 mt-2">
-                  <p className="text-xs text-red-800 dark:text-red-200 font-semibold">🆘 You indicated thoughts of self-harm. Please reach out to a crisis line or healthcare provider. If in the US, call or text 988.</p>
-                </div>
-              )}
-            </div>
+            </ScaleSection>
           )}
 
           {/* GAD-7 */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-bold uppercase tracking-wider text-foreground">GAD-7 · Anxiety Screening</p>
-              {gadTotal > 0 && (
-                <span className={`text-xs font-semibold ${gadSev?.color}`}>{gadTotal}/21 — {gadSev?.text}</span>
+          <ScaleSection
+            title="GAD-7 · Anxiety Screening"
+            score={gadTotal}
+            scoreLabel={gadSev?.text}
+            scoreColor={gadSev?.color}
+          >
+            <div className="space-y-0 pt-1">
+              {GAD7.map((q) => (
+                <ScaleQuestion key={q.key} q={q} value={gad7Responses[q.key] ?? null} onChange={handleGAD} />
+              ))}
+              {gadTotal >= 10 && (
+                <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mt-2">
+                  <p className="text-xs text-amber-800 dark:text-amber-200">⚠ Score {gadTotal}/21 suggests moderate-to-severe anxiety. Consider sharing this with your healthcare provider.</p>
+                </div>
               )}
             </div>
-            {GAD7.map((q) => (
-              <ScaleQuestion key={q.key} q={q} value={gad7Responses[q.key] ?? null} onChange={handleGAD} />
-            ))}
-            {gadTotal >= 10 && (
-              <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-xl p-3 mt-2">
-                <p className="text-xs text-amber-800 dark:text-amber-200">⚠ Score {gadTotal}/21 suggests moderate-to-severe anxiety. Consider sharing this with your healthcare provider.</p>
-              </div>
-            )}
-          </div>
+          </ScaleSection>
 
           {/* PCL-5 — Premium only */}
           {showPCL5 && (
-            <div className="space-y-1">
-              <div className="flex items-center justify-between flex-wrap gap-1">
-                <p className="text-xs font-bold uppercase tracking-wider text-foreground">PCL-5 · Trauma Symptom Screening</p>
-                {pcl5Total > 0 && <ScoreBadge score={pcl5Total} max={80} thresholds={{ moderate: 23, high: 33 }} />}
-              </div>
-              <p className="text-[11px] text-muted-foreground pb-1">In the past month, how much were you bothered by: (PCL-5, Weathers et al., 2013 — public domain VA)</p>
-              {PCL5_ITEMS.map(({ key, label }) => (
-                <div key={key} className="space-y-1.5 py-2 border-b border-border/40 last:border-0">
-                  <p className="text-xs font-medium text-foreground leading-snug">{label}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {pcl5Opts.map((opt, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handlePCL5(key, i)}
-                        className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all ${
-                          pcl5Responses[key] === i
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-muted text-muted-foreground border-border hover:border-primary/50"
-                        }`}
-                      >
-                        {opt}
-                      </button>
-                    ))}
+            <ScaleSection
+              title="PCL-5 · Trauma Symptom Screening"
+              score={pcl5Total}
+              scoreLabel={pcl5Total > 0 ? (pcl5Total >= 33 ? "High — speak to your provider" : pcl5Total >= 23 ? "Moderate" : "Low concern") : null}
+              scoreColor={pcl5Total >= 33 ? "text-destructive" : pcl5Total >= 23 ? "text-amber-600" : "text-emerald-600"}
+            >
+              <div className="pt-1">
+                <p className="text-[11px] text-muted-foreground pb-2">In the past month, how much were you bothered by: (PCL-5, Weathers et al., 2013 — public domain VA)</p>
+                {PCL5_ITEMS.map(({ key, label }) => (
+                  <div key={key} className="space-y-1.5 py-2 border-b border-border/40 last:border-0">
+                    <p className="text-xs font-medium text-foreground leading-snug">{label}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {pcl5Opts.map((opt, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handlePCL5(key, i)}
+                          className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all ${
+                            pcl5Responses[key] === i
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-muted text-muted-foreground border-border hover:border-primary/50"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
-              <p className="text-[10px] text-muted-foreground pt-1">PCL-5 score ≥31–33 may indicate PTSD — discuss with a mental health professional. Not diagnostic.</p>
-            </div>
+                ))}
+                <p className="text-[10px] text-muted-foreground pt-2">PCL-5 score ≥31–33 may indicate PTSD — discuss with a mental health professional. Not diagnostic.</p>
+              </div>
+            </ScaleSection>
           )}
 
           {/* FSFI — Premium only */}
           {showFSFI && (
-            <div className="space-y-1">
-              <p className="text-xs font-bold uppercase tracking-wider text-foreground">FSFI · Sexual Function Screening</p>
-              <p className="text-[11px] text-muted-foreground pb-1">Optional and confidential. Rate based on the past 4 weeks. (Rosen et al., 2000 — public domain)</p>
-              {FSFI_DOMAINS.map(({ domain, items }) => (
-                <div key={domain} className="space-y-3 pt-2">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{domain}</p>
-                  {items.map(({ key, label, options }) => (
-                    <div key={key} className="space-y-1.5">
-                      <p className="text-xs font-medium text-foreground leading-snug">{label}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {options.map((opt, i) => (
-                          <button
-                            key={i}
-                            onClick={() => handleFSFI(key, i)}
-                            className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all ${
-                              fsfiResponses[key] === i
-                                ? "bg-primary text-primary-foreground border-primary"
-                                : "bg-muted text-muted-foreground border-border hover:border-primary/50"
-                            }`}
-                          >
-                            {opt}
-                          </button>
-                        ))}
+            <ScaleSection title="FSFI · Sexual Function Screening">
+              <div className="pt-1">
+                <p className="text-[11px] text-muted-foreground pb-2">Optional and confidential. Rate based on the past 4 weeks. (Rosen et al., 2000 — public domain)</p>
+                {FSFI_DOMAINS.map(({ domain, items }) => (
+                  <div key={domain} className="space-y-3 pt-2">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{domain}</p>
+                    {items.map(({ key, label, options }) => (
+                      <div key={key} className="space-y-1.5">
+                        <p className="text-xs font-medium text-foreground leading-snug">{label}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {options.map((opt, i) => (
+                            <button
+                              key={i}
+                              onClick={() => handleFSFI(key, i)}
+                              className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-all ${
+                                fsfiResponses[key] === i
+                                  ? "bg-primary text-primary-foreground border-primary"
+                                  : "bg-muted text-muted-foreground border-border hover:border-primary/50"
+                              }`}
+                            >
+                              {opt}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-              <p className="text-[10px] text-muted-foreground pt-2">FSFI is a validated research instrument. Scores are not diagnostic — discuss with your provider.</p>
-            </div>
+                    ))}
+                  </div>
+                ))}
+                <p className="text-[10px] text-muted-foreground pt-2">FSFI is a validated research instrument. Scores are not diagnostic — discuss with your provider.</p>
+              </div>
+            </ScaleSection>
           )}
 
           <p className="text-[10px] text-muted-foreground">These validated screening tools are not a diagnosis. Always consult a licensed healthcare professional.</p>
