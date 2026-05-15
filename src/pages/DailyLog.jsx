@@ -757,39 +757,44 @@ export default function DailyLog() {
         </div>
       </Section>
 
-      {/* Save Buttons */}
-      <div className="fixed bottom-20 left-0 right-0 z-30 px-4 max-w-lg mx-auto space-y-2">
-        <div className="flex gap-2">
+      {/* Save Buttons — iOS-native style sticky footer */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 bg-background/95 backdrop-blur-lg border-t border-border/50"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 4.5rem)" }}
+      >
+        <div className="max-w-lg mx-auto px-4 pt-3 pb-2 flex items-center gap-2">
           {existingEntry && (
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-12 w-12 rounded-2xl shrink-0 text-muted-foreground hover:text-destructive hover:border-destructive"
+            <button
               onClick={() => clearMutation.mutate()}
               disabled={clearMutation.isPending}
+              className="h-11 w-11 rounded-2xl flex items-center justify-center border border-border text-muted-foreground hover:text-destructive hover:border-destructive transition-colors shrink-0"
+              aria-label="Delete entry"
             >
-              <Trash2 className="w-5 h-5" />
-            </Button>
+              <Trash2 className="w-4.5 h-4.5" />
+            </button>
           )}
-          <Button
+          <button
             onClick={() => saveMutation.mutate()}
             disabled={saveMutation.isPending}
-            className="flex-1 h-12 rounded-2xl font-semibold gap-2 shadow-lg shadow-primary/20 text-base"
+            className={`flex-1 h-11 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-sm ${
+              hasUnsavedChanges
+                ? "bg-primary text-primary-foreground shadow-primary/20"
+                : "bg-primary/10 text-primary"
+            }`}
           >
             {saveMutation.isPending
-              ? <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-              : hasUnsavedChanges ? <Save className="w-5 h-5" /> : <Check className="w-5 h-5" />}
-            {hasUnsavedChanges ? "Save Daily Entry" : "Saved ✓"}
-          </Button>
+              ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              : hasUnsavedChanges ? <Save className="w-4 h-4" /> : <Check className="w-4 h-4" />}
+            {hasUnsavedChanges ? "Save Entry" : "Saved ✓"}
+          </button>
+          <button
+            onClick={() => saveTomorrowMutation.mutate()}
+            disabled={saveTomorrowMutation.isPending}
+            className="h-11 px-4 rounded-2xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+          >
+            Next →
+          </button>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => saveTomorrowMutation.mutate()}
-          disabled={saveTomorrowMutation.isPending}
-          className="w-full h-11 rounded-2xl font-medium text-sm bg-card"
-        >
-          Save & Continue Tomorrow →
-        </Button>
       </div>
 
       <p className="text-[10px] text-muted-foreground text-center pb-2">

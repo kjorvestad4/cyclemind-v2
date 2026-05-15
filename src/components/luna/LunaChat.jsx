@@ -270,7 +270,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
       <div className="w-full max-w-md h-[640px] rounded-3xl bg-gradient-to-b from-teal-50 via-white to-blue-50 dark:from-teal-950 dark:via-slate-900 dark:to-blue-950 shadow-2xl flex flex-col border border-teal-200 dark:border-teal-900 overflow-hidden" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
-        <div className="px-5 py-4 border-b flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+        <div className="px-5 py-4 border-b flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur" style={{ paddingTop: `calc(1rem + env(safe-area-inset-top))` }}>
           <div className="flex items-center gap-3 flex-1">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-blue-600 flex items-center justify-center shadow">
               <Moon className="w-5 h-5 text-white" />

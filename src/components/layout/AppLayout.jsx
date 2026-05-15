@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, PenLine, BarChart3, BookOpen, User, LogOut } from "lucide-react";
+import { LayoutDashboard, PenLine, BarChart3, BookOpen, User, LogOut, ChevronLeft } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
 import { getCycleDay } from "@/lib/symptoms";
@@ -16,12 +16,23 @@ const NAV_ITEMS = [
   { path: "/profile", icon: User, label: "Profile" },
 ];
 
+const PAGE_TITLES = {
+  "/dashboard": "Dashboard",
+  "/log": "Daily Log",
+  "/insights": "Insights",
+  "/resources": "Resources",
+  "/profile": "Profile",
+};
+
 export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const mainRef = useScrollPosition(location.pathname);
   const { user } = useAuth();
   const [cycleData, setCycleData] = useState({ mode: 'menstrual', day: null, edd: null });
+
+  const isTopLevel = Object.keys(PAGE_TITLES).includes(location.pathname);
+  const pageTitle = PAGE_TITLES[location.pathname] || "CycleMind";
 
   useEffect(() => {
     if (!user) return;
@@ -52,28 +63,44 @@ export default function AppLayout() {
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-
-            <Link to="/dashboard" className="flex items-center gap-2 py-1 px-1 -mx-1 rounded-lg">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <span className="text-primary text-sm">🌙</span>
+          {isTopLevel ? (
+            /* Brand logo on top-level pages */
+            <>
+              <Link to="/dashboard" className="flex items-center gap-2 py-1 px-1 -mx-1 rounded-lg min-w-0">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <span className="text-primary text-sm">🌙</span>
+                </div>
+                <h1 className="font-serif text-lg font-semibold text-foreground">CycleMind</h1>
+              </Link>
+              <div className="flex items-center gap-2 shrink-0">
+                <p className="text-[10px] text-muted-foreground max-w-[100px] text-right leading-tight hidden sm:block">
+                  Not medical advice. Always consult your doctor.
+                </p>
+                <button
+                  onClick={() => base44.auth.logout("/welcome")}
+                  className="flex flex-col items-center gap-0.5 hover:bg-muted rounded-xl px-2 py-1 transition-colors"
+                  aria-label="Sign out"
+                >
+                  <LogOut className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground font-medium">Sign out</span>
+                </button>
               </div>
-              <h1 className="font-serif text-lg font-semibold text-foreground">CycleMind</h1>
-            </Link>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <p className="text-[10px] text-muted-foreground max-w-[120px] text-right leading-tight">
-              Not medical advice. Always consult your doctor.
-            </p>
-            <button
-              onClick={() => base44.auth.logout("/welcome")}
-              className="flex flex-col items-center gap-0.5 hover:bg-muted rounded-xl px-2 py-1 transition-colors"
-              aria-label="Sign out"
-            >
-              <LogOut className="w-4 h-4 text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground font-medium">Sign out</span>
-            </button>
-          </div>
+            </>
+          ) : (
+            /* Back button + page title on child paths */
+            <>
+              <button
+                onClick={() => navigate(-1)}
+                className="flex items-center gap-1 px-2 py-1.5 -ml-1 rounded-xl hover:bg-muted transition-colors text-foreground"
+                aria-label="Go back"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                <span className="text-sm font-medium">Back</span>
+              </button>
+              <h1 className="font-serif text-base font-semibold text-foreground absolute left-1/2 -translate-x-1/2">{pageTitle}</h1>
+              <div className="w-16" /> {/* spacer to balance the back button */}
+            </>
+          )}
         </div>
       </header>
 
