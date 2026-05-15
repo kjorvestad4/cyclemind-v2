@@ -30,6 +30,10 @@ const ANTIDEPRESSANTS = [
   "Phenelzine (Nardil)",
   "Tranylcypromine (Parnate)",
   "Selegiline (Emsam)",
+  // Other
+  "Nefazodone (Serzone)",
+  "Gepirone (Exxua)",
+  "Desipramine (Norpramin)",
 ];
 
 const SUGGESTED_MEDS = [
