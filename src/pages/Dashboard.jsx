@@ -202,12 +202,13 @@ export default function Dashboard() {
         />
 
         {/* Cycle History Widget */}
-        {isMenstrual && cycles.length > 1 && (
+        {isMenstrual && cycles.length > 0 && (
           <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Cycle History</p>
             <div className="space-y-2">
               {[...cycles]
                 .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
+                .slice(1) // Skip current active cycle (most recent)
                 .slice(0, 3)
                 .map((cycle, i) => (
                   <div key={cycle.id} className="flex items-center justify-between text-sm">
@@ -219,6 +220,11 @@ export default function Dashboard() {
                     </span>
                   </div>
                 ))}
+              {cycles.length === 1 && (
+                <p className="text-xs text-muted-foreground text-center py-2">
+                  Log your next period to see cycle history
+                </p>
+              )}
             </div>
           </div>
         )}
