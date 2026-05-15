@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, PenLine, BarChart3, BookOpen, User, ChevronLeft, LogOut } from "lucide-react";
+import { LayoutDashboard, PenLine, BarChart3, BookOpen, User, LogOut } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
 import { getCycleDay } from "@/lib/symptoms";
 import { format } from "date-fns";
 import LunaButton from "@/components/luna/LunaButton";
+import { useAuth } from "@/lib/AuthContext";
 
 const NAV_ITEMS = [
   { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -18,19 +19,15 @@ const NAV_ITEMS = [
 export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const isRoot = location.pathname === "/" || location.pathname === "/dashboard";
   const mainRef = useScrollPosition(location.pathname);
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [cycleData, setCycleData] = useState({ mode: 'menstrual', day: null, edd: null });
 
   useEffect(() => {
-    const loadData = async () => {
+    if (!user) return;
+    const loadCycleData = async () => {
       try {
-        const currentUser = await base44.auth.me();
-        if (!currentUser) return;
-        setUser(currentUser);
-
-        const cycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, "-start_date", 5);
+        const cycles = await base44.entities.Cycle.filter({ created_by: user.email }, "-start_date", 5);
         if (cycles.length > 0) {
           const latestCycle = cycles[0];
           const cycleDay = getCycleDay(format(new Date(), "yyyy-MM-dd"), cycles);
@@ -41,12 +38,11 @@ export default function AppLayout() {
           });
         }
       } catch (err) {
-        console.error('Failed to load user data for Luna:', err);
+        console.error('Failed to load cycle data for Luna:', err);
       }
     };
-
-    loadData();
-  }, []);
+    loadCycleData();
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
