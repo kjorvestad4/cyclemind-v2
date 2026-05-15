@@ -123,7 +123,7 @@ export default function GuidedTour() {
 
   return (
     <>
-      {/* Dimmed overlay with cutout */}
+      {/* Dimmed overlay — pointer-events-none so it never blocks clicks */}
       <div
         ref={overlayRef}
         className="fixed inset-0 z-[9998] pointer-events-none"
@@ -134,10 +134,7 @@ export default function GuidedTour() {
         }}
       />
 
-      {/* Click-blocker overlay */}
-      <div className="fixed inset-0 z-[9998]" onClick={() => {}} />
-
-      {/* Highlight ring around target */}
+      {/* Highlight ring around target — pointer-events-none */}
       {rect && (
         <div
           className="fixed z-[9999] rounded-2xl ring-2 ring-teal-400 ring-offset-2 ring-offset-transparent pointer-events-none transition-all duration-300"
