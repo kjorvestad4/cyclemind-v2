@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { Moon, Crown } from 'lucide-react';
+import { Moon, Crown, Bell } from 'lucide-react';
 import { getUserTier, TIERS } from '@/lib/freemium';
 import LunaChat from './LunaChat';
+import LunaAlertsPopup from './LunaAlertsPopup';
+import LunaNotificationBadge from './LunaNotificationBadge';
 
 export default function LunaButton({ user, cycleMode, cycleDay, eddInfo }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showAlerts, setShowAlerts] = useState(false);
   const isPremium = user ? getUserTier(user) === TIERS.PREMIUM : false;
 
   if (!user) {
@@ -16,10 +19,11 @@ export default function LunaButton({ user, cycleMode, cycleDay, eddInfo }) {
       <>
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-32 right-4 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-teal-600 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 flex items-center justify-center"
+          className="fixed bottom-32 right-4 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-teal-600 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 flex items-center justify-center relative"
           title="Chat with Luna"
         >
           <Moon className="w-6 h-6" />
+          <LunaNotificationBadge onClick={() => setShowAlerts(true)} />
         </button>
 
         {isOpen && (
@@ -29,6 +33,10 @@ export default function LunaButton({ user, cycleMode, cycleDay, eddInfo }) {
             eddInfo={eddInfo}
             onClose={() => setIsOpen(false)}
           />
+        )}
+
+        {showAlerts && (
+          <LunaAlertsPopup onClose={() => setShowAlerts(false)} />
         )}
       </>
     );

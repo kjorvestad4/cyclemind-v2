@@ -1,0 +1,62 @@
+{
+  "name": "LunaAlert",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user this alert belongs to"
+    },
+    "alert_type": {
+      "type": "string",
+      "enum": [
+        "luteal_phase",
+        "severe_symptoms",
+        "log_reminder",
+        "pattern_insight",
+        "fertility_window",
+        "menopause_milestone"
+      ],
+      "description": "Type of alert"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short alert title"
+    },
+    "message": {
+      "type": "string",
+      "description": "Detailed alert message"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "description": "Alert priority"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has read this alert"
+    },
+    "created_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When this alert was generated"
+    },
+    "expires_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When this alert should expire (7 days from creation)"
+    }
+  },
+  "required": [
+    "user_id",
+    "alert_type",
+    "title",
+    "message",
+    "created_date"
+  ]
+}
