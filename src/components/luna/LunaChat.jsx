@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2, Mic, MicOff, FileDown, Bell } from 'lucide-react';
+import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2, Mic, MicOff, FileDown, Bell, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { format } from 'date-fns';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 // Actions that should navigate to the log page instead of sending a chat message
 const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log', 'log my mood today', 'log today', 'log my symptoms', 'log symptoms today', 'track my symptoms today'];
@@ -459,6 +459,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
 
 // Notifications Panel Component
 function NotificationsPanel({ onClose }) {
+  const queryClient = useQueryClient();
   const { data: alertData, isLoading } = useQuery({
     queryKey: ["luna-alerts"],
     queryFn: async () => {
@@ -467,8 +468,19 @@ function NotificationsPanel({ onClose }) {
     },
     refetchInterval: 30000,
   });
+  const [showRead, setShowRead] = useState(false);
+
+  const markAsReadMutation = useMutation({
+    mutationFn: async (alertId) => {
+      await base44.entities.LunaAlert.update(alertId, { is_read: true });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["luna-alerts"] });
+    },
+  });
 
   const alerts = alertData?.alerts || [];
+  const filteredAlerts = showRead ? alerts : alerts.filter(a => !a.is_read);
 
   const alertIcons = {
     luteal_phase: AlertCircle,
@@ -486,43 +498,83 @@ function NotificationsPanel({ onClose }) {
   };
 
   return (
-    <div className="p-5 space-y-3">
-      {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
-        </div>
-      ) : alerts.length === 0 ? (
-        <div className="text-center py-12">
-          <Bell className="w-12 h-12 mx-auto text-slate-300 mb-3" />
-          <p className="text-slate-600 dark:text-slate-400">No alerts right now</p>
-          <p className="text-xs text-muted-foreground mt-1">Luna will notify you when she spots patterns or important updates</p>
-        </div>
-      ) : (
-        alerts.map((alert) => {
-          const Icon = alertIcons[alert.alert_type] || Bell;
-          const colorClass = alertColors[alert.severity];
-          
-          return (
-            <div
-              key={alert.id}
-              className={`p-4 rounded-2xl border transition-all ${colorClass} ${!alert.is_read ? "ring-2 ring-teal-500/30" : "opacity-80"}`}
-            >
-              <div className="flex items-start gap-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${alert.severity === "high" ? "bg-white/50" : "bg-white/30"}`}>
-                  <Icon className="w-4 h-4" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold mb-1">{alert.title}</p>
-                  <p className="text-xs leading-relaxed opacity-90">{alert.message}</p>
-                  <p className="text-[10px] mt-2 opacity-70">
-                    {format(new Date(alert.created_date), "MMM d, yyyy")}
-                  </p>
+    <div className="flex flex-col h-full">
+      {/* Header with filter toggle */}
+      <div className="px-5 py-3 border-b flex items-center justify-between bg-slate-50 dark:bg-slate-800">
+        <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
+          {showRead ? alerts.length : alerts.filter(a => !a.is_read).length} alert{showRead ? alerts.length !== 1 ? "s" : "" : alerts.filter(a => !a.is_read).length !== 1 ? "s" : ""}
+        </p>
+        <button
+          onClick={() => setShowRead(!showRead)}
+          className="text-xs text-teal-600 dark:text-teal-400 hover:underline font-medium flex items-center gap-1"
+        >
+          {showRead ? (
+            <>
+              <EyeOff className="w-3 h-3" />
+              Hide Read
+            </>
+          ) : (
+            <>
+              <Eye className="w-3 h-3" />
+              Show All
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Alerts List */}
+      <div className="flex-1 overflow-y-auto p-5 space-y-3">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
+          </div>
+        ) : filteredAlerts.length === 0 ? (
+          <div className="text-center py-12">
+            <Bell className="w-12 h-12 mx-auto text-slate-300 mb-3" />
+            <p className="text-slate-600 dark:text-slate-400">
+              {showRead ? "No read alerts" : "No unread alerts"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {showRead ? "Mark alerts as read to see them here" : "Luna will notify you when she spots patterns or important updates"}
+            </p>
+          </div>
+        ) : (
+          filteredAlerts.map((alert) => {
+            const Icon = alertIcons[alert.alert_type] || Bell;
+            const colorClass = alertColors[alert.severity];
+            
+            return (
+              <div
+                key={alert.id}
+                className={`p-4 rounded-2xl border transition-all ${colorClass} ${!alert.is_read ? "ring-2 ring-teal-500/30" : "opacity-80"}`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${alert.severity === "high" ? "bg-white/50" : "bg-white/30"}`}>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-semibold">{alert.title}</p>
+                      {!alert.is_read && (
+                        <button
+                          onClick={() => markAsReadMutation.mutate(alert.id)}
+                          className="text-xs text-teal-600 dark:text-teal-400 hover:underline font-medium"
+                        >
+                          Mark as read
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-xs leading-relaxed opacity-90 mt-1">{alert.message}</p>
+                    <p className="text-[10px] mt-2 opacity-70">
+                      {format(new Date(alert.created_date), "MMM d, yyyy")}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })
-      )}
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }

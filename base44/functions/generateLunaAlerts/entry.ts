@@ -18,6 +18,21 @@ Deno.serve(async (req) => {
     const todayEntry = entries.find(e => e.date === todayStr);
     const latestCycle = cycles.length > 0 ? cycles[0] : null;
     
+    // Clear old alerts from previous cycles (keep only current cycle alerts)
+    if (latestCycle) {
+      const allAlerts = await base44.entities.LunaAlert.filter({ created_by: user.email });
+      const alertsToDelete = allAlerts.filter(alert => {
+        const alertDate = new Date(alert.created_date);
+        return alertDate < new Date(latestCycle.start_date);
+      });
+      
+      if (alertsToDelete.length > 0) {
+        for (const alert of alertsToDelete) {
+          await base44.entities.LunaAlert.delete(alert.id);
+        }
+      }
+    }
+    
     const alerts = [];
     
     // Helper to create alert
