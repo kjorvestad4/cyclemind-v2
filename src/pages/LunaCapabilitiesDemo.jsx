@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Mic, FileText, Heart, TrendingUp, FileDown, Sparkles, Check, AlertCircle } from "lucide-react";
+import { Mic, FileText, Heart, TrendingUp, FileDown, Sparkles, Check, AlertCircle, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import VoiceLoggingButton from "@/components/luna/VoiceLoggingButton";
 
@@ -13,6 +13,9 @@ export default function LunaCapabilitiesDemo() {
   const [codedResult, setcodedResult] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeDemo, setActiveDemo] = useState(null);
+  const [testResults, setTestResults] = useState({});
+  const [lunaMessage, setLunaMessage] = useState("");
+  const [lunaResponse, setLunaResponse] = useState("");
 
   // Demo 1: Voice Logging
   const handleVoiceLogComplete = (mappedEntry) => {
@@ -50,7 +53,8 @@ export default function LunaCapabilitiesDemo() {
     try {
       const response = await base44.functions.invoke("getFertilityGuidance", {});
       console.log("Fertility Guidance:", response.data);
-      toast.success("Fertility guidance generated! Check console for data.");
+      setTestResults(prev => ({ ...prev, fertility: response.data }));
+      toast.success("Fertility guidance generated! See results below.");
       setActiveDemo("fertility");
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to get fertility guidance");
@@ -62,7 +66,8 @@ export default function LunaCapabilitiesDemo() {
     try {
       const response = await base44.functions.invoke("getMenopauseTrajectory", {});
       console.log("Menopause Trajectory:", response.data);
-      toast.success("Menopause trajectory generated! Check console for data.");
+      setTestResults(prev => ({ ...prev, menopause: response.data }));
+      toast.success("Menopause trajectory generated! See results below.");
       setActiveDemo("menopause");
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to get menopause trajectory");
@@ -78,8 +83,30 @@ export default function LunaCapabilitiesDemo() {
         includeScreening: true
       });
       toast.success("Doctor report generated! Check your downloads folder.");
+      setTestResults(prev => ({ ...prev, doctorReport: "Generated successfully" }));
     } catch (error) {
       toast.error("Failed to generate report");
+    }
+  };
+
+  // Demo 6: Luna Chat Test
+  const testLunaChat = async () => {
+    if (!lunaMessage.trim()) {
+      toast.error("Please enter a message for Luna");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const response = await base44.functions.invoke("lunaChat", {
+        message: lunaMessage
+      });
+      setLunaResponse(response.data.response);
+      toast.success("Luna responded! See below.");
+    } catch (error) {
+      toast.error("Failed to chat with Luna");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -178,8 +205,35 @@ export default function LunaCapabilitiesDemo() {
             <Heart className="w-4 h-4 mr-2" />
             Test Fertility Guidance
           </Button>
-          {activeDemo === "fertility" && (
-            <p className="text-xs text-muted-foreground">Check browser console for fertility data output</p>
+          {testResults.fertility && (
+            <div className="bg-white rounded-lg p-4 space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-muted-foreground">Conception Probability</p>
+                  <p className="font-semibold text-lg">{testResults.fertility.conceptionProbability}%</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Cycle Day</p>
+                  <p className="font-semibold">{testResults.fertility.currentCycleDay}</p>
+                </div>
+              </div>
+              {testResults.fertility.fertilityWindow && (
+                <div>
+                  <p className="text-muted-foreground">Fertility Window</p>
+                  <p className="font-medium">{new Date(testResults.fertility.fertilityWindow.start).toLocaleDateString()} - {new Date(testResults.fertility.fertilityWindow.end).toLocaleDateString()}</p>
+                </div>
+              )}
+              {testResults.fertility.tips && testResults.fertility.tips.length > 0 && (
+                <div>
+                  <p className="text-muted-foreground mb-2">Evidence-Based Tips:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {testResults.fertility.tips.slice(0, 3).map((tip, i) => (
+                      <li key={i}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           )}
         </CardContent>
       </Card>
@@ -200,8 +254,35 @@ export default function LunaCapabilitiesDemo() {
             <TrendingUp className="w-4 h-4 mr-2" />
             Test Menopause Trajectory
           </Button>
-          {activeDemo === "menopause" && (
-            <p className="text-xs text-muted-foreground">Check browser console for menopause trajectory data</p>
+          {testResults.menopause && (
+            <div className="bg-white rounded-lg p-4 space-y-3 text-xs">
+              <div className="flex items-center gap-2">
+                <Badge variant={testResults.menopause.stage.includes("Early") ? "default" : "secondary"}>
+                  {testResults.menopause.stage}
+                </Badge>
+                <span className="text-muted-foreground">Months since last period: {testResults.menopause.monthsSinceLastPeriod || "N/A"}</span>
+              </div>
+              {testResults.menopause.topSymptoms && testResults.menopause.topSymptoms.length > 0 && (
+                <div>
+                  <p className="text-muted-foreground mb-2">Top Symptoms:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {testResults.menopause.topSymptoms.map((symptom, i) => (
+                      <Badge key={i} variant="secondary">{symptom}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {testResults.menopause.recommendations && testResults.menopause.recommendations.length > 0 && (
+                <div>
+                  <p className="text-muted-foreground mb-2">Recommendations:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {testResults.menopause.recommendations.slice(0, 3).map((rec, i) => (
+                      <li key={i}>{rec}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           )}
         </CardContent>
       </Card>
@@ -230,26 +311,57 @@ export default function LunaCapabilitiesDemo() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-teal-600" />
-            Luna Superagent Integration
+            6. Luna Chat - Test Live Conversation
           </CardTitle>
+          <CardDescription>Test Luna's clinical superagent capabilities in real-time</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            All capabilities above are now available through Luna chat. Luna will proactively:
+            Send a message to Luna and see her clinical insights with RAG-powered analysis:
           </p>
-          <ul className="text-xs space-y-1 text-muted-foreground">
-            <li>• Run pattern analysis before every response using generateRAGInsights</li>
-            <li>• Accept voice transcripts and auto-code symptoms</li>
-            <li>• Process journal entries and extract DSM-5 symptoms</li>
-            <li>• Provide fertility guidance when TTC mode is enabled</li>
-            <li>• Track menopause trajectory with STRAW+10 staging</li>
-            <li>• Generate doctor reports on request</li>
-            <li>• Send proactive alerts for high-risk phases</li>
-          </ul>
-          <div className="bg-amber-50 border border-amber-200 rounded p-3">
-            <p className="text-[10px] text-amber-700">
-              <strong>Disclaimer:</strong> Every Luna insight ends with: "This is AI-generated pattern recognition and not a substitute for professional medical advice. Please discuss with your psychiatrist."
-            </p>
+          <Textarea
+            value={lunaMessage}
+            onChange={(e) => setLunaMessage(e.target.value)}
+            placeholder="Try: 'I've been feeling really moody and bloated this week, is this normal for my cycle phase?' or 'Can you analyze my symptoms and tell me if I might have PMDD?'"
+            className="min-h-[80px]"
+          />
+          <div className="flex gap-2">
+            <Button onClick={testLunaChat} disabled={isProcessing || !lunaMessage.trim()}>
+              {isProcessing ? "Luna is thinking..." : "Send to Luna"}
+            </Button>
+            <Button variant="outline" onClick={() => setLunaMessage("I've been feeling really moody and bloated this week, is this normal for my cycle phase?")}>
+              Use Example
+            </Button>
+          </div>
+
+          {lunaResponse && (
+            <div className="bg-white rounded-lg p-4 space-y-3">
+              <div className="flex items-start gap-3">
+                <Sparkles className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
+                <div className="space-y-3 flex-1">
+                  <div className="prose prose-sm max-w-none">
+                    <p className="text-sm leading-relaxed">{lunaResponse}</p>
+                  </div>
+                  <div className="bg-amber-50 border border-amber-200 rounded p-2">
+                    <p className="text-[10px] text-amber-700">
+                      <strong>Disclaimer:</strong> This is AI-generated pattern recognition and not a substitute for professional medical advice. Please discuss with your psychiatrist.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-teal-50 border border-teal-200 rounded p-3 mt-4">
+            <p className="text-xs font-semibold text-teal-800 mb-2">Luna's Capabilities:</p>
+            <ul className="text-xs space-y-1 text-teal-700">
+              <li>✓ Pattern analysis with DSM-5, ACOG, Endocrine Society guidelines</li>
+              <li>✓ Voice-to-symptom logging & journal auto-coding</li>
+              <li>✓ Fertility guidance with conception probability</li>
+              <li>✓ Menopause trajectory with STRAW+10 staging</li>
+              <li>✓ Doctor report generation on request</li>
+              <li>✓ Proactive alerts for high-risk phases</li>
+            </ul>
           </div>
         </CardContent>
       </Card>
