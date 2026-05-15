@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { X, Bell, AlertCircle, Calendar, TrendingUp, MessageCircle, FileDown, Baby, Flame } from "lucide-react";
+import { X, Bell, AlertCircle, Calendar, TrendingUp, MessageCircle, FileDown, Baby, Flame, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 const alertIcons = {
   luteal_phase: Calendar,
@@ -40,6 +41,23 @@ export default function LunaAlertsPopup({ onClose }) {
       queryClient.invalidateQueries({ queryKey: ["luna-alerts"] });
     },
   });
+
+  const clearAllMutation = useMutation({
+    mutationFn: async () => {
+      const unreadAlerts = alerts.filter(a => !a.is_read);
+      for (const alert of unreadAlerts) {
+        await base44.entities.LunaAlert.update(alert.id, { is_read: true });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["luna-alerts"] });
+      toast.success("All alerts cleared");
+    },
+  });
+
+  const handleClearAll = () => {
+    clearAllMutation.mutate();
+  };
 
   const handleAlertClick = (alert) => {
     if (!alert.is_read) {
@@ -82,9 +100,20 @@ export default function LunaAlertsPopup({ onClose }) {
               </p>
             </div>
           </div>
-          <button onClick={onClose} aria-label="Close alerts">
-            <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-          </button>
+          <div className="flex items-center gap-2">
+            {alerts.some(a => !a.is_read) && (
+              <button
+                onClick={handleClearAll}
+                disabled={clearAllMutation.isPending}
+                className="text-xs text-red-600 dark:text-red-400 hover:underline font-medium disabled:opacity-50"
+              >
+                Clear All
+              </button>
+            )}
+            <button onClick={onClose} aria-label="Close alerts">
+              <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+            </button>
+          </div>
         </div>
 
         {/* Alerts List */}

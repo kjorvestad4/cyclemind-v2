@@ -306,6 +306,7 @@ export default function Profile() {
   const [notifDaily, setNotifDaily] = useState(true);
   const [notifMode, setNotifMode] = useState(true);
   const [lutealMedReminder, setLutealMedReminder] = useState(false);
+  const [fertilityMode, setFertilityMode] = useState(false);
   const [researchOptIn, setResearchOptIn] = useState(false);
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -321,6 +322,7 @@ export default function Profile() {
       if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
       setFullName(u?.display_name || u?.full_name || "");
       if (u?.luteal_med_reminder !== undefined) setLutealMedReminder(!!u.luteal_med_reminder);
+      if (u?.fertility_mode !== undefined) setFertilityMode(!!u.fertility_mode);
       if (u?.research_opt_in !== undefined) setResearchOptIn(!!u.research_opt_in);
     }).catch(() => {});
   }, []);
@@ -412,6 +414,11 @@ export default function Profile() {
   const handleLutealToggle = (val) => {
     setLutealMedReminder(val);
     savePrefToggle("luteal_med_reminder", val);
+  };
+
+  const handleFertilityToggle = (val) => {
+    setFertilityMode(val);
+    savePrefToggle("fertility_mode", val);
   };
 
   const handleResearchToggle = (val) => {
@@ -614,13 +621,22 @@ export default function Profile() {
             <Toggle checked={notifMode} onChange={setNotifMode} />
           </div>
           {isMenstrual && (
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <p className="text-sm font-medium">💊 Luteal Phase Medication Reminder</p>
-                <p className="text-[11px] text-muted-foreground">Shows a gentle in-app reminder during your luteal phase to stay consistent with medications (SSRIs, supplements, etc.)</p>
+            <>
+              <div className="flex items-center justify-between py-3">
+                <div>
+                  <p className="text-sm font-medium">🌸 Fertility Mode</p>
+                  <p className="text-[11px] text-muted-foreground">Get alerts for your fertile window and conception probability</p>
+                </div>
+                <Toggle checked={fertilityMode} onChange={handleFertilityToggle} />
               </div>
-              <Toggle checked={lutealMedReminder} onChange={handleLutealToggle} />
-            </div>
+              <div className="flex items-center justify-between py-3">
+                <div>
+                  <p className="text-sm font-medium">💊 Luteal Phase Medication Reminder</p>
+                  <p className="text-[11px] text-muted-foreground">Shows a gentle in-app reminder during your luteal phase to stay consistent with medications (SSRIs, supplements, etc.)</p>
+                </div>
+                <Toggle checked={lutealMedReminder} onChange={handleLutealToggle} />
+              </div>
+            </>
           )}
         </div>
 
