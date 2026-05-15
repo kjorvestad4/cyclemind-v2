@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2 } from 'lucide-react';
+import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2, Mic, MicOff, FileDown } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { format } from 'date-fns';
@@ -41,14 +41,17 @@ function saveSession(messages, savedIndexes) {
   } catch {}
 }
 
-export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
+export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, menopauseStage, onClose }) {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [savedSymptomIndexes, setSavedSymptomIndexes] = useState(new Set());
+  const [isListening, setIsListening] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
   const messagesEndRef = useRef(null);
   const initializedRef = useRef(false);
+  const recognitionRef = useRef(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -81,6 +84,8 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
           cycleMode,
           cycleDay,
           eddInfo,
+          fertilityMode,
+          menopauseStage,
         });
         setMessages([{
           role: 'assistant',
@@ -120,6 +125,8 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
         cycleMode,
         cycleDay,
         eddInfo,
+        fertilityMode,
+        menopauseStage,
         alreadySavedSymptoms,
       });
 
@@ -129,7 +136,8 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
         content: botReply.message,
         suggestedActions: botReply.suggestedActions || [],
         flags: botReply.flags || { escalate: false, crisis: false },
-        detectedSymptoms: botReply.detectedSymptoms || []
+        detectedSymptoms: botReply.detectedSymptoms || [],
+        codedSymptoms: botReply.codedSymptoms || {}
       }]);
     } catch (err) {
       console.error(err);
@@ -151,6 +159,10 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
       window.location.href = '/log#journal';
       return;
     }
+    if (lc === 'generate doctor report') {
+      handleGenerateReport();
+      return;
+    }
     handleSend(action);
   };
 
@@ -159,7 +171,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
       const today = format(new Date(), 'yyyy-MM-dd');
       const existing = await base44.entities.DailyEntry.filter({ date: today });
       const entry = existing[0];
-      const newSymptoms = symptoms.map(name => ({ name, severity: 3 }));
+      const newSymptoms = symptoms.map(s => typeof s === 'string' ? { name: s, severity: 3 } : s);
       if (entry) {
         const merged = [...(entry.custom_symptoms || [])];
         newSymptoms.forEach(s => {
@@ -170,10 +182,70 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
         await base44.entities.DailyEntry.create({ date: today, custom_symptoms: newSymptoms });
       }
       setSavedSymptomIndexes(prev => new Set([...prev, msgIdx]));
-      toast.success(`${symptoms.length} symptom(s) saved to today's log!`);
+      toast.success(`${newSymptoms.length} symptom(s) saved to today's log!`);
     } catch (err) {
       console.error(err);
       toast.error("Couldn't save symptoms. Please try again.");
+    }
+  };
+
+  const handleGenerateReport = async () => {
+    try {
+      const response = await base44.functions.invoke('generateDoctorReport', {
+        includeJournal: true,
+        includeMedications: true,
+        includeScreening: true
+      });
+      toast.success('Doctor report generated! Check your downloads.');
+    } catch (err) {
+      toast.error('Failed to generate report');
+    }
+  };
+
+  const startVoiceRecording = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      toast.error('Voice recording not supported in this browser. Use Chrome or Edge.');
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = true;
+    recognitionRef.current.interimResults = true;
+
+    recognitionRef.current.onstart = () => {
+      setIsListening(true);
+      setVoiceTranscript('');
+    };
+
+    recognitionRef.current.onresult = (event) => {
+      let interimTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        interimTranscript += event.results[i][0].transcript;
+      }
+      setVoiceTranscript(interimTranscript);
+    };
+
+    recognitionRef.current.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      toast.error('Voice recording error: ' + event.error);
+      setIsListening(false);
+    };
+
+    recognitionRef.current.onend = () => {
+      setIsListening(false);
+      if (voiceTranscript.trim()) {
+        setInput(voiceTranscript);
+      }
+    };
+
+    recognitionRef.current.start();
+  };
+
+  const stopVoiceRecording = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
     }
   };
 
@@ -286,14 +358,41 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, onClose }) {
           ⚠️ Luna is not a doctor. This is supportive conversation only. Always consult your healthcare provider.
         </div>
 
+        {/* Voice Recording Overlay */}
+        {isListening && (
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-red-500 animate-pulse flex items-center justify-center mx-auto">
+                <Mic className="w-8 h-8 text-white" />
+              </div>
+              <p className="text-white font-semibold">Listening...</p>
+              <p className="text-white/80 text-sm max-w-[200px]">{voiceTranscript || 'Speak your symptoms...'}</p>
+              <Button onClick={stopVoiceRecording} variant="destructive" size="sm">
+                <MicOff className="w-4 h-4 mr-2" /> Stop Recording
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Input */}
         <div className="p-5 border-t flex gap-3 bg-white/90 dark:bg-slate-900/90">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={isListening ? stopVoiceRecording : startVoiceRecording}
+            className={`rounded-full ${isListening ? 'bg-red-500 text-white hover:bg-red-600' : ''}`}
+            disabled={loading}
+          >
+            {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          </Button>
           <Input
-            placeholder="How are you feeling today?"
+            placeholder={isListening ? 'Recording...' : 'How are you feeling today?'}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-            disabled={loading}
+            disabled={loading || isListening}
+            className="flex-1"
           />
           <Button onClick={() => handleSend()} disabled={loading || !input.trim()} size="icon" className="rounded-full">
             <Send className="w-4 h-4" />

@@ -75,10 +75,20 @@ Deno.serve(async (req) => {
     doc.text(`Report Generated: ${format(new Date(), 'MMM d, yyyy')}`, 20, 33);
     doc.text(`Reporting Period: Last 90 days (${format(ninetyDaysAgo, 'MMM d')} - ${format(new Date(), 'MMM d')})`, 20, 38);
 
+    // Add fertility/menopause context if applicable
+    if (latestCycle) {
+      doc.setFontSize(9);
+      if (latestCycle.cycle_type === 'pregnancy' || latestCycle.is_pregnancy_mode) {
+        doc.text(`Pregnancy Mode | EDD: ${latestCycle.estimated_due_date || 'N/A'} | Week: ${latestCycle.pregnancy_week || 'N/A'}`, 20, 43);
+      } else if (latestCycle.cycle_type === 'menopause' || latestCycle.is_menopause_mode) {
+        doc.text(`Menopause Tracking | HRT: ${latestCycle.hrt_type || 'None'}`, 20, 43);
+      }
+    }
+
     // Disclaimer
     doc.setFontSize(8);
     doc.setTextColor(150);
-    doc.text('This report contains sensitive health information. For healthcare provider use only.', 20, 45);
+    doc.text('This report contains sensitive health information. For healthcare provider use only.', 20, latestCycle ? 48 : 45);
 
     let yPosition = 55;
 
@@ -101,6 +111,25 @@ Deno.serve(async (req) => {
       doc.text(`Current Cycle Type: ${latestCycle.cycle_type || 'Menstrual'}`, 25, yPosition);
       yPosition += 5;
       doc.text(`Current Cycle Day: ${latestCycle.cycle_day || 'N/A'}`, 25, yPosition);
+      yPosition += 5;
+      
+      if (latestCycle.cycle_type === 'pregnancy' || latestCycle.is_pregnancy_mode) {
+        doc.text(`Pregnancy Week: ${latestCycle.pregnancy_week || 'N/A'} | Trimester: ${latestCycle.trimester || 'N/A'}`, 25, yPosition);
+        yPosition += 5;
+        if (latestCycle.estimated_due_date) {
+          doc.text(`Estimated Due Date: ${format(parseISO(latestCycle.estimated_due_date), 'MMM d, yyyy')}`, 25, yPosition);
+          yPosition += 5;
+        }
+      }
+      
+      if (latestCycle.cycle_type === 'menopause' || latestCycle.is_menopause_mode) {
+        doc.text(`HRT Type: ${latestCycle.hrt_type || 'None'}`, 25, yPosition);
+        yPosition += 5;
+        if (latestCycle.hrt_start_date) {
+          doc.text(`HRT Start Date: ${format(parseISO(latestCycle.hrt_start_date), 'MMM d, yyyy')}`, 25, yPosition);
+          yPosition += 5;
+        }
+      }
     }
     yPosition += 8;
 
