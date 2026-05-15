@@ -1,45 +1,59 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { X, ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const TOUR_KEY = "cyclemind_tour_v1_done";
+const TOUR_KEY = "cyclemind_tour_v2_done";
 
 const STEPS = [
   {
-    id: "dashboard",
     title: "Welcome to CycleMind! 🌙",
     description: "This is your Dashboard — your daily home base. It shows your current cycle phase, today's symptom severity, and personalized insights.",
     target: "tour-dashboard",
   },
   {
-    id: "log",
-    title: "Daily Log 📝",
+    title: "📅 Calendar View",
+    description: "Tap this button to open the full calendar. Browse past cycle days, view symptom severity by day, and log events like bleeding, ovulation, or intimacy.",
+    target: "tour-calendar",
+  },
+  {
+    title: "🔄 Switch Tracking Mode",
+    description: "Tap 'Switch' to change your active tracking mode — Menstrual / PMDD, Pregnancy, Postpartum, or Menopause. Each mode unlocks different symptom tracking fields.",
+    target: "tour-switch",
+  },
+  {
+    title: "📝 Daily Log",
     description: "Tap here every day to log your symptoms, mood, vitals, and more. Your data builds the foundation for all clinical insights.",
     target: "tour-log",
   },
   {
-    id: "insights",
-    title: "Insights 📊",
-    description: "See your symptom patterns visualized over time. Track PMDD indicators, phase comparisons, and generate clinical-grade reports for your doctor.",
+    title: "📊 Insights",
+    description: "See your symptom patterns visualized over time. Track PMDD indicators, phase comparisons, and generate clinical-grade reports to share with your doctor.",
     target: "tour-insights",
   },
   {
-    id: "resources",
-    title: "Resources 📚",
+    title: "📚 Resources",
     description: "Access evidence-based articles, guides, and tools curated by our clinical team to help you understand your reproductive health.",
     target: "tour-resources",
   },
   {
-    id: "profile",
-    title: "Profile & Settings ⚙️",
-    description: "Manage your cycle mode (menstrual, pregnancy, postpartum, menopause), personal details, and app preferences here.",
+    title: "⚙️ Profile & Settings",
+    description: "Manage your cycle mode, personal details, and app preferences here.",
     target: "tour-profile",
   },
   {
-    id: "luna",
     title: "Meet Luna 🌙",
-    description: "Tap the Luna button anytime to chat with your AI companion — she can answer questions, validate your feelings, and help you understand your cycle.",
-    target: "tour-luna",
+    description: "This is your Luna AI button — tap it anytime to open Luna. She can answer questions, validate your feelings, and support you through your cycle.",
+    target: "tour-luna-button",
+  },
+  {
+    title: "Luna Chat 💬",
+    description: "Inside Luna, the Chat tab lets you have a real conversation. Ask about your symptoms, get coping tips, or simply talk through how you're feeling.",
+    target: "tour-luna-button",
+  },
+  {
+    title: "Luna Notifications 🔔",
+    description: "The Notifications tab inside Luna shows personalized health alerts — like luteal phase warnings, pattern insights, and positive progress updates.",
+    target: "tour-luna-button",
   },
 ];
 
@@ -68,7 +82,11 @@ export default function GuidedTour() {
     };
     update();
     window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
   }, [step, visible]);
 
   const dismiss = () => {
@@ -92,11 +110,11 @@ export default function GuidedTour() {
     <>
       {/* Semi-transparent backdrop — pointer-events-none so nothing is blocked */}
       <div
-        className="fixed inset-0 bg-black/50 pointer-events-none"
-        style={{ zIndex: 9998 }}
+        className="fixed inset-0 pointer-events-none"
+        style={{ zIndex: 9998, background: "rgba(0,0,0,0.5)" }}
       />
 
-      {/* Highlight ring — pointer-events-none */}
+      {/* Highlight cutout ring — pointer-events-none */}
       {highlightRect && (
         <div
           className="fixed pointer-events-none transition-all duration-300"
@@ -107,13 +125,13 @@ export default function GuidedTour() {
             width: highlightRect.width + 10,
             height: highlightRect.height + 10,
             borderRadius: 14,
-            boxShadow: "0 0 0 3px #14b8a6, 0 0 0 5000px rgba(0,0,0,0.5)",
+            boxShadow: "0 0 0 3px #14b8a6, 0 0 0 5000px rgba(0,0,0,0.45)",
             background: "transparent",
           }}
         />
       )}
 
-      {/* Tooltip — anchored to bottom of screen, always fully visible */}
+      {/* Tooltip — always anchored just above the bottom nav */}
       <div
         className="fixed left-4 right-4 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-teal-300 dark:border-teal-700 p-5"
         style={{ zIndex: 10000, bottom: 90 }}
@@ -126,8 +144,8 @@ export default function GuidedTour() {
           <X className="w-4 h-4" />
         </button>
 
-        {/* Step indicator */}
-        <div className="flex gap-1.5 mb-3">
+        {/* Step dots */}
+        <div className="flex gap-1.5 mb-3 flex-wrap">
           {STEPS.map((_, i) => (
             <span
               key={i}

@@ -18,6 +18,7 @@ export default function LunaButton({ user, cycleMode, cycleDay, eddInfo }) {
     return (
       <>
         <button
+          id="tour-luna-button"
           onClick={() => setIsOpen(true)}
           className="fixed bottom-[96px] right-6 z-[60] w-14 h-14 rounded-full bg-gradient-to-br from-teal-600 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 flex items-center justify-center"
           title="Chat with Luna"

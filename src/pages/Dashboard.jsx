@@ -134,6 +134,7 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground mt-1">You've got this — tracking helps. 💜</p>
         </div>
         <Button
+          id="tour-calendar"
           variant="default"
           size="icon"
           className="h-11 w-11 rounded-xl shrink-0 mt-1 shadow-md"

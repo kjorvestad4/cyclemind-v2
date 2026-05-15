@@ -73,6 +73,7 @@ export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode }) {
         </div>
       </div>
       <button
+        id="tour-switch"
         onClick={onSwitchMode}
         className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all shrink-0"
       >

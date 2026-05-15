@@ -119,9 +119,7 @@ export default function AppLayout() {
       </main>
 
       {/* Luna AI Button */}
-      <div id="tour-luna">
-        <LunaButton user={user} cycleMode={cycleData.mode} cycleDay={cycleData.day} eddInfo={cycleData.edd} />
-      </div>
+      <LunaButton user={user} cycleMode={cycleData.mode} cycleDay={cycleData.day} eddInfo={cycleData.edd} />
       <GuidedTour />
 
       {/* Bottom Navigation */}
