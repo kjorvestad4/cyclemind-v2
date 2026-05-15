@@ -97,7 +97,7 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-foreground">💊 Luteal Phase — Medication Reminder</p>
             <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-              You're currently in your luteal phase (day {cycleDay}/{cycleLength}). If you take luteal-phase medications (SSRIs, supplements, etc.), this is a reminder to stay consistent. Consult your psychiatrist before changing doses.
+              You're currently in your luteal phase (day {cycleDay}/{cycleLength}). If you take luteal-phase medications (antidepressants, other prescription medications, supplements, etc.), this is a reminder to stay consistent. Consult your healthcare provider before changing doses.
             </p>
           </div>
         </div>
