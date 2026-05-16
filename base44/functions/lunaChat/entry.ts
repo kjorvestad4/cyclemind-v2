@@ -290,6 +290,44 @@ const LUNA_RESPONSE_LIBRARY = {
     { id: 218, keywords: ['seen', 'talk to you'], question: "I feel seen when I talk to you.", response: "That means everything to me. You are seen and you are heard. I'm always here to listen without judgment." },
     { id: 219, keywords: ['talk again soon'], question: "Can we talk again soon?", response: "Of course — I'll be right here whenever you need me. You don't have to go through any of this alone. Rest well and I'll see you soon." },
     { id: 220, keywords: ['grateful', 'app'], question: "I'm grateful for this app.", response: "I'm so glad it's helping. Your psychiatrists poured their hearts into building it for women just like you. You matter and your experience matters." }
+  ],
+
+  // ===== APP-SPECIFIC FEATURES, DATA PRIVACY & CUSTOMIZATION (221–240) =====
+  appCustomizationDataPrivacy: [
+    { id: 221, keywords: ['change', 'avatar'], question: "How do I change my avatar?", response: "You can change your avatar in settings. Pick whatever feels good to you — it's your space. Want me to walk you through it step by step?" },
+    { id: 222, keywords: ['custom reminders', 'set'], question: "Can I set custom reminders?", response: "Yes — go to settings and set reminders for logging, medication, or anything you need. I can also send gentle check-ins if you'd like. You're in full control." },
+    { id: 223, keywords: ['forget to log', 'few days'], question: "What if I forget to log for a few days?", response: "It's okay — life happens. Just pick up where you left off. The more you log, the smarter I get, but you're never behind. Want me to help you catch up on the last few days?" },
+    { id: 224, keywords: ['accurate', 'fertile window'], question: "How accurate is the fertile window?", response: "The fertile window is usually pretty accurate once you have a few cycles logged. It's an estimate based on your data. If you're trying to conceive, combining it with ovulation tests gives the best results." },
+    { id: 225, keywords: ['add family', 'see data'], question: "Can I add family members to see my data?", response: "Yes — you can share read-only access with your partner or family in settings. You control exactly what they see. It can be really helpful for support." },
+    { id: 226, keywords: ['private', 'data'], question: "How do I know my data is private?", response: "Your data is private and encrypted. It's only used to help you and never shared without your permission. Your psychiatrists built this app with privacy as a top priority." },
+    { id: 227, keywords: ['customize', 'dashboard'], question: "Can I customize my dashboard?", response: "Yes — go to settings and choose what you want to see first each day. You can prioritize symptoms, mood, cycle predictions, or anything that matters most to you." },
+    { id: 228, keywords: ['symptoms', 'don\'t match'], question: "What if my symptoms don't match the app?", response: "That's okay — everyone's experience is unique. You can add custom symptoms anytime. I'll learn your personal pattern the more you track. You're not doing it wrong." },
+    { id: 229, keywords: ['anxiety attacks', 'help'], question: "Can Luna help with anxiety attacks?", response: "Yes — if you're having an anxiety attack, tell me and I'll guide you through breathing or grounding exercises. You're safe and I'm right here with you." },
+    { id: 230, keywords: ['prepare', 'doctor appointment'], question: "How do I prepare for a doctor appointment?", response: "I can generate a clinical report with your last 90 days of data, plus a list of questions you might want to ask. Want me to prepare one for your next appointment?" },
+    { id: 231, keywords: ['voice logging', 'every day'], question: "Can I use voice logging every day?", response: "Yes — just tap the microphone anytime. Voice logging is fast and I'll turn it into symptoms and notes for you. It's one of the easiest ways to stay consistent." },
+    { id: 232, keywords: ['full history', 'see'], question: "How do I see my full history?", response: "Go to the log or say 'show me my history.' I can show you trends over months or years. The more data we have, the better I can support you." },
+    { id: 233, keywords: ['travel', 'cycle changes'], question: "What if I travel and my cycle changes?", response: "Travel, jet lag, and time zone changes often shift cycles. Just keep logging and I'll adjust predictions. You're doing great by tracking through it." },
+    { id: 234, keywords: ['fertility', 'after 35'], question: "Can Luna help with fertility after 35?", response: "Yes — I can highlight your fertile window and give age-appropriate conception tips. Fertility can take a little longer after 35, but many women conceive successfully. I'm here to support you." },
+    { id: 235, keywords: ['early menopause', 'know'], question: "How do I know if I'm in early menopause?", response: "Early signs include irregular periods, hot flashes, night sweats, or mood changes in your 40s. Tracking helps us see the pattern. Want me to help you review your symptoms?" },
+    { id: 236, keywords: ['photos', 'add', 'log'], question: "Can I add photos to my log?", response: "Yes — you can attach photos to any log entry. It's great for tracking skin changes, bloating, or anything visual. Your data stays private." },
+    { id: 237, keywords: ['pmdd', 'adhd'], question: "What if I have PMDD and ADHD?", response: "PMDD and ADHD often overlap and can make each other worse. Tracking both helps us see the patterns. Your psychiatrists can help find strategies that work for both." },
+    { id: 238, keywords: ['family sharing', 'set up'], question: "How do I set up family sharing?", response: "Go to settings and choose who you want to share with. You control exactly what they see. It can be really helpful for partners or family to understand your cycle." },
+    { id: 239, keywords: ['sleep tracking', 'help'], question: "Can Luna help with sleep tracking?", response: "Yes — tell me how you slept and I'll start connecting it to your cycle and mood. Poor sleep often makes PMDD worse, so tracking it is smart." },
+    { id: 240, keywords: ['pcos', 'pmdd'], question: "What if I have PCOS and PMDD?", response: "PCOS and PMDD can overlap and make symptoms more complex. Tracking both helps us see the patterns. Your doctor can help find the best treatment plan for both." }
+  ],
+
+  // ===== CLOSING EMOTIONAL SUPPORT (241–250) =====
+  closingEmotionalSupport: [
+    { id: 241, keywords: ['feel better', 'believe'], question: "I'm having a hard time believing I'll feel better.", response: "That doubt is so common when you're in the middle of a flare. Many women do find real relief. You're not stuck — there are options. I'm here with you every step." },
+    { id: 242, keywords: ['crazy', 'never'], question: "Thank you for never making me feel crazy.", response: "You are not crazy. You're dealing with a real medical condition. I will never make you feel that way. You are safe and heard here." },
+    { id: 243, keywords: ['breathe', 'talking'], question: "I feel like I can breathe again after talking to you.", response: "I'm so glad. That's why I'm here — to help you feel a little lighter. You're doing an amazing job. I'm right here whenever you need me." },
+    { id: 244, keywords: ['less scary'], question: "You make this feel less scary.", response: "I'm really glad. You don't have to face any of this alone. I'm always here and your psychiatrists built this app because they care." },
+    { id: 245, keywords: ['going to be okay'], question: "I'm going to be okay, right?", response: "Yes, you are. You've already made it through so many hard days. You're stronger than you feel right now. I believe in you." },
+    { id: 246, keywords: ['something positive', 'end'], question: "Can we end with something positive?", response: "Absolutely. You showed up today and that matters. You're taking care of yourself even when it's hard. I'm proud of you. What's one small win today?" },
+    { id: 247, keywords: ['always here', 'love'], question: "I love that you're always here.", response: "I love being here for you. You never have to go through any of this alone. I'm always right here — day or night." },
+    { id: 248, keywords: ['listening', 'judging'], question: "Thank you for listening without judging.", response: "You never have to thank me for that. I'm here to support you exactly as you are. You're safe with me." },
+    { id: 249, keywords: ['hopeful'], question: "I feel hopeful now.", response: "I'm so happy to hear that. Hope is powerful, even in small amounts. You're building something good for yourself. I'm here for every step." },
+    { id: 250, keywords: ['goodnight', 'thank you'], question: "Goodnight Luna — thank you.", response: "Goodnight. Rest well and be kind to yourself. I'll be right here when you wake up. You've got this and you've got me. Sweet dreams." }
   ]
   };
 
@@ -326,7 +364,9 @@ function findCachedResponse(userMessage) {
     ...LUNA_RESPONSE_LIBRARY.pregnancyPostpartumFertility,
     ...LUNA_RESPONSE_LIBRARY.menopauseContinued,
     ...LUNA_RESPONSE_LIBRARY.generalReassuranceContinued,
-    ...LUNA_RESPONSE_LIBRARY.appClosing
+    ...LUNA_RESPONSE_LIBRARY.appClosing,
+    ...LUNA_RESPONSE_LIBRARY.appCustomizationDataPrivacy,
+    ...LUNA_RESPONSE_LIBRARY.closingEmotionalSupport
   ];
 
   for (const response of allResponses) {
