@@ -380,21 +380,54 @@ const LUNA_RESPONSE_LIBRARY = {
   ]
   };
 
+// === SEMANTIC SIMILARITY MATCHING ENGINE ===
+// Calculates semantic confidence score (0-1) based on keyword overlap and phrase matching
+function calculateSemanticSimilarity(userMessage, responseKeywords) {
+  const messageLower = userMessage.toLowerCase();
+  const messageWords = messageLower.split(/\s+/);
+  
+  let keywordMatches = 0;
+  let totalKeywords = responseKeywords.length;
+  let phraseBonus = 0;
+  
+  // Check for exact phrase matches (higher weight)
+  for (const keyword of responseKeywords) {
+    if (messageLower.includes(keyword.toLowerCase())) {
+      keywordMatches += 1;
+      // Bonus if it's a multi-word phrase
+      if (keyword.includes(' ')) {
+        phraseBonus += 0.15;
+      }
+    }
+  }
+  
+  // Base score: keyword match percentage
+  let baseScore = totalKeywords > 0 ? keywordMatches / totalKeywords : 0;
+  
+  // Apply phrase bonus
+  let score = Math.min(1.0, baseScore + phraseBonus);
+  
+  return {
+    score: parseFloat(score.toFixed(3)),
+    matchCount: keywordMatches,
+    totalKeywords: totalKeywords
+  };
+}
+
 // Crisis detection function — checks for high-priority safety keywords FIRST
 function detectCrisisResponse(userMessage) {
   const messageLower = userMessage.toLowerCase();
   const crisisKeywords = [
     'suicidal', 'kill myself', 'end my life', 'hurt myself', 'self harm', 'self-harm', 'harm myself',
-    'don\'t want to be here', 'don\'t want to live', 'i can\'t', 'breaking down', 'losing control',
+    'don\'t want to be here', 'don\'t want to live', 'losing control',
     'intrusive thoughts', 'manic episode', 'detached', 'dissociated', 'not safe with myself',
     'completely hopeless', 'severe chest pain', 'bleeding heavily', 'dizzy', 'can\'t function',
     'severe panic attacks', 'can\'t get out of bed', 'abdominal pain', 'unsafe', 'emergency',
-    'can\'t keep myself safe', 'have a plan', 'dark thoughts', 'can\'t do this alone', 'right now'
+    'can\'t keep myself safe', 'have a plan', 'dark thoughts', 'can\'t do this alone'
   ];
   
   for (const keyword of crisisKeywords) {
     if (messageLower.includes(keyword)) {
-      // Return the best crisis match based on full phrase matching
       return findCrisisResponseMatch(userMessage);
     }
   }
@@ -402,60 +435,42 @@ function detectCrisisResponse(userMessage) {
   return null;
 }
 
-// Match against crisis responses for maximum accuracy
+// Match against crisis responses with semantic scoring
 function findCrisisResponseMatch(userMessage) {
-  const messageLower = userMessage.toLowerCase();
+  const crisisResponses = LUNA_RESPONSE_LIBRARY.crisisSuicidalSelfHarm || [];
   let bestMatch = null;
   let highestScore = 0;
   
-  const crisisResponses = LUNA_RESPONSE_LIBRARY.crisisSuicidalSelfHarm || [];
-  
   for (const response of crisisResponses) {
-    let matchScore = 0;
-    for (const keyword of response.keywords) {
-      if (messageLower.includes(keyword.toLowerCase())) {
-        matchScore += 1;
-      }
-    }
-    if (matchScore > highestScore) {
-      highestScore = matchScore;
-      bestMatch = response;
+    const similarity = calculateSemanticSimilarity(userMessage, response.keywords);
+    if (similarity.score > highestScore) {
+      highestScore = similarity.score;
+      bestMatch = { ...response, similarityScore: similarity.score };
     }
   }
   
-  return highestScore >= 1 ? bestMatch : null;
+  return highestScore >= 0.4 ? bestMatch : null;
 }
 
 // Medium-priority matching for life events, partner dynamics, culture, treatments
 function findOutsideTheBoxMatch(userMessage) {
-  const messageLower = userMessage.toLowerCase();
+  const outsideTheBoxResponses = LUNA_RESPONSE_LIBRARY.outsideTheBoxLife || [];
   let bestMatch = null;
   let highestScore = 0;
   
-  const outsideTheBoxResponses = LUNA_RESPONSE_LIBRARY.outsideTheBoxLife || [];
-  
   for (const response of outsideTheBoxResponses) {
-    let matchScore = 0;
-    for (const keyword of response.keywords) {
-      if (messageLower.includes(keyword.toLowerCase())) {
-        matchScore += 1;
-      }
-    }
-    if (matchScore > highestScore) {
-      highestScore = matchScore;
-      bestMatch = response;
+    const similarity = calculateSemanticSimilarity(userMessage, response.keywords);
+    if (similarity.score > highestScore) {
+      highestScore = similarity.score;
+      bestMatch = { ...response, similarityScore: similarity.score };
     }
   }
   
-  return highestScore >= 1 ? bestMatch : null;
+  return highestScore >= 0.5 ? bestMatch : null;
 }
 
-// Smart matching function to find cached response from the library
+// Smart matching function with semantic similarity scoring
 function findCachedResponse(userMessage) {
-  const messageLower = userMessage.toLowerCase();
-  let bestMatch = null;
-  let highestScore = 0;
-
   const allResponses = [
     ...LUNA_RESPONSE_LIBRARY.cycleBasics,
     ...LUNA_RESPONSE_LIBRARY.pmddSymptoms,
@@ -485,25 +500,22 @@ function findCachedResponse(userMessage) {
     ...LUNA_RESPONSE_LIBRARY.generalReassuranceContinued,
     ...LUNA_RESPONSE_LIBRARY.appClosing,
     ...LUNA_RESPONSE_LIBRARY.appCustomizationDataPrivacy,
-    ...LUNA_RESPONSE_LIBRARY.closingEmotionalSupport,
-    ...LUNA_RESPONSE_LIBRARY.outsideTheBoxLife,
-    ...LUNA_RESPONSE_LIBRARY.crisisSuicidalSelfHarm
+    ...LUNA_RESPONSE_LIBRARY.closingEmotionalSupport
   ];
 
+  let bestMatch = null;
+  let highestScore = 0;
+
   for (const response of allResponses) {
-    let matchScore = 0;
-    for (const keyword of response.keywords) {
-      if (messageLower.includes(keyword.toLowerCase())) {
-        matchScore += 1;
-      }
-    }
-    if (matchScore > highestScore) {
-      highestScore = matchScore;
-      bestMatch = response;
+    const similarity = calculateSemanticSimilarity(userMessage, response.keywords);
+    if (similarity.score > highestScore) {
+      highestScore = similarity.score;
+      bestMatch = { ...response, similarityScore: similarity.score };
     }
   }
 
-  return highestScore >= 1 ? bestMatch : null;
+  // Return match only if confidence is reasonable (≥0.45 for common library)
+  return highestScore >= 0.45 ? bestMatch : null;
 }
 
 // Fallback template responses (kept for backward compatibility)
@@ -638,52 +650,57 @@ Deno.serve(async (req) => {
      const userMessageOriginal = messages[messages.length - 1].content;
      const messageLength = userMessage.length;
 
-     // FIRST PRIORITY: Check for crisis/safety keywords — return immediately
+     // === HYBRID ROUTING: LOCAL RAG-FIRST ARCHITECTURE ===
+
+     // TIER 1: CRISIS/SAFETY (Highest Priority)
      const crisisMatch = detectCrisisResponse(userMessageOriginal);
      if (crisisMatch) {
-       console.log(`[LUNA ROUTING] crisis_match=q${crisisMatch.id} cost=$0 priority=HIGHEST`);
+       console.log(`[LUNA ROUTING] TIER_1_CRISIS q${crisisMatch.id} score=${crisisMatch.similarityScore} cost=$0`);
        return Response.json({
          message: crisisMatch.response,
          suggestedActions: [],
          flags: { escalate: true, crisis: true },
          timestamp: new Date().toISOString(),
-         route: 'crisis_immediate'
+         route: 'tier_1_crisis'
        });
      }
 
-     // SECOND PRIORITY: Check for outside-the-box life events, partner dynamics, culture, treatments
+     // TIER 2: OUTSIDE-THE-BOX (Medium-High Priority)
      let outsideTheBoxMatch = null;
      if (messageLength < 150) {
        outsideTheBoxMatch = findOutsideTheBoxMatch(userMessageOriginal);
      }
 
      if (outsideTheBoxMatch) {
-       console.log(`[LUNA ROUTING] outside_the_box_match=q${outsideTheBoxMatch.id} cost=$0 priority=MEDIUM-HIGH`);
+       console.log(`[LUNA ROUTING] TIER_2_OUTSIDE_BOX q${outsideTheBoxMatch.id} score=${outsideTheBoxMatch.similarityScore} cost=$0`);
        return Response.json({
          message: outsideTheBoxMatch.response,
          suggestedActions: [],
          flags: { escalate: false, crisis: false },
          timestamp: new Date().toISOString(),
-         route: 'outside_the_box'
+         route: 'tier_2_outside_box'
        });
      }
 
-     // THIRD PRIORITY: Try to match against the comprehensive response library (250+ cached responses)
+     // TIER 3: CACHED LIBRARY (Common Questions - 250+ responses)
      let cachedMatch = null;
      if (messageLength < 150) {
        cachedMatch = findCachedResponse(userMessageOriginal);
      }
 
-     if (cachedMatch) {
-       console.log(`[LUNA ROUTING] cached_library_match=q${cachedMatch.id} cost=$0`);
+     if (cachedMatch && cachedMatch.similarityScore >= 0.45) {
+       console.log(`[LUNA ROUTING] TIER_3_CACHED q${cachedMatch.id} score=${cachedMatch.similarityScore} cost=$0`);
        return Response.json({
          message: cachedMatch.response,
          suggestedActions: [],
          flags: { escalate: false, crisis: false },
          timestamp: new Date().toISOString(),
-         route: 'cached_library'
+         route: 'tier_3_cached_library'
        });
      }
+
+     // TIER 4: FALLBACK TO EXPENSIVE LLM (Complex/Novel Questions)
+     console.log(`[LUNA ROUTING] TIER_4_LLM_FALLBACK msgLen=${messageLength} cached_score=${cachedMatch?.similarityScore || 'none'} escalate_to_grok=true`);
 
     // Fallback to old pattern-based templates
     const simplePatterns = {
