@@ -139,6 +139,43 @@ const LUNA_RESPONSE_LIBRARY = {
     { id: 98, keywords: ['feel better', 'talking', 'you'], question: "I feel better after talking to you.", response: "I'm so glad. That's why I'm here — to listen and support you through the hard parts. You're doing an amazing job taking care of yourself." },
     { id: 99, keywords: ['thank you', 'luna'], question: "Thank you Luna.", response: "You're so welcome. I'm always here for you — day or night, good days or hard ones. You've got this and you've got me." },
     { id: 100, keywords: ['ready', 'feel better'], question: "I'm ready to feel better.", response: "I hear you and I believe you. Small steps add up and you're already taking one by being here. I'm proud of you and I'm right here for every step of the journey." }
+  ],
+
+  // ===== LIFESTYLE, DIET, EXERCISE & SLEEP (101–115) =====
+  lifestyleDietExercise: [
+    { id: 101, keywords: ['cravings', 'pmdd', 'help'], question: "What helps with PMDD cravings?", response: "Cravings are very common with PMDD because of hormone shifts. Choosing protein and healthy fats can help stabilize blood sugar. You're not weak for craving — your body is asking for support. Want a simple snack idea?" },
+    { id: 102, keywords: ['coffee', 'during pmdd'], question: "Can I drink coffee during PMDD?", response: "Many women find that cutting back on caffeine in the luteal phase helps anxiety and irritability. If you love coffee, try switching to half-caff or herbal tea a few days before your period. Small changes can make a big difference." },
+    { id: 103, keywords: ['exercise', 'too much', 'pmdd'], question: "How much exercise is too much for PMDD?", response: "Gentle movement is helpful, but intense workouts can sometimes make fatigue and mood worse during a flare. Listen to your body — if you feel more drained after exercise, try something lighter. You know yourself best." },
+    { id: 104, keywords: ['fatigue', 'pmdd', 'help'], question: "What helps with PMDD fatigue?", response: "PMDD fatigue is real. Short naps, staying hydrated, and eating balanced meals can help. Gentle movement like a short walk can also boost energy without draining you. You're not lazy — your body is working hard." },
+    { id: 105, keywords: ['yoga', 'help pmdd'], question: "Can yoga help PMDD symptoms?", response: "Yes, gentle yoga is one of the most helpful exercises for many women with PMDD. It calms the nervous system and can reduce anxiety and irritability. Want me to suggest a simple 5-minute sequence you can do at home?" },
+    { id: 106, keywords: ['sugar', 'affect pmdd'], question: "How does sugar affect PMDD?", response: "Sugar can make mood swings and fatigue worse because it causes blood sugar spikes and crashes. Many women feel steadier when they reduce it in the luteal phase. You don't have to be perfect — small reductions help." },
+    { id: 107, keywords: ['best', 'diet', 'pmdd'], question: "What's the best diet for PMDD?", response: "A diet rich in complex carbs, protein, healthy fats, and magnesium often helps. Think leafy greens, nuts, fish, and whole grains. Everyone is different though — want me to suggest a simple daily meal plan?" },
+    { id: 108, keywords: ['nap', 'during pmdd'], question: "Can I take a nap during PMDD?", response: "Absolutely — short naps can be very restorative during PMDD. Just 20–30 minutes can help fatigue and mood. You're not being lazy; you're giving your body what it needs." },
+    { id: 109, keywords: ['alcohol', 'affect', 'pmdd'], question: "How does alcohol affect my PMDD?", response: "Alcohol can make PMDD symptoms feel much stronger the next day. Many women feel better when they avoid it completely in the week before their period. You're making a smart choice for your well-being." },
+    { id: 110, keywords: ['headaches', 'pmdd', 'help'], question: "What helps with PMDD headaches?", response: "Hydration, magnesium, and a cool compress on your forehead can help. Some women also find relief with gentle neck stretches. If headaches are severe or frequent, mention them to your doctor." },
+    { id: 111, keywords: ['bath', 'pmdd', 'relief'], question: "Can I take a bath for PMDD relief?", response: "Yes, a warm (not hot) bath with Epsom salts is one of the most soothing things for PMDD. It relaxes muscles and calms the nervous system. You deserve this kind of care." },
+    { id: 112, keywords: ['lack', 'sleep', 'affect pmdd'], question: "How does lack of sleep affect PMDD?", response: "Lack of sleep makes PMDD symptoms feel much stronger. Even one good night can make a difference. Would you like some simple bedtime tips that other women with PMDD find helpful?" },
+    { id: 113, keywords: ['best time', 'exercise', 'cycle'], question: "What's the best time to exercise during my cycle?", response: "Many women feel best exercising in the follicular phase (after their period). During the luteal phase, gentler movement is usually better. Listen to your energy — your body knows what it needs." },
+    { id: 114, keywords: ['green tea', 'pmdd'], question: "Can I drink green tea for PMDD?", response: "Green tea has some helpful antioxidants, but the caffeine can make anxiety worse for some women. Herbal teas like chamomile or peppermint are often gentler during PMDD. Want some recipe ideas?" },
+    { id: 115, keywords: ['track', 'motivated', 'feel bad'], question: "How do I stay motivated to track when I feel bad?", response: "When you feel bad, tracking can feel like the last thing you want to do. Try the 2-minute rule — just open the app and log one thing. You're building data that helps you and your doctor. I'm proud of you for trying." }
+  ],
+
+  // ===== MEDICATION, BIRTH CONTROL & HRT (116–120) =====
+  medicationBirthControlHRT: [
+    { id: 116, keywords: ['birth control', 'help', 'pmdd'], question: "Can birth control help my PMDD?", response: "Some women find continuous birth control helps PMDD by stabilizing hormones. Others feel it makes symptoms worse. It's very individual. Would you like help preparing questions for your doctor about your options?" },
+    { id: 117, keywords: ['skip periods', 'birth control', 'safe'], question: "Is it safe to skip periods with birth control?", response: "Yes, many doctors recommend continuous birth control to skip the luteal phase for women with severe PMDD. It can reduce flares. Talk with your doctor about what's best for you." },
+    { id: 118, keywords: ['hrt', 'perimenopause'], question: "What about HRT for perimenopause?", response: "HRT can be very helpful for hot flashes, mood swings, and sleep in perimenopause. The benefits and risks are individual. Your doctor can help you decide if it's right for you." },
+    { id: 119, keywords: ['antidepressants', 'luteal phase'], question: "Can I take antidepressants only during the luteal phase?", response: "Yes, many women with PMDD use luteal-phase dosing of SSRIs and find it very effective with fewer side effects. It's a common approach — your psychiatrist can guide you on it." },
+    { id: 120, keywords: ['supplements', 'interact', 'medication'], question: "Do supplements interact with my medication?", response: "Some supplements can interact with medications, especially antidepressants or birth control. Always check with your doctor or pharmacist before starting anything new. Want me to help you make a list to discuss with them?" }
+  ],
+
+  // ===== WHEN TO SEE A DOCTOR / MENTAL HEALTH CRISES (121–125) =====
+  mentalHealthCrises: [
+    { id: 121, keywords: ['suicidal thoughts', 'what do i do'], question: "I'm having suicidal thoughts — what do I do?", response: "I'm really glad you told me. Please reach out to the 988 Suicide & Crisis Lifeline right now — they're available 24/7 and understand what you're going through. You are not alone and help is here." },
+    { id: 122, keywords: ['depression', 'bad', 'get out of bed'], question: "My depression is so bad I can't get out of bed.", response: "That level of depression is serious and you don't have to carry it alone. Please contact your psychiatrist or doctor today. If you're in immediate danger, call 988 or go to the nearest ER. I'm here with you." },
+    { id: 123, keywords: ['call', 'doctor', 'about pmdd'], question: "When should I call my doctor about PMDD?", response: "If PMDD is affecting your ability to work, parent, or keep relationships healthy, it's time to talk with your doctor. You don't have to wait until it's unbearable. You deserve support." },
+    { id: 124, keywords: ['scared', 'hurt myself'], question: "I'm scared I might hurt myself.", response: "Thank you for telling me. Please call 988 right now or go to the nearest ER. You are not a burden and help is available. I'm right here and I care about you." },
+    { id: 125, keywords: ['symptoms', 'getting worse', 'every month'], question: "My symptoms are getting worse every month.", response: "If symptoms are getting worse, it's important to talk with your doctor. They may want to adjust treatment or run some tests. You're not imagining it — you're listening to your body." }
   ]
 };
 
@@ -161,7 +198,10 @@ function findCachedResponse(userMessage) {
     ...LUNA_RESPONSE_LIBRARY.postpartumBreastfeeding,
     ...LUNA_RESPONSE_LIBRARY.irregularBleeding,
     ...LUNA_RESPONSE_LIBRARY.emotionalReassurance,
-    ...LUNA_RESPONSE_LIBRARY.appSupport
+    ...LUNA_RESPONSE_LIBRARY.appSupport,
+    ...LUNA_RESPONSE_LIBRARY.lifestyleDietExercise,
+    ...LUNA_RESPONSE_LIBRARY.medicationBirthControlHRT,
+    ...LUNA_RESPONSE_LIBRARY.mentalHealthCrises
   ];
 
   for (const response of allResponses) {
