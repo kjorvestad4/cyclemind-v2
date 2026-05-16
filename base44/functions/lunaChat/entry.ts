@@ -93,7 +93,7 @@ const LUNA_RESPONSE_LIBRARY = {
 
   // ===== GENERAL SUPPORT & REASSURANCE (71–75) =====
   generalSupport: [
-    { id: 71, keywords: ['going crazy', 'before period', 'feel like'], question: "I feel like I'm going crazy before my period.", response: "You are not going crazy. This is the very real effect of PMDD hormones on your brain. You're doing an amazing job just by recognizing it and reaching out. I'm right here with you." },
+    { id: 71, keywords: ['going crazy', 'before period', 'feel like', 'not very good', 'not doing great', 'really struggling', 'feeling low', 'bad day', 'bad way'], question: "I feel like I'm going crazy before my period.", response: "You are not going crazy. This is the very real effect of PMDD hormones on your brain. You're doing an amazing job just by recognizing it and reaching out. I'm right here with you." },
     { id: 72, keywords: ['why', 'hard', 'every month'], question: "Why is this so hard every month?", response: "It is hard — PMDD is a real medical condition and it takes a lot of energy to manage. You're not weak; you're strong for showing up every month. I see you and I'm proud of you." },
     { id: 73, keywords: ['feel', 'alone', 'this'], question: "I feel so alone with this.", response: "You are not alone. Millions of women go through this, and many feel exactly the way you do. I'm here with you, and your psychiatrists are building this app so you have better support. You've got this and you've got me." },
     { id: 74, keywords: ['feel normal', 'again', 'will i'], question: "Will I ever feel normal again?", response: "Yes — many women find real relief with the right treatment and tracking. It may not be perfect every month, but it can get so much better. You're already taking the first step by using the app." },
@@ -489,6 +489,30 @@ function findTechTroubleshootingMatch(userMessage) {
   return highestScore >= 0.4 ? bestMatch : null;
 }
 
+// Vague emotional/low-mood matching — PRIORITIZED for short emotional inputs
+function findVagueEmotionalMatch(userMessage) {
+  const emotionalResponses = [
+    ...LUNA_RESPONSE_LIBRARY.generalSupport,
+    ...LUNA_RESPONSE_LIBRARY.emotionalReassurance,
+    ...LUNA_RESPONSE_LIBRARY.generalReassuranceFinal,
+    ...LUNA_RESPONSE_LIBRARY.generalReassuranceContinued,
+    ...LUNA_RESPONSE_LIBRARY.closingEmotionalSupport,
+    ...LUNA_RESPONSE_LIBRARY.appClosing
+  ];
+  let bestMatch = null;
+  let highestScore = 0;
+  
+  for (const response of emotionalResponses) {
+    const similarity = calculateSemanticSimilarity(userMessage, response.keywords);
+    if (similarity.score > highestScore) {
+      highestScore = similarity.score;
+      bestMatch = { ...response, similarityScore: similarity.score };
+    }
+  }
+  
+  return highestScore >= 0.50 ? bestMatch : null;
+}
+
 // Medium-priority matching for life events, partner dynamics, culture, treatments
 function findOutsideTheBoxMatch(userMessage) {
   const outsideTheBoxResponses = LUNA_RESPONSE_LIBRARY.outsideTheBoxLife || [];
@@ -556,10 +580,10 @@ function findCachedResponse(userMessage) {
   return highestScore >= 0.45 ? bestMatch : null;
 }
 
-// Fallback template responses (kept for backward compatibility)
+// Fallback template responses (kept for backward compatibility, no medication mentions)
 const TEMPLATE_RESPONSES = {
   cycle_day: {
-    message: "I see you're checking where you are in your cycle. Where you are hormonally really shapes how you're feeling. 💙 What symptoms or emotions are standing out to you today?",
+    message: "I see you're checking where you are in your cycle. Where you are hormonally really shapes how you're feeling. What symptoms or emotions are standing out to you today?",
     suggestedActions: ["Track today's symptoms", "Tell me about my mood", "Self-care tips for this phase"],
     flags: { escalate: false, crisis: false },
     codedSymptoms: {},
@@ -573,7 +597,7 @@ const TEMPLATE_RESPONSES = {
     detectedSymptoms: []
   },
   mood_check: {
-    message: "How you're feeling emotionally is so important — and it's often connected to where you are in your cycle. 🌙 What's your mood like right now?",
+    message: "How you're feeling emotionally is so important — and it's often connected to where you are in your cycle. What's your mood like right now?",
     suggestedActions: ["Track mood in log", "Self-care ideas", "When will I feel better?"],
     flags: { escalate: false, crisis: false },
     codedSymptoms: {},
@@ -587,28 +611,28 @@ const TEMPLATE_RESPONSES = {
     detectedSymptoms: []
   },
   self_care: {
-    message: "Self-care during your cycle is so powerful — and it looks different depending on what phase you're in. 💚 What kind of self-care are you thinking about?",
+    message: "Self-care during your cycle is so powerful — and it looks different depending on what phase you're in. What kind of self-care are you thinking about?",
     suggestedActions: ["Luteal phase tips", "Follicular phase ideas", "Track today's symptoms"],
     flags: { escalate: false, crisis: false },
     codedSymptoms: {},
     detectedSymptoms: []
   },
   ovulation: {
-    message: "Ovulation is such a powerful time — energized, creative, sometimes more social. How are you feeling in this phase? 🌟",
+    message: "Ovulation is such a powerful time — energized, creative, sometimes more social. How are you feeling in this phase?",
     suggestedActions: ["Track ovulation test", "Fertility window", "How to support this phase"],
     flags: { escalate: false, crisis: false },
     codedSymptoms: {},
     detectedSymptoms: []
   },
   luteal_phase: {
-    message: "The luteal phase is intense — it's when emotions and physical symptoms peak. This is so normal. What's standing out for you right now? 💜",
+    message: "The luteal phase is intense — it's when emotions and physical symptoms peak. This is so normal. What's standing out for you right now?",
     suggestedActions: ["Track symptoms", "PMDD support", "Self-compassion ideas"],
     flags: { escalate: false, crisis: false },
     codedSymptoms: {},
     detectedSymptoms: []
   },
   fertility_window: {
-    message: "Your fertile window is the best time for conception. I can help you track ovulation and understand your timing. 🎯 What would help most right now?",
+    message: "Your fertile window is the best time for conception. I can help you track ovulation and understand your timing. What would help most right now?",
     suggestedActions: ["View fertile window", "Log ovulation test", "Conception tips"],
     flags: { escalate: false, crisis: false },
     codedSymptoms: {},
@@ -703,59 +727,76 @@ Deno.serve(async (req) => {
        });
      }
 
-     // TIER 2: TECH TROUBLESHOOTING (Medium Priority)
+     // TIER 2: VAGUE EMOTIONAL/LOW-MOOD (Highest Non-Crisis Priority)
+     let vagueEmotionalMatch = null;
+     if (messageLength < 100) {
+       vagueEmotionalMatch = findVagueEmotionalMatch(userMessageOriginal);
+     }
+
+     if (vagueEmotionalMatch) {
+       console.log(`[LUNA ROUTING] TIER_2_VAGUE_EMOTIONAL q${vagueEmotionalMatch.id} score=${vagueEmotionalMatch.similarityScore} cost=$0`);
+       return Response.json({
+         message: vagueEmotionalMatch.response,
+         suggestedActions: [],
+         flags: { escalate: false, crisis: false },
+         timestamp: new Date().toISOString(),
+         route: 'tier_2_vague_emotional'
+       });
+     }
+
+     // TIER 3: TECH TROUBLESHOOTING (Medium Priority)
      let techMatch = null;
      if (messageLength < 150) {
        techMatch = findTechTroubleshootingMatch(userMessageOriginal);
      }
 
      if (techMatch) {
-       console.log(`[LUNA ROUTING] TIER_2_TECH q${techMatch.id} score=${techMatch.similarityScore} cost=$0`);
+       console.log(`[LUNA ROUTING] TIER_3_TECH q${techMatch.id} score=${techMatch.similarityScore} cost=$0`);
        return Response.json({
          message: techMatch.response,
          suggestedActions: [],
          flags: { escalate: false, crisis: false },
          timestamp: new Date().toISOString(),
-         route: 'tier_2_tech_troubleshooting'
+         route: 'tier_3_tech_troubleshooting'
        });
      }
 
-     // TIER 3: OUTSIDE-THE-BOX (Medium-High Priority)
+     // TIER 4: OUTSIDE-THE-BOX (Medium-High Priority)
      let outsideTheBoxMatch = null;
      if (messageLength < 150) {
        outsideTheBoxMatch = findOutsideTheBoxMatch(userMessageOriginal);
      }
 
      if (outsideTheBoxMatch) {
-       console.log(`[LUNA ROUTING] TIER_3_OUTSIDE_BOX q${outsideTheBoxMatch.id} score=${outsideTheBoxMatch.similarityScore} cost=$0`);
+       console.log(`[LUNA ROUTING] TIER_4_OUTSIDE_BOX q${outsideTheBoxMatch.id} score=${outsideTheBoxMatch.similarityScore} cost=$0`);
        return Response.json({
          message: outsideTheBoxMatch.response,
          suggestedActions: [],
          flags: { escalate: false, crisis: false },
          timestamp: new Date().toISOString(),
-         route: 'tier_3_outside_box'
+         route: 'tier_4_outside_box'
        });
      }
 
-     // TIER 4: CACHED LIBRARY (Common Questions - 250+ responses)
+     // TIER 5: CACHED LIBRARY (Common Questions - 250+ responses)
      let cachedMatch = null;
      if (messageLength < 150) {
        cachedMatch = findCachedResponse(userMessageOriginal);
      }
 
      if (cachedMatch && cachedMatch.similarityScore >= 0.45) {
-       console.log(`[LUNA ROUTING] TIER_4_CACHED q${cachedMatch.id} score=${cachedMatch.similarityScore} cost=$0`);
+       console.log(`[LUNA ROUTING] TIER_5_CACHED q${cachedMatch.id} score=${cachedMatch.similarityScore} cost=$0`);
        return Response.json({
          message: cachedMatch.response,
          suggestedActions: [],
          flags: { escalate: false, crisis: false },
          timestamp: new Date().toISOString(),
-         route: 'tier_4_cached_library'
+         route: 'tier_5_cached_library'
        });
      }
 
-     // TIER 5: FALLBACK TO EXPENSIVE LLM (Complex/Novel Questions)
-     console.log(`[LUNA ROUTING] TIER_5_LLM_FALLBACK msgLen=${messageLength} cached_score=${cachedMatch?.similarityScore || 'none'} escalate_to_grok=true`);
+     // TIER 6: FALLBACK TO EXPENSIVE LLM (Complex/Novel Questions)
+     console.log(`[LUNA ROUTING] TIER_6_LLM_FALLBACK msgLen=${messageLength} cached_score=${cachedMatch?.similarityScore || 'none'} escalate_to_grok=true`);
 
     // Fallback to old pattern-based templates
     const simplePatterns = {
@@ -855,13 +896,13 @@ Deno.serve(async (req) => {
 
     if (!grokApiKey) {
       console.log('[LUNA ROUTING] grok_key_missing, falling back to local intelligent response');
-      // Intelligent local fallback for complex questions
+      // Intelligent local fallback for complex questions — warm validation first
       const parsed = {
-        message: `I hear you exploring something deeper here. Your question touches on the intersection of your cycle and mental health — that's so important. 💜\n\nFor specific medical guidance like medication adjustments and how your SSRI interacts with your cycle, your psychiatrist or gynecologist is the best expert. But I can definitely help you:\n\n• Prepare questions for your doctor\n• Track your anxiety patterns across your cycle\n• Explore coping strategies for luteal-phase anxiety\n\nWhat feels most helpful right now?\n\nThis is not a substitute for professional medical advice. Please consult your doctor.`,
-        suggestedActions: ['Prepare doctor questions', 'Track anxiety patterns', 'Coping strategies for luteal phase'],
+        message: `I hear you and I'm here to listen. What you're feeling matters and you're doing the right thing by reaching out.\n\nI can help you understand your patterns better and prepare questions for your doctor, but for specific medical guidance, your psychiatrist is the best expert.\n\nWhat would help you most right now?\n\nThis is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.`,
+        suggestedActions: ['Prepare doctor questions', 'Coping strategies', 'Track today'],
         flags: { escalate: false, crisis: false },
-        detectedSymptoms: [{ name: 'anxiety', severity: 4 }],
-        codedSymptoms: { s_anxiety: 4 }
+        detectedSymptoms: [],
+        codedSymptoms: {}
       };
       console.log('[LUNA ROUTING] local_complex_response cost=$0');
       return Response.json({
@@ -922,13 +963,13 @@ Deno.serve(async (req) => {
       });
     } catch (grokError) {
       console.log('[LUNA ROUTING] grok_fallback_triggered');
-      // Intelligent local fallback when Grok fails
+      // Warm, validation-focused fallback when Grok fails
       const parsed = {
-        message: `I appreciate you sharing this with me. Questions about how your medication works with your cycle are really important. 💜\n\nYour doctor is the best person to discuss dose adjustments and medication interactions with your cycle. But I'm here to help you:\n\n• Track and understand your anxiety patterns\n• Prepare questions for your doctor appointment\n• Explore self-care strategies during your luteal phase\n\nWhat would help most right now?\n\nThis is not a substitute for professional medical advice. Please consult your doctor.`,
-        suggestedActions: ['Prepare doctor questions', 'Track mood patterns', 'Luteal phase support'],
+        message: `I'm here for you. What you're sharing matters and I want to listen and support you.\n\nI can help you track your patterns, explore self-care, and prepare for conversations with your doctor — but they're the best expert for medical questions.\n\nTell me what feels most helpful right now.\n\nThis is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.`,
+        suggestedActions: ['Listen to my day', 'Self-care ideas', 'Prepare for doctor'],
         flags: { escalate: false, crisis: false },
-        detectedSymptoms: [{ name: 'anxiety', severity: 3 }],
-        codedSymptoms: { s_anxiety: 3 }
+        detectedSymptoms: [],
+        codedSymptoms: {}
       };
       console.log('[LUNA ROUTING] local_intelligent_response cost=$0');
       return Response.json({
