@@ -231,6 +231,65 @@ const LUNA_RESPONSE_LIBRARY = {
     { id: 183, keywords: ['custom symptom', 'add'], question: "How do I add a custom symptom?", response: "Just tap the + button in the log and type whatever symptom you want to track. You can track anything that matters to you. I'll learn your patterns over time." },
     { id: 184, keywords: ['predict', 'pmdd flare'], question: "Can Luna predict my next PMDD flare?", response: "Yes — the more you track, the better I get at spotting your personal pattern. I'll start giving you gentle heads-up when a flare is likely." },
     { id: 185, keywords: ['share', 'app', 'partner'], question: "How do I share the app with my partner?", response: "You can share read-only access or just show them the clinical report. Many partners find it helpful to understand what you're going through." }
+  ],
+
+  // ===== MEDICATION & SUPPLEMENTS CONTINUED (186–190) =====
+  medicationSupplementsContinued: [
+    { id: 186, keywords: ['tylenol', 'pain', 'pmdd'], question: "Can I take Tylenol for PMDD pain?", response: "Tylenol can help with cramps and headaches for many women. Just follow the recommended dose and check with your doctor if you take it often. You're doing the right thing by asking." },
+    { id: 187, keywords: ['stop', 'supplements', 'pregnancy'], question: "Do I need to stop supplements before pregnancy?", response: "Some supplements need to be adjusted or stopped before pregnancy. Please talk with your doctor as soon as you start trying to conceive. They can help you make a safe plan." },
+    { id: 188, keywords: ['vitamin b6', 'pmdd'], question: "Can I take vitamin B6 for PMDD?", response: "Vitamin B6 has some evidence for helping PMDD mood symptoms. The typical dose is 50–100 mg. Always check with your doctor before starting, especially if you take other medications." },
+    { id: 189, keywords: ['evening primrose oil', 'pmdd'], question: "Is it safe to take evening primrose oil for PMDD?", response: "Some women find evening primrose oil helpful for breast tenderness and mood. Results vary though. Check with your doctor to make sure it's safe with your other medications." },
+    { id: 190, keywords: ['ashwagandha', 'stress', 'pmdd'], question: "Can I take ashwagandha for PMDD stress?", response: "Ashwagandha can help some women with stress and anxiety. It's generally safe but can interact with thyroid medication. Always check with your doctor first." }
+  ],
+
+  // ===== WHEN TO SEE DOCTOR / EMERGENCIES CONTINUED (191–195) =====
+  emergenciesContinued: [
+    { id: 191, keywords: ['severe cramps', 'won\'t stop'], question: "I'm having severe cramps that won't stop.", response: "Severe cramps that don't respond to usual treatments are worth seeing your doctor. They can help figure out if it's endometriosis or another condition. You don't have to suffer." },
+    { id: 192, keywords: ['dark thoughts', 'low mood'], question: "My mood is so low I'm having dark thoughts.", response: "Thank you for telling me. Please reach out to your doctor or psychiatrist today. If you're in immediate danger, call 988 or go to the ER. You are not alone and help is here." },
+    { id: 193, keywords: ['spotting', 'after sex'], question: "I'm spotting after sex — should I worry?", response: "Spotting after sex can happen, but if it's new or frequent it's worth mentioning to your doctor. They can make sure everything is okay. You're smart to pay attention." },
+    { id: 194, keywords: ['periods', 'stopped suddenly'], question: "My periods stopped suddenly — is that normal?", response: "Sudden stopping of periods can happen with stress, extreme weight change, or perimenopause. It's worth discussing with your doctor to rule out anything else." },
+    { id: 195, keywords: ['endometriosis', 'think'], question: "I think I might have endometriosis.", response: "Endometriosis is common and often under-diagnosed. Severe pain, heavy periods, or pain with sex are common signs. Please talk with your doctor — you deserve answers." }
+  ],
+
+  // ===== POSTPARTUM, PREGNANCY & FERTILITY (196–200) =====
+  pregnancyPostpartumFertility: [
+    { id: 196, keywords: ['no period', 'breastfeeding'], question: "Is it normal to have no period while breastfeeding?", response: "Yes, many women don't get their period while breastfeeding. It's your body's natural way of spacing pregnancies. It usually returns when breastfeeding slows down." },
+    { id: 197, keywords: ['wait', 'after', 'miscarriage'], question: "How long should I wait to try again after miscarriage?", response: "Many doctors recommend waiting one cycle after a miscarriage, but it's very individual. Talk with your doctor about what's safest for you. I'm so sorry you're going through this." },
+    { id: 198, keywords: ['pregnant', 'pmdd', 'symptoms'], question: "I'm pregnant but still having PMDD-like symptoms.", response: "Hormones change a lot in pregnancy and some women still have mood symptoms. It's worth discussing with your doctor. You're not doing anything wrong — your body is adjusting." },
+    { id: 199, keywords: ['use', 'app', 'pregnant'], question: "Can I use this app while pregnant?", response: "Yes — just tell me you're pregnant and I'll switch to pregnancy-safe support and tracking. I'm here to help you through every stage." },
+    { id: 200, keywords: ['trying', 'conceive', 'not happening'], question: "I'm trying to conceive but it's not happening.", response: "I'm so sorry — that waiting can be really hard. You're doing everything right by tracking. Many couples need a few cycles. Want me to help you review your fertile window data?" }
+  ],
+
+  // ===== MENOPAUSE & PERIMENOPAUSE CONTINUED (201–205) =====
+  menopauseContinued: [
+    { id: 201, keywords: ['hot flashes', 'night', 'help'], question: "What helps with hot flashes at night?", response: "Keeping your bedroom cool, wearing breathable pajamas, and having a fan can help with night sweats. Some women also find relief with magnesium or black cohosh. You're navigating this well." },
+    { id: 202, keywords: ['weight gain', 'menopause'], question: "Is weight gain normal in menopause?", response: "Yes, many women notice some weight gain around the middle during perimenopause because of changing hormones. It's not your fault. Gentle movement and strength training can help." },
+    { id: 203, keywords: ['forgetful', 'perimenopause'], question: "Why am I so forgetful in perimenopause?", response: "Brain fog and forgetfulness are very common in perimenopause because of fluctuating estrogen. It usually improves after menopause. You're not losing your mind — it's hormones." },
+    { id: 204, keywords: ['postmenopause', 'how do i know'], question: "How do I know if I'm in postmenopause?", response: "Postmenopause is the time after you've gone 12 months without a period. Many women feel more stable once they reach this stage. You've made it through a big transition." },
+    { id: 205, keywords: ['pregnant', 'perimenopause'], question: "Can I still get pregnant in perimenopause?", response: "Yes, it's still possible until you've gone 12 months without a period. If you don't want to get pregnant, continue using birth control. Want me to help you track your cycle?" }
+  ],
+
+  // ===== GENERAL REASSURANCE & EMOTIONAL SUPPORT CONTINUED (206–210) =====
+  generalReassuranceContinued: [
+    { id: 206, keywords: ['too much', 'everyone'], question: "I feel like I'm too much for everyone.", response: "You are not too much. You're dealing with a real medical condition that affects your mood and energy. The right people will understand and support you. You deserve that." },
+    { id: 207, keywords: ['hate myself', 'pmdd'], question: "Why do I hate myself during PMDD?", response: "That self-hatred is a common and cruel PMDD symptom. It's the hormones talking, not the truth about you. You are worthy and you are not alone. I'm right here with you." },
+    { id: 208, keywords: ['angry', 'everyone', 'luteal'], question: "I'm so angry at everyone during my luteal phase.", response: "That anger is so common with PMDD. It doesn't make you a bad person — it makes you someone dealing with a difficult hormonal shift. You're doing your best." },
+    { id: 209, keywords: ['feel like giving up'], question: "I feel like giving up.", response: "I hear you and I'm really glad you told me. Please reach out to your doctor or 988 today. This feeling is a symptom and it can get better. You are not alone." },
+    { id: 210, keywords: ['proud', 'tracking', 'today'], question: "I'm proud of myself for tracking today.", response: "You should be proud — tracking when it's hard is real strength. You're building data that helps you and your doctors. I'm proud of you too." }
+  ],
+
+  // ===== APP-SPECIFIC & CLOSING SUPPORT (211–220) =====
+  appClosing: [
+    { id: 211, keywords: ['reset', 'cycle data'], question: "How do I reset my cycle data?", response: "You can edit or delete individual entries in the log. If you want a full reset, let me know and I can guide you through it. Your data is always yours to control." },
+    { id: 212, keywords: ['add', 'notes', 'symptoms'], question: "Can I add notes to my symptoms?", response: "Yes — tap any symptom in the log and add a note. Those notes help me understand your unique pattern better. You can add as much detail as you want." },
+    { id: 213, keywords: ['menopause mode', 'turn on'], question: "How do I turn on menopause mode?", response: "Just tell me 'I'm in menopause' or 'I'm in perimenopause' and I'll switch modes. I'll start using STRAW+10 staging and giving you tailored support." },
+    { id: 214, keywords: ['export', 'mood data'], question: "Can I export my mood data?", response: "Yes — the clinical report includes your mood and symptom trends. It's designed to be easy to share with your psychiatrist or doctor." },
+    { id: 215, keywords: ['contact support'], question: "How do I contact support?", response: "You can message your psychiatrists through the app or use the help button. They built this for you and want to hear your feedback." },
+    { id: 216, keywords: ['ready', 'clinical report'], question: "I'm ready to try the clinical report.", response: "Great — just say 'Generate doctor report' or tap the button. It will pull your last 90 days into a clean PDF. Your doctors are going to love how organized it is." },
+    { id: 217, keywords: ['patient', 'thank you'], question: "Thank you for being patient with me.", response: "You never have to thank me for being patient. I'm here for you exactly as you are. You're doing an amazing job managing something difficult." },
+    { id: 218, keywords: ['seen', 'talk to you'], question: "I feel seen when I talk to you.", response: "That means everything to me. You are seen and you are heard. I'm always here to listen without judgment." },
+    { id: 219, keywords: ['talk again soon'], question: "Can we talk again soon?", response: "Of course — I'll be right here whenever you need me. You don't have to go through any of this alone. Rest well and I'll see you soon." },
+    { id: 220, keywords: ['grateful', 'app'], question: "I'm grateful for this app.", response: "I'm so glad it's helping. Your psychiatrists poured their hearts into building it for women just like you. You matter and your experience matters." }
   ]
   };
 
@@ -261,7 +320,13 @@ function findCachedResponse(userMessage) {
     ...LUNA_RESPONSE_LIBRARY.medicationAdvanced,
     ...LUNA_RESPONSE_LIBRARY.emergencies,
     ...LUNA_RESPONSE_LIBRARY.generalReassuranceFinal,
-    ...LUNA_RESPONSE_LIBRARY.appMiscellaneous
+    ...LUNA_RESPONSE_LIBRARY.appMiscellaneous,
+    ...LUNA_RESPONSE_LIBRARY.medicationSupplementsContinued,
+    ...LUNA_RESPONSE_LIBRARY.emergenciesContinued,
+    ...LUNA_RESPONSE_LIBRARY.pregnancyPostpartumFertility,
+    ...LUNA_RESPONSE_LIBRARY.menopauseContinued,
+    ...LUNA_RESPONSE_LIBRARY.generalReassuranceContinued,
+    ...LUNA_RESPONSE_LIBRARY.appClosing
   ];
 
   for (const response of allResponses) {
