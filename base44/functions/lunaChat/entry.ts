@@ -176,8 +176,63 @@ const LUNA_RESPONSE_LIBRARY = {
     { id: 123, keywords: ['call', 'doctor', 'about pmdd'], question: "When should I call my doctor about PMDD?", response: "If PMDD is affecting your ability to work, parent, or keep relationships healthy, it's time to talk with your doctor. You don't have to wait until it's unbearable. You deserve support." },
     { id: 124, keywords: ['scared', 'hurt myself'], question: "I'm scared I might hurt myself.", response: "Thank you for telling me. Please call 988 right now or go to the nearest ER. You are not a burden and help is available. I'm right here and I care about you." },
     { id: 125, keywords: ['symptoms', 'getting worse', 'every month'], question: "My symptoms are getting worse every month.", response: "If symptoms are getting worse, it's important to talk with your doctor. They may want to adjust treatment or run some tests. You're not imagining it — you're listening to your body." }
+  ],
+
+  // ===== LIFESTYLE, DIET, EXERCISE & SLEEP (151–160) =====
+  lifestyleAdvanced: [
+    { id: 151, keywords: ['insomnia', 'pmdd'], question: "What helps with PMDD insomnia?", response: "PMDD insomnia is so common. A consistent bedtime routine, magnesium, and avoiding screens an hour before bed can help. You're not failing at sleep — your hormones are making it hard. Want some gentle wind-down ideas?" },
+    { id: 152, keywords: ['magnesium', 'pmdd'], question: "Can I take magnesium for PMDD?", response: "Yes, magnesium is one of the most studied supplements for PMDD and can help with mood, cramps, and sleep. Check with your doctor for the right dose. You're doing the right thing by exploring options." },
+    { id: 153, keywords: ['weight', 'affect', 'cycle'], question: "How does my weight affect my cycle?", response: "Both very low and very high body weight can affect cycle regularity. Your body is trying to protect you. If your cycles are irregular and you're worried, your doctor can help figure out the best next step." },
+    { id: 154, keywords: ['joint pain', 'pmdd'], question: "What helps with PMDD joint pain?", response: "Gentle stretching, warm baths, and anti-inflammatory foods can help with PMDD joint pain. Some women also find relief with magnesium or omega-3s. You're not imagining it — this is a real symptom." },
+    { id: 155, keywords: ['strength training', 'pmdd'], question: "Can I do strength training with PMDD?", response: "Light strength training can be helpful if it feels good. During bad flares, many women prefer gentler movement. Listen to your body — it knows what it needs right now." },
+    { id: 156, keywords: ['thyroid', 'affect', 'cycle'], question: "How does my thyroid affect my cycle?", response: "Thyroid issues can make cycles irregular or cause heavy bleeding. If your periods are very irregular or you're extremely tired, it's worth asking your doctor about thyroid testing." },
+    { id: 157, keywords: ['back pain', 'pmdd'], question: "What helps with PMDD back pain?", response: "Gentle heat, stretching, and good posture can help with PMDD back pain. Some women also find relief with magnesium or a short walk. You're not alone — this is a common symptom." },
+    { id: 158, keywords: ['vitamin d', 'pmdd'], question: "Can I take vitamin D for PMDD?", response: "Vitamin D is important for mood and many women with PMDD are low. It's worth discussing with your doctor. Want me to help you make a list of questions for your next appointment?" },
+    { id: 159, keywords: ['gut health', 'pmdd'], question: "How does my gut health affect PMDD?", response: "There's a strong gut-brain connection. Many women feel better with more fiber, fermented foods, and probiotics. It's worth experimenting gently. Want some simple food ideas?" },
+    { id: 160, keywords: ['dizziness', 'pmdd'], question: "What helps with PMDD dizziness?", response: "Staying hydrated, eating regular meals, and avoiding sudden position changes can help with PMDD dizziness. If it's severe, mention it to your doctor. You're doing the right thing by noticing." }
+  ],
+
+  // ===== MEDICATION, BIRTH CONTROL & HRT (161–170) =====
+  medicationAdvanced: [
+    { id: 161, keywords: ['birth control', 'continuously'], question: "Can I take birth control continuously for PMDD?", response: "Yes, many women with PMDD use continuous birth control to skip the luteal phase and reduce flares. It's a common and effective approach. Talk with your doctor about whether it's right for you." },
+    { id: 162, keywords: ['hrt', 'side effects'], question: "What are the side effects of HRT?", response: "HRT side effects vary, but common ones include breast tenderness, bloating, and spotting at first. Your doctor can help you find the right dose and type. You're smart to ask questions." },
+    { id: 163, keywords: ['progesterone', 'pmdd'], question: "Can I take progesterone for PMDD?", response: "Some women find progesterone cream or pills helpful for PMDD. Results vary though. It's worth discussing with your doctor to see if it could be a good option for you." },
+    { id: 164, keywords: ['ssri', 'pmdd', 'work'], question: "Do SSRIs work for PMDD?", response: "Yes, many women with PMDD find low-dose SSRIs very effective, especially if taken only during the luteal phase. It's one of the most studied treatments. Your psychiatrist can guide you." },
+    { id: 165, keywords: ['st john', 'wort', 'pmdd'], question: "Can I take St. John's Wort for PMDD?", response: "St. John's Wort can help some women with mood, but it interacts with many medications including birth control and antidepressants. Always check with your doctor first." },
+    { id: 166, keywords: ['ibuprofen', 'birth control', 'safe'], question: "Is it safe to take ibuprofen with my birth control?", response: "Yes, ibuprofen is generally safe with birth control. It can help with cramps and breast tenderness. Just follow the recommended dose." },
+    { id: 167, keywords: ['melatonin', 'antidepressants'], question: "Can I take melatonin with antidepressants?", response: "Melatonin is usually safe with antidepressants, but check with your doctor or pharmacist. It can be helpful for sleep during PMDD flares." },
+    { id: 168, keywords: ['cbd', 'pmdd'], question: "What about CBD for PMDD?", response: "Some women find CBD helpful for anxiety and pain with PMDD. Research is still limited though. Always check with your doctor, especially if you take other medications." },
+    { id: 169, keywords: ['fish oil', 'pmdd'], question: "Can I take fish oil for PMDD?", response: "Omega-3s from fish oil have some evidence for helping mood and inflammation with PMDD. It's generally safe — your doctor can tell you the right dose." },
+    { id: 170, keywords: ['stop', 'medication', 'pregnancy'], question: "Do I need to stop my medication before pregnancy?", response: "Some medications need to be adjusted or changed before pregnancy. Please talk with your doctor as soon as you start trying to conceive. They can help you make a safe plan." }
+  ],
+
+  // ===== WHEN TO SEE A DOCTOR / EMERGENCIES (171–175) =====
+  emergencies: [
+    { id: 171, keywords: ['bleeding', 'very heavily', 'er'], question: "I'm bleeding very heavily — should I go to the ER?", response: "If you're soaking through a pad or tampon in under an hour or feel dizzy/faint, yes — go to the ER or urgent care. Heavy bleeding can be serious. You're not overreacting." },
+    { id: 172, keywords: ['anxiety', 'panic attacks'], question: "My anxiety is so bad I'm having panic attacks.", response: "Panic attacks are scary but they pass. Please reach out to your doctor or psychiatrist today. If you feel like you can't breathe or are in danger, call 988 or go to the ER." },
+    { id: 173, keywords: ['chest pain', 'pmdd flare'], question: "I'm having chest pain during a PMDD flare.", response: "Chest pain is always worth checking out. Please see a doctor or go to the ER to rule out anything serious. PMDD can make everything feel more intense, but better safe than sorry." },
+    { id: 174, keywords: ['periods', 'extremely painful'], question: "My periods are extremely painful — is that normal?", response: "Very painful periods that interfere with your life are not something you have to live with. It could be endometriosis or another condition. Please talk with your doctor." },
+    { id: 175, keywords: ['postpartum depression', 'think'], question: "I think I might have postpartum depression.", response: "Postpartum depression is real and treatable. Please reach out to your doctor or a mental health professional today. You're not a bad mom — you're dealing with something medical." }
+  ],
+
+  // ===== GENERAL REASSURANCE & EMOTIONAL SUPPORT (176–180) =====
+  generalReassuranceFinal: [
+    { id: 176, keywords: ['failure', 'pmdd'], question: "I feel like a failure because of my PMDD.", response: "You are not a failure. PMDD is a medical condition, not a character flaw. You're showing up and seeking support — that is strength. I see you and I'm proud of you." },
+    { id: 177, keywords: ['mood change', 'so fast'], question: "Why does my mood change so fast?", response: "Hormones can cause rapid mood shifts during the luteal phase. It's not you being dramatic — it's biology. You're doing an amazing job managing something difficult." },
+    { id: 178, keywords: ['ruin', 'relationships'], question: "I'm scared this will ruin my relationships.", response: "PMDD can strain relationships, but many couples find ways to work through it together. Open communication and treatment help. You deserve understanding and support." },
+    { id: 179, keywords: ['hopeless', 'normal'], question: "I feel hopeless about ever feeling normal.", response: "That hopelessness is a real PMDD symptom. It feels permanent but it's not. Many women do find real relief. You're not stuck — there are options. I'm here with you." },
+    { id: 180, keywords: ['angry', 'body'], question: "I'm so angry at my body.", response: "It's okay to be angry at your body when it feels like it's working against you. That anger is valid. You're not alone in feeling this way. I'm right here with you." }
+  ],
+
+  // ===== APP-SPECIFIC & MISCELLANEOUS (181–185) =====
+  appMiscellaneous: [
+    { id: 181, keywords: ['back up', 'data'], question: "How do I back up my data?", response: "Your data is automatically backed up in your account. The clinical report is also a great way to save a snapshot. You're always in control of your information." },
+    { id: 182, keywords: ['cycle length', 'goal'], question: "Can I change my cycle length goal?", response: "Yes — go to settings and update your average cycle length. The more accurate it is, the better my predictions become. I'm here to help you fine-tune it." },
+    { id: 183, keywords: ['custom symptom', 'add'], question: "How do I add a custom symptom?", response: "Just tap the + button in the log and type whatever symptom you want to track. You can track anything that matters to you. I'll learn your patterns over time." },
+    { id: 184, keywords: ['predict', 'pmdd flare'], question: "Can Luna predict my next PMDD flare?", response: "Yes — the more you track, the better I get at spotting your personal pattern. I'll start giving you gentle heads-up when a flare is likely." },
+    { id: 185, keywords: ['share', 'app', 'partner'], question: "How do I share the app with my partner?", response: "You can share read-only access or just show them the clinical report. Many partners find it helpful to understand what you're going through." }
   ]
-};
+  };
 
 // Smart matching function to find cached response from the library
 function findCachedResponse(userMessage) {
@@ -201,7 +256,12 @@ function findCachedResponse(userMessage) {
     ...LUNA_RESPONSE_LIBRARY.appSupport,
     ...LUNA_RESPONSE_LIBRARY.lifestyleDietExercise,
     ...LUNA_RESPONSE_LIBRARY.medicationBirthControlHRT,
-    ...LUNA_RESPONSE_LIBRARY.mentalHealthCrises
+    ...LUNA_RESPONSE_LIBRARY.mentalHealthCrises,
+    ...LUNA_RESPONSE_LIBRARY.lifestyleAdvanced,
+    ...LUNA_RESPONSE_LIBRARY.medicationAdvanced,
+    ...LUNA_RESPONSE_LIBRARY.emergencies,
+    ...LUNA_RESPONSE_LIBRARY.generalReassuranceFinal,
+    ...LUNA_RESPONSE_LIBRARY.appMiscellaneous
   ];
 
   for (const response of allResponses) {
