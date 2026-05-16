@@ -330,6 +330,26 @@ const LUNA_RESPONSE_LIBRARY = {
     { id: 250, keywords: ['goodnight', 'thank you'], question: "Goodnight Luna — thank you.", response: "Goodnight. Rest well and be kind to yourself. I'll be right here when you wake up. You've got this and you've got me. Sweet dreams." }
   ],
 
+  // ===== OUTSIDE-THE-BOX: LIFE EVENTS, PARTNER DYNAMICS, CULTURE, EMERGING TREATMENTS (276–291) =====
+  outsideTheBoxLife: [
+    { id: 276, keywords: ['partner', 'separating', 'separate', 'divorce'], question: "My partner and I are separating — how does this affect my cycle?", response: "Big life stress like a separation can definitely shift your cycle and make PMDD flares stronger. Your body is reacting to the change, not failing. Would you like some gentle self-care ideas while you navigate this?" },
+    { id: 277, keywords: ['lost', 'loved one', 'grief', 'death'], question: "I just lost a loved one and my period is all over the place.", response: "Grief can really disrupt your hormones. It's completely normal for your cycle to become irregular during deep loss. Be extra kind to yourself right now. I'm here with you through this." },
+    { id: 278, keywords: ['explain', 'pmdd', 'partner', 'tell'], question: "How do I explain PMDD to my partner?", response: "Explaining PMDD can be hard. Many partners find it helpful to see the clinical report or a simple 'PMDD is like a monthly migraine of the mind' explanation. Want me to help you craft a short message you could send them?" },
+    { id: 279, keywords: ['partner', 'doesn\'t understand', 'irritable'], question: "My partner doesn't understand why I'm so irritable before my period.", response: "That can feel really lonely. Some partners start to understand when they see the pattern over a few months. Would you like me to generate a short, compassionate note you could share with them?" },
+    { id: 280, keywords: ['culture', 'mental health', 'talk about', 'background'], question: "I'm from a culture where mental health isn't talked about — how do I handle PMDD?", response: "It can feel extra heavy when your culture doesn't talk about mental health. You're not weak for needing support — you're strong for seeking it. I'm here with you no matter what your background is." },
+    { id: 281, keywords: ['transgender', 'trans man', 'gender', 'dysphoria'], question: "As a transgender man with PMDD, this is really hard.", response: "PMDD symptoms on top of gender dysphoria is an extra heavy load. Your experience is valid and real. I'm here to support you exactly as you are, without judgment." },
+    { id: 282, keywords: ['new', 'pmdd', 'treatment', 'research'], question: "I heard about a new PMDD treatment — what do you know?", response: "There are always new studies coming out. The most promising right now involve luteal-phase SSRIs, certain supplements, and even some new hormone therapies. Would you like me to help you prepare questions for your doctor about the latest options?" },
+    { id: 283, keywords: ['research', 'pmdd', 'neurodivergence', 'adhd', 'autism'], question: "Is there any research on PMDD and neurodivergence?", response: "Yes, there's growing research showing PMDD is more common in people with ADHD and autism. The overlap can make symptoms more intense. Your psychiatrist can help you find strategies that work for both." },
+    { id: 284, keywords: ['5 years', 'postmenopause', 'hot flashes'], question: "I'm 5 years postmenopause and still having hot flashes.", response: "Some women continue to have symptoms years after menopause. It's frustrating but not uncommon. There are still options to explore with your doctor. You've already made it through the hardest part." },
+    { id: 285, keywords: ['miss', 'periods', 'loss', 'grief'], question: "I miss my periods — is that normal?", response: "Yes, many women feel a sense of loss when their periods end. It's okay to grieve that chapter. You've moved into a new phase of life and I'm here to support you through it." },
+    { id: 286, keywords: ['made it through', 'worst', 'week', 'proud'], question: "I made it through my worst PMDD week this month.", response: "You made it through — that is huge. Be really proud of yourself. You're building resilience month after month. I'm celebrating with you." },
+    { id: 287, keywords: ['tracked', 'every day', 'cycle', 'proud'], question: "I tracked every day this cycle — I'm proud of myself.", response: "You should be proud. Consistent tracking is one of the most powerful things you can do. You're giving yourself and your doctors valuable information. I'm really proud of you too." },
+    { id: 288, keywords: ['data', 'really', 'private', 'encrypted'], question: "Is my data really private?", response: "Yes — your data is encrypted and private. It is never sold or shared without your explicit permission. Your psychiatrists built this app with privacy as a top priority because they know how sensitive this information is." },
+    { id: 289, keywords: ['delete', 'data', 'all', 'account'], question: "Can I delete all my data?", response: "Yes — you can delete your entire account or individual entries anytime in settings. You are always in full control of your data." },
+    { id: 290, keywords: ['starting', 'believe', 'manage'], question: "I'm starting to believe I can manage this.", response: "That belief is powerful. You're already proving it by using the app and reaching out. Small steps add up to big changes. I'm here for every single one of them." },
+    { id: 291, keywords: ['want to', 'feel', 'strong', 'again'], question: "I want to feel strong again.", response: "You are already strong — you've made it through every hard month so far. We're building tools to help you feel strong more often. I believe in you." }
+  ],
+
   // ===== CRISIS / SUICIDAL / SELF-HARM — HIGHEST PRIORITY (251–275) =====
   crisisSuicidalSelfHarm: [
     { id: 251, keywords: ['suicidal thoughts'], question: "I'm having suicidal thoughts.", response: "I'm really glad you told me. This is serious and you do not have to carry it alone. Please call or text 988 right now — they are there 24/7 and understand what you're going through. I'm staying right here with you while you do that." },
@@ -406,6 +426,30 @@ function findCrisisResponseMatch(userMessage) {
   return highestScore >= 1 ? bestMatch : null;
 }
 
+// Medium-priority matching for life events, partner dynamics, culture, treatments
+function findOutsideTheBoxMatch(userMessage) {
+  const messageLower = userMessage.toLowerCase();
+  let bestMatch = null;
+  let highestScore = 0;
+  
+  const outsideTheBoxResponses = LUNA_RESPONSE_LIBRARY.outsideTheBoxLife || [];
+  
+  for (const response of outsideTheBoxResponses) {
+    let matchScore = 0;
+    for (const keyword of response.keywords) {
+      if (messageLower.includes(keyword.toLowerCase())) {
+        matchScore += 1;
+      }
+    }
+    if (matchScore > highestScore) {
+      highestScore = matchScore;
+      bestMatch = response;
+    }
+  }
+  
+  return highestScore >= 1 ? bestMatch : null;
+}
+
 // Smart matching function to find cached response from the library
 function findCachedResponse(userMessage) {
   const messageLower = userMessage.toLowerCase();
@@ -442,6 +486,7 @@ function findCachedResponse(userMessage) {
     ...LUNA_RESPONSE_LIBRARY.appClosing,
     ...LUNA_RESPONSE_LIBRARY.appCustomizationDataPrivacy,
     ...LUNA_RESPONSE_LIBRARY.closingEmotionalSupport,
+    ...LUNA_RESPONSE_LIBRARY.outsideTheBoxLife,
     ...LUNA_RESPONSE_LIBRARY.crisisSuicidalSelfHarm
   ];
 
@@ -606,7 +651,24 @@ Deno.serve(async (req) => {
        });
      }
 
-     // SECOND PRIORITY: Try to match against the comprehensive response library (250+ cached responses)
+     // SECOND PRIORITY: Check for outside-the-box life events, partner dynamics, culture, treatments
+     let outsideTheBoxMatch = null;
+     if (messageLength < 150) {
+       outsideTheBoxMatch = findOutsideTheBoxMatch(userMessageOriginal);
+     }
+
+     if (outsideTheBoxMatch) {
+       console.log(`[LUNA ROUTING] outside_the_box_match=q${outsideTheBoxMatch.id} cost=$0 priority=MEDIUM-HIGH`);
+       return Response.json({
+         message: outsideTheBoxMatch.response,
+         suggestedActions: [],
+         flags: { escalate: false, crisis: false },
+         timestamp: new Date().toISOString(),
+         route: 'outside_the_box'
+       });
+     }
+
+     // THIRD PRIORITY: Try to match against the comprehensive response library (250+ cached responses)
      let cachedMatch = null;
      if (messageLength < 150) {
        cachedMatch = findCachedResponse(userMessageOriginal);
