@@ -330,6 +330,25 @@ const LUNA_RESPONSE_LIBRARY = {
     { id: 250, keywords: ['goodnight', 'thank you'], question: "Goodnight Luna — thank you.", response: "Goodnight. Rest well and be kind to yourself. I'll be right here when you wake up. You've got this and you've got me. Sweet dreams." }
   ],
 
+  // ===== TECH TROUBLESHOOTING (292–306) =====
+  techTroubleshooting: [
+    { id: 292, keywords: ['voice logging', 'isn\'t working', 'not working', 'microphone'], question: "Voice logging isn't working.", response: "Let's fix that quickly. Make sure your microphone permission is enabled in your phone settings and you're on the latest app version. Try closing and reopening the app. If it's still not working, tap the IT Support button below and I'll help you send a quick note to the team." },
+    { id: 293, keywords: ['clinical report', 'button', 'missing'], question: "The clinical report button is missing.", response: "That can happen after an update. Try pulling down to refresh the screen or restarting the app. If it's still missing, tap the IT Support button and the team will get it fixed for you right away." },
+    { id: 294, keywords: ['not getting', 'notifications', 'notifications not coming'], question: "I'm not getting notifications.", response: "Notifications are important! Go to your phone settings → CycleMind → Notifications and make sure they're turned on. Also check inside the app settings. If they're still not coming, tap IT Support and we'll investigate." },
+    { id: 295, keywords: ['app', 'crashing', 'crash'], question: "The app is crashing.", response: "I'm sorry that's happening. Please try force-closing the app and reopening it. If it keeps crashing, tap the IT Support button — the team will want to know your phone model and iOS/Android version to fix it fast." },
+    { id: 296, keywords: ['can\'t log in', 'login', 'can\'t sign in'], question: "I can't log in.", response: "Let's get you back in. Try resetting your password from the login screen. If that doesn't work, tap the IT Support button and we'll help you right away." },
+    { id: 297, keywords: ['pdf', 'report', 'weird', 'symbols', 'formatting'], question: "The PDF report has weird symbols.", response: "That's a known formatting glitch we're fixing. Tap the IT Support button and the team can regenerate a clean version for you immediately." },
+    { id: 298, keywords: ['luna', 'isn\'t responding', 'voice', 'not hearing'], question: "Luna isn't responding to my voice.", response: "Voice can be picky with background noise. Try speaking clearly in a quiet room. If it's still not hearing you, tap IT Support and we'll check your device settings." },
+    { id: 299, keywords: ['cycle data', 'disappeared', 'missing', 'lost data'], question: "My cycle data disappeared.", response: "Don't worry — your data is backed up. Try pulling down to refresh or restarting the app. If it's still missing, tap IT Support and we'll restore it for you." },
+    { id: 300, keywords: ['app', 'running', 'slow', 'laggy', 'performance'], question: "The app is running slow.", response: "Slow performance can happen with older phones or low battery. Try closing background apps or restarting your device. Tap IT Support if it stays slow." },
+    { id: 301, keywords: ['can\'t see', 'history', 'view history'], question: "Can't see my history.", response: "History can sometimes get hidden after updates. Try scrolling to find it or restarting the app. If it's still not showing, tap IT Support and we'll check your account." },
+    { id: 302, keywords: ['fertility', 'mode', 'won\'t turn on', 'won\'t enable'], question: "Fertility mode won't turn on.", response: "Fertility mode requires going through settings. Try going to Profile → Cycle Mode → Fertility. If the toggle still won't work, tap IT Support and we'll fix it for you." },
+    { id: 303, keywords: ['colors', 'look wrong', 'display', 'after update', 'theme'], question: "Colors look wrong after update.", response: "Display glitches can happen after updates. Try going to Settings → Theme and toggle between Light/Dark mode to refresh. If colors are still off, tap IT Support and the team will investigate." },
+    { id: 304, keywords: ['data', 'not syncing', 'sync', 'sync issue'], question: "Data not syncing.", response: "Sync issues usually resolve with a restart. Try force-closing the app, waiting 10 seconds, and reopening it. Make sure you have a good internet connection. If it's still not syncing, tap IT Support." },
+    { id: 305, keywords: ['app', 'won\'t open', 'ipad', 'tablet', 'won\'t work'], question: "App won't open on iPad.", response: "iPad compatibility can sometimes glitch. Make sure the app is updated in the App Store and try restarting your iPad. If it still won't open, tap IT Support and the team will check iPad support for your issue." },
+    { id: 306, keywords: ['log', 'won\'t save', 'save', 'losing entries', 'entries disappear'], question: "My log entries won't save.", response: "Unsaved entries can happen with connectivity issues. Check your internet connection and try saving again. If entries keep disappearing, tap IT Support and we'll investigate your account." }
+  ],
+
   // ===== OUTSIDE-THE-BOX: LIFE EVENTS, PARTNER DYNAMICS, CULTURE, EMERGING TREATMENTS (276–291) =====
   outsideTheBoxLife: [
     { id: 276, keywords: ['partner', 'separating', 'separate', 'divorce'], question: "My partner and I are separating — how does this affect my cycle?", response: "Big life stress like a separation can definitely shift your cycle and make PMDD flares stronger. Your body is reacting to the change, not failing. Would you like some gentle self-care ideas while you navigate this?" },
@@ -452,6 +471,24 @@ function findCrisisResponseMatch(userMessage) {
   return highestScore >= 0.4 ? bestMatch : null;
 }
 
+// Tech troubleshooting matching with semantic similarity
+function findTechTroubleshootingMatch(userMessage) {
+  const techResponses = LUNA_RESPONSE_LIBRARY.techTroubleshooting || [];
+  let bestMatch = null;
+  let highestScore = 0;
+  
+  for (const response of techResponses) {
+    const similarity = calculateSemanticSimilarity(userMessage, response.keywords);
+    if (similarity.score > highestScore) {
+      highestScore = similarity.score;
+      bestMatch = { ...response, similarityScore: similarity.score };
+    }
+  }
+  
+  // Lower threshold for tech issues since they're usually specific
+  return highestScore >= 0.4 ? bestMatch : null;
+}
+
 // Medium-priority matching for life events, partner dynamics, culture, treatments
 function findOutsideTheBoxMatch(userMessage) {
   const outsideTheBoxResponses = LUNA_RESPONSE_LIBRARY.outsideTheBoxLife || [];
@@ -500,7 +537,8 @@ function findCachedResponse(userMessage) {
     ...LUNA_RESPONSE_LIBRARY.generalReassuranceContinued,
     ...LUNA_RESPONSE_LIBRARY.appClosing,
     ...LUNA_RESPONSE_LIBRARY.appCustomizationDataPrivacy,
-    ...LUNA_RESPONSE_LIBRARY.closingEmotionalSupport
+    ...LUNA_RESPONSE_LIBRARY.closingEmotionalSupport,
+    ...LUNA_RESPONSE_LIBRARY.techTroubleshooting
   ];
 
   let bestMatch = null;
@@ -665,42 +703,59 @@ Deno.serve(async (req) => {
        });
      }
 
-     // TIER 2: OUTSIDE-THE-BOX (Medium-High Priority)
+     // TIER 2: TECH TROUBLESHOOTING (Medium Priority)
+     let techMatch = null;
+     if (messageLength < 150) {
+       techMatch = findTechTroubleshootingMatch(userMessageOriginal);
+     }
+
+     if (techMatch) {
+       console.log(`[LUNA ROUTING] TIER_2_TECH q${techMatch.id} score=${techMatch.similarityScore} cost=$0`);
+       return Response.json({
+         message: techMatch.response,
+         suggestedActions: [],
+         flags: { escalate: false, crisis: false },
+         timestamp: new Date().toISOString(),
+         route: 'tier_2_tech_troubleshooting'
+       });
+     }
+
+     // TIER 3: OUTSIDE-THE-BOX (Medium-High Priority)
      let outsideTheBoxMatch = null;
      if (messageLength < 150) {
        outsideTheBoxMatch = findOutsideTheBoxMatch(userMessageOriginal);
      }
 
      if (outsideTheBoxMatch) {
-       console.log(`[LUNA ROUTING] TIER_2_OUTSIDE_BOX q${outsideTheBoxMatch.id} score=${outsideTheBoxMatch.similarityScore} cost=$0`);
+       console.log(`[LUNA ROUTING] TIER_3_OUTSIDE_BOX q${outsideTheBoxMatch.id} score=${outsideTheBoxMatch.similarityScore} cost=$0`);
        return Response.json({
          message: outsideTheBoxMatch.response,
          suggestedActions: [],
          flags: { escalate: false, crisis: false },
          timestamp: new Date().toISOString(),
-         route: 'tier_2_outside_box'
+         route: 'tier_3_outside_box'
        });
      }
 
-     // TIER 3: CACHED LIBRARY (Common Questions - 250+ responses)
+     // TIER 4: CACHED LIBRARY (Common Questions - 250+ responses)
      let cachedMatch = null;
      if (messageLength < 150) {
        cachedMatch = findCachedResponse(userMessageOriginal);
      }
 
      if (cachedMatch && cachedMatch.similarityScore >= 0.45) {
-       console.log(`[LUNA ROUTING] TIER_3_CACHED q${cachedMatch.id} score=${cachedMatch.similarityScore} cost=$0`);
+       console.log(`[LUNA ROUTING] TIER_4_CACHED q${cachedMatch.id} score=${cachedMatch.similarityScore} cost=$0`);
        return Response.json({
          message: cachedMatch.response,
          suggestedActions: [],
          flags: { escalate: false, crisis: false },
          timestamp: new Date().toISOString(),
-         route: 'tier_3_cached_library'
+         route: 'tier_4_cached_library'
        });
      }
 
-     // TIER 4: FALLBACK TO EXPENSIVE LLM (Complex/Novel Questions)
-     console.log(`[LUNA ROUTING] TIER_4_LLM_FALLBACK msgLen=${messageLength} cached_score=${cachedMatch?.similarityScore || 'none'} escalate_to_grok=true`);
+     // TIER 5: FALLBACK TO EXPENSIVE LLM (Complex/Novel Questions)
+     console.log(`[LUNA ROUTING] TIER_5_LLM_FALLBACK msgLen=${messageLength} cached_score=${cachedMatch?.similarityScore || 'none'} escalate_to_grok=true`);
 
     // Fallback to old pattern-based templates
     const simplePatterns = {
