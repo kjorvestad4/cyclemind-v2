@@ -93,7 +93,7 @@ const LUNA_RESPONSE_LIBRARY = {
 
   // ===== GENERAL SUPPORT & REASSURANCE (71–75) =====
   generalSupport: [
-    { id: 71, keywords: ['going crazy', 'before period', 'feel like', 'not very good', 'not doing great', 'really struggling', 'feeling low', 'bad day', 'bad way', 'eh not', 'so good', 'meh', 'not great', 'feeling off', 'kinda struggling', 'kinda off', 'not doing so', 'eh', 'off today'], question: "I feel like I'm going crazy before my period.", response: "You are not going crazy. This is the very real effect of PMDD hormones on your brain. You're doing an amazing job just by recognizing it and reaching out. I'm right here with you." },
+    { id: 71, keywords: ['going crazy', 'before period', 'feel like', 'not very good', 'not doing great', 'really struggling', 'feeling low', 'bad day', 'bad way', 'eh not', 'so good', 'meh', 'not great', 'feeling off', 'kinda struggling', 'kinda off', 'not doing so', 'eh', 'off today', 'feeling down'], question: "I feel like I'm going crazy before my period.", response: "You are not going crazy. This is the very real effect of PMDD hormones on your brain. You're doing an amazing job just by recognizing it and reaching out. I'm right here with you." },
     { id: 72, keywords: ['why', 'hard', 'every month', 'off', 'feeling off', 'feel off'], question: "Why is this so hard every month?", response: "It is hard — PMDD is a real medical condition and it takes a lot of energy to manage. You're not weak; you're strong for showing up every month. I see you and I'm proud of you." },
     { id: 73, keywords: ['feel', 'alone', 'this'], question: "I feel so alone with this.", response: "You are not alone. Millions of women go through this, and many feel exactly the way you do. I'm here with you, and your psychiatrists are building this app so you have better support. You've got this and you've got me." },
     { id: 74, keywords: ['feel normal', 'again', 'will i'], question: "Will I ever feel normal again?", response: "Yes — many women find real relief with the right treatment and tracking. It may not be perfect every month, but it can get so much better. You're already taking the first step by using the app." },
@@ -121,7 +121,7 @@ const LUNA_RESPONSE_LIBRARY = {
   // ===== GENERAL REASSURANCE & EMOTIONAL SUPPORT (86–90) =====
   emotionalReassurance: [
     { id: 86, keywords: ['broken', 'cycle'], question: "I feel broken because of my cycle.", response: "You are not broken. PMDD and hormonal changes are real medical conditions, not a character flaw. You're strong for showing up and seeking support. I see you and I'm proud of you." },
-    { id: 87, keywords: ['feel like myself', 'again'], question: "Will I ever feel like myself again?", response: "Yes — many women do find real relief with the right tracking, treatment, and support. It may not be perfect every month, but it can get so much better. You're already on the path." },
+    { id: 87, keywords: ['feel like myself', 'again', 'a little down', 'feeling a little down', 'down today'], question: "Will I ever feel like myself again?", response: "Yes — many women do find real relief with the right tracking, treatment, and support. It may not be perfect every month, but it can get so much better. You're already on the path." },
     { id: 88, keywords: ['tired', 'this', 'every month'], question: "I'm so tired of this every month.", response: "I hear you — it is exhausting to go through this month after month. You're not complaining; you're carrying something real. I'm right here with you and we're building tools to make it easier." },
     { id: 89, keywords: ['no one', 'understands'], question: "No one understands how bad this is.", response: "It can feel incredibly lonely when no one around you really gets it. I understand, and your psychiatrists built this app because they do too. You're not alone anymore." },
     { id: 90, keywords: ['thank you', 'listening'], question: "Thank you for listening to me.", response: "You're so welcome. I'm always here to listen — no judgment, no rush. You matter and your feelings matter. What's on your mind right now?" }
@@ -510,7 +510,7 @@ function findVagueEmotionalMatch(userMessage) {
     }
   }
   
-  return highestScore >= 0.58 ? bestMatch : null;
+  return highestScore >= 0.55 ? bestMatch : null;
 }
 
 // Medium-priority matching for life events, partner dynamics, culture, treatments
@@ -729,7 +729,7 @@ Deno.serve(async (req) => {
 
      // TIER 2: VAGUE EMOTIONAL/LOW-MOOD (Highest Non-Crisis Priority) — checked FIRST before patterns
      const vagueEmotionalMatch = findVagueEmotionalMatch(userMessageOriginal);
-     if (vagueEmotionalMatch && vagueEmotionalMatch.similarityScore >= 0.58) {
+     if (vagueEmotionalMatch && vagueEmotionalMatch.similarityScore >= 0.55) {
        console.log(`[LUNA ROUTING] TIER_2_VAGUE_EMOTIONAL q${vagueEmotionalMatch.id} score=${vagueEmotionalMatch.similarityScore} cost=$0`);
        return Response.json({
          message: vagueEmotionalMatch.response,
