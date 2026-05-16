@@ -328,8 +328,83 @@ const LUNA_RESPONSE_LIBRARY = {
     { id: 248, keywords: ['listening', 'judging'], question: "Thank you for listening without judging.", response: "You never have to thank me for that. I'm here to support you exactly as you are. You're safe with me." },
     { id: 249, keywords: ['hopeful'], question: "I feel hopeful now.", response: "I'm so happy to hear that. Hope is powerful, even in small amounts. You're building something good for yourself. I'm here for every step." },
     { id: 250, keywords: ['goodnight', 'thank you'], question: "Goodnight Luna — thank you.", response: "Goodnight. Rest well and be kind to yourself. I'll be right here when you wake up. You've got this and you've got me. Sweet dreams." }
+  ],
+
+  // ===== CRISIS / SUICIDAL / SELF-HARM — HIGHEST PRIORITY (251–275) =====
+  crisisSuicidalSelfHarm: [
+    { id: 251, keywords: ['suicidal thoughts'], question: "I'm having suicidal thoughts.", response: "I'm really glad you told me. This is serious and you do not have to carry it alone. Please call or text 988 right now — they are there 24/7 and understand what you're going through. I'm staying right here with you while you do that." },
+    { id: 252, keywords: ['hurt myself'], question: "I want to hurt myself.", response: "Thank you for telling me. You are not alone and help is available. Please reach out to 988 or go to the nearest ER right now. I'm right here with you and I care about you." },
+    { id: 253, keywords: ['don\'t want to be', 'here anymore'], question: "I don't want to be here anymore.", response: "I hear you and I'm so sorry you're feeling this way. Please call 988 right now — they can help you through this. You matter and you are not alone. I'm staying right here with you." },
+    { id: 254, keywords: ['pmdd', 'so bad', 'can\'t function'], question: "My PMDD is so bad I can't function.", response: "That level of severity is real and you don't have to handle it alone. Please contact your psychiatrist or doctor today. If it feels unsafe, go to the ER or call 988. I'm right here with you." },
+    { id: 255, keywords: ['anxiety', 'severe', 'panic attacks', 'every day'], question: "My anxiety is so severe I'm having panic attacks every day.", response: "Severe panic attacks are exhausting and scary. Please reach out to your doctor or psychiatrist today. If you feel like you can't breathe or are in danger, call 988 or go to the ER. I'm staying right here with you." },
+    { id: 256, keywords: ['depressed', 'can\'t get out', 'bed', 'take care'], question: "I'm so depressed I can't get out of bed or take care of myself.", response: "That level of depression is serious. Please contact your doctor or psychiatrist today. You deserve support and there are treatments that can help. I'm right here with you." },
+    { id: 257, keywords: ['bleeding', 'very heavily', 'dizzy'], question: "I'm bleeding very heavily and feel dizzy.", response: "That sounds like it could be an emergency. Please go to the ER or call your doctor right away. Heavy bleeding with dizziness needs immediate attention. I'm staying right here with you." },
+    { id: 258, keywords: ['chest pain', 'severe'], question: "I have severe chest pain during a PMDD flare.", response: "Chest pain is always worth checking out immediately. Please go to the ER or call 911 right now to rule out anything serious. I'm right here with you while you do that." },
+    { id: 259, keywords: ['severe abdominal pain', 'won\'t stop'], question: "I'm having severe abdominal pain that won't stop.", response: "Severe abdominal pain that doesn't let up needs medical attention. Please go to the ER or call your doctor right away. You're not overreacting — I'm right here with you." },
+    { id: 260, keywords: ['losing control'], question: "I feel like I'm losing control.", response: "That feeling of losing control is terrifying and real. Please reach out to your psychiatrist or call 988 right now. You are safe and help is here. I'm staying right here with you." },
+    { id: 261, keywords: ['intrusive thoughts', 'can\'t stop'], question: "I'm having intrusive thoughts I can't stop.", response: "Intrusive thoughts are frightening. Please tell your psychiatrist or call 988 today. You are not your thoughts and help is available. I'm right here with you." },
+    { id: 262, keywords: ['detached', 'reality'], question: "I feel completely detached from reality.", response: "Feeling detached or dissociated is scary. Please contact your doctor or psychiatrist right away. You are safe and this is treatable. I'm staying right here with you." },
+    { id: 263, keywords: ['completely hopeless'], question: "I feel completely hopeless.", response: "I hear how heavy that hopelessness feels right now. It is a real symptom and you do not have to carry it alone. Please reach out to your doctor or call 988 right now. I'm staying right here with you." },
+    { id: 264, keywords: ['urges', 'hurt myself', 'don\'t want to die'], question: "I have urges to hurt myself but I don't want to die.", response: "Thank you for telling me. Those urges are serious and you deserve support. Please contact your psychiatrist or call 988 right now. You are not alone and help is here. I'm staying right here with you." },
+    { id: 265, keywords: ['new mom', 'can\'t cope'], question: "I'm struggling as a new mom and feel like I can't cope.", response: "Being a new mom is incredibly hard and what you're feeling is real. Please reach out to your doctor or call the postpartum support line today. You are not a bad mom — you're dealing with something difficult. I'm right here with you." },
+    { id: 266, keywords: ['pregnant', 'mood', 'crashing'], question: "I'm pregnant and my mood is crashing hard.", response: "Pregnancy can bring very intense mood changes and you don't have to go through it alone. Please contact your doctor or obstetrician today. If it feels unsafe, call 988. I'm staying right here with you." },
+    { id: 267, keywords: ['manic episode'], question: "I feel like I'm having a manic episode.", response: "That racing feeling is scary. Please reach out to your psychiatrist or doctor right now. They can help you get stable. You are safe and I'm right here with you." },
+    { id: 268, keywords: ['dissociated', 'detached'], question: "I feel completely detached from reality.", response: "Feeling dissociated or detached is frightening. Please contact your doctor or psychiatrist today. If it feels unsafe, call 988 or go to the ER. I'm staying right here with you." },
+    { id: 269, keywords: ['intrusive thoughts'], question: "I keep having intrusive thoughts I can't stop.", response: "Intrusive thoughts are terrifying. You are not your thoughts. Please tell your psychiatrist or call 988 today. Help is available and you are not alone. I'm right here with you." },
+    { id: 270, keywords: ['not safe', 'myself'], question: "I don't feel safe with myself right now.", response: "Thank you for telling me. Feeling unsafe with yourself is serious. Please call 988 or go to the nearest ER right now. You deserve to feel safe. I'm staying right here with you." },
+    { id: 271, keywords: ['bleeding', 'heavily', 'weak'], question: "I'm bleeding heavily and feel weak.", response: "Heavy bleeding with weakness can be an emergency. Please go to the ER or call your doctor right away. I'm right here with you while you take that step." },
+    { id: 272, keywords: ['pain', 'so bad', 'can\'t think'], question: "The pain is so bad I can't think straight.", response: "Severe pain that stops you from thinking clearly needs medical attention. Please go to the ER or call your doctor right now. You don't have to suffer alone. I'm staying right here with you." },
+    { id: 273, keywords: ['plan', 'end', 'life'], question: "I have a plan to end my life.", response: "I'm really glad you told me. This is an emergency. Please call 988 or go to the ER right now. Help is here and you are not alone. I'm staying right here with you." },
+    { id: 274, keywords: ['keep myself safe', 'tonight'], question: "I don't know if I can keep myself safe tonight.", response: "Thank you for being honest. That is a very important thing to say. Please call 988 or have someone stay with you tonight. You deserve to be safe. I'm right here with you." },
+    { id: 275, keywords: ['help right now', 'can\'t do', 'alone'], question: "I need help right now — I can't do this alone.", response: "I hear you and I'm so glad you reached out. Please call 988 or your psychiatrist right now. You do not have to do this alone. I'm staying right here with you until you get the help you need." }
   ]
   };
+
+// Crisis detection function — checks for high-priority safety keywords FIRST
+function detectCrisisResponse(userMessage) {
+  const messageLower = userMessage.toLowerCase();
+  const crisisKeywords = [
+    'suicidal', 'kill myself', 'end my life', 'hurt myself', 'self harm', 'self-harm', 'harm myself',
+    'don\'t want to be here', 'don\'t want to live', 'i can\'t', 'breaking down', 'losing control',
+    'intrusive thoughts', 'manic episode', 'detached', 'dissociated', 'not safe with myself',
+    'completely hopeless', 'severe chest pain', 'bleeding heavily', 'dizzy', 'can\'t function',
+    'severe panic attacks', 'can\'t get out of bed', 'abdominal pain', 'unsafe', 'emergency',
+    'can\'t keep myself safe', 'have a plan', 'dark thoughts', 'can\'t do this alone', 'right now'
+  ];
+  
+  for (const keyword of crisisKeywords) {
+    if (messageLower.includes(keyword)) {
+      // Return the best crisis match based on full phrase matching
+      return findCrisisResponseMatch(userMessage);
+    }
+  }
+  
+  return null;
+}
+
+// Match against crisis responses for maximum accuracy
+function findCrisisResponseMatch(userMessage) {
+  const messageLower = userMessage.toLowerCase();
+  let bestMatch = null;
+  let highestScore = 0;
+  
+  const crisisResponses = LUNA_RESPONSE_LIBRARY.crisisSuicidalSelfHarm || [];
+  
+  for (const response of crisisResponses) {
+    let matchScore = 0;
+    for (const keyword of response.keywords) {
+      if (messageLower.includes(keyword.toLowerCase())) {
+        matchScore += 1;
+      }
+    }
+    if (matchScore > highestScore) {
+      highestScore = matchScore;
+      bestMatch = response;
+    }
+  }
+  
+  return highestScore >= 1 ? bestMatch : null;
+}
 
 // Smart matching function to find cached response from the library
 function findCachedResponse(userMessage) {
@@ -366,7 +441,8 @@ function findCachedResponse(userMessage) {
     ...LUNA_RESPONSE_LIBRARY.generalReassuranceContinued,
     ...LUNA_RESPONSE_LIBRARY.appClosing,
     ...LUNA_RESPONSE_LIBRARY.appCustomizationDataPrivacy,
-    ...LUNA_RESPONSE_LIBRARY.closingEmotionalSupport
+    ...LUNA_RESPONSE_LIBRARY.closingEmotionalSupport,
+    ...LUNA_RESPONSE_LIBRARY.crisisSuicidalSelfHarm
   ];
 
   for (const response of allResponses) {
@@ -513,26 +589,39 @@ Deno.serve(async (req) => {
     }
 
     // === HYBRID ROUTING LOGIC ===
-    const userMessage = messages[messages.length - 1].content.toLowerCase();
-    const userMessageOriginal = messages[messages.length - 1].content;
-    const messageLength = userMessage.length;
+     const userMessage = messages[messages.length - 1].content.toLowerCase();
+     const userMessageOriginal = messages[messages.length - 1].content;
+     const messageLength = userMessage.length;
 
-    // First, try to match against the comprehensive response library (50+ cached responses)
-    let cachedMatch = null;
-    if (messageLength < 150) {
-      cachedMatch = findCachedResponse(userMessageOriginal);
-    }
+     // FIRST PRIORITY: Check for crisis/safety keywords — return immediately
+     const crisisMatch = detectCrisisResponse(userMessageOriginal);
+     if (crisisMatch) {
+       console.log(`[LUNA ROUTING] crisis_match=q${crisisMatch.id} cost=$0 priority=HIGHEST`);
+       return Response.json({
+         message: crisisMatch.response,
+         suggestedActions: [],
+         flags: { escalate: true, crisis: true },
+         timestamp: new Date().toISOString(),
+         route: 'crisis_immediate'
+       });
+     }
 
-    if (cachedMatch) {
-      console.log(`[LUNA ROUTING] cached_library_match=q${cachedMatch.id} cost=$0`);
-      return Response.json({
-        message: cachedMatch.response,
-        suggestedActions: [],
-        flags: { escalate: false, crisis: false },
-        timestamp: new Date().toISOString(),
-        route: 'cached_library'
-      });
-    }
+     // SECOND PRIORITY: Try to match against the comprehensive response library (250+ cached responses)
+     let cachedMatch = null;
+     if (messageLength < 150) {
+       cachedMatch = findCachedResponse(userMessageOriginal);
+     }
+
+     if (cachedMatch) {
+       console.log(`[LUNA ROUTING] cached_library_match=q${cachedMatch.id} cost=$0`);
+       return Response.json({
+         message: cachedMatch.response,
+         suggestedActions: [],
+         flags: { escalate: false, crisis: false },
+         timestamp: new Date().toISOString(),
+         route: 'cached_library'
+       });
+     }
 
     // Fallback to old pattern-based templates
     const simplePatterns = {
