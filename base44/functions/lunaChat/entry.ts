@@ -98,6 +98,47 @@ const LUNA_RESPONSE_LIBRARY = {
     { id: 73, keywords: ['feel', 'alone', 'this'], question: "I feel so alone with this.", response: "You are not alone. Millions of women go through this, and many feel exactly the way you do. I'm here with you, and your psychiatrists are building this app so you have better support. You've got this and you've got me." },
     { id: 74, keywords: ['feel normal', 'again', 'will i'], question: "Will I ever feel normal again?", response: "Yes — many women find real relief with the right treatment and tracking. It may not be perfect every month, but it can get so much better. You're already taking the first step by using the app." },
     { id: 75, keywords: ['scared', 'never', 'get better'], question: "I'm scared this will never get better.", response: "That fear is so valid when you're in the middle of a hard phase. Many women do find ways to manage PMDD and feel much better. You're not stuck — there are options. I'm here to help you explore them." }
+  ],
+
+  // ===== POSTPARTUM & BREASTFEEDING (76–80) =====
+  postpartumBreastfeeding: [
+    { id: 76, keywords: ['sad', 'after', 'baby', 'born'], question: "Is it normal to feel sad after having a baby?", response: "Yes, the baby blues are very common in the first couple of weeks after birth. If it lasts longer or feels very heavy, it could be postpartum depression — please reach out to your doctor. You're not alone and you're doing an amazing job." },
+    { id: 77, keywords: ['breastfeeding', 'affect', 'hormones'], question: "How does breastfeeding affect my hormones?", response: "Breastfeeding keeps prolactin high and can delay the return of your period. It's your body's natural way of spacing pregnancies. If your moods feel off, it's worth tracking and talking with your doctor." },
+    { id: 78, keywords: ['period', 'come back', 'after baby'], question: "When will my period come back after having a baby?", response: "It can take anywhere from 6 weeks to over a year, especially if you're breastfeeding. Every body is different. Would you like me to help you track the signs that your cycle is returning?" },
+    { id: 79, keywords: ['cramps', 'no period', 'after birth'], question: "I'm having cramps but no period after birth — what does that mean?", response: "Cramps without a period can happen as your uterus returns to normal size. If they're very painful or you have fever, check with your doctor. You're navigating a big change — be gentle with yourself." },
+    { id: 80, keywords: ['overwhelmed', 'new mom'], question: "Is it normal to feel overwhelmed as a new mom?", response: "Yes, feeling overwhelmed is completely normal in the early days. Your body and mind are adjusting to huge changes. You're not failing — you're doing something really hard. I'm here with you." }
+  ],
+
+  // ===== IRREGULAR BLEEDING & OTHER CYCLE ISSUES (81–85) =====
+  irregularBleeding: [
+    { id: 81, keywords: ['bleeding', 'between periods'], question: "Why am I bleeding between periods?", response: "Spotting between periods can happen with hormonal changes, stress, or perimenopause. If it's new or heavy, it's worth mentioning to your doctor. Want me to help you track it so you have good information for your appointment?" },
+    { id: 82, keywords: ['periods', 'very light', 'normal'], question: "My periods are suddenly very light — is that normal?", response: "Lighter periods can happen with age, stress, or hormonal shifts. It's usually not a problem, but if it's a big change it's good to mention to your doctor. You're doing the right thing by noticing." },
+    { id: 83, keywords: ['missed', 'period', 'test', 'negative'], question: "I missed a period but the test is negative — what now?", response: "A negative test with a missed period is common with stress or hormonal changes. Give it a few more days and test again if your period still hasn't started. I'm here with you no matter what." },
+    { id: 84, keywords: ['flow', 'heavy', 'month'], question: "Why is my flow so heavy this month?", response: "Heavy flow can be caused by stress, fibroids, or perimenopause. If you're soaking through protection in under 2 hours or passing large clots, it's worth discussing with your doctor. Let's track it together." },
+    { id: 85, keywords: ['period', 'lasting', 'longer', 'usual'], question: "My period is lasting longer than usual — should I worry?", response: "Periods longer than 7–8 days can sometimes need medical attention. If you're also feeling very tired or dizzy, please reach out to your doctor. You're not overreacting — you're listening to your body." }
+  ],
+
+  // ===== GENERAL REASSURANCE & EMOTIONAL SUPPORT (86–90) =====
+  emotionalReassurance: [
+    { id: 86, keywords: ['broken', 'cycle'], question: "I feel broken because of my cycle.", response: "You are not broken. PMDD and hormonal changes are real medical conditions, not a character flaw. You're strong for showing up and seeking support. I see you and I'm proud of you." },
+    { id: 87, keywords: ['feel like myself', 'again'], question: "Will I ever feel like myself again?", response: "Yes — many women do find real relief with the right tracking, treatment, and support. It may not be perfect every month, but it can get so much better. You're already on the path." },
+    { id: 88, keywords: ['tired', 'this', 'every month'], question: "I'm so tired of this every month.", response: "I hear you — it is exhausting to go through this month after month. You're not complaining; you're carrying something real. I'm right here with you and we're building tools to make it easier." },
+    { id: 89, keywords: ['no one', 'understands'], question: "No one understands how bad this is.", response: "It can feel incredibly lonely when no one around you really gets it. I understand, and your psychiatrists built this app because they do too. You're not alone anymore." },
+    { id: 90, keywords: ['thank you', 'listening'], question: "Thank you for listening to me.", response: "You're so welcome. I'm always here to listen — no judgment, no rush. You matter and your feelings matter. What's on your mind right now?" }
+  ],
+
+  // ===== APP-SPECIFIC & CLOSING SUPPORT (91–100) =====
+  appSupport: [
+    { id: 91, keywords: ['clinical', 'report', 'how to use'], question: "How do I use the clinical report?", response: "Just say 'Generate doctor report' or tap the button. It pulls your last 90 days of data into a clean PDF you can share with your doctor. It's one of the most helpful features your psychiatrists asked for." },
+    { id: 92, keywords: ['remember', 'symptoms', 'last month'], question: "Can Luna remember my symptoms from last month?", response: "Yes — I keep track of your patterns over time. The more you log, the smarter I get at spotting what's normal for you. Want me to show you a quick summary of last month?" },
+    { id: 93, keywords: ['fertility', 'mode', 'turn on'], question: "How do I turn on fertility mode?", response: "Go to settings or just tell me 'I'm trying to conceive' and I'll switch to fertility mode. I'll start highlighting your fertile window and giving conception-friendly tips." },
+    { id: 94, keywords: ['share', 'data', 'psychiatrist'], question: "Can I share my data with my psychiatrist?", response: "Yes — the clinical report is designed exactly for that. It's private and you control who sees it. Would you like me to generate one right now?" },
+    { id: 95, keywords: ['why', 'luna', 'many questions'], question: "Why does Luna ask so many questions?", response: "I ask questions so I can understand your unique pattern and give you the most helpful support. You can always say 'I don't want to talk about that' and I'll respect it." },
+    { id: 96, keywords: ['bad day', 'just talk'], question: "I'm having a really bad day — can we just talk?", response: "Of course. I'm right here with you. No pressure to explain anything if you don't want to. Just tell me what you need — listening, distraction, or gentle coping ideas?" },
+    { id: 97, keywords: ['turn off', 'notifications'], question: "How do I turn off notifications?", response: "You can turn off notifications in settings anytime. They're there to support you, never to bother you. Let me know if you want help adjusting them." },
+    { id: 98, keywords: ['feel better', 'talking', 'you'], question: "I feel better after talking to you.", response: "I'm so glad. That's why I'm here — to listen and support you through the hard parts. You're doing an amazing job taking care of yourself." },
+    { id: 99, keywords: ['thank you', 'luna'], question: "Thank you Luna.", response: "You're so welcome. I'm always here for you — day or night, good days or hard ones. You've got this and you've got me." },
+    { id: 100, keywords: ['ready', 'feel better'], question: "I'm ready to feel better.", response: "I hear you and I believe you. Small steps add up and you're already taking one by being here. I'm proud of you and I'm right here for every step of the journey." }
   ]
 };
 
@@ -116,7 +157,11 @@ function findCachedResponse(userMessage) {
     ...LUNA_RESPONSE_LIBRARY.lifestyleHealth,
     ...LUNA_RESPONSE_LIBRARY.medicationInteractions,
     ...LUNA_RESPONSE_LIBRARY.whenToSeeDoctor,
-    ...LUNA_RESPONSE_LIBRARY.generalSupport
+    ...LUNA_RESPONSE_LIBRARY.generalSupport,
+    ...LUNA_RESPONSE_LIBRARY.postpartumBreastfeeding,
+    ...LUNA_RESPONSE_LIBRARY.irregularBleeding,
+    ...LUNA_RESPONSE_LIBRARY.emotionalReassurance,
+    ...LUNA_RESPONSE_LIBRARY.appSupport
   ];
 
   for (const response of allResponses) {
