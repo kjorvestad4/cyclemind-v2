@@ -93,8 +93,8 @@ const LUNA_RESPONSE_LIBRARY = {
 
   // ===== GENERAL SUPPORT & REASSURANCE (71–75) =====
   generalSupport: [
-    { id: 71, keywords: ['going crazy', 'before period', 'feel like', 'not very good', 'not doing great', 'really struggling', 'feeling low', 'bad day', 'bad way'], question: "I feel like I'm going crazy before my period.", response: "You are not going crazy. This is the very real effect of PMDD hormones on your brain. You're doing an amazing job just by recognizing it and reaching out. I'm right here with you." },
-    { id: 72, keywords: ['why', 'hard', 'every month'], question: "Why is this so hard every month?", response: "It is hard — PMDD is a real medical condition and it takes a lot of energy to manage. You're not weak; you're strong for showing up every month. I see you and I'm proud of you." },
+    { id: 71, keywords: ['going crazy', 'before period', 'feel like', 'not very good', 'not doing great', 'really struggling', 'feeling low', 'bad day', 'bad way', 'eh not', 'so good', 'meh', 'not great', 'feeling off', 'kinda struggling', 'kinda off', 'not doing so', 'eh', 'off today'], question: "I feel like I'm going crazy before my period.", response: "You are not going crazy. This is the very real effect of PMDD hormones on your brain. You're doing an amazing job just by recognizing it and reaching out. I'm right here with you." },
+    { id: 72, keywords: ['why', 'hard', 'every month', 'off', 'feeling off', 'feel off'], question: "Why is this so hard every month?", response: "It is hard — PMDD is a real medical condition and it takes a lot of energy to manage. You're not weak; you're strong for showing up every month. I see you and I'm proud of you." },
     { id: 73, keywords: ['feel', 'alone', 'this'], question: "I feel so alone with this.", response: "You are not alone. Millions of women go through this, and many feel exactly the way you do. I'm here with you, and your psychiatrists are building this app so you have better support. You've got this and you've got me." },
     { id: 74, keywords: ['feel normal', 'again', 'will i'], question: "Will I ever feel normal again?", response: "Yes — many women find real relief with the right treatment and tracking. It may not be perfect every month, but it can get so much better. You're already taking the first step by using the app." },
     { id: 75, keywords: ['scared', 'never', 'get better'], question: "I'm scared this will never get better.", response: "That fear is so valid when you're in the middle of a hard phase. Many women do find ways to manage PMDD and feel much better. You're not stuck — there are options. I'm here to help you explore them." }
@@ -489,7 +489,7 @@ function findTechTroubleshootingMatch(userMessage) {
   return highestScore >= 0.4 ? bestMatch : null;
 }
 
-// Vague emotional/low-mood matching — PRIORITIZED for short emotional inputs
+// Vague emotional/low-mood matching — PRIORITIZED for short emotional inputs (0.58 threshold)
 function findVagueEmotionalMatch(userMessage) {
   const emotionalResponses = [
     ...LUNA_RESPONSE_LIBRARY.generalSupport,
@@ -510,7 +510,7 @@ function findVagueEmotionalMatch(userMessage) {
     }
   }
   
-  return highestScore >= 0.50 ? bestMatch : null;
+  return highestScore >= 0.58 ? bestMatch : null;
 }
 
 // Medium-priority matching for life events, partner dynamics, culture, treatments
@@ -727,13 +727,9 @@ Deno.serve(async (req) => {
        });
      }
 
-     // TIER 2: VAGUE EMOTIONAL/LOW-MOOD (Highest Non-Crisis Priority)
-     let vagueEmotionalMatch = null;
-     if (messageLength < 100) {
-       vagueEmotionalMatch = findVagueEmotionalMatch(userMessageOriginal);
-     }
-
-     if (vagueEmotionalMatch) {
+     // TIER 2: VAGUE EMOTIONAL/LOW-MOOD (Highest Non-Crisis Priority) — checked FIRST before patterns
+     const vagueEmotionalMatch = findVagueEmotionalMatch(userMessageOriginal);
+     if (vagueEmotionalMatch && vagueEmotionalMatch.similarityScore >= 0.58) {
        console.log(`[LUNA ROUTING] TIER_2_VAGUE_EMOTIONAL q${vagueEmotionalMatch.id} score=${vagueEmotionalMatch.similarityScore} cost=$0`);
        return Response.json({
          message: vagueEmotionalMatch.response,
@@ -779,11 +775,7 @@ Deno.serve(async (req) => {
      }
 
      // TIER 5: CACHED LIBRARY (Common Questions - 250+ responses)
-     let cachedMatch = null;
-     if (messageLength < 150) {
-       cachedMatch = findCachedResponse(userMessageOriginal);
-     }
-
+     const cachedMatch = findCachedResponse(userMessageOriginal);
      if (cachedMatch && cachedMatch.similarityScore >= 0.45) {
        console.log(`[LUNA ROUTING] TIER_5_CACHED q${cachedMatch.id} score=${cachedMatch.similarityScore} cost=$0`);
        return Response.json({
