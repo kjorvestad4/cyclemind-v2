@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
   User, Settings, LogOut, Shield, Trash2, FileDown, Link2,
-  ChevronRight, Moon, Sun, Bell, Heart, Bookmark, CalendarDays, X, ChevronDown, ChevronUp, Edit
+  ChevronRight, Moon, Sun, Bell, Heart, Bookmark, CalendarDays, X, ChevronDown, ChevronUp, Edit, HelpCircle
 } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -549,6 +549,32 @@ export default function Profile() {
       {/* ── Quick Actions ── */}
       <Section title="Quick Actions" icon={Settings}>
         <div className="divide-y divide-border/30">
+          <ActionRow
+            icon={HelpCircle}
+            label="IT Support / Something's Not Working"
+            sublabel="Report a bug or request technical assistance"
+            onClick={() => {
+              const user_id = user?.id || 'unknown';
+              const device_info = navigator.userAgent;
+              const timestamp = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+              const emailBody = `
+      Hi CycleMind Support Team,
+
+      I'm experiencing a technical issue with the app.
+
+      === USER INFO ===
+      User ID: ${user_id}
+      Timestamp: ${timestamp}
+      Device: ${device_info}
+
+      === ISSUE DESCRIPTION ===
+      (Please describe your issue here)
+
+      Thank you for your help!
+              `.trim();
+              window.location.href = `mailto:support@cyclemindapp.com?subject=CycleMind%20Support%20Request&body=${encodeURIComponent(emailBody)}`;
+            }}
+          />
           <ActionRow
             icon={FileDown}
             label="Export All My Data"

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2, Mic, MicOff, FileDown, Bell, Eye, EyeOff } from 'lucide-react';
+import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2, Mic, MicOff, FileDown, Bell, Eye, EyeOff, HelpCircle } from 'lucide-react';
 // Loader2 kept for NotificationsPanel
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
@@ -255,6 +255,43 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
     }
   };
 
+  const handleITSupport = async () => {
+    try {
+      const user = await base44.auth.me();
+      const last5Entries = messages.slice(-5).map(m => `[${m.role.toUpperCase()}] ${m.content}`).join('\n\n');
+      const userAgent = navigator.userAgent;
+      const timestamp = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+
+      const emailBody = `
+  Hi CycleMind Support Team,
+
+  I'm experiencing an issue with the app and would like assistance.
+
+  === USER INFO ===
+  User ID: ${user?.id || 'unknown'}
+  Timestamp: ${timestamp}
+  Device: ${userAgent}
+
+  === RECENT MESSAGES ===
+  ${last5Entries || 'No messages yet'}
+
+  === ISSUE DESCRIPTION ===
+  (Please describe your issue above)
+
+  Thank you for your help!
+      `.trim();
+
+      // Open email client
+      const mailtoLink = `mailto:support@cyclemindapp.com?subject=CycleMind%20Support%20Request&body=${encodeURIComponent(emailBody)}`;
+      window.location.href = mailtoLink;
+
+      toast.success('Opening your email client...');
+    } catch (err) {
+      console.error(err);
+      toast.error('Could not open email client. Please email support@cyclemindapp.com directly.');
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div className="w-full max-w-md h-[640px] rounded-3xl bg-gradient-to-b from-slate-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950 shadow-2xl flex flex-col border border-teal-300 dark:border-teal-900 overflow-hidden" onClick={e => e.stopPropagation()}>
@@ -431,6 +468,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
             onClick={isListening ? stopVoiceRecording : startVoiceRecording}
             className={`rounded-full ${isListening ? 'bg-red-500 text-white hover:bg-red-600' : 'border-teal-300 hover:bg-teal-50'}`}
             disabled={loading}
+            title="Voice logging"
           >
             {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-teal-600" />}
           </Button>
@@ -442,6 +480,16 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
             disabled={loading || isListening}
             className="flex-1"
           />
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={handleITSupport}
+            className="rounded-full border-amber-300 hover:bg-amber-50"
+            title="IT Support"
+          >
+            <HelpCircle className="w-4 h-4 text-amber-600" />
+          </Button>
           <Button onClick={() => handleSend()} disabled={loading || !input.trim()} size="icon" className="rounded-full bg-teal-600 hover:bg-teal-700">
             <Send className="w-4 h-4" />
           </Button>
