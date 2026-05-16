@@ -57,6 +57,47 @@ const LUNA_RESPONSE_LIBRARY = {
     { id: 48, keywords: ['brain fog', 'menopause', 'what helps'], question: "What helps with menopause brain fog?", response: "Many women find that good sleep, regular movement, and omega-3s help with brain fog. It's frustrating but usually improves with time. Want me to suggest a simple daily habit that might help?" },
     { id: 49, keywords: ['perimenopause', 'how long', 'lasts'], question: "How long does perimenopause last?", response: "Perimenopause usually lasts 4–8 years, but it's different for everyone. You're in a normal transition and doing great by tracking it. I'm here for every step." },
     { id: 50, keywords: ['supplements', 'menopause', 'what helps'], question: "What supplements help with menopause symptoms?", response: "Some women find magnesium, vitamin D, and black cohosh helpful, but results vary. The best approach is talking with your doctor before starting anything new. Would you like me to help you prepare a list of questions for that conversation?" }
+  ],
+
+  // ===== LIFESTYLE, DIET, EXERCISE & SLEEP (51–60) =====
+  lifestyleHealth: [
+    { id: 51, keywords: ['foods', 'avoid', 'pmdd', 'diet'], question: "What foods should I avoid during PMDD?", response: "Many women feel better when they cut back on sugar, caffeine, and alcohol in the luteal phase. Everyone is different though. Want me to suggest some easy swaps that might help you this week?" },
+    { id: 52, keywords: ['caffeine', 'worse', 'pmdd', 'make'], question: "Can caffeine make PMDD worse?", response: "Yes, caffeine can make anxiety and irritability worse for some women with PMDD. Cutting back in the week before your period often helps. You don't have to quit completely — even reducing it can make a difference." },
+    { id: 53, keywords: ['exercise', 'best', 'pmdd'], question: "What exercise is best for PMDD?", response: "Gentle movement like walking, yoga, or swimming is usually best during a PMDD flare. Nothing too intense if you're feeling low. Even 10 minutes can help mood chemicals. What feels doable for you today?" },
+    { id: 54, keywords: ['sleep', 'affect', 'cycle'], question: "How does sleep affect my cycle?", response: "Poor sleep can make PMDD symptoms feel stronger and can even shift your cycle. A consistent bedtime routine really helps. Would you like some simple sleep tips that other women with PMDD find useful?" },
+    { id: 55, keywords: ['supplements', 'help', 'pmdd'], question: "What supplements help with PMDD?", response: "Calcium, magnesium, vitamin B6, and omega-3s are the ones with the strongest evidence for PMDD. Always check with your doctor before starting anything new. Want me to help you make a simple list to discuss with them?" },
+    { id: 56, keywords: ['alcohol', 'worse', 'pmdd', 'make'], question: "Does alcohol make PMDD worse?", response: "Yes, alcohol can make mood swings, anxiety, and fatigue worse during the luteal phase. Many women feel better when they cut back or avoid it completely before their period. You're not missing out — your body is thanking you." },
+    { id: 57, keywords: ['water', 'drink', 'cycle'], question: "How much water should I drink during my cycle?", response: "Staying well hydrated helps with bloating and fatigue. Aim for at least 8 glasses a day, more if you're exercising. Adding a little lemon or cucumber can make it easier to drink. You've got this." },
+    { id: 58, keywords: ['stress', 'affect', 'period'], question: "Can stress affect my period?", response: "Yes, stress is one of the most common reasons cycles shift or become irregular. Your body is protecting you. Would you like some quick stress-relief ideas that other women with PMDD find helpful?" },
+    { id: 59, keywords: ['bloating', 'pmdd', 'help', 'what helps'], question: "What helps with PMDD bloating?", response: "Reducing salt, staying hydrated, and gentle movement can all help with bloating. Some women also find magnesium helpful. You're not alone — this is a very common symptom." },
+    { id: 60, keywords: ['diet', 'affect', 'mood', 'period'], question: "How does my diet affect my mood before my period?", response: "Blood sugar swings from sugar and refined carbs can make mood symptoms worse. Eating balanced meals with protein and healthy fats helps stabilize things. Want me to suggest a simple meal idea for today?" }
+  ],
+
+  // ===== MEDICATION & INTERACTIONS (61–65) =====
+  medicationInteractions: [
+    { id: 61, keywords: ['ibuprofen', 'pmdd', 'pain', 'take'], question: "Can I take ibuprofen for PMDD pain?", response: "Ibuprofen can help with cramps and breast tenderness for many women. Just follow the recommended dose and check with your doctor if you take it often. You're doing the right thing by asking." },
+    { id: 62, keywords: ['birth control', 'affect', 'pmdd'], question: "Does my birth control affect PMDD?", response: "Some women find hormonal birth control helps PMDD, while others feel it makes symptoms worse. It's very individual. Would you like help preparing questions to discuss with your doctor about your options?" },
+    { id: 63, keywords: ['antidepressants', 'pmdd', 'ssri', 'take'], question: "Can I take antidepressants for PMDD?", response: "Many women with PMDD find low-dose SSRIs helpful, especially if taken only during the luteal phase. It's a common and effective treatment. Talking with your psychiatrist is the best next step — want me to help you prepare what to say?" },
+    { id: 64, keywords: ['natural', 'remedies', 'pmdd'], question: "What about natural remedies for PMDD?", response: "Some women find relief with chasteberry, magnesium, or saffron. Results vary though. Always check with your doctor before starting anything new, especially if you take other medications." },
+    { id: 65, keywords: ['melatonin', 'pmdd', 'safe'], question: "Is it safe to take melatonin with PMDD?", response: "Melatonin is generally safe and can help with sleep during PMDD flares. Start with a low dose. If sleep is a big issue for you, it's worth discussing with your doctor too." }
+  ],
+
+  // ===== WHEN TO SEE A DOCTOR (66–70) =====
+  whenToSeeDoctor: [
+    { id: 66, keywords: ['see', 'doctor', 'pmdd', 'when'], question: "When should I see a doctor for PMDD?", response: "If PMDD is interfering with your work, relationships, or daily life, it's a good idea to talk with your doctor or psychiatrist. You don't have to wait until it's unbearable. You deserve support." },
+    { id: 67, keywords: ['heavy', 'periods', 'doctor'], question: "My periods are very heavy — should I see a doctor?", response: "Very heavy periods that soak through pads or tampons in under 2 hours or last longer than 7 days are worth discussing with your doctor. It could be something treatable. Want me to help you prepare questions for the appointment?" },
+    { id: 68, keywords: ['spotting', 'between', 'periods', 'normal'], question: "I'm spotting between periods — is that normal?", response: "Spotting between periods can happen, but if it's new or frequent it's worth mentioning to your doctor. They can help figure out if it's hormonal or something else. You're doing the right thing by noticing." },
+    { id: 69, keywords: ['anxiety', 'bad', 'function', 'cannot'], question: "My anxiety is so bad I can't function — what should I do?", response: "That level of anxiety is serious and you don't have to handle it alone. Please reach out to your doctor or psychiatrist today. If it feels like a crisis, the 988 lifeline is there 24/7. I'm right here with you too." },
+    { id: 70, keywords: ['hormones', 'tested', 'should i'], question: "Should I get my hormones tested?", response: "Hormone testing can be helpful for some women, especially if you suspect thyroid issues or perimenopause. Your doctor can tell you the best tests for your situation. Want me to help you make a list of symptoms to share with them?" }
+  ],
+
+  // ===== GENERAL SUPPORT & REASSURANCE (71–75) =====
+  generalSupport: [
+    { id: 71, keywords: ['going crazy', 'before period', 'feel like'], question: "I feel like I'm going crazy before my period.", response: "You are not going crazy. This is the very real effect of PMDD hormones on your brain. You're doing an amazing job just by recognizing it and reaching out. I'm right here with you." },
+    { id: 72, keywords: ['why', 'hard', 'every month'], question: "Why is this so hard every month?", response: "It is hard — PMDD is a real medical condition and it takes a lot of energy to manage. You're not weak; you're strong for showing up every month. I see you and I'm proud of you." },
+    { id: 73, keywords: ['feel', 'alone', 'this'], question: "I feel so alone with this.", response: "You are not alone. Millions of women go through this, and many feel exactly the way you do. I'm here with you, and your psychiatrists are building this app so you have better support. You've got this and you've got me." },
+    { id: 74, keywords: ['feel normal', 'again', 'will i'], question: "Will I ever feel normal again?", response: "Yes — many women find real relief with the right treatment and tracking. It may not be perfect every month, but it can get so much better. You're already taking the first step by using the app." },
+    { id: 75, keywords: ['scared', 'never', 'get better'], question: "I'm scared this will never get better.", response: "That fear is so valid when you're in the middle of a hard phase. Many women do find ways to manage PMDD and feel much better. You're not stuck — there are options. I'm here to help you explore them." }
   ]
 };
 
@@ -71,7 +112,11 @@ function findCachedResponse(userMessage) {
     ...LUNA_RESPONSE_LIBRARY.pmddSymptoms,
     ...LUNA_RESPONSE_LIBRARY.moodMentalHealth,
     ...LUNA_RESPONSE_LIBRARY.pregnancyFertility,
-    ...LUNA_RESPONSE_LIBRARY.menopause
+    ...LUNA_RESPONSE_LIBRARY.menopause,
+    ...LUNA_RESPONSE_LIBRARY.lifestyleHealth,
+    ...LUNA_RESPONSE_LIBRARY.medicationInteractions,
+    ...LUNA_RESPONSE_LIBRARY.whenToSeeDoctor,
+    ...LUNA_RESPONSE_LIBRARY.generalSupport
   ];
 
   for (const response of allResponses) {
