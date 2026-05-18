@@ -431,6 +431,7 @@ export default function Landing() {
                   <p className="text-teal-700 text-sm font-semibold mt-0.5">{specialty}</p>
                 </div>
                 <p className="text-sm text-gray-500 leading-relaxed">{bio}</p>
+                <span className="inline-block bg-teal-50 border border-teal-200 text-teal-700 text-xs font-semibold px-3 py-1 rounded-full">✓ Board Certified</span>
               </div>
             ))}
           </div>
