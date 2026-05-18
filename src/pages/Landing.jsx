@@ -418,10 +418,10 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { initials: "E.B.", role: "Psychiatrist & Co-Founder", specialty: "Women's Mental Health Psychiatrist", bio: "Board-certified psychiatrist with specialized training in perinatal mental health, PMDD, and hormonal mood disorders across the reproductive lifecycle." },
+              { initials: "E.B.", role: "Psychiatrist & Co-Founder", specialty: "Women's Mental Health Psychiatrist", bio: "Board-certified psychiatrist with specialized training in perinatal mental health, PMDD, and hormonal mood disorders across the reproductive lifecycle.", hideBadge: true },
               { initials: "M.R.", role: "Psychiatrist & Co-Founder", specialty: "Women's Mental Health Psychiatrist", bio: "Expert in postpartum depression, pregnancy-related anxiety, and complex psychiatric care for women navigating major hormonal transitions." },
               { initials: "T.K.", role: "Physician & Co-Founder", specialty: "Internal Medicine & Psychiatry", bio: "Dual-trained physician in Internal Medicine and Psychiatry, bringing an integrative clinical perspective to CycleMind's methodology and patient care approach." },
-            ].map(({ initials, role, specialty, bio }) => (
+            ].map(({ initials, role, specialty, bio, hideBadge }) => (
               <div key={initials} className="rounded-3xl border border-gray-100 bg-gray-50 p-8 space-y-4 text-center">
                 <div className="w-20 h-20 rounded-full bg-teal-600 flex items-center justify-center mx-auto text-white font-bold text-xl font-serif shadow-md">
                   {initials}
@@ -431,7 +431,7 @@ export default function Landing() {
                   <p className="text-teal-700 text-sm font-semibold mt-0.5">{specialty}</p>
                 </div>
                 <p className="text-sm text-gray-500 leading-relaxed">{bio}</p>
-                <span className="inline-block bg-teal-50 border border-teal-200 text-teal-700 text-xs font-semibold px-3 py-1 rounded-full">✓ Board Certified</span>
+                {!hideBadge && <span className="inline-block bg-teal-50 border border-teal-200 text-teal-700 text-xs font-semibold px-3 py-1 rounded-full">✓ Board Certified</span>}
               </div>
             ))}
           </div>
