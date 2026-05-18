@@ -34,7 +34,7 @@ const TESTIMONIALS = [
   },
   {
     name: "Karen Whitaker, 37",
-    context: "PMDD Advocate",
+    context: "PMDD Patient",
     quote: "After years of being dismissed, CycleMind's detailed tracking helped me secure an official PMDD diagnosis. The patterns it uncovers are spot-on and the privacy is unmatched. This app is changing lives."
   },
   {
