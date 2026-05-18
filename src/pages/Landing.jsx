@@ -1,6 +1,7 @@
 import LandingNav from '@/components/landing/LandingNav';
 import LandingHero from '@/components/landing/LandingHero';
 import TrustBar from '@/components/landing/TrustBar';
+import AppShowcase from '@/components/landing/AppShowcase';
 import TestimonialsSection from '@/components/landing/TestimonialsSection';
 import BetaCTA from '@/components/landing/BetaCTA';
 import LandingFooter from '@/components/landing/LandingFooter';
@@ -23,6 +24,11 @@ export default function Landing() {
       <LandingNav />
       <LandingHero />
       <TrustBar />
+
+      {/* ── APP SHOWCASE ── */}
+      <div id="showcase">
+        <AppShowcase />
+      </div>
 
       {/* ── WHY CYCLEMIND ── */}
       <section id="about" className="py-24 px-5 bg-white">
