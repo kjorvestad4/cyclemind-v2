@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import TestimonialsSection from '@/components/landing/TestimonialsSection';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -439,34 +440,7 @@ export default function Landing() {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section className="py-24 px-5 bg-gray-50">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14 space-y-3">
-            <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Beta Users</span>
-            <h2 className="font-serif text-4xl font-bold text-gray-900">What early users are saying</h2>
-            <p className="text-gray-500 text-sm">Feedback from our ongoing beta testing program.</p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {[
-              { quote: "Easy to use.", context: "Beta Tester" },
-              { quote: "Has tracking tools and insights not available on any other app.", context: "Beta Tester" },
-              { quote: "AI chatbot is really helpful!", context: "Beta Tester" },
-              { quote: "Clinical Reports are superb!", context: "Beta Tester" },
-            ].map(({ quote, context }, i) => (
-              <div key={i} className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4">
-                <div className="flex gap-0.5">
-                  {[1,2,3,4,5].map(s => <Star key={s} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
-                </div>
-                <p className="text-gray-800 font-medium leading-relaxed">"{quote}"</p>
-                <p className="text-xs text-gray-400">{context}</p>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-center text-sm text-gray-400 mt-8 italic">More testimonials coming as our beta program expands. Join now to be part of it.</p>
-        </div>
-      </section>
+      <TestimonialsSection />
 
       {/* ── FREE VS PREMIUM ── */}
       <section className="py-24 px-5 bg-white">
