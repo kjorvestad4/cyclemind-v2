@@ -3,42 +3,42 @@ import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const TESTIMONIALS = [
   {
-    name: "Sarah Thompson, 34",
+    name: "Sarah T., 34",
     context: "PMDD Patient",
     quote: "CycleMind finally connected the dots on my PMDD. The daily symptom tracker revealed patterns I'd suspected for years. Sharing clean reports with my psychiatrist made every session more productive — I feel seen, understood, and in control for the first time."
   },
   {
-    name: "Jessica Patel, 29",
+    name: "Jessica P., 29",
     context: "First-Time Mom",
     quote: "From pregnancy through postpartum recovery, CycleMind tracked every physical and emotional shift. The privacy focus gave me confidence to log sensitive symptoms, and the insights helped me communicate clearly with my OB and therapist when things felt overwhelming."
   },
   {
-    name: "Linda Martinez, 48",
+    name: "Linda M., 48",
     context: "Perimenopause",
     quote: "Perimenopause threw my cycles and mood into chaos. CycleMind's menopause-specific tracking and pattern insights gave me clarity and confidence. It feels like the app was built by psychiatrists who actually understand this transition."
   },
   {
-    name: "Rachel Kim, 31",
+    name: "Rachel K., 31",
     context: "Marketing Manager",
     quote: "Private, intuitive, and genuinely science-based. I love how quickly I can log symptoms yet still get powerful weekly insights into my PMS and mental health. CycleMind turned my 'cycles that have a mind of their own' into something I can actually manage."
   },
   {
-    name: "Amanda Lopez, 35",
+    name: "Amanda L., 35",
     context: "Postpartum",
     quote: "Postpartum anxiety hit hard, but CycleMind's recovery tracking showed me the hormonal patterns and that it was temporary. Logging took seconds even on tough days, and the data helped my care team adjust support in real time."
   },
   {
-    name: "Megan Foster, 40",
+    name: "Megan F., 40",
     context: "Cycle Tracker",
     quote: "Finally an app that covers every stage — menstrual, pregnancy planning, postpartum, and now perimenopause — without selling my data. The mental-health focus sets CycleMind apart. It's like having a psychiatrist's insight in my pocket."
   },
   {
-    name: "Karen Whitaker, 37",
+    name: "Karen W., 37",
     context: "PMDD Patient",
     quote: "After years of being dismissed, CycleMind's detailed tracking helped me secure an official PMDD diagnosis. The patterns it uncovers are spot-on and the privacy is unmatched. This app is changing lives."
   },
   {
-    name: "Patricia Moreau, 52",
+    name: "Patricia M., 52",
     context: "Menopause",
     quote: "Menopause was exhausting until CycleMind. The comprehensive tracking across life stages, combined with clear science-backed insights, has restored my sense of control. I've already sent the link to every friend in the same boat."
   },
