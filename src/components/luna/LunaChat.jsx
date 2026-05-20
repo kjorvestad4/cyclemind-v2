@@ -343,7 +343,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
             <div className="p-5 space-y-6">
               {messages.map((msg, idx) => (
                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] rounded-3xl px-5 py-3.5 text-[15px] leading-relaxed shadow-sm ${
+                  <div className={`max-w-[80%] min-w-0 rounded-3xl px-5 py-3.5 text-[15px] leading-relaxed shadow-sm overflow-hidden ${
                     msg.role === 'user' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 border border-teal-100 dark:border-teal-900 rounded-bl-none'
                   }`}>
                     {msg.role === 'assistant' ? (
@@ -365,7 +365,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
                           key={i}
                           variant="outline"
                           size="sm"
-                          className={`text-xs rounded-2xl w-full justify-start ${
+                          className={`text-xs rounded-2xl w-full justify-start whitespace-normal h-auto py-1.5 ${
                             isReportAction 
                               ? 'border-teal-400 bg-teal-50 text-teal-700 hover:bg-teal-100 dark:bg-teal-950/50 dark:text-teal-300'
                               : isLogAction 
