@@ -230,7 +230,7 @@ Respond with only the adapted message text, nothing else.`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${grokApiKey}` },
         body: JSON.stringify({
-          model: 'grok-2-latest',
+          model: 'grok-3-mini',
           messages: [{ role: 'user', content: adaptPrompt }],
           temperature: 0.65,
           max_tokens: 512
@@ -265,6 +265,7 @@ Respond with only the adapted message text, nothing else.`;
 
 async function generateGrokResponse(messages, contextInfo, ragResults) {
   const grokApiKey = Deno.env.get('XAI_API_KEY');
+  console.log('[LUNA] grok key present:', !!grokApiKey, 'key prefix:', grokApiKey?.slice(0,8));
 
   if (!grokApiKey) {
     return {
@@ -298,9 +299,9 @@ async function generateGrokResponse(messages, contextInfo, ragResults) {
       'Authorization': `Bearer ${grokApiKey}`
     },
     body: JSON.stringify({
-      model: 'grok-2-latest',
+      model: 'grok-3-mini',
       messages: [
-        { role: 'system', content: systemContent },
+        { role: 'system', content: systemContent + '\n\nIMPORTANT: Respond ONLY with a valid JSON object with keys: message (string), suggestedActions (array of strings), flags (object with escalate and crisis booleans).' },
         ...messagesWithContext
       ],
       response_format: { type: 'json_object' },
@@ -309,14 +310,18 @@ async function generateGrokResponse(messages, contextInfo, ragResults) {
     })
   });
 
-  if (!grokResponse.ok) throw new Error(`Grok API error: ${grokResponse.statusText}`);
+  if (!grokResponse.ok) {
+    const errBody = await grokResponse.text();
+    console.error('[LUNA] grok error body:', errBody);
+    throw new Error(`Grok API error: ${grokResponse.status} ${grokResponse.statusText} — ${errBody}`);
+  }
 
   const grokData = await grokResponse.json();
   const content = grokData.choices[0].message.content;
 
   try {
     const parsed = JSON.parse(content);
-    return { ...parsed, route: 'tier_3_grok', modelUsed: 'grok-2-latest' };
+    return { ...parsed, route: 'tier_3_grok', modelUsed: 'grok-3-mini' };
   } catch {
     return {
       message: content + "\n\nThis is not a substitute for professional medical advice. Please consult your doctor.",
@@ -325,7 +330,7 @@ async function generateGrokResponse(messages, contextInfo, ragResults) {
       detectedSymptoms: [],
       codedSymptoms: {},
       route: 'tier_3_grok',
-      modelUsed: 'grok-2-latest'
+      modelUsed: 'grok-3-mini'
     };
   }
 }
@@ -343,8 +348,11 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { messages, cycleMode, cycleDay, eddInfo, fertilityMode, menopauseStage } = await req.json();
+    const body = await req.json();
+    console.log('[LUNA] body keys:', Object.keys(body));
+    const { messages, cycleMode, cycleDay, eddInfo, fertilityMode, menopauseStage } = body;
     const userMessage = messages[messages.length - 1].content;
+    console.log('[LUNA] userMessage:', userMessage);
 
     // ── Initial greeting shortcut ──
     if (messages.length === 1 && userMessage === 'Hello Luna, I just opened the chat.') {
