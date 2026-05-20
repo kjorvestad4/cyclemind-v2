@@ -283,7 +283,18 @@ async function generateGrokResponse(messages, contextInfo, ragResults) {
     ? `\n\nRelated context from knowledge base (use as guidance, not verbatim): "${ragResults.bestMatch.response}"`
     : '';
 
-  const systemContent = LUNA_SYSTEM_PROMPT + '\n\n' + contextInfo + ragHint;
+  const systemContent = LUNA_SYSTEM_PROMPT + '\n\n' + contextInfo;
+
+  // Inject RAG context into the last user message
+  const messagesWithContext = messages.map((m, i) => {
+    if (i === messages.length - 1 && m.role === 'user' && ragResults.bestMatch) {
+      return {
+        role: 'user',
+        content: `Context from curated responses:\n${ragResults.bestMatch.response}\n\nUser message: ${m.content}`
+      };
+    }
+    return { role: m.role, content: m.content };
+  });
 
   const grokResponse = await fetch('https://api.x.ai/v1/chat/completions', {
     method: 'POST',
@@ -295,7 +306,7 @@ async function generateGrokResponse(messages, contextInfo, ragResults) {
       model: 'grok-2-latest',
       messages: [
         { role: 'system', content: systemContent },
-        ...messages.map(m => ({ role: m.role, content: m.content }))
+        ...messagesWithContext
       ],
       response_format: { type: 'json_object' },
       temperature: 0.7,
