@@ -395,6 +395,25 @@ Deno.serve(async (req) => {
     const ragResults = ragSearch(userMessage);
     console.log(`[LUNA] rag_search score=${ragResults.score} match_id=${ragResults.bestMatch?.id} category=${ragResults.bestMatch?.category}`);
 
+    // ── Quick Reply shortcut: suggested action buttons use RAG-only, no Grok ──
+    const { isQuickReply } = body;
+    if (isQuickReply && ragResults.bestMatch && ragResults.score >= 0.3) {
+      const result = await generateLocalResponse(userMessage, ragResults.bestMatch);
+      console.log(`[LUNA] route=quick_reply model=${result.modelUsed}`);
+      return Response.json({ ...result, timestamp: new Date().toISOString() });
+    }
+    if (isQuickReply && !ragResults.bestMatch) {
+      return Response.json({
+        mainContent: "I'm here with you. Want to tell me more about what's going on right now?",
+        disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+        source: 'rag',
+        suggestedActions: [],
+        flags: { escalate: false, crisis: false },
+        timestamp: new Date().toISOString(),
+        route: 'quick_fallback'
+      });
+    }
+
     // ── Step 2: Router Decision ──
     const decision = routeDecision(userMessage, ragResults);
     console.log(`[LUNA] router useLocal=${decision.useLocal} priority=${decision.priority}`);

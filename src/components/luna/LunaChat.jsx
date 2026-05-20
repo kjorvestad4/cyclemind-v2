@@ -95,7 +95,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
     }]);
   }, []);
 
-  const handleSend = useCallback(async (userMessage = input.trim()) => {
+  const handleSend = useCallback(async (userMessage = input.trim(), isQuickReply = false) => {
     if (!userMessage || loading) return;
     setInput('');
     setLoading(true);
@@ -118,6 +118,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
         fertilityMode,
         menopauseStage,
         alreadySavedSymptoms,
+        isQuickReply,
       });
 
       const botReply = response.data;
@@ -156,7 +157,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
       handleGenerateReport();
       return;
     }
-    handleSend(action);
+    handleSend(action, true);
   };
 
   const saveSymptoms = async (symptoms, msgIdx) => {
