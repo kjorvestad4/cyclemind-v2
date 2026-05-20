@@ -46,6 +46,7 @@ export default function LunaButton({ user, cycleMode, cycleDay, eddInfo }) {
   // Free tier: locked bubble
   return (
     <button
+      id="tour-luna-button"
       onClick={() => window.location.href = '/billing'}
       className="fixed bottom-32 right-4 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 text-slate-600 shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 flex items-center justify-center group"
       title="Upgrade to Premium for Luna AI"
