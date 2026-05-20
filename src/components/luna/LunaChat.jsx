@@ -354,9 +354,17 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
                       <p>{msg.content}</p>
                     )}
 
-                {/* Suggested Actions */}
+                {/* Disclaimer */}
+                {msg.role === 'assistant' && msg.disclaimer && (
+                  <p className="mt-3 text-[10px] text-muted-foreground border-t border-teal-100 dark:border-teal-900 pt-2 leading-snug">
+                    ⚕️ {msg.disclaimer}
+                  </p>
+                )}
+              </div>
+
+                {/* Suggested Actions — outside bubble so they don't overflow */}
                 {msg.role === 'assistant' && msg.suggestedActions?.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-4">
+                  <div className="flex flex-wrap gap-2 mt-2 max-w-[80%]">
                     {msg.suggestedActions.map((action, i) => {
                       const isLogAction = LOG_ACTIONS.includes(action.toLowerCase());
                       const isReportAction = action.toLowerCase() === 'generate clinical report';
@@ -385,7 +393,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
 
                 {/* Detected Symptoms — offer to save */}
                 {msg.role === 'assistant' && msg.detectedSymptoms?.length > 0 && (
-                  <div className="mt-3 p-3 bg-teal-50 dark:bg-teal-950/50 border border-teal-200 dark:border-teal-800 rounded-2xl">
+                  <div className="mt-2 max-w-[80%] p-3 bg-teal-50 dark:bg-teal-950/50 border border-teal-200 dark:border-teal-800 rounded-2xl">
                     <p className="text-xs font-semibold text-teal-700 dark:text-teal-300 mb-2">Symptoms I noticed you mentioned:</p>
                     <div className="flex flex-wrap gap-1.5 mb-2">
                       {msg.detectedSymptoms.map((s, i) => (
@@ -410,23 +418,15 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
                   </div>
                 )}
 
-                {/* Disclaimer */}
-                {msg.role === 'assistant' && msg.disclaimer && (
-                  <p className="mt-3 text-[10px] text-muted-foreground border-t border-teal-100 dark:border-teal-900 pt-2 leading-snug">
-                    ⚕️ {msg.disclaimer}
-                  </p>
-                )}
-
                 {/* Crisis Banner */}
                 {msg.role === 'assistant' && msg.flags?.crisis && (
-                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-xs flex items-start gap-2">
+                  <div className="mt-2 max-w-[80%] p-3 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-xs flex items-start gap-2">
                     <AlertCircle className="w-4 h-4 mt-px shrink-0" />
                     <div>
                       I'm really concerned about how you're feeling. Please reach out right now to the <strong>988 Suicide &amp; Crisis Lifeline</strong> (call or text 988) or your doctor/ER.
                     </div>
                   </div>
                 )}
-              </div>
             </div>
           ))}
 
