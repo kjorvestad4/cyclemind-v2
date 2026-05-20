@@ -278,11 +278,6 @@ async function generateGrokResponse(messages, contextInfo, ragResults) {
     };
   }
 
-  // Optionally inject the best RAG match as context hint for Grok
-  const ragHint = ragResults.bestMatch
-    ? `\n\nRelated context from knowledge base (use as guidance, not verbatim): "${ragResults.bestMatch.response}"`
-    : '';
-
   const systemContent = LUNA_SYSTEM_PROMPT + '\n\n' + contextInfo;
 
   // Inject RAG context into the last user message
