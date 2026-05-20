@@ -365,7 +365,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
                           key={i}
                           variant="outline"
                           size="sm"
-                          className={`text-xs rounded-2xl w-full justify-start whitespace-normal h-auto py-1.5 ${
+                          className={`text-xs rounded-2xl w-full justify-start text-left whitespace-normal h-auto py-1.5 ${
                             isReportAction 
                               ? 'border-teal-400 bg-teal-50 text-teal-700 hover:bg-teal-100 dark:bg-teal-950/50 dark:text-teal-300'
                               : isLogAction 
