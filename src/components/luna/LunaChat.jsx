@@ -84,11 +84,12 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
     if (fertilityMode) greeting += " I'm here to support your fertility journey.";
     else if (menopauseStage) greeting += ` I'm here to support you through menopause (${menopauseStage}).`;
     else if (cycleDay) greeting += ` You're on cycle day ${cycleDay} — I'm here to listen.`;
-    greeting += "\n\n*This is not a substitute for professional medical advice. Please consult your doctor.*";
 
     setMessages([{
       role: 'assistant',
       content: greeting,
+      disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+      source: 'rag',
       suggestedActions: ["Track today's symptoms", "Cycle phase tips", "I need support"],
       flags: { escalate: false, crisis: false }
     }]);
@@ -122,7 +123,9 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
       const botReply = response.data;
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: botReply.message,
+        content: botReply.mainContent || botReply.message || '',
+        disclaimer: botReply.disclaimer || null,
+        source: botReply.source || null,
         suggestedActions: botReply.suggestedActions || [],
         flags: botReply.flags || { escalate: false, crisis: false },
         detectedSymptoms: botReply.detectedSymptoms || [],
@@ -405,6 +408,13 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
                       </Button>
                     )}
                   </div>
+                )}
+
+                {/* Disclaimer */}
+                {msg.role === 'assistant' && msg.disclaimer && (
+                  <p className="mt-3 text-[10px] text-muted-foreground border-t border-teal-100 dark:border-teal-900 pt-2 leading-snug">
+                    ⚕️ {msg.disclaimer}
+                  </p>
                 )}
 
                 {/* Crisis Banner */}

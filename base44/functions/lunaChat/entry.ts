@@ -184,9 +184,7 @@ Strict Safety Rules:
 - NEVER suggest they have a specific condition or diagnosis.
 - If the user asks about medication or treatment, gently redirect to their doctor.
 - Always be cautious with crisis or self-harm language.
-
-Always end EVERY single response with this exact line:
-This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.`;
+- Do NOT append any disclaimer at the end — the disclaimer is handled separately by the system.`;
 
 // ============================================================================
 // RESPONSE GENERATORS
@@ -198,7 +196,9 @@ async function generateLocalResponse(userMessage, ragEntry) {
   // Crisis responses are never adapted — always return verbatim
   if (isCrisis) {
     return {
-      message: ragEntry.response,
+      mainContent: ragEntry.response,
+      disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+      source: 'rag',
       suggestedActions: [],
       flags: { escalate: true, crisis: true },
       route: 'tier_1_crisis',
@@ -221,7 +221,7 @@ Guidelines:
 - Make it feel personal and supportive
 - Use natural, conversational language
 - Do not add new medical advice
-- End with this exact disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional."
+- Do NOT append any disclaimer — it is handled separately
 
 Respond with only the adapted message text, nothing else.`;
 
@@ -239,13 +239,17 @@ Respond with only the adapted message text, nothing else.`;
 
       if (grokResponse.ok) {
         const data = await grokResponse.json();
-        const adapted = data.choices[0].message.content.trim();
+        // Strip any disclaimer the model may have appended
+        let adapted = data.choices[0].message.content.trim();
+        adapted = adapted.replace(/This is not a substitute for professional medical advice\..*$/s, '').trim();
         return {
-          message: adapted,
+          mainContent: adapted,
+          disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+          source: 'rag',
           suggestedActions: [],
           flags: { escalate: false, crisis: false },
           route: 'tier_2_rag_adapted',
-          modelUsed: 'grok-2-latest'
+          modelUsed: 'grok-3-mini'
         };
       }
     } catch (_) {
@@ -255,7 +259,9 @@ Respond with only the adapted message text, nothing else.`;
 
   // Fallback: return verbatim curated response
   return {
-    message: ragEntry.response,
+    mainContent: ragEntry.response,
+    disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+    source: 'rag',
     suggestedActions: [],
     flags: { escalate: false, crisis: false },
     route: 'tier_2_rag_verbatim',
@@ -269,11 +275,11 @@ async function generateGrokResponse(messages, contextInfo, ragResults) {
 
   if (!grokApiKey) {
     return {
-      message: `I hear you and I'm here to listen. You matter and your feelings matter.\n\nThis is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.`,
+      mainContent: "I hear you and I'm here to listen. You matter and your feelings matter.",
+      disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+      source: 'rag',
       suggestedActions: [],
       flags: { escalate: false, crisis: false },
-      detectedSymptoms: [],
-      codedSymptoms: {},
       route: 'local_fallback',
       modelUsed: 'none'
     };
@@ -301,7 +307,7 @@ async function generateGrokResponse(messages, contextInfo, ragResults) {
     body: JSON.stringify({
       model: 'grok-3-mini',
       messages: [
-        { role: 'system', content: systemContent + '\n\nIMPORTANT: Respond ONLY with a valid JSON object with keys: message (string), suggestedActions (array of strings), flags (object with escalate and crisis booleans).' },
+        { role: 'system', content: systemContent + '\n\nIMPORTANT: Respond ONLY with a valid JSON object with keys: mainContent (string — your response, no disclaimer), suggestedActions (array of strings), flags (object with escalate and crisis booleans).' },
         ...messagesWithContext
       ],
       response_format: { type: 'json_object' },
@@ -321,14 +327,25 @@ async function generateGrokResponse(messages, contextInfo, ragResults) {
 
   try {
     const parsed = JSON.parse(content);
-    return { ...parsed, route: 'tier_3_grok', modelUsed: 'grok-3-mini' };
+    // Normalize: extract mainContent from `message` if model used old key
+    const mainContent = parsed.mainContent || parsed.message || '';
+    // Strip any disclaimer the model may have appended to the content
+    const cleanContent = mainContent.replace(/This is not a substitute for professional medical advice\..*$/s, '').trim();
+    return {
+      ...parsed,
+      mainContent: cleanContent,
+      disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+      source: 'grok',
+      route: 'tier_3_grok',
+      modelUsed: 'grok-3-mini'
+    };
   } catch {
     return {
-      message: content + "\n\nThis is not a substitute for professional medical advice. Please consult your doctor.",
+      mainContent: content.replace(/This is not a substitute for professional medical advice\..*$/s, '').trim(),
+      disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+      source: 'grok',
       suggestedActions: [],
       flags: { escalate: false, crisis: false },
-      detectedSymptoms: [],
-      codedSymptoms: {},
       route: 'tier_3_grok',
       modelUsed: 'grok-3-mini'
     };
@@ -359,11 +376,13 @@ Deno.serve(async (req) => {
       let greeting = "Hi, I'm Luna 🌙 — your compassionate CycleMind companion.\n\nHow are you feeling today? I'm here to listen and support you through your cycle, pregnancy, or menopausal journey.";
       if (fertilityMode) greeting += " I see you're in fertility mode — I can help track your fertile window and provide conception guidance.";
       else if (menopauseStage) greeting += ` I see you're tracking menopause (${menopauseStage}) — I'm here to support you through this transition.`;
-      greeting += "\n\nThis is not a substitute for professional medical advice. Please consult your doctor.";
+      // disclaimer is returned separately
 
       console.log('[LUNA] route=template');
       return Response.json({
-        message: greeting,
+        mainContent: greeting,
+        disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+        source: 'rag',
         suggestedActions: ["Track today's symptoms", fertilityMode ? "View fertility window" : "Generate doctor report"].filter(Boolean),
         flags: { escalate: false, crisis: false },
         timestamp: new Date().toISOString(),
@@ -402,7 +421,9 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('[LUNA] error:', error.message);
     return Response.json({
-      message: "I'm having a brief moment connecting, but I'm still here for you. Can you try sending your message again?\n\nThis is not a substitute for professional medical advice. Please consult your doctor.",
+      mainContent: "I'm having a brief moment connecting, but I'm still here for you. Can you try sending your message again?",
+      disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+      source: 'rag',
       suggestedActions: [],
       flags: { escalate: false, crisis: false },
       timestamp: new Date().toISOString(),
