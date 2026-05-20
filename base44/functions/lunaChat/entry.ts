@@ -181,16 +181,74 @@ Core clinical rules:
 // RESPONSE GENERATORS
 // ============================================================================
 
-function generateLocalResponse(ragEntry) {
+async function generateLocalResponse(userMessage, ragEntry) {
+  const isCrisis = CRISIS_CATEGORIES.has(ragEntry.category);
+
+  // Crisis responses are never adapted — always return verbatim
+  if (isCrisis) {
+    return {
+      message: ragEntry.response,
+      suggestedActions: [],
+      flags: { escalate: true, crisis: true },
+      route: 'tier_1_crisis',
+      modelUsed: 'rag_verbatim'
+    };
+  }
+
+  // Adapt the curated response to the user's message via Grok
+  const grokApiKey = Deno.env.get('XAI_API_KEY');
+  if (grokApiKey) {
+    const adaptPrompt = `You are Luna 🌙. Adapt the following curated response to sound warm, empathetic, and sister-like.
+
+Original Curated Response:
+${ragEntry.response}
+
+User Message: ${userMessage}
+
+Guidelines:
+- Keep the core advice from the curated response
+- Make it feel personal and supportive
+- Use natural, conversational language
+- Do not add new medical advice
+- End with this exact disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional."
+
+Respond with only the adapted message text, nothing else.`;
+
+    try {
+      const grokResponse = await fetch('https://api.x.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${grokApiKey}` },
+        body: JSON.stringify({
+          model: 'grok-2-latest',
+          messages: [{ role: 'user', content: adaptPrompt }],
+          temperature: 0.65,
+          max_tokens: 512
+        })
+      });
+
+      if (grokResponse.ok) {
+        const data = await grokResponse.json();
+        const adapted = data.choices[0].message.content.trim();
+        return {
+          message: adapted,
+          suggestedActions: [],
+          flags: { escalate: false, crisis: false },
+          route: 'tier_2_rag_adapted',
+          modelUsed: 'grok-2-latest'
+        };
+      }
+    } catch (_) {
+      // fall through to verbatim
+    }
+  }
+
+  // Fallback: return verbatim curated response
   return {
     message: ragEntry.response,
     suggestedActions: [],
-    flags: {
-      escalate: CRISIS_CATEGORIES.has(ragEntry.category),
-      crisis: CRISIS_CATEGORIES.has(ragEntry.category)
-    },
-    route: CRISIS_CATEGORIES.has(ragEntry.category) ? 'tier_1_crisis' : 'tier_2_rag_local',
-    modelUsed: 'rag_local'
+    flags: { escalate: false, crisis: false },
+    route: 'tier_2_rag_verbatim',
+    modelUsed: 'rag_verbatim'
   };
 }
 
@@ -298,8 +356,8 @@ Deno.serve(async (req) => {
 
     // ── Step 3a: Local RAG Response ──
     if (decision.useLocal && ragResults.bestMatch) {
-      const result = generateLocalResponse(ragResults.bestMatch);
-      console.log(`[LUNA] route=${result.route} model=rag_local cost=$0`);
+      const result = await generateLocalResponse(userMessage, ragResults.bestMatch);
+      console.log(`[LUNA] route=${result.route} model=${result.modelUsed}`);
       return Response.json({ ...result, timestamp: new Date().toISOString() });
     }
 
