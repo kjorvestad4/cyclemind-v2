@@ -132,23 +132,33 @@ function ragSearch(userMessage) {
 // ROUTER
 // ============================================================================
 
+const CRISIS_SIGNAL_KEYWORDS = ['suicide', 'kill myself', 'hurt myself', "can't go on", 'end it', 'suicidal', 'end my life', "don't want to be here", "don't want to live", 'not safe with myself'];
+const MEDICAL_SIGNAL_KEYWORDS = ['medication', 'antidepressant', 'ssri', 'hormone therapy', 'should i take', 'birth control', 'thyroid', 'prescription', 'drug interaction'];
+
 function routeDecision(userMessage, ragResults) {
-  const { bestMatch, score } = ragResults;
+  const { score } = ragResults;
+  const msgLower = userMessage.toLowerCase();
 
-  // Always local for crisis
-  if (bestMatch && CRISIS_CATEGORIES.has(bestMatch.category)) {
-    return { useLocal: true, reason: 'crisis', threshold: 0 };
+  const isCrisis = CRISIS_SIGNAL_KEYWORDS.some(k => msgLower.includes(k));
+  const isMedical = MEDICAL_SIGNAL_KEYWORDS.some(k => msgLower.includes(k));
+
+  if (isCrisis) {
+    return { useLocal: true, priority: 'crisis' };
   }
 
-  // Emotional content: lower threshold to prefer local
-  if (bestMatch && EMOTIONAL_CATEGORIES.has(bestMatch.category)) {
-    const threshold = 0.50;
-    return { useLocal: score >= threshold, reason: 'emotional', threshold };
+  if (isMedical) {
+    return { useLocal: score > 0.65, priority: 'medical' };
   }
 
-  // Clinical/factual content: higher threshold for accuracy
-  const threshold = 0.65;
-  return { useLocal: score >= threshold, reason: 'factual', threshold };
+  if (score >= 0.75) {
+    return { useLocal: true, priority: 'strong_match' };
+  }
+
+  if (score >= 0.55) {
+    return { useLocal: true, priority: 'partial_match' };
+  }
+
+  return { useLocal: false, priority: 'grok_fallback' };
 }
 
 // ============================================================================
@@ -284,7 +294,7 @@ Deno.serve(async (req) => {
 
     // ── Step 2: Router Decision ──
     const decision = routeDecision(userMessage, ragResults);
-    console.log(`[LUNA] router useLocal=${decision.useLocal} reason=${decision.reason} threshold=${decision.threshold}`);
+    console.log(`[LUNA] router useLocal=${decision.useLocal} priority=${decision.priority}`);
 
     // ── Step 3a: Local RAG Response ──
     if (decision.useLocal && ragResults.bestMatch) {
@@ -302,7 +312,7 @@ Deno.serve(async (req) => {
       menopauseStage ? `MENOPAUSE STAGE: ${menopauseStage}` : null
     ].filter(Boolean).join(' | ');
 
-    console.log(`[LUNA] route=tier_3_grok score=${ragResults.score} below threshold=${decision.threshold}`);
+    console.log(`[LUNA] route=tier_3_grok score=${ragResults.score} priority=${decision.priority}`);
     const result = await generateGrokResponse(messages, contextInfo, ragResults);
     return Response.json({ ...result, timestamp: new Date().toISOString() });
 
