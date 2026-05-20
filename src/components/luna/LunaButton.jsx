@@ -10,10 +10,6 @@ export default function LunaButton({ user, cycleMode, cycleDay, eddInfo }) {
   const [showAlerts, setShowAlerts] = useState(false);
   const isPremium = user ? getUserTier(user) === TIERS.PREMIUM : false;
 
-  if (!user) {
-    return null;
-  }
-
   if (isPremium) {
     return (
       <>
