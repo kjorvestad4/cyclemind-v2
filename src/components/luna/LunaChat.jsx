@@ -448,11 +448,6 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
           )}
         </div>
 
-        {/* Disclaimer */}
-        <div className="px-5 py-3 text-[10px] bg-amber-50 dark:bg-amber-950/50 border-t border-amber-200 text-amber-800 dark:text-amber-200">
-          ⚠️ Luna is not a doctor. This is supportive conversation only. Always consult your healthcare provider.
-        </div>
-
         {/* Voice Recording Overlay */}
         {isListening && (
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
