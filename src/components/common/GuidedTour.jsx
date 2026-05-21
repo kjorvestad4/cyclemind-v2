@@ -8,7 +8,7 @@ const STEPS = [
   {
     title: "Welcome to CycleMind! 🌙",
     description: "This is your Dashboard — your daily home base. It shows your current cycle phase, today's symptom severity, and personalized insights.",
-    target: null,
+    target: "tour-dashboard",
   },
   {
     title: "📅 Calendar View",
@@ -81,10 +81,12 @@ export default function GuidedTour() {
         setHighlightRect(null);
       }
     };
-    update();
+    // Small delay to let layout settle after step change
+    const t = setTimeout(update, 80);
     window.addEventListener("resize", update);
     window.addEventListener("scroll", update, true);
     return () => {
+      clearTimeout(t);
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
     };
@@ -132,10 +134,15 @@ export default function GuidedTour() {
         />
       )}
 
-      {/* Tooltip — moves up when Luna button is highlighted so it doesn't cover it */}
+      {/* Tooltip — positions above the highlight when element is in bottom half */}
       <div
         className="fixed left-4 right-4 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-teal-300 dark:border-teal-700 p-5"
-        style={{ zIndex: 10000, bottom: current.target === "tour-luna-button" ? 180 : 90 }}
+        style={{
+          zIndex: 10000,
+          ...(highlightRect && highlightRect.top > window.innerHeight / 2
+            ? { bottom: window.innerHeight - highlightRect.top + 16 }
+            : { bottom: 90 })
+        }}
       >
         {/* Close button */}
         <button
