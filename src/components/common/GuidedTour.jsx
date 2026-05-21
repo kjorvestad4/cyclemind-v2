@@ -8,7 +8,7 @@ const STEPS = [
   {
     title: "Welcome to CycleMind! 🌙",
     description: "This is your Dashboard — your daily home base. It shows your current cycle phase, today's symptom severity, and personalized insights.",
-    target: "tour-dashboard",
+    target: null,
   },
   {
     title: "📅 Calendar View",
@@ -73,7 +73,8 @@ export default function GuidedTour() {
   useEffect(() => {
     if (!visible) return;
     const update = () => {
-      const el = document.getElementById(STEPS[step].target);
+      const target = STEPS[step].target;
+      const el = target ? document.getElementById(target) : null;
       if (el) {
         setHighlightRect(el.getBoundingClientRect());
       } else {
