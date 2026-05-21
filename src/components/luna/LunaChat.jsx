@@ -50,6 +50,7 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [savedSymptomIndexes, setSavedSymptomIndexes] = useState(new Set());
+  const [responseMode, setResponseMode] = useState('quick'); // 'quick' | 'deep'
   const [isListening, setIsListening] = useState(false);
   const [voiceTranscript, setVoiceTranscript] = useState('');
   const voiceTranscriptRef = useRef('');
@@ -120,6 +121,7 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
         menopauseStage,
         alreadySavedSymptoms,
         isQuickReply,
+        mode: isQuickReply ? 'quick' : responseMode,
       });
 
       const botReply = response.data;
@@ -482,8 +484,32 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
           </div>
         )}
 
+        {/* Response Mode Toggle */}
+        <div className="px-5 pt-3 pb-1 flex gap-2 bg-white/90 dark:bg-slate-900/90">
+          <button
+            onClick={() => setResponseMode('quick')}
+            className={`flex-1 text-xs font-medium py-1.5 rounded-full border transition-all ${
+              responseMode === 'quick'
+                ? 'bg-teal-600 text-white border-teal-600'
+                : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
+            }`}
+          >
+            ⚡ Quick reply
+          </button>
+          <button
+            onClick={() => setResponseMode('deep')}
+            className={`flex-1 text-xs font-medium py-1.5 rounded-full border transition-all ${
+              responseMode === 'deep'
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
+            }`}
+          >
+            🌊 Let me think on it
+          </button>
+        </div>
+
         {/* Input */}
-        <div className="p-5 border-t flex gap-3 bg-white/90 dark:bg-slate-900/90">
+        <div className="px-5 pb-5 pt-2 border-t flex gap-3 bg-white/90 dark:bg-slate-900/90">
           <Button
             type="button"
             variant="outline"

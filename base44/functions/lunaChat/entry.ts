@@ -448,7 +448,7 @@ Respond with only the adapted message text, nothing else.`;
   };
 }
 
-async function generateGrokResponse(messages, contextInfo, ragResults) {
+async function generateGrokResponse(messages, contextInfo, ragResults, deepMode = false) {
   const grokApiKey = Deno.env.get('XAI_API_KEY');
   console.log('[LUNA] grok key present:', !!grokApiKey, 'key prefix:', grokApiKey?.slice(0,8));
 
@@ -490,8 +490,8 @@ async function generateGrokResponse(messages, contextInfo, ragResults) {
         ...messagesWithContext
       ],
       response_format: { type: 'json_object' },
-      temperature: 0.7,
-      max_tokens: 1024
+      temperature: deepMode ? 0.75 : 0.7,
+      max_tokens: deepMode ? 900 : 1024
     })
   });
 
@@ -546,9 +546,10 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     console.log('[LUNA] body keys:', Object.keys(body));
-    const { messages, cycleMode, cycleDay, cyclePhase, eddInfo, fertilityMode, menopauseStage } = body;
+    const { messages, cycleMode, cycleDay, cyclePhase, eddInfo, fertilityMode, menopauseStage, mode = 'quick' } = body;
+    const isDeepMode = mode === 'deep';
     const userMessage = messages[messages.length - 1].content;
-    console.log('[LUNA] userMessage:', userMessage);
+    console.log('[LUNA] userMessage:', userMessage, 'mode:', mode);
 
     // ── Initial greeting shortcut ──
     if (messages.length === 1 && userMessage === 'Hello Luna, I just opened the chat.') {
@@ -570,6 +571,22 @@ Deno.serve(async (req) => {
         timestamp: new Date().toISOString(),
         route: 'template'
       });
+    }
+
+    // ── Deep Mode: skip RAG, go straight to Grok for richer response ──
+    if (isDeepMode) {
+      const contextInfo = [
+        `Current context → Cycle mode: ${cycleMode || 'unknown'}`,
+        cycleDay ? `Cycle day: ${cycleDay}` : null,
+        cyclePhase ? `Cycle phase: ${cyclePhase}` : null,
+        eddInfo ? `EDD: ${eddInfo}` : null,
+        fertilityMode ? 'FERTILITY MODE ACTIVE' : null,
+        menopauseStage ? `MENOPAUSE STAGE: ${menopauseStage}` : null
+      ].filter(Boolean).join(' | ');
+
+      console.log('[LUNA] route=deep_mode');
+      const deepResult = await generateGrokResponse(messages, contextInfo, { bestMatch: null, score: 0 }, true);
+      return Response.json({ ...deepResult, mode: 'deep', timestamp: new Date().toISOString() });
     }
 
     // ── Step 1: RAG Search ──
