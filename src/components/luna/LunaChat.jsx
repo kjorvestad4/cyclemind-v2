@@ -43,7 +43,7 @@ function saveSession(messages, savedIndexes) {
   } catch {}
 }
 
-export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, menopauseStage, onClose }) {
+export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fertilityMode, menopauseStage, onClose }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' or 'notifications'
   const [messages, setMessages] = useState([]);
@@ -114,6 +114,7 @@ export default function LunaChat({ cycleMode, cycleDay, eddInfo, fertilityMode, 
         messages: [...currentMessages, { role: 'user', content: userMessage }],
         cycleMode,
         cycleDay,
+        cyclePhase,
         eddInfo,
         fertilityMode,
         menopauseStage,

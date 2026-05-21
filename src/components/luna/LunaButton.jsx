@@ -5,7 +5,7 @@ import LunaChat from './LunaChat';
 import LunaAlertsPopup from './LunaAlertsPopup';
 import LunaNotificationBadge from './LunaNotificationBadge';
 
-export default function LunaButton({ user, cycleMode, cycleDay, eddInfo }) {
+export default function LunaButton({ user, cycleMode, cycleDay, cyclePhase, eddInfo }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
   const isPremium = user ? getUserTier(user) === TIERS.PREMIUM : false;
@@ -27,6 +27,7 @@ export default function LunaButton({ user, cycleMode, cycleDay, eddInfo }) {
           <LunaChat
             cycleMode={cycleMode}
             cycleDay={cycleDay}
+            cyclePhase={cyclePhase}
             eddInfo={eddInfo}
             onClose={() => setIsOpen(false)}
           />

@@ -30,7 +30,7 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const mainRef = useScrollPosition(location.pathname);
   const { user } = useAuth();
-  const [cycleData, setCycleData] = useState({ mode: 'menstrual', day: null, edd: null });
+  const [cycleData, setCycleData] = useState({ mode: 'menstrual', day: null, edd: null, phase: null });
 
   const isTopLevel = Object.keys(PAGE_TITLES).includes(location.pathname);
   const pageTitle = PAGE_TITLES[location.pathname] || "CycleMind";
@@ -43,10 +43,19 @@ export default function AppLayout() {
         if (cycles.length > 0) {
           const latestCycle = cycles[0];
           const cycleDay = getCycleDay(format(new Date(), "yyyy-MM-dd"), cycles);
+          // Derive phase from cycle day (approximate for menstrual cycles)
+          let phase = latestCycle.phase || null;
+          if (!phase && cycleDay) {
+            if (cycleDay <= 5) phase = 'menstrual';
+            else if (cycleDay <= 13) phase = 'follicular';
+            else if (cycleDay <= 16) phase = 'ovulatory';
+            else phase = 'luteal';
+          }
           setCycleData({
             mode: latestCycle.cycle_type || 'menstrual',
             day: cycleDay || null,
-            edd: latestCycle.estimated_due_date || null
+            edd: latestCycle.estimated_due_date || null,
+            phase
           });
         }
       } catch (err) {
@@ -119,7 +128,7 @@ export default function AppLayout() {
       </main>
 
       {/* Luna AI Button */}
-      <LunaButton user={user} cycleMode={cycleData.mode} cycleDay={cycleData.day} eddInfo={cycleData.edd} />
+      <LunaButton user={user} cycleMode={cycleData.mode} cycleDay={cycleData.day} cyclePhase={cycleData.phase} eddInfo={cycleData.edd} />
       <GuidedTour />
 
       {/* Bottom Navigation */}

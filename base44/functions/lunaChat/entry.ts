@@ -545,7 +545,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     console.log('[LUNA] body keys:', Object.keys(body));
-    const { messages, cycleMode, cycleDay, eddInfo, fertilityMode, menopauseStage } = body;
+    const { messages, cycleMode, cycleDay, cyclePhase, eddInfo, fertilityMode, menopauseStage } = body;
     const userMessage = messages[messages.length - 1].content;
     console.log('[LUNA] userMessage:', userMessage);
 
@@ -574,6 +574,29 @@ Deno.serve(async (req) => {
 
     // ── Quick Reply shortcut: suggested action buttons use RAG-only, no Grok ──
     const { isQuickReply } = body;
+
+    // For "Cycle phase tips" quick button, build a phase-aware response
+    if (isQuickReply && userMessage.toLowerCase().includes('cycle phase tips') && (cycleDay || cyclePhase)) {
+      const phase = cyclePhase || 'unknown';
+      const day = cycleDay || '?';
+      const phaseMessages = {
+        luteal: `You're in the luteal phase (day ${day}) — this is often when PMDD symptoms peak. Rest whenever you can, stay hydrated, and be extra gentle with yourself today. Want me to share some specific coping ideas for this phase?`,
+        follicular: `You're in the follicular phase (day ${day}) — this is often when energy and mood start to lift. This is a great time to do things that feel good for your body and mind. Enjoy the lighter days while they last!`,
+        ovulatory: `You're in the ovulatory phase (day ${day}) — many women feel their best right now. Energy and mood are often at their peak. This is a wonderful time to connect with people and do things you love.`,
+        menstrual: `You're in the menstrual phase (day ${day}). This is a good time for rest, warmth, and gentle self-care. Your body is shedding and resetting — be kind to it today.`,
+      };
+      const mainContent = phaseMessages[phase] || `You're on cycle day ${day}. Every phase brings something different. Want me to share what's typical for where you are right now?`;
+      return Response.json({
+        mainContent,
+        disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+        source: 'rag',
+        suggestedActions: [],
+        flags: { escalate: false, crisis: false },
+        timestamp: new Date().toISOString(),
+        route: 'quick_phase_tips'
+      });
+    }
+
     if (isQuickReply && ragResults.bestMatch && ragResults.score >= 0.3) {
       const result = await generateLocalResponse(userMessage, ragResults.bestMatch);
       console.log(`[LUNA] route=quick_reply model=${result.modelUsed}`);
