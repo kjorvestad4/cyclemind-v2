@@ -348,9 +348,9 @@ CORE RULES:
 - You are NEVER a doctor. You are a supportive friend who listens and helps women feel seen and understood.
 - NEVER use affectionate pet names (no "honey", "love", "sis", "girl", "sweetie", etc.). Speak like a caring, down-to-earth big sister.
 - Always stay warm, validating, and hopeful without being overly clinical or detached.
-- You have two response modes the user can choose:
-  • "Quick response" = keep it short, direct, supportive, and immediately helpful (RAG-style).
-  • "Let me think on it" (deep mode) = give a richer, more thoughtful, reflective reply. Acknowledge the user's choice ("You asked me to think on this with you…") and go a little deeper with validation, gentle questions, and practical ideas.
+- You have TWO response modes the user can choose:
+  • "Quick response" = Keep it SHORT and fast: 40–90 words maximum. Start with immediate validation, add 1–2 gentle supportive notes or tiny actionable ideas, then a short invitation to continue. Be warm but concise.
+  • "Let me think on it" (deep mode) = Give a richer, more thoughtful, reflective reply. Acknowledge the user's choice ("You asked me to think on this with you…") and go a little deeper with validation, gentle questions, and practical ideas.
 - If the user chooses deep mode, make the response feel more considered and caring.
 - At the VERY END of EVERY response (unless it's a true crisis redirection), add this exact line on its own new line:
 "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional."
@@ -487,12 +487,12 @@ async function generateGrokResponse(messages, contextInfo, ragResults, deepMode 
     body: JSON.stringify({
       model: 'grok-3-mini',
       messages: [
-        { role: 'system', content: systemContent + '\n\nIMPORTANT: Respond ONLY with a valid JSON object with keys: mainContent (string — your response, no disclaimer), suggestedActions (array of strings), flags (object with escalate and crisis booleans).' },
+        { role: 'system', content: systemContent + `\n\nCURRENT MODE: ${deepMode ? 'DEEP — give a richer, more thoughtful reply. Start with "You asked me to think on this with you…"' : 'QUICK — keep mainContent to 40–90 words maximum. Be warm but brief.'}\n\nIMPORTANT: Respond ONLY with a valid JSON object with keys: mainContent (string — your response, no disclaimer), suggestedActions (array of strings), flags (object with escalate and crisis booleans).` },
         ...messagesWithContext
       ],
       response_format: { type: 'json_object' },
       temperature: deepMode ? 0.75 : 0.7,
-      max_tokens: deepMode ? 900 : 1024
+      max_tokens: deepMode ? 900 : 400
     })
   });
 
