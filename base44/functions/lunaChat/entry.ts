@@ -249,6 +249,12 @@ const RAG_KNOWLEDGE_BASE = [
   { id: 478, category: 'quick_coping', keywords: ['need to reset'], question: "I need to reset my day.", response: "Let's reset together. Take one slow breath with me. What's one small thing you can do right now that feels kind to yourself?" },
   { id: 479, category: 'emotional', keywords: ['feel hopeful'], question: "I feel a little hopeful today.", response: "That's beautiful. Hold onto that spark. Even small moments of hope are worth noticing." },
   { id: 480, category: 'emotional', keywords: ['thank you luna'], question: "Thank you Luna.", response: "You're so welcome. I'm always here for you — good days, hard days, or anywhere in between." },
+
+  { id: 481, category: 'quick_button', keywords: ['cycle phase tips', 'luteal phase tips', 'day 19 tips', 'current phase tips', 'phase tips'], question: "Cycle phase tips", response: "You're in the luteal phase (day 19). This is when PMDD symptoms often peak. Rest when you can, stay hydrated, and be extra gentle with yourself today. Want me to give you some specific luteal phase coping ideas?" },
+  { id: 482, category: 'quick_button', keywords: ['cycle phase tips', 'follicular phase tips', 'day 5 tips'], question: "Cycle phase tips", response: "You're in the follicular phase — this is often the 'good' phase for many women with PMDD. Energy is usually higher and mood is more stable. Enjoy the lighter days while they last." },
+  { id: 483, category: 'quick_button', keywords: ['cycle phase tips', 'ovulatory phase tips', 'day 14 tips'], question: "Cycle phase tips", response: "You're in the ovulatory phase — many women feel their best here. Energy and mood are often at their peak. This is a good time to do things that feel good for your body and mind." },
+  { id: 484, category: 'quick_button', keywords: ['cycle phase tips', 'menstrual phase tips', 'day 1 tips', 'period tips'], question: "Cycle phase tips", response: "You're in the menstrual phase. This is a good time for rest, warmth, and gentle self-care. Your body is shedding and resetting — be kind to it." },
+  { id: 485, category: 'quick_button', keywords: ['i need support', 'need support', 'help me'], question: "I need support", response: "I'm right here with you. What feels heaviest right now? I'm listening without judgment." },
 ];
 
 const EMOTIONAL_CATEGORIES = new Set(['emotional', 'life_events', 'postpartum']);
