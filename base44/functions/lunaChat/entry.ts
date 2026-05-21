@@ -572,39 +572,22 @@ Deno.serve(async (req) => {
     const ragResults = ragSearch(userMessage);
     console.log(`[LUNA] rag_search score=${ragResults.score} match_id=${ragResults.bestMatch?.id} category=${ragResults.bestMatch?.category}`);
 
-    // ── Quick Reply shortcut: suggested action buttons use RAG-only, no Grok ──
+    // ── Quick Reply / Quick Button: pure RAG lookup enriched with phase + day ──
     const { isQuickReply } = body;
 
-    // For "Cycle phase tips" quick button, build a phase-aware response
-    if (isQuickReply && userMessage.toLowerCase().includes('cycle phase tips') && (cycleDay || cyclePhase)) {
-      const phase = cyclePhase || 'unknown';
-      const day = cycleDay || '?';
-      const phaseMessages = {
-        luteal: `You're in the luteal phase (day ${day}) — this is often when PMDD symptoms peak. Rest whenever you can, stay hydrated, and be extra gentle with yourself today. Want me to share some specific coping ideas for this phase?`,
-        follicular: `You're in the follicular phase (day ${day}) — this is often when energy and mood start to lift. This is a great time to do things that feel good for your body and mind. Enjoy the lighter days while they last!`,
-        ovulatory: `You're in the ovulatory phase (day ${day}) — many women feel their best right now. Energy and mood are often at their peak. This is a wonderful time to connect with people and do things you love.`,
-        menstrual: `You're in the menstrual phase (day ${day}). This is a good time for rest, warmth, and gentle self-care. Your body is shedding and resetting — be kind to it today.`,
-      };
-      const mainContent = phaseMessages[phase] || `You're on cycle day ${day}. Every phase brings something different. Want me to share what's typical for where you are right now?`;
-      return Response.json({
-        mainContent,
-        disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
-        source: 'rag',
-        suggestedActions: [],
-        flags: { escalate: false, crisis: false },
-        timestamp: new Date().toISOString(),
-        route: 'quick_phase_tips'
-      });
-    }
+    if (isQuickReply) {
+      const enrichedQuery = `${userMessage} ${cyclePhase || ''} day ${cycleDay || ''}`.trim();
+      const enrichedRag = ragSearch(enrichedQuery);
+      console.log(`[LUNA] quick_reply enriched_score=${enrichedRag.score} match_id=${enrichedRag.bestMatch?.id}`);
 
-    if (isQuickReply && ragResults.bestMatch && ragResults.score >= 0.3) {
-      const result = await generateLocalResponse(userMessage, ragResults.bestMatch);
-      console.log(`[LUNA] route=quick_reply model=${result.modelUsed}`);
-      return Response.json({ ...result, timestamp: new Date().toISOString() });
-    }
-    if (isQuickReply && !ragResults.bestMatch) {
+      if (enrichedRag.bestMatch && enrichedRag.score >= 0.3) {
+        const result = await generateLocalResponse(userMessage, enrichedRag.bestMatch);
+        console.log(`[LUNA] route=quick_rag model=${result.modelUsed}`);
+        return Response.json({ ...result, timestamp: new Date().toISOString() });
+      }
+
       return Response.json({
-        mainContent: "I'm here with you. Want to tell me more about what's going on right now?",
+        mainContent: "I'm right here with you. Want to tell me more about what's going on right now?",
         disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
         source: 'rag',
         suggestedActions: [],
