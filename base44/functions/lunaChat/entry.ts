@@ -72,7 +72,7 @@ const RAG_KNOWLEDGE_BASE = [
   // PMDD Extended
   { id: 300, category: 'pmdd', keywords: ['pmdd flare', 'pmdd bad', 'pmdd hitting hard', 'pmdd wave', 'pmdd intense'], question: "PMDD is hitting me really hard right now.", response: "I hear you — when PMDD hits hard it can feel like everything is too much at once. You're not overreacting and you're not alone. This wave is real, and it will pass. I'm right here with you while it does." },
   { id: 301, category: 'pmdd', keywords: ['pmdd rage', 'pmdd anger', 'so irritable', 'snappy before period', 'pmdd irritability'], question: "I feel so irritable and angry before my period.", response: "That rage and irritability is one of the hardest parts of PMDD. It's the hormones talking, not you being a bad person. Be gentle with yourself today — you're carrying something heavy." },
-  { id: 302, category: 'pmdd', keywords: ['pmdd anxiety', 'anxiety luteal', 'panic before period', 'overwhelmed luteal'], question: "My anxiety gets so bad before my period.", response: "PMDD anxiety can feel like your nervous system is on high alert. It's exhausting. You're doing a good job just by noticing it and reaching out. Want to talk about what's feeling heaviest right now?" },
+  { id: 302, category: 'pmdd', keywords: ['pmdd anxiety', 'anxiety luteal', 'panic before period', 'overwhelmed luteal', 'anxious today', 'feel anxious', 'feeling anxious', 'so anxious', 'overwhelmed today', 'feel overwhelmed', 'feeling overwhelmed', 'so overwhelmed', 'anxious and overwhelmed', 'overwhelmed and anxious'], question: "My anxiety gets so bad before my period.", response: "That anxious, overwhelmed feeling is so real — especially in the luteal phase when your nervous system is already working overtime. You're not overreacting. You're doing a good job just by noticing it and reaching out. Want to talk about what's feeling heaviest right now?" },
   { id: 303, category: 'emotional', keywords: ['feel hopeless', 'no point', 'nothing helps', 'why bother'], question: "I feel completely hopeless during luteal phase.", response: "That hopelessness is one of the cruelest parts of PMDD. It lies to you and makes everything feel pointless. It is temporary, even when it doesn't feel like it. I'm right here with you until it lifts." },
   { id: 304, category: 'emotional', keywords: ['guilt', 'bad mom', 'bad wife', 'bad person cycle', 'feel like failure'], question: "I feel like a bad mom/wife/person when I'm in luteal phase.", response: "PMDD guilt is brutal. You are not a bad person — your brain is going through a hormonal storm. The fact that you care so much shows what a good person you are." },
   { id: 305, category: 'perimenopause', keywords: ['perimenopause', 'perimenopausal', 'transitioning menopause', 'changing cycle'], question: "My cycle is changing and I feel off all the time.", response: "Perimenopause can feel like your body is rewriting the rules. The unpredictability is real and exhausting. You're not losing it — your hormones are shifting. I'm here to help you track and navigate it." },
@@ -590,57 +590,41 @@ Deno.serve(async (req) => {
       return Response.json({ ...deepResult, mode: 'deep', timestamp: new Date().toISOString() });
     }
 
-    // ── Step 1: RAG Search ──
-    const ragResults = ragSearch(userMessage);
+    // ── Quick Mode: pure RAG, instant response, no Grok call ──
+    // Enriched search: combine message + phase + day for best match
+    const enrichedQuery = `${userMessage} ${cyclePhase || ''} day ${cycleDay || ''}`.trim();
+    const ragResults = ragSearch(enrichedQuery);
     console.log(`[LUNA] rag_search score=${ragResults.score} match_id=${ragResults.bestMatch?.id} category=${ragResults.bestMatch?.category}`);
 
-    // ── Quick Reply / Quick Button: pure RAG lookup enriched with phase + day ──
-    const { isQuickReply } = body;
-
-    if (isQuickReply) {
-      const enrichedQuery = `${userMessage} ${cyclePhase || ''} day ${cycleDay || ''}`.trim();
-      const enrichedRag = ragSearch(enrichedQuery);
-      console.log(`[LUNA] quick_reply enriched_score=${enrichedRag.score} match_id=${enrichedRag.bestMatch?.id}`);
-
-      if (enrichedRag.bestMatch && enrichedRag.score >= 0.3) {
-        const result = await generateLocalResponse(userMessage, enrichedRag.bestMatch);
-        console.log(`[LUNA] route=quick_rag model=${result.modelUsed}`);
-        return Response.json({ ...result, timestamp: new Date().toISOString() });
-      }
-
+    if (ragResults.bestMatch && ragResults.score >= 0.15) {
+      // Return verbatim RAG entry — no Grok adapt call, sub-second response
+      const entry = ragResults.bestMatch;
+      const isCrisis = CRISIS_CATEGORIES.has(entry.category);
+      console.log(`[LUNA] route=quick_rag_instant category=${entry.category}`);
       return Response.json({
-        mainContent: "I'm right here with you. Want to tell me more about what's going on right now?",
+        mainContent: entry.response,
         disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
         source: 'rag',
         suggestedActions: [],
-        flags: { escalate: false, crisis: false },
+        flags: { escalate: false, crisis: isCrisis },
         timestamp: new Date().toISOString(),
-        route: 'quick_fallback'
+        route: 'quick_rag_instant',
+        modelUsed: 'rag_verbatim'
       });
     }
 
-    // ── Step 2: Router Decision ──
-    const decision = routeDecision(userMessage, ragResults);
-    console.log(`[LUNA] router useLocal=${decision.useLocal} priority=${decision.priority}`);
-
-    // ── Step 3a: Local RAG Response ──
-    if (decision.useLocal && ragResults.bestMatch) {
-      const result = await generateLocalResponse(userMessage, ragResults.bestMatch);
-      console.log(`[LUNA] route=${result.route} model=${result.modelUsed}`);
-      return Response.json({ ...result, timestamp: new Date().toISOString() });
-    }
-
-    // ── Step 3b: Grok Fallback ──
+    // ── Quick Mode Grok fallback (no RAG match) — still enforces short response ──
     const contextInfo = [
       `Current context → Cycle mode: ${cycleMode || 'unknown'}`,
       cycleDay ? `Cycle day: ${cycleDay}` : null,
+      cyclePhase ? `Cycle phase: ${cyclePhase}` : null,
       eddInfo ? `EDD: ${eddInfo}` : null,
       fertilityMode ? 'FERTILITY MODE ACTIVE' : null,
       menopauseStage ? `MENOPAUSE STAGE: ${menopauseStage}` : null
     ].filter(Boolean).join(' | ');
 
-    console.log(`[LUNA] route=tier_3_grok score=${ragResults.score} priority=${decision.priority}`);
-    const result = await generateGrokResponse(messages, contextInfo, ragResults);
+    console.log(`[LUNA] route=quick_grok_fallback score=${ragResults.score}`);
+    const result = await generateGrokResponse(messages, contextInfo, ragResults, false);
     return Response.json({ ...result, timestamp: new Date().toISOString() });
 
   } catch (error) {
