@@ -142,7 +142,7 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
     } finally {
       setLoading(false);
     }
-  }, [input, loading, messages, cycleMode, cycleDay, eddInfo, fertilityMode, menopauseStage, savedSymptomIndexes]);
+  }, [input, loading, messages, cycleMode, cycleDay, cyclePhase, eddInfo, fertilityMode, menopauseStage, savedSymptomIndexes, responseMode]);
 
   const handleSuggestedAction = (action) => {
     const lc = action.toLowerCase();
