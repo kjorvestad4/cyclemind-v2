@@ -13,7 +13,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 // Actions that should navigate to the log page instead of sending a chat message
 const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log', 'log my mood today', 'log today', 'log my symptoms', 'log symptoms today', 'track my symptoms today'];
 // Actions that should navigate to the journal section of the log page
-const JOURNAL_ACTIONS = ['journal your feelings', 'journal', 'write in your journal', 'log your feelings', 'start a journaling session', 'start journaling', 'journaling session', 'open journal'];
+const JOURNAL_ACTIONS = ['journal your feelings', 'journal', 'write in your journal', 'log your feelings', 'start a journaling session', 'start journaling', 'journaling session', 'open journal', 'note down what you\'re feeling', 'note down what your feeling', 'note down', 'write down your feelings', 'write down what you\'re feeling'];
 
 const SESSION_KEY = 'luna_chat_session';
 const SESSION_TTL_MS = 7 * 60 * 1000; // 7 minutes
@@ -370,7 +370,9 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
                         lc.includes('cycle phase tips') ||
                         lc.includes('i need support') ||
                         lc.includes('track') ||
-                        lc.includes('report')
+                        lc.includes('report') ||
+                        lc.includes('note down') ||
+                        lc.includes('journal')
                       );
                     }).map((action, i) => {
                       const isLogAction = LOG_ACTIONS.includes(action.toLowerCase());
