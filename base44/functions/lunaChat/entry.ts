@@ -572,7 +572,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ── Deep Mode: skip RAG, go straight to Grok for richer response ──
+    // ── Deep Mode: always Grok, full conversation history, no RAG injection ──
     if (isDeepMode) {
       const contextInfo = [
         `Current context → Cycle mode: ${cycleMode || 'unknown'}`,
@@ -583,8 +583,43 @@ Deno.serve(async (req) => {
         menopauseStage ? `MENOPAUSE STAGE: ${menopauseStage}` : null
       ].filter(Boolean).join(' | ');
 
-      console.log('[LUNA] route=deep_mode');
-      const deepResult = await generateGrokResponse(messages, contextInfo, { bestMatch: null, score: 0 }, true);
+      const systemContent = LUNA_SYSTEM_PROMPT + '\n\n' + contextInfo +
+        '\n\nCURRENT MODE: DEEP — give a richer, more thoughtful reply. Start with "You asked me to think on this with you…"' +
+        '\n\nIMPORTANT: Respond ONLY with a valid JSON object with keys: mainContent (string — your response, no disclaimer), suggestedActions (array of strings), flags (object with escalate and crisis booleans).';
+
+      // Pass full conversation history — no RAG injection — so Luna follows the thread
+      const conversationMessages = messages.map(m => ({ role: m.role, content: m.content }));
+
+      console.log('[LUNA] route=deep_mode history_length:', messages.length);
+      const grokApiKey = Deno.env.get('XAI_API_KEY');
+      const grokResponse = await fetch('https://api.x.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${grokApiKey}` },
+        body: JSON.stringify({
+          model: 'grok-3-mini',
+          messages: [{ role: 'system', content: systemContent }, ...conversationMessages],
+          response_format: { type: 'json_object' },
+          temperature: 0.75,
+          max_tokens: 900
+        })
+      });
+
+      if (!grokResponse.ok) {
+        const errBody = await grokResponse.text();
+        throw new Error(`Grok deep-mode error: ${grokResponse.status} — ${errBody}`);
+      }
+
+      const grokData = await grokResponse.json();
+      const rawContent = grokData.choices[0].message.content;
+      let deepResult;
+      try {
+        const parsed = JSON.parse(rawContent);
+        const mainContent = (parsed.mainContent || parsed.message || '').replace(/This is not a substitute for professional medical advice\..*$/s, '').trim();
+        deepResult = { ...parsed, mainContent, source: 'grok', route: 'deep_grok', modelUsed: 'grok-3-mini' };
+      } catch {
+        deepResult = { mainContent: rawContent.replace(/This is not a substitute for professional medical advice\..*$/s, '').trim(), suggestedActions: [], flags: { escalate: false, crisis: false }, source: 'grok', route: 'deep_grok', modelUsed: 'grok-3-mini' };
+      }
+      deepResult.disclaimer = "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.";
       return Response.json({ ...deepResult, mode: 'deep', timestamp: new Date().toISOString() });
     }
 
