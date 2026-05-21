@@ -599,8 +599,13 @@ Deno.serve(async (req) => {
       const entry = ragResults.bestMatch;
       const isCrisis = CRISIS_CATEGORIES.has(entry.category);
       console.log(`[LUNA] route=quick_rag_instant category=${entry.category}`);
+
+      // Enforce quick-mode length cap (≤450 chars) to prevent repetitive long openers
+      let mainContent = entry.response;
+      if (mainContent.length > 450) mainContent = mainContent.substring(0, 420) + '…';
+
       return Response.json({
-        mainContent: entry.response,
+        mainContent,
         disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
         source: 'rag',
         suggestedActions: [],
