@@ -356,12 +356,25 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
                       <p>{msg.content}</p>
                     )}
 
-                {/* Suggested Actions */}
+                {/* Suggested Actions — only render recognised action buttons, not coping tips */}
                 {msg.role === 'assistant' && msg.suggestedActions?.length > 0 && (
                   <div className="flex flex-col gap-1.5 mt-3">
-                    {msg.suggestedActions.map((action, i) => {
+                    {msg.suggestedActions.filter(action => {
+                      const lc = action.toLowerCase();
+                      // Only show as button if it's a clear navigation/action intent
+                      return (
+                        LOG_ACTIONS.includes(lc) ||
+                        JOURNAL_ACTIONS.some(j => lc.includes(j)) ||
+                        lc.includes('generate') ||
+                        lc.includes('view fertility') ||
+                        lc.includes('cycle phase tips') ||
+                        lc.includes('i need support') ||
+                        lc.includes('track') ||
+                        lc.includes('report')
+                      );
+                    }).map((action, i) => {
                       const isLogAction = LOG_ACTIONS.includes(action.toLowerCase());
-                      const isReportAction = action.toLowerCase() === 'generate clinical report';
+                      const isReportAction = action.toLowerCase().includes('report') || action.toLowerCase().includes('generate');
                       return (
                         <Button
                           key={i}

@@ -400,6 +400,7 @@ Guidelines:
 - Use natural, conversational language
 - Do not add new medical advice
 - Do NOT append any disclaimer — it is handled separately
+- NEVER use pet names or terms of endearment such as "love", "honey", "sweetie", "darling", "dear" — address the user directly without any pet names
 
 Respond with only the adapted message text, nothing else.`;
 
@@ -554,14 +555,17 @@ Deno.serve(async (req) => {
       let greeting = "Hi, I'm Luna 🌙 — your compassionate CycleMind companion.\n\nHow are you feeling today? I'm here to listen and support you through your cycle, pregnancy, or menopausal journey.";
       if (fertilityMode) greeting += " I see you're in fertility mode — I can help track your fertile window and provide conception guidance.";
       else if (menopauseStage) greeting += ` I see you're tracking menopause (${menopauseStage}) — I'm here to support you through this transition.`;
-      // disclaimer is returned separately
+      else if (cyclePhase === 'luteal') greeting += " You're in the luteal phase — be extra gentle with yourself today. Rest when you can, stay hydrated, and know it's okay to do a little less.";
+      else if (cyclePhase === 'menstrual') greeting += " You're in your menstrual phase — warmth and rest are your best friends right now. Be kind to your body today.";
+      else if (cyclePhase === 'follicular') greeting += " You're in the follicular phase — energy and mood often start to lift here. A good time to do things that feel good for you.";
+      else if (cyclePhase === 'ovulatory') greeting += " You're in the ovulatory phase — many women feel their best here. Enjoy the lighter energy if you have it!";
 
       console.log('[LUNA] route=template');
       return Response.json({
         mainContent: greeting,
         disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
         source: 'rag',
-        suggestedActions: ["Track today's symptoms", fertilityMode ? "View fertility window" : "Generate doctor report"].filter(Boolean),
+        suggestedActions: ["Track today's symptoms", "Cycle phase tips", "I need support"],
         flags: { escalate: false, crisis: false },
         timestamp: new Date().toISOString(),
         route: 'template'
