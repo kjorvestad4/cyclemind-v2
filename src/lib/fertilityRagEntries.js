@@ -572,4 +572,65 @@ export const fertilityRagEntries = [
   { id: 3674, category: 'chapter6', keywords: ['Luna response boundaries Chapter 6'], question: "What overarching boundaries apply to Luna for PMDD content?", response: "Luna must never diagnose PMDD, interpret DRSP scores clinically, or recommend specific treatments. All responses must remain educational and end with a clinician redirect." },
 
   { id: 3675, category: 'chapter6', keywords: ['PMDD lifetime course'], question: "What is the lifetime course of PMDD per Chapter 6?", response: "PMDD typically begins in the early 20s, persists until menopause, and may worsen during perimenopause. Symptoms remit after menopause or with ovulation suppression." },
+
+  // === Chapter 7: Perimenopause and Mental Health (IDs 3676–3705) ===
+  { id: 3676, category: 'chapter7', keywords: ['perimenopause overview'], question: "What does Chapter 7 of the Textbook of Women's Reproductive Mental Health cover?", response: "Chapter 7 reviews the physiology of perimenopause, increased risk of new-onset and recurrent depression/anxiety, vasomotor symptoms (VMS), sleep disruption, cognitive changes, sexual dysfunction, and evidence-based treatments." },
+
+  { id: 3677, category: 'chapter7', keywords: ['perimenopausal depression risk'], question: "What is the risk of depression during perimenopause?", response: "Women in perimenopause have a 2–4-fold increased risk of new-onset major depressive episodes compared with premenopause, even after adjusting for other risk factors." },
+
+  { id: 3678, category: 'chapter7', keywords: ['vasomotor symptoms VMS perimenopause'], question: "What are vasomotor symptoms and their mental health impact?", response: "Hot flashes and night sweats (VMS) affect up to 80% of women and contribute to sleep disruption, fatigue, mood instability, and reduced quality of life." },
+
+  { id: 3679, category: 'chapter7', keywords: ['perimenopause sleep disturbance'], question: "How does perimenopause affect sleep?", response: "Sleep fragmentation due to night sweats, hormonal changes, and mood symptoms is common and can exacerbate or trigger depressive episodes." },
+
+  { id: 3680, category: 'chapter7', keywords: ['CycleMind perimenopause tracker'], question: "How can CycleMind support perimenopausal users?", response: "CycleMind can offer a perimenopause mode with irregular-cycle detection, VMS/sleep/mood/cognitive symptom logging, and correlation charts to help users track the menopausal transition." },
+
+  { id: 3681, category: 'chapter7', keywords: ['Luna boundaries perimenopause'], question: "What boundaries should Luna observe for perimenopause topics?", response: "Luna must state she is not a clinician and cannot diagnose depression or recommend hormone therapy. She can share general education from Chapter 7 and support symptom tracking but must redirect all treatment decisions to a qualified provider." },
+
+  { id: 3682, category: 'chapter7', keywords: ['MHT menopausal hormone therapy'], question: "What does Chapter 7 say about menopausal hormone therapy (MHT)?", response: "MHT (estrogen ± progestin) is highly effective for VMS and can improve sleep and quality of life. It may also have mood benefits in some perimenopausal women but requires individualized risk-benefit assessment." },
+
+  { id: 3683, category: 'chapter7', keywords: ['SSRIs SNRIs perimenopause'], question: "What role do SSRIs/SNRIs play in perimenopausal depression?", response: "SSRIs and SNRIs are first-line pharmacologic treatments for perimenopausal depression and can also reduce VMS and improve sleep." },
+
+  { id: 3684, category: 'chapter7', keywords: ['cognitive changes perimenopause'], question: "What cognitive symptoms occur during perimenopause?", response: "Subjective memory complaints and difficulty with word-finding are common but usually mild and transient; objective testing often shows minimal change." },
+
+  { id: 3685, category: 'chapter7', keywords: ['CycleMind VMS sleep tracking'], question: "What perimenopause-specific tracking should CycleMind include?", response: "VMS frequency/severity logging, sleep quality tracker, mood correlation charts, and cognitive symptom notes to help users identify patterns and prepare for clinician visits." },
+
+  { id: 3686, category: 'chapter7', keywords: ['perimenopause vs depression overlap'], question: "How does Chapter 7 differentiate perimenopausal symptoms from depression?", response: "Many symptoms (sleep disturbance, fatigue, irritability) overlap. Chapter 7 provides tables and guidance for distinguishing hormonally driven symptoms from a primary depressive disorder." },
+
+  { id: 3687, category: 'chapter7', keywords: ['CBT perimenopause'], question: "Is CBT recommended for perimenopausal symptoms?", response: "Yes. CBT is effective for both depression and vasomotor symptoms during the menopausal transition and is a non-hormonal treatment option." },
+
+  { id: 3688, category: 'chapter7', keywords: ['Luna response template Chapter 7'], question: "What template should Luna use for perimenopause questions?", response: "1. Disclaimer. 2. General educational summary from Chapter 7. 3. Offer CycleMind perimenopause tracking. 4. Strong redirect to psychiatrist or gynecologist." },
+
+  { id: 3689, category: 'chapter7', keywords: ['sexual dysfunction perimenopause'], question: "What sexual changes occur in perimenopause?", response: "Declining estrogen leads to vaginal dryness, dyspareunia, and reduced desire. These changes often interact with mood symptoms and relationship factors." },
+
+  { id: 3690, category: 'chapter7', keywords: ['Chapter 7 authors'], question: "Who authored Chapter 7?", response: "Nicole Leistikow, M.D., Milena H. Smith, M.D., Ph.D., Katherine E. Williams, M.D., and C. Neill Epperson, M.D." },
+
+  { id: 3691, category: 'chapter7', keywords: ['hormonal fluctuations perimenopause mood'], question: "What hormonal mechanism links perimenopause to mood symptoms?", response: "Erratic fluctuations and eventual decline in estradiol and progesterone, along with changes in allopregnanolone and serotonin sensitivity, contribute to mood vulnerability." },
+
+  { id: 3692, category: 'chapter7', keywords: ['CycleMind perimenopause education'], question: "How should CycleMind incorporate Chapter 7 education?", response: "Create clear educational cards on VMS, sleep, mood, cognitive, and sexual changes with emphasis on evidence-based treatments and the importance of professional evaluation." },
+
+  { id: 3693, category: 'chapter7', keywords: ['perimenopause bipolar disorder'], question: "What is discussed regarding bipolar disorder in perimenopause?", response: "Women with bipolar disorder may experience increased depressive episodes or mood instability during the menopausal transition." },
+
+  { id: 3694, category: 'chapter7', keywords: ['Luna disclaimer perimenopause'], question: "What disclaimer is required for Chapter 7 topics?", response: "Luna must state she is not a physician and cannot recommend hormone therapy or diagnose depression. This is general information only." },
+
+  { id: 3695, category: 'chapter7', keywords: ['non-hormonal treatments VMS'], question: "What non-hormonal treatments for VMS are reviewed?", response: "SSRIs/SNRIs, gabapentin, cognitive-behavioral therapy, and lifestyle modifications are effective non-hormonal options for vasomotor symptoms." },
+
+  { id: 3696, category: 'chapter7', keywords: ['CycleMind feature ideas Chapter 7'], question: "What CycleMind features are inspired by Chapter 7?", response: "Perimenopause-specific dashboard, VMS/sleep/mood/cognitive symptom tracker, hormone-transition correlation charts, and treatment education library." },
+
+  { id: 3697, category: 'chapter7', keywords: ['perimenopause anxiety'], question: "Is anxiety increased during perimenopause?", response: "Yes. New-onset and recurrent anxiety disorders are more common during the menopausal transition, often co-occurring with depressive symptoms." },
+
+  { id: 3698, category: 'chapter7', keywords: ['Luna safety netting perimenopause'], question: "What safety netting should Luna include?", response: "Luna should advise users experiencing severe mood changes, suicidal thoughts, or debilitating VMS/sleep disruption to contact their psychiatrist or gynecologist promptly." },
+
+  { id: 3699, category: 'chapter7', keywords: ['integrated care perimenopause'], question: "What does Chapter 7 emphasize about care?", response: "Collaborative care between reproductive psychiatrists, gynecologists, and primary providers is essential for optimal management of perimenopausal mental health symptoms." },
+
+  { id: 3700, category: 'chapter7', keywords: ['Chapter 7 key takeaway for app'], question: "What is the primary takeaway from Chapter 7 for CycleMind?", response: "Perimenopause is a high-risk window for mood, sleep, and cognitive symptoms; CycleMind should provide dedicated tracking tools and education while maintaining strict clinical boundaries." },
+
+  { id: 3701, category: 'chapter7', keywords: ['Luna response boundaries Chapter 7'], question: "What overarching boundaries apply to Luna for Chapter 7 content?", response: "Luna must never diagnose perimenopausal depression or recommend MHT/SSRIs. All responses remain general education and end with a clinician redirect." },
+
+  { id: 3702, category: 'chapter7', keywords: ['perimenopause cognitive complaints'], question: "How are cognitive complaints characterized?", response: "Subjective 'brain fog' and word-finding difficulty are common but usually mild and transient; objective deficits are minimal when controlled for age and mood." },
+
+  { id: 3703, category: 'chapter7', keywords: ['CycleMind data export perimenopause'], question: "How can CycleMind data support perimenopausal care?", response: "Users can export VMS, sleep, mood, and cognitive symptom timelines to share with their psychiatrist or gynecologist for personalized treatment planning." },
+
+  { id: 3704, category: 'chapter7', keywords: ['perimenopause LGBTQ+ considerations'], question: "Does Chapter 7 address diverse populations?", response: "The chapter notes the need for inclusive care and acknowledges that data on gender-diverse individuals in perimenopause are limited but growing." },
+
+  { id: 3705, category: 'chapter7', keywords: ['perimenopause lifetime course'], question: "What is the typical course of perimenopause?", response: "Perimenopause lasts 4–8 years on average, beginning around age 47. Symptoms peak during the late transition and generally improve after menopause." },
 ];
