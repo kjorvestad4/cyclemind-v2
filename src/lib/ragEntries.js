@@ -187,4 +187,36 @@ export const ragEntries = [
   // Prognosis & Support
   { id: 1673, category: 'postpartum', keywords: ['prognosis of perinatal OCD'], question: "What is the outlook for someone with perinatal OCD?", response: "With proper treatment (especially CBT ± medication), most women improve significantly. Untreated OCD can affect bonding and increase risk of postpartum depression. Early recognition and treatment lead to better outcomes for both mother and baby." },
   { id: 1674, category: 'postpartum', keywords: ['support for partners of women with perinatal OCD'], question: "How can partners support someone with perinatal OCD?", response: "Partners can help by learning about OCD, avoiding participating in rituals, encouraging professional treatment, and providing emotional support without judgment. Involvement in therapy sessions can also be very helpful." },
+
+  // === NEW UpToDate Chronic Hypertension in Pregnancy RAG Entries (IDs 1696–1710) ===
+  // Definitions & Diagnosis
+  { id: 1696, category: 'pregnancy', keywords: ['what is chronic hypertension in pregnancy'], question: "What is chronic hypertension in pregnancy?", response: "Chronic hypertension means you had high blood pressure before pregnancy or it was first found before 20 weeks. It is different from gestational hypertension or preeclampsia, which start later in pregnancy." },
+  { id: 1697, category: 'pregnancy', keywords: ['blood pressure numbers for hypertension in pregnancy'], question: "What blood pressure numbers mean hypertension in pregnancy?", response: "Hypertension is systolic ≥140 or diastolic ≥90. Severe hypertension is systolic ≥160 or diastolic ≥110. These numbers should be confirmed on at least two readings before starting treatment, unless they are in the severe range." },
+
+  // Risks
+  { id: 1698, category: 'pregnancy', keywords: ['risks of chronic hypertension in pregnancy'], question: "What are the risks of having chronic hypertension during pregnancy?", response: "It increases the chance of preeclampsia, placental abruption, preterm birth, cesarean birth, fetal growth restriction, and other complications. The risks are higher if blood pressure is poorly controlled or if preeclampsia develops on top of chronic hypertension." },
+  { id: 1699, category: 'pregnancy', keywords: ['superimposed preeclampsia'], question: "What is superimposed preeclampsia?", response: "This is when preeclampsia develops in someone who already has chronic hypertension. It can be harder to diagnose because some signs (like protein in urine or rising blood pressure) may already be present. Close monitoring is essential." },
+
+  // Preconception & Early Pregnancy
+  { id: 1700, category: 'pregnancy', keywords: ['preconception care for chronic hypertension'], question: "What should I do before getting pregnant if I have high blood pressure?", response: "Optimize blood pressure control, review your medications (some are not safe in pregnancy), check for secondary causes of hypertension, and discuss risks with your provider. Folic acid and a healthy lifestyle are also important." },
+  { id: 1701, category: 'pregnancy', keywords: ['low dose aspirin for chronic hypertension'], question: "Should I take low-dose aspirin if I have chronic hypertension?", response: "Yes. Low-dose aspirin (usually 81 mg daily) is recommended starting after 12 weeks to help reduce the risk of preeclampsia in people with chronic hypertension." },
+
+  // Monitoring During Pregnancy
+  { id: 1702, category: 'pregnancy', keywords: ['monitoring chronic hypertension in pregnancy'], question: "How is chronic hypertension monitored during pregnancy?", response: "You will have more frequent prenatal visits, regular blood pressure checks (often at home), urine and blood tests, and ultrasounds to monitor fetal growth. Your provider will watch closely for signs of preeclampsia or worsening hypertension." },
+  { id: 1703, category: 'pregnancy', keywords: ['fetal monitoring with chronic hypertension'], question: "How is the baby monitored if I have chronic hypertension?", response: "Serial growth ultrasounds are usually started around 28–32 weeks. Fetal well-being tests (nonstress tests or biophysical profiles) are often started at 32 weeks or earlier if there are concerns about growth or blood pressure control." },
+
+  // Blood Pressure Treatment
+  { id: 1704, category: 'pregnancy', keywords: ['when to treat high blood pressure in pregnancy'], question: "When should high blood pressure be treated during pregnancy?", response: "Severe hypertension (≥160/110) should be treated quickly. For non-severe hypertension, treatment is usually started or continued if blood pressure is consistently ≥140/90, especially if you were already on medication or have end-organ effects." },
+  { id: 1705, category: 'pregnancy', keywords: ['safe blood pressure medications in pregnancy'], question: "Which blood pressure medications are safe in pregnancy?", response: "Labetalol and extended-release nifedipine are commonly used and generally considered safe. Methyldopa is an older option. ACE inhibitors, ARBs, and some other drugs are not safe and should be stopped before or early in pregnancy." },
+  { id: 1706, category: 'pregnancy', keywords: ['target blood pressure in pregnancy with hypertension'], question: "What is the goal blood pressure during pregnancy if I have hypertension?", response: "Most experts aim to keep blood pressure in the 120–139/80–89 range after starting treatment. The exact target is individualized based on your situation and any end-organ effects." },
+
+  // Delivery
+  { id: 1707, category: 'pregnancy', keywords: ['when to deliver with chronic hypertension'], question: "When is delivery recommended if I have chronic hypertension?", response: "For well-controlled hypertension without complications, delivery is often planned between 37 and 39+6 weeks. Earlier delivery may be needed if preeclampsia develops or there are concerns about the baby's growth or your health." },
+
+  // Postpartum
+  { id: 1708, category: 'postpartum', keywords: ['blood pressure after birth with chronic hypertension'], question: "What happens to blood pressure after delivery if I have chronic hypertension?", response: "Blood pressure often drops right after birth then can rise again a few days later. Close monitoring (in person or at home) is important in the first weeks postpartum. Your pre-pregnancy medications can often be restarted, with attention to breastfeeding safety." },
+  { id: 1709, category: 'postpartum', keywords: ['postpartum follow up for chronic hypertension'], question: "What follow-up do I need after birth if I have high blood pressure?", response: "You should have a blood pressure check within 3–10 days after delivery. Continue monitoring at home and follow up with your primary care provider or cardiologist for long-term management of hypertension." },
+
+  // General Support
+  { id: 1710, category: 'pregnancy', keywords: ['planning pregnancy with chronic hypertension'], question: "Can I have a healthy pregnancy with chronic hypertension?", response: "Yes, many people do. Good blood pressure control before and during pregnancy, close monitoring, low-dose aspirin, and a strong care team significantly improve outcomes for both you and your baby." },
 ];
