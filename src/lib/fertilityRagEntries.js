@@ -450,4 +450,65 @@ export const fertilityRagEntries = [
   { id: 3614, category: 'chapter4', keywords: ['Luna response boundaries Chapter 4'], question: "What overarching boundaries apply to Luna for Chapter 4 content?", response: "Luna must never advise on contraceptive selection or discontinuation. All responses remain educational and end with a redirect to qualified medical providers." },
 
   { id: 3615, category: 'chapter4', keywords: ['CycleMind contraception education'], question: "How should CycleMind incorporate Chapter 4 into its education library?", response: "Create clear, non-directive educational modules on contraception-mental health interactions with emphasis on shared decision-making and professional guidance." },
+
+  // === Chapter 5: Infertility and Perinatal Loss (IDs 3616–3645) ===
+  { id: 3616, category: 'chapter5', keywords: ['infertility perinatal loss overview'], question: "What does Chapter 5 of the Textbook of Women's Reproductive Mental Health cover?", response: "Chapter 5 addresses the psychiatric impact of infertility, pregnancy loss (miscarriage, stillbirth, ectopic pregnancy, termination), and perinatal bereavement, including grief reactions, depression, anxiety, PTSD, and treatment considerations across the reproductive lifespan." },
+
+  { id: 3617, category: 'chapter5', keywords: ['infertility mental health'], question: "What mental health risks are associated with infertility?", response: "Infertility is linked to elevated rates of depression, anxiety, grief, and relationship strain. The chronic stress of treatment and uncertainty can exacerbate preexisting psychiatric conditions." },
+
+  { id: 3618, category: 'chapter5', keywords: ['perinatal loss grief'], question: "How does Chapter 5 describe grief after perinatal loss?", response: "Perinatal loss triggers intense grief that may include complicated grief, depression, anxiety, and PTSD symptoms. The grief is often disenfranchised and requires validation and support." },
+
+  { id: 3619, category: 'chapter5', keywords: ['miscarriage mental health'], question: "What psychiatric sequelae follow miscarriage?", response: "Miscarriage is associated with increased risk of depression, anxiety, and PTSD. Risk is higher with recurrent losses or history of mood disorders." },
+
+  { id: 3620, category: 'chapter5', keywords: ['CycleMind infertility tracking'], question: "How can CycleMind support users experiencing infertility?", response: "CycleMind can offer optional mood, grief, and treatment-cycle tracking to help users monitor emotional patterns during fertility treatments and share data with their reproductive psychiatrist." },
+
+  { id: 3621, category: 'chapter5', keywords: ['Luna boundaries perinatal loss'], question: "What boundaries should Luna observe when discussing infertility or perinatal loss?", response: "Luna must clearly state she is not a grief counselor or psychiatrist and cannot provide therapy. She can share general educational information and support tracking but must strongly redirect users to qualified mental health professionals and support groups." },
+
+  { id: 3622, category: 'chapter5', keywords: ['stillbirth mental health'], question: "What mental health impact does stillbirth have?", response: "Stillbirth carries particularly high risk of complicated grief, depression, anxiety, and PTSD. Subsequent pregnancies often involve intense anxiety and hypervigilance." },
+
+  { id: 3623, category: 'chapter5', keywords: ['termination of pregnancy mental health'], question: "How does Chapter 5 address mental health after pregnancy termination?", response: "Mental health outcomes after termination are highly individual. Risk factors include preexisting psychiatric illness, coercion, or lack of social support. Most women do not experience long-term regret." },
+
+  { id: 3624, category: 'chapter5', keywords: ['CycleMind perinatal loss tracker'], question: "What tracking features should CycleMind include for perinatal loss?", response: "Optional, sensitive grief and mood tracking modules with gentle prompts and resources, allowing users to log emotions over time and generate reports for their clinician." },
+
+  { id: 3625, category: 'chapter5', keywords: ['infertility treatment psychiatric effects'], question: "What psychiatric effects are associated with infertility treatments?", response: "Hormonal stimulation (e.g., gonadotropins) can cause mood lability, anxiety, and depression. The emotional rollercoaster of IVF cycles increases stress and requires psychiatric support." },
+
+  { id: 3626, category: 'chapter5', keywords: ['Luna response template Chapter 5'], question: "What template should Luna use for Chapter 5 topics?", response: "1. Clear disclaimer. 2. General educational summary. 3. Offer CycleMind tracking option. 4. Strong redirect to perinatal psychiatrist, grief counselor, or support organizations." },
+
+  { id: 3627, category: 'chapter5', keywords: ['complicated grief perinatal loss'], question: "What is complicated grief after perinatal loss?", response: "Complicated grief involves prolonged, intense yearning, disbelief, bitterness, or functional impairment beyond expected bereavement and may require specific therapeutic intervention." },
+
+  { id: 3628, category: 'chapter5', keywords: ['CycleMind support resources Chapter 5'], question: "How should CycleMind incorporate support resources from Chapter 5?", response: "Include curated, vetted links to perinatal loss support organizations, grief resources, and professional referral pathways alongside tracking tools." },
+
+  { id: 3629, category: 'chapter5', keywords: ['PTSD after perinatal loss'], question: "Is PTSD discussed in relation to perinatal loss?", response: "Yes. Traumatic perinatal loss (stillbirth, emergency procedures) can trigger PTSD symptoms including intrusive memories, avoidance, hyperarousal, and negative alterations in cognition and mood." },
+
+  { id: 3630, category: 'chapter5', keywords: ['Luna disclaimer perinatal loss'], question: "What disclaimer is required for Chapter 5 topics?", response: "Luna must state she is not a therapist or grief counselor and cannot provide counseling or treatment. Users should seek professional mental health support." },
+
+  { id: 3631, category: 'chapter5', keywords: ['subsequent pregnancy after loss'], question: "What mental health challenges occur in pregnancies after loss?", response: "Subsequent pregnancies after perinatal loss are often marked by heightened anxiety, hypervigilance, and fear of recurrence that benefit from specialized perinatal psychiatric care." },
+
+  { id: 3632, category: 'chapter5', keywords: ['Chapter 5 authors'], question: "Who authored Chapter 5?", response: "Neha S. Hudepohl, M.D., Jessica L. Coker, M.D., Sharvari P. Shivanekar, M.D., Madhavi-Latha Nagalla, M.D., Soudabeh Givrad, M.D., Lindsay R. Standeven, M.D., Courtney Erdly, B.A., Premala Jones, Ph.D., and Katherine E. Williams, M.D." },
+
+  { id: 3633, category: 'chapter5', keywords: ['infertility depression anxiety'], question: "What is the prevalence of depression and anxiety in infertility?", response: "Rates of depression and anxiety are significantly elevated in individuals undergoing infertility treatment compared with the general population." },
+
+  { id: 3634, category: 'chapter5', keywords: ['CycleMind grief mood correlation'], question: "How can CycleMind help with grief and mood correlation?", response: "CycleMind can visualize mood and grief intensity over time during infertility treatment or after loss to help users recognize patterns and prepare for clinical appointments." },
+
+  { id: 3635, category: 'chapter5', keywords: ['Luna educational content Chapter 5'], question: "How should Luna present Chapter 5 content?", response: "Luna should deliver compassionate, destigmatizing education on infertility and perinatal loss while always pairing it with offers to track symptoms and strong clinician referrals." },
+
+  { id: 3636, category: 'chapter5', keywords: ['partner support perinatal loss'], question: "Does Chapter 5 address partner experiences?", response: "Yes. Partners also experience grief, depression, and anxiety after perinatal loss and may have different coping styles that require acknowledgment in couple-based care." },
+
+  { id: 3637, category: 'chapter5', keywords: ['CycleMind feature ideas Chapter 5'], question: "What CycleMind features are inspired by Chapter 5?", response: "Gentle grief tracking, infertility treatment cycle logging, mood/grief correlation charts, and resource links—all optional and privacy-protected." },
+
+  { id: 3638, category: 'chapter5', keywords: ['ectopic pregnancy mental health'], question: "What psychiatric impact is associated with ectopic pregnancy?", response: "Ectopic pregnancy involves both medical emergency and pregnancy loss, often triggering acute stress, grief, and anxiety about future fertility." },
+
+  { id: 3639, category: 'chapter5', keywords: ['Luna safety netting Chapter 5'], question: "What safety netting should Luna include for Chapter 5 topics?", response: "Luna should recommend immediate professional support for severe grief, suicidal thoughts, or functional impairment and provide crisis resource information." },
+
+  { id: 3640, category: 'chapter5', keywords: ['integrated care infertility loss'], question: "What does Chapter 5 emphasize about care?", response: "Integrated psychiatric and reproductive care is essential for individuals and couples experiencing infertility and perinatal loss." },
+
+  { id: 3641, category: 'chapter5', keywords: ['Chapter 5 key takeaway for app'], question: "What is the primary takeaway from Chapter 5 for CycleMind?", response: "Infertility and perinatal loss are profound psychological experiences; the app should offer respectful, optional tracking and education while always directing users to professional support." },
+
+  { id: 3642, category: 'chapter5', keywords: ['Luna response boundaries Chapter 5'], question: "What overarching boundaries apply to Luna for Chapter 5 content?", response: "Luna must never provide grief counseling or interpret loss experiences clinically. All responses remain general education and end with a clear redirect to qualified mental health professionals." },
+
+  { id: 3643, category: 'chapter5', keywords: ['recurrent pregnancy loss mental health'], question: "What mental health risks are associated with recurrent pregnancy loss?", response: "Recurrent losses compound grief and increase risk of depression, anxiety, and PTSD; specialized support is often needed." },
+
+  { id: 3644, category: 'chapter5', keywords: ['CycleMind data export Chapter 5'], question: "How can CycleMind data support clinical care for infertility or loss?", response: "Users can export mood, grief, and treatment timelines to share with their reproductive psychiatrist or perinatal mental health specialist." },
+
+  { id: 3645, category: 'chapter5', keywords: ['perinatal loss stigma'], question: "Does Chapter 5 address stigma around perinatal loss?", response: "Yes. Societal and cultural stigma often leads to disenfranchised grief; validation and open discussion are important components of recovery." },
 ];
