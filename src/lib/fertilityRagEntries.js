@@ -206,4 +206,65 @@ export const fertilityRagEntries = [
   { id: 3494, category: 'introduction', keywords: ['CycleMind feature ideas Introduction'], question: "What CycleMind features are directly inspired by the Introduction?", response: "Inclusive language toggle, stage-specific dashboards (menstrual, pregnancy, perimenopause), educational onboarding module explaining terminology, and seamless clinician-export functionality." },
 
   { id: 3495, category: 'introduction', keywords: ['textbook future editions gender inclusive'], question: "What does the Introduction say about future editions and gender-diverse populations?", response: "The editors anticipate that future editions will incorporate more comprehensive data and language for gender-diverse populations as the field advances. The current edition focuses on the best available evidence while committing to ongoing evolution of the field." },
+
+  // === Chapter 1: Reproductive Life Cycle Overview (IDs 3496–3525) ===
+  { id: 3496, category: 'chapter1', keywords: ['reproductive life cycle overview'], question: "What does Chapter 1 of the Textbook of Women's Reproductive Mental Health cover?", response: "Chapter 1 provides a comprehensive overview of the female reproductive life cycle, including menarche, menstrual cycle physiology, pregnancy, postpartum period, perimenopause, and menopause, with emphasis on hormonal changes and their intersections with mental health." },
+
+  { id: 3497, category: 'chapter1', keywords: ['menstrual cycle physiology'], question: "What are the key physiologic stages of the menstrual cycle described in Chapter 1?", response: "The menstrual cycle includes the follicular phase (estrogen rise), ovulation, and luteal phase (progesterone dominance). These hormonal fluctuations are linked to mood, sleep, and cognitive changes that can influence mental health vulnerability." },
+
+  { id: 3498, category: 'chapter1', keywords: ['CycleMind menstrual cycle tracking'], question: "How can CycleMind support users based on Chapter 1 menstrual cycle physiology?", response: "CycleMind can implement phase-aware tracking (follicular, ovulatory, luteal) with symptom logging to help users identify patterns in mood, sleep, and energy across the cycle." },
+
+  { id: 3499, category: 'chapter1', keywords: ['Luna boundaries reproductive physiology'], question: "What boundaries should Luna observe when discussing reproductive physiology from Chapter 1?", response: "Luna must state she is not a medical provider and cannot interpret individual hormonal or cycle data clinically. She can share general educational information and support tracking but must redirect users to their clinician for personalized advice." },
+
+  { id: 3500, category: 'chapter1', keywords: ['pregnancy physiologic changes'], question: "What major physiologic changes during pregnancy are highlighted in Chapter 1?", response: "Pregnancy involves dramatic increases in estrogen, progesterone, and other hormones, along with cardiovascular, immune, and neuroendocrine adaptations that can influence mental health risk." },
+
+  { id: 3501, category: 'chapter1', keywords: ['CycleMind pregnancy mode'], question: "How should CycleMind handle pregnancy tracking per Chapter 1?", response: "CycleMind can switch to a pregnancy-specific mode that logs mood, sleep, and anxiety symptoms while providing general education on common perinatal physiologic changes and strongly encouraging professional monitoring." },
+
+  { id: 3502, category: 'chapter1', keywords: ['postpartum reproductive changes'], question: "What postpartum physiologic changes are covered in Chapter 1?", response: "The postpartum period features rapid hormone withdrawal, lactation-related changes, and recovery of the hypothalamic-pituitary-ovarian axis, creating a window of heightened mental health vulnerability." },
+
+  { id: 3503, category: 'chapter1', keywords: ['perimenopause physiology'], question: "How does Chapter 1 describe perimenopause?", response: "Perimenopause is characterized by irregular cycles, fluctuating estrogen and progesterone, and eventual decline leading to menopause. These changes are associated with increased risk of mood symptoms, sleep disruption, and vasomotor symptoms." },
+
+  { id: 3504, category: 'chapter1', keywords: ['CycleMind perimenopause tracking'], question: "What perimenopause features should CycleMind include?", response: "CycleMind should offer irregular-cycle detection, VMS/sleep/mood logging, and educational content on perimenopausal hormonal transitions while always directing users to clinical evaluation." },
+
+  { id: 3505, category: 'chapter1', keywords: ['menopause transition mental health'], question: "What mental health implications of the reproductive life cycle does Chapter 1 emphasize?", response: "Hormonal transitions across the lifespan (menstrual cycle, pregnancy, postpartum, perimenopause) are periods of increased vulnerability to mood, anxiety, and other psychiatric symptoms." },
+
+  { id: 3506, category: 'chapter1', keywords: ['Luna response reproductive life cycle'], question: "How should Luna respond to questions about the reproductive life cycle?", response: "Luna should provide general educational summaries from Chapter 1, support CycleMind tracking tools, and always include a clear disclaimer and clinician redirect." },
+
+  { id: 3507, category: 'chapter1', keywords: ['hormonal fluctuations mental health'], question: "What is the relationship between hormonal fluctuations and mental health per Chapter 1?", response: "Estrogen and progesterone fluctuations can modulate neurotransmitter systems (serotonin, GABA) and HPA-axis function, contributing to mood and anxiety symptom variability across reproductive stages." },
+
+  { id: 3508, category: 'chapter1', keywords: ['CycleMind symptom correlation'], question: "How can CycleMind help users correlate symptoms with reproductive phases?", response: "CycleMind can generate visualizations and reports showing symptom patterns relative to cycle phase, pregnancy trimester, or perimenopausal stage to support user awareness and clinician discussions." },
+
+  { id: 3509, category: 'chapter1', keywords: ['menarche reproductive life cycle'], question: "What does Chapter 1 say about menarche?", response: "Menarche marks the beginning of the reproductive lifespan with establishment of menstrual cycles and associated hormonal changes that may influence early mental health experiences." },
+
+  { id: 3510, category: 'chapter1', keywords: ['Luna boundaries hormonal changes'], question: "What boundaries apply when Luna discusses hormonal changes from Chapter 1?", response: "Luna cannot provide individualized hormonal interpretations or medical advice. She must limit responses to general physiology education and redirect users to qualified healthcare providers." },
+
+  { id: 3511, category: 'chapter1', keywords: ['postpartum hormone withdrawal'], question: "What postpartum changes are emphasized in Chapter 1?", response: "Rapid postpartum hormone withdrawal, especially of estrogen and progesterone, is a key physiologic event that can contribute to mood vulnerability in the perinatal period." },
+
+  { id: 3512, category: 'chapter1', keywords: ['CycleMind life stage dashboards'], question: "What life-stage dashboards should CycleMind offer based on Chapter 1?", response: "Dedicated dashboards for menstrual cycle, pregnancy/postpartum, and perimenopause/menopause with tailored symptom trackers and educational summaries from the chapter." },
+
+  { id: 3513, category: 'chapter1', keywords: ['reproductive lifespan overview'], question: "What is the overall structure of the reproductive life cycle in Chapter 1?", response: "The chapter traces the female reproductive lifespan from menarche through menopause, detailing endocrine physiology and its relevance to psychiatric symptoms at each transition." },
+
+  { id: 3514, category: 'chapter1', keywords: ['Luna educational content Chapter 1'], question: "How should Luna present Chapter 1 educational content?", response: "Luna should deliver concise, accurate summaries of reproductive physiology while always pairing them with CycleMind tracking encouragement and a strong clinician redirect." },
+
+  { id: 3515, category: 'chapter1', keywords: ['estrogen progesterone mental health'], question: "How do estrogen and progesterone influence mental health according to Chapter 1?", response: "Estrogen and progesterone modulate serotonin, GABA, and other neurotransmitter systems and influence HPA-axis reactivity, creating windows of vulnerability during hormonal shifts." },
+
+  { id: 3516, category: 'chapter1', keywords: ['CycleMind data export Chapter 1'], question: "How can CycleMind data support clinical discussions based on Chapter 1?", response: "Users can export phase-tagged symptom data and charts to share with their psychiatrist, helping correlate symptoms with reproductive physiology as described in the chapter." },
+
+  { id: 3517, category: 'chapter1', keywords: ['menopause physiology'], question: "What does Chapter 1 describe about menopause?", response: "Menopause is the permanent cessation of menstruation following 12 months of amenorrhea, preceded by perimenopause with fluctuating hormones and associated mental health risks." },
+
+  { id: 3518, category: 'chapter1', keywords: ['Luna disclaimer reproductive physiology'], question: "What disclaimer must Luna include when discussing Chapter 1 content?", response: "Luna must always state: 'I am not a physician. This is general educational information from the textbook. Please consult your psychiatrist or OB/GYN for personalized medical advice.'" },
+
+  { id: 3519, category: 'chapter1', keywords: ['reproductive transitions vulnerability'], question: "Why are reproductive transitions periods of mental health vulnerability per Chapter 1?", response: "Hormonal fluctuations, physical changes, and psychosocial stressors during reproductive transitions increase risk for mood, anxiety, and other psychiatric symptoms." },
+
+  { id: 3520, category: 'chapter1', keywords: ['CycleMind tracking features Chapter 1'], question: "Which tracking features does Chapter 1 inspire for CycleMind?", response: "Phase-specific symptom logging, cycle irregularity detection, pregnancy/postpartum mode, perimenopause tracking, and symptom–hormone phase correlation visualizations." },
+
+  { id: 3521, category: 'chapter1', keywords: ['Chapter 1 authors'], question: "Who authored Chapter 1 of the textbook?", response: "Alexis Lighten Wesley, M.D., Mira Zein, M.D., Melisa Olgun, B.A., and Lisa A. Catapano, M.D., Ph.D." },
+
+  { id: 3522, category: 'chapter1', keywords: ['Luna response template Chapter 1'], question: "What is Luna's recommended response template for Chapter 1 topics?", response: "1. Disclaimer. 2. Brief accurate summary from Chapter 1. 3. Offer to log symptoms in CycleMind. 4. Strong redirect to clinician." },
+
+  { id: 3523, category: 'chapter1', keywords: ['ovarian cycle vs uterine cycle'], question: "Does Chapter 1 distinguish ovarian and uterine cycle phases?", response: "Yes. Chapter 1 describes both the ovarian cycle (follicular, ovulatory, luteal) and corresponding uterine/endometrial changes to provide a complete physiologic picture." },
+
+  { id: 3524, category: 'chapter1', keywords: ['CycleMind inclusive language Chapter 1'], question: "How should CycleMind apply inclusive language from the Introduction when using Chapter 1 content?", response: "All cycle and reproductive tracking features and education should use affirming, non-assumptive language that acknowledges diverse gender identities and reproductive experiences." },
+
+  { id: 3525, category: 'chapter1', keywords: ['Chapter 1 key takeaway for app'], question: "What is the primary takeaway from Chapter 1 for CycleMind development?", response: "The reproductive life cycle provides the physiologic framework for understanding mental health vulnerabilities across stages; CycleMind should make these stages trackable and understandable while always connecting users to professional care." },
 ];
