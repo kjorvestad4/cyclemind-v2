@@ -755,4 +755,65 @@ export const fertilityRagEntries = [
   { id: 3764, category: 'chapter9', keywords: ['Luna safety netting Chapter 9'], question: "What safety netting should Luna include for postpartum topics?", response: "Luna should advise immediate help for thoughts of harm to self or infant, severe insomnia, or inability to care for the baby." },
 
   { id: 3765, category: 'chapter9', keywords: ['Chapter 9 key takeaway for app'], question: "What is the primary takeaway from Chapter 9 for CycleMind development?", response: "The postpartum period requires vigilant monitoring; CycleMind should provide practical, compassionate tracking tools while ensuring users remain connected to their clinical team." },
+
+  // === Chapter 10: Perinatal Psychiatric Emergencies (IDs 3766–3795) ===
+  { id: 3766, category: 'chapter10', keywords: ['perinatal psychiatric emergencies overview'], question: "What does Chapter 10 of the Textbook of Women's Reproductive Mental Health cover?", response: "Chapter 10 outlines a practical, safety-first approach to psychiatric emergencies during pregnancy and the postpartum period, including agitation, suicidality, psychosis, severe depression, and mania." },
+
+  { id: 3767, category: 'chapter10', keywords: ['postpartum psychosis emergency'], question: "How is postpartum psychosis managed as an emergency?", response: "Postpartum psychosis is a psychiatric emergency requiring immediate hospitalization, antipsychotics/mood stabilizers, and close safety monitoring due to high risks of infanticide and suicide." },
+
+  { id: 3768, category: 'chapter10', keywords: ['suicidality perinatal period'], question: "What is the approach to suicidality in pregnancy and postpartum?", response: "Chapter 10 emphasizes rapid risk assessment, safety planning, hospitalization when indicated, and balancing maternal and fetal safety in treatment decisions." },
+
+  { id: 3769, category: 'chapter10', keywords: ['CycleMind emergency alerts'], question: "How can CycleMind support emergency detection?", response: "CycleMind can include optional safety check-ins, severe symptom alerts (suicidal thoughts, agitation, psychosis indicators), and one-tap clinician or crisis resource connections." },
+
+  { id: 3770, category: 'chapter10', keywords: ['Luna boundaries perinatal emergencies'], question: "What boundaries should Luna observe for psychiatric emergencies?", response: "Luna must immediately direct users experiencing suicidal thoughts, agitation, psychosis, or inability to ensure safety to emergency services or their perinatal psychiatrist. Luna cannot provide crisis intervention." },
+
+  { id: 3771, category: 'chapter10', keywords: ['agitation perinatal treatment'], question: "How is acute agitation managed in the perinatal period?", response: "Chapter 10 reviews pharmacologic (antipsychotics, benzodiazepines) and non-pharmacologic de-escalation strategies while considering pregnancy and breastfeeding safety." },
+
+  { id: 3772, category: 'chapter10', keywords: ['severe depression pregnancy postpartum'], question: "What is the approach to severe depression in the perinatal period?", response: "Severe depression may require hospitalization, electroconvulsive therapy (ECT), or urgent medication initiation after risk-benefit discussion." },
+
+  { id: 3773, category: 'chapter10', keywords: ['CycleMind safety features'], question: "What safety features should CycleMind include based on Chapter 10?", response: "Crisis resource buttons, daily safety screeners, severe symptom flagging, and easy export of recent logs for emergency clinicians." },
+
+  { id: 3774, category: 'chapter10', keywords: ['Luna response template emergencies'], question: "What template should Luna use for emergency topics?", response: "1. Immediate safety redirect. 2. Crisis resources. 3. Encourage contact with perinatal psychiatrist or emergency services. 4. Offer to help log symptoms once safety is addressed." },
+
+  { id: 3775, category: 'chapter10', keywords: ['Chapter 10 authors'], question: "Who authored Chapter 10?", response: "Jovana Martinovic, M.D., Pooja Lakshmin, M.D., Mira Zein, M.D., Melisa Olgun, B.A., and Lucy A. Hutner, M.D." },
+
+  { id: 3776, category: 'chapter10', keywords: ['mania perinatal emergency'], question: "How is manic or mixed episodes managed perinatally?", response: "Acute mania in pregnancy or postpartum is a psychiatric emergency requiring prompt mood stabilization and safety assessment." },
+
+  { id: 3777, category: 'chapter10', keywords: ['Luna disclaimer emergencies'], question: "What disclaimer is required for Chapter 10 topics?", response: "Luna must state she is not a clinician and cannot manage psychiatric emergencies. Users in crisis must contact emergency services or their perinatal mental health team immediately." },
+
+  { id: 3778, category: 'chapter10', keywords: ['ECT electroconvulsive therapy perinatal'], question: "Is ECT discussed for perinatal emergencies?", response: "Yes. ECT is a safe and effective option for severe, treatment-resistant depression, psychosis, or catatonia in pregnancy and postpartum." },
+
+  { id: 3779, category: 'chapter10', keywords: ['CycleMind crisis resources'], question: "How should CycleMind integrate crisis resources from Chapter 10?", response: "Include one-tap access to national perinatal mental health crisis lines, suicide prevention hotlines, and local emergency psychiatric services." },
+
+  { id: 3780, category: 'chapter10', keywords: ['infant safety perinatal emergencies'], question: "What infant safety considerations are emphasized?", response: "Chapter 10 stresses assessment of maternal capacity to care for the infant during acute psychiatric emergencies and the need for family/support involvement." },
+
+  { id: 3781, category: 'chapter10', keywords: ['Luna safety netting Chapter 10'], question: "What safety netting should Luna include?", response: "Luna should immediately provide crisis numbers, urge contact with emergency services or the perinatal team, and offer to stay with the user until help arrives if appropriate." },
+
+  { id: 3782, category: 'chapter10', keywords: ['collaborative care emergencies'], question: "What model of care is advocated for perinatal emergencies?", response: "Rapid, coordinated care between reproductive psychiatrists, obstetricians, emergency departments, and pediatricians is essential." },
+
+  { id: 3783, category: 'chapter10', keywords: ['CycleMind feature ideas Chapter 10'], question: "What CycleMind features are inspired by Chapter 10?", response: "Emergency symptom flagging, crisis resource buttons, safety check-in prompts, and one-tap export of recent logs for emergency clinicians." },
+
+  { id: 3784, category: 'chapter10', keywords: ['Luna educational content Chapter 10'], question: "How should Luna present Chapter 10 content?", response: "Luna should deliver clear, action-oriented education on recognizing emergencies while always prioritizing immediate safety and professional intervention." },
+
+  { id: 3785, category: 'chapter10', keywords: ['postpartum psychosis risk factors'], question: "What risk factors for postpartum psychosis are noted?", response: "History of bipolar disorder, previous postpartum psychosis, family history, and sleep deprivation are major risk factors." },
+
+  { id: 3786, category: 'chapter10', keywords: ['Luna response boundaries Chapter 10'], question: "What overarching boundaries apply to Luna for Chapter 10 content?", response: "Luna must never attempt to manage, assess, or treat psychiatric emergencies. Every response must redirect immediately to professional emergency care." },
+
+  { id: 3787, category: 'chapter10', keywords: ['Chapter 10 key takeaway for app'], question: "What is the primary takeaway from Chapter 10 for CycleMind?", response: "Psychiatric emergencies in the perinatal period require immediate action; the app should provide fast safety tools and education while ensuring users reach professional help." },
+
+  { id: 3788, category: 'chapter10', keywords: ['agitation de-escalation perinatal'], question: "What de-escalation strategies are recommended?", response: "Non-pharmacologic techniques (quiet environment, verbal de-escalation) are preferred initially, with judicious use of medications when safety is at risk." },
+
+  { id: 3789, category: 'chapter10', keywords: ['CycleMind safety check-in'], question: "Should CycleMind include safety check-ins?", response: "Yes — optional daily or triggered safety screeners with immediate crisis resources if high-risk responses are detected." },
+
+  { id: 3790, category: 'chapter10', keywords: ['perinatal emergency planning'], question: "Does Chapter 10 discuss advance planning?", response: "Yes. Proactive safety planning for women at high risk (bipolar, prior psychosis) is strongly recommended before delivery." },
+
+  { id: 3791, category: 'chapter10', keywords: ['Luna crisis redirect language'], question: "What language should Luna use in crisis situations?", response: "Luna should use direct, compassionate language such as: 'This sounds like an emergency. Please call 911 or your perinatal psychiatrist right now. I'm here to help you reach support.'" },
+
+  { id: 3792, category: 'chapter10', keywords: ['integrated emergency care'], question: "What is the core message of Chapter 10?", response: "Perinatal psychiatric emergencies require rapid, coordinated, multidisciplinary intervention prioritizing safety of mother and infant." },
+
+  { id: 3793, category: 'chapter10', keywords: ['CycleMind emergency export'], question: "How can CycleMind assist in emergencies?", response: "Users can instantly export the last 7–14 days of symptom logs to share with emergency providers or their perinatal team." },
+
+  { id: 3794, category: 'chapter10', keywords: ['Luna educational content emergencies'], question: "How should Luna present emergency education?", response: "Luna should focus on recognition of warning signs and immediate action steps while always deferring treatment to professionals." },
+
+  { id: 3795, category: 'chapter10', keywords: ['Chapter 10 key takeaway for app'], question: "What is the primary takeaway from Chapter 10 for CycleMind development?", response: "The app must include robust safety features and crisis pathways while maintaining strict boundaries and never attempting to replace professional emergency care." },
 ];
