@@ -389,4 +389,65 @@ export const fertilityRagEntries = [
   { id: 3584, category: 'chapter3', keywords: ['Chapter 3 key takeaway for app'], question: "What is the primary takeaway from Chapter 3 for CycleMind development?", response: "Sexual function is deeply connected to reproductive transitions and mental health; the app should offer optional, private, respectful tracking tools while maintaining strict clinical boundaries." },
 
   { id: 3585, category: 'chapter3', keywords: ['Luna response boundaries Chapter 3'], question: "What overarching boundaries apply to Luna for Chapter 3 content?", response: "Luna must never provide sexual therapy, diagnose dysfunctions, or recommend treatments. All responses must remain educational and include a clear redirect to qualified specialists." },
+
+  // === Chapter 4: Contraception and Mental Health (IDs 3586–3615) ===
+  { id: 3586, category: 'chapter4', keywords: ['contraception mental health overview'], question: "What does Chapter 4 of the Textbook of Women's Reproductive Mental Health cover?", response: "Chapter 4 reviews all major contraceptive methods (combined hormonal, progestin-only, intrauterine devices, implants, barriers, sterilization) and their potential psychiatric effects, with special attention to mood, PMDD, and decision-making in women with mental health conditions." },
+
+  { id: 3587, category: 'chapter4', keywords: ['combined hormonal contraception mood effects'], question: "What are the mental health implications of combined hormonal contraceptives?", response: "Combined estrogen-progestin contraceptives can have variable mood effects. Some women experience improvement in PMDD symptoms while others report mood worsening, depression, or anxiety. Individual response is highly variable." },
+
+  { id: 3588, category: 'chapter4', keywords: ['progestin-only contraception mental health'], question: "What psychiatric considerations exist for progestin-only methods?", response: "Progestin-only pills, implants, injections, and hormonal IUDs may be associated with mood changes in some women, though evidence is mixed. They are often considered when estrogen is contraindicated." },
+
+  { id: 3589, category: 'chapter4', keywords: ['contraception PMDD'], question: "How does Chapter 4 address contraception in women with PMDD?", response: "Continuous combined hormonal contraception with drospirenone is often beneficial for PMDD. Luteal-phase symptom tracking helps guide contraceptive choice in women with premenstrual mood syndromes." },
+
+  { id: 3590, category: 'chapter4', keywords: ['CycleMind contraception mood tracking'], question: "How can CycleMind support users starting or changing contraception?", response: "CycleMind can include optional mood and symptom tracking before and after starting contraception to help users identify personal response patterns and share data with their psychiatrist." },
+
+  { id: 3591, category: 'chapter4', keywords: ['Luna boundaries contraception'], question: "What boundaries should Luna observe when discussing contraception from Chapter 4?", response: "Luna must state she is not a prescribing clinician and cannot recommend contraceptive methods. She can provide general educational information from the textbook and support symptom tracking but must redirect all decisions to the user's psychiatrist and gynecologist." },
+
+  { id: 3592, category: 'chapter4', keywords: ['copper IUD mental health'], question: "What mental health considerations apply to the copper IUD?", response: "The non-hormonal copper IUD has no systemic hormonal effects and is often preferred when hormonal methods exacerbate mood symptoms." },
+
+  { id: 3593, category: 'chapter4', keywords: ['levonorgestrel IUD mood effects'], question: "What psychiatric effects are associated with the levonorgestrel IUD?", response: "The hormonal IUD releases progestin locally with minimal systemic absorption; mood effects are generally lower than oral methods but should still be monitored in sensitive individuals." },
+
+  { id: 3594, category: 'chapter4', keywords: ['contraception bipolar disorder'], question: "What contraception guidance is given for women with bipolar disorder?", response: "Mood-stabilizing effects of certain contraceptives may be beneficial, but enzyme-inducing medications can reduce contraceptive efficacy. Close collaboration between psychiatry and gynecology is essential." },
+
+  { id: 3595, category: 'chapter4', keywords: ['CycleMind contraceptive log'], question: "What contraceptive tracking feature should CycleMind include?", response: "An optional, private contraceptive method log that correlates start dates, method type, and daily mood/sleep symptoms to support informed discussions with providers." },
+
+  { id: 3596, category: 'chapter4', keywords: ['emergency contraception mental health'], question: "Does Chapter 4 discuss emergency contraception?", response: "Emergency contraception (levonorgestrel or ulipristal) has minimal psychiatric impact due to short-term use, but follow-up contraceptive counseling is important." },
+
+  { id: 3597, category: 'chapter4', keywords: ['Luna response template Chapter 4'], question: "What template should Luna use for contraception questions?", response: "1. Clear disclaimer. 2. General educational summary from Chapter 4. 3. Offer CycleMind tracking. 4. Strong redirect to psychiatrist and gynecologist for personalized contraceptive decisions." },
+
+  { id: 3598, category: 'chapter4', keywords: ['sterilization mental health'], question: "What mental health considerations apply to permanent sterilization?", response: "Decision-making for tubal ligation or vasectomy should include thorough discussion of regret risk, especially in women with mood disorders or history of trauma." },
+
+  { id: 3599, category: 'chapter4', keywords: ['barrier methods mental health'], question: "How do barrier methods relate to mental health in Chapter 4?", response: "Barrier methods (condoms, diaphragms) have no hormonal effects and can be preferred when psychiatric stability is the priority or hormonal methods are contraindicated." },
+
+  { id: 3600, category: 'chapter4', keywords: ['Chapter 4 author'], question: "Who authored Chapter 4?", response: "Lulu Zhao, M.D." },
+
+  { id: 3601, category: 'chapter4', keywords: ['contraception depression risk'], question: "What does Chapter 4 say about contraception and depression risk?", response: "Large population studies show small increased risk of depression with hormonal contraception in some subgroups, but many women experience mood stability or improvement. Individual monitoring is recommended." },
+
+  { id: 3602, category: 'chapter4', keywords: ['CycleMind PMDD contraception tracking'], question: "How can CycleMind help women with PMDD choose contraception?", response: "CycleMind can track luteal-phase symptoms before and after starting a contraceptive method to provide objective data for shared decision-making with the treatment team." },
+
+  { id: 3603, category: 'chapter4', keywords: ['Luna disclaimer contraception'], question: "What disclaimer is mandatory for Chapter 4 topics?", response: "Luna must state she is not a physician and cannot prescribe or recommend contraception. All contraceptive decisions require discussion with a qualified medical provider." },
+
+  { id: 3604, category: 'chapter4', keywords: ['contraceptive counseling reproductive psychiatry'], question: "What is the role of reproductive psychiatrists in contraceptive counseling?", response: "Reproductive psychiatrists help weigh psychiatric risks and benefits of contraceptive methods and coordinate care with gynecologists." },
+
+  { id: 3605, category: 'chapter4', keywords: ['CycleMind feature ideas Chapter 4'], question: "What CycleMind features are inspired by Chapter 4?", response: "Contraceptive method log with mood correlation charts, PMDD-specific tracking around contraceptive changes, and educational cards on hormonal vs. non-hormonal options." },
+
+  { id: 3606, category: 'chapter4', keywords: ['progestin implant mental health'], question: "What mental health considerations apply to the etonogestrel implant?", response: "The subdermal progestin implant may cause irregular bleeding and mood changes in some users; monitoring and early removal options should be discussed." },
+
+  { id: 3607, category: 'chapter4', keywords: ['Luna educational content Chapter 4'], question: "How should Luna present Chapter 4 content?", response: "Luna should provide neutral, evidence-based summaries of contraceptive-mental health interactions while always directing users to their treatment team for individualized decisions." },
+
+  { id: 3608, category: 'chapter4', keywords: ['contraception schizophrenia'], question: "What contraception considerations exist for women with schizophrenia?", response: "Antipsychotic medications may interact with hormonal contraceptives; long-acting reversible methods are often preferred due to adherence challenges and medication interactions." },
+
+  { id: 3609, category: 'chapter4', keywords: ['CycleMind data export contraception'], question: "How can CycleMind data support contraceptive decision-making?", response: "Users can export mood and symptom timelines before and after contraceptive initiation to facilitate evidence-based discussions with their psychiatrist and gynecologist." },
+
+  { id: 3610, category: 'chapter4', keywords: ['non-hormonal contraception benefits'], question: "What benefits of non-hormonal contraception are highlighted?", response: "Non-hormonal methods eliminate systemic hormonal exposure and are preferred by many women with mood disorders or hormone sensitivity." },
+
+  { id: 3611, category: 'chapter4', keywords: ['Luna safety netting contraception'], question: "What safety netting should Luna include?", response: "Luna should advise users to contact their provider immediately for severe mood changes, breakthrough bleeding concerns, or questions about contraceptive efficacy with psychiatric medications." },
+
+  { id: 3612, category: 'chapter4', keywords: ['integrated contraceptive psychiatric care'], question: "What is the core message of Chapter 4?", response: "Contraceptive choice in women with psychiatric illness requires individualized, collaborative care between reproductive psychiatrists and gynecologists." },
+
+  { id: 3613, category: 'chapter4', keywords: ['Chapter 4 key takeaway for app'], question: "What is the primary takeaway from Chapter 4 for CycleMind?", response: "Contraception can significantly affect mental health; the app should support objective tracking of symptoms around contraceptive changes while maintaining strict clinical boundaries." },
+
+  { id: 3614, category: 'chapter4', keywords: ['Luna response boundaries Chapter 4'], question: "What overarching boundaries apply to Luna for Chapter 4 content?", response: "Luna must never advise on contraceptive selection or discontinuation. All responses remain educational and end with a redirect to qualified medical providers." },
+
+  { id: 3615, category: 'chapter4', keywords: ['CycleMind contraception education'], question: "How should CycleMind incorporate Chapter 4 into its education library?", response: "Create clear, non-directive educational modules on contraception-mental health interactions with emphasis on shared decision-making and professional guidance." },
 ];
