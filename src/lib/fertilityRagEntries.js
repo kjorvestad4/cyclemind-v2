@@ -511,4 +511,65 @@ export const fertilityRagEntries = [
   { id: 3644, category: 'chapter5', keywords: ['CycleMind data export Chapter 5'], question: "How can CycleMind data support clinical care for infertility or loss?", response: "Users can export mood, grief, and treatment timelines to share with their reproductive psychiatrist or perinatal mental health specialist." },
 
   { id: 3645, category: 'chapter5', keywords: ['perinatal loss stigma'], question: "Does Chapter 5 address stigma around perinatal loss?", response: "Yes. Societal and cultural stigma often leads to disenfranchised grief; validation and open discussion are important components of recovery." },
+
+  // === Chapter 6: Premenstrual Mood Syndromes and PMDD (IDs 3646–3675) ===
+  { id: 3646, category: 'chapter6', keywords: ['PMDD premenstrual mood syndromes overview'], question: "What does Chapter 6 of the Textbook of Women's Reproductive Mental Health cover?", response: "Chapter 6 provides a comprehensive review of premenstrual mood syndromes with a primary focus on Premenstrual Dysphoric Disorder (PMDD), including DSM-5 criteria, epidemiology, pathophysiology, screening, diagnosis, differential diagnosis, and evidence-based treatments." },
+
+  { id: 3647, category: 'chapter6', keywords: ['DSM-5 PMDD criteria'], question: "What are the DSM-5 diagnostic criteria for PMDD as described in Chapter 6?", response: "PMDD requires at least five symptoms (including at least one core mood symptom) in the final week before menses, improving within days after menses onset, and minimal or absent in the week post-menses, confirmed by prospective charting over at least two cycles." },
+
+  { id: 3648, category: 'chapter6', keywords: ['DRSP Daily Record of Severity of Problems'], question: "What is the DRSP and how is it used for PMDD diagnosis?", response: "The Daily Record of Severity of Problems (DRSP) is the gold-standard 21-item prospective daily rating scale. Chapter 6 emphasizes that prospective charting with the DRSP for at least one (ideally two) menstrual cycles is required to confirm the diagnosis." },
+
+  { id: 3649, category: 'chapter6', keywords: ['CycleMind digital DRSP'], question: "How can CycleMind implement the DRSP from Chapter 6?", response: "CycleMind can include a full digital DRSP form with daily ratings, automatic luteal-phase highlighting, severity scoring, and exportable charts that meet the prospective charting requirement for clinical diagnosis." },
+
+  { id: 3650, category: 'chapter6', keywords: ['PMDD prevalence'], question: "What is the prevalence of PMDD per Chapter 6?", response: "PMDD affects approximately 5–8% of menstruating individuals. Prevalence is consistent across cultures but underdiagnosed due to the requirement for prospective charting." },
+
+  { id: 3651, category: 'chapter6', keywords: ['PMDD pathophysiology'], question: "What is the pathophysiology of PMDD discussed in Chapter 6?", response: "PMDD involves abnormal sensitivity to normal luteal-phase fluctuations in estrogen and progesterone, particularly allopregnanolone effects on GABA-A receptors, along with serotonin dysregulation." },
+
+  { id: 3652, category: 'chapter6', keywords: ['Luna boundaries PMDD diagnosis'], question: "What boundaries should Luna observe regarding PMDD diagnosis from Chapter 6?", response: "Luna must never diagnose PMDD. She can explain the diagnostic process (prospective DRSP charting) and support tracking but must always state that only a qualified clinician can make the diagnosis." },
+
+  { id: 3653, category: 'chapter6', keywords: ['luteal phase SSRI PMDD'], question: "What is the first-line pharmacologic treatment for PMDD?", response: "Luteal-phase dosing of SSRIs (e.g., sertraline, fluoxetine) is first-line and highly effective for core mood symptoms. Continuous dosing is also an option for some patients." },
+
+  { id: 3654, category: 'chapter6', keywords: ['drospirenone OCP PMDD'], question: "What hormonal contraceptive is recommended for PMDD?", response: "Combined oral contraceptives containing drospirenone (especially continuous or extended-cycle regimens) are effective for many women with PMDD and are supported by strong evidence." },
+
+  { id: 3655, category: 'chapter6', keywords: ['CycleMind luteal phase alerts'], question: "How should CycleMind support PMDD management?", response: "CycleMind can provide luteal-phase alerts, automated DRSP prompts, symptom pattern visualizations, and educational cards on evidence-based treatments (SSRIs, drospirenone OCPs, CBT) while always redirecting treatment decisions to clinicians." },
+
+  { id: 3656, category: 'chapter6', keywords: ['PMDD vs PME'], question: "How does Chapter 6 differentiate PMDD from premenstrual exacerbation (PME)?", response: "PMDD requires symptoms to be absent or minimal in the follicular phase. PME involves worsening of an underlying mood disorder premenstrually but with symptoms present throughout the cycle." },
+
+  { id: 3657, category: 'chapter6', keywords: ['CBT PMDD'], question: "What non-pharmacologic treatments are discussed for PMDD?", response: "Cognitive-behavioral therapy (CBT) has promising evidence for PMDD. Lifestyle interventions, calcium, vitamin B6, and exercise are also reviewed as adjunctive options." },
+
+  { id: 3658, category: 'chapter6', keywords: ['PMDD screening tools'], question: "What screening tools are recommended in Chapter 6?", response: "The DRSP is the gold standard. Other tools include the Premenstrual Symptoms Screening Tool (PSST) and Calendar of Premenstrual Experiences (COPE) for initial screening before prospective charting." },
+
+  { id: 3659, category: 'chapter6', keywords: ['Luna response template PMDD'], question: "What template should Luna use for PMDD questions?", response: "1. Disclaimer (not a clinician). 2. Explain diagnostic process and general education. 3. Offer digital DRSP tracking in CycleMind. 4. Strongly redirect to psychiatrist for diagnosis and treatment." },
+
+  { id: 3660, category: 'chapter6', keywords: ['PMDD perimenopause'], question: "Does PMDD persist into perimenopause per Chapter 6?", response: "Yes. PMDD symptoms can continue or worsen during the perimenopausal transition due to increasingly erratic hormonal fluctuations." },
+
+  { id: 3661, category: 'chapter6', keywords: ['Chapter 6 authors'], question: "Who authored Chapter 6?", response: "Erin Murphy Barzilay, M.D., Katherine Unverferth, M.D., and Laura Obler, M.D." },
+
+  { id: 3662, category: 'chapter6', keywords: ['PMDD risk factors'], question: "What risk factors for PMDD are covered?", response: "Genetic vulnerability, history of trauma, prior mood disorders, and sensitivity to neuroactive steroids (allopregnanolone) are key risk factors." },
+
+  { id: 3663, category: 'chapter6', keywords: ['CycleMind PMDD education'], question: "How should CycleMind incorporate Chapter 6 education?", response: "Create clear, evidence-based education cards on PMDD diagnosis (DRSP requirement), treatments, and differentiation from PME, with direct links to the digital DRSP tracker." },
+
+  { id: 3664, category: 'chapter6', keywords: ['PMDD comorbidities'], question: "What comorbidities are common with PMDD?", response: "PMDD frequently co-occurs with major depression, bipolar disorder, anxiety disorders, and PTSD. Prospective charting is essential to distinguish primary PMDD from exacerbation of these conditions." },
+
+  { id: 3665, category: 'chapter6', keywords: ['Luna disclaimer PMDD'], question: "What disclaimer is required for PMDD topics?", response: "Luna must state: 'I am not a psychiatrist and cannot diagnose or treat PMDD. This is general information. Please consult your clinician for prospective charting and treatment planning.'" },
+
+  { id: 3666, category: 'chapter6', keywords: ['GnRH agonists PMDD'], question: "Are GnRH agonists discussed for PMDD?", response: "GnRH agonists can be used in severe, refractory PMDD to suppress ovulation but require add-back hormone therapy and are not first-line due to side effects." },
+
+  { id: 3667, category: 'chapter6', keywords: ['CycleMind PMDD diagnostic support'], question: "How does CycleMind support PMDD diagnosis per Chapter 6?", response: "CycleMind can automate the prospective DRSP process, calculate luteal vs. follicular symptom ratios, and generate clinician-ready reports to meet DSM-5 diagnostic standards." },
+
+  { id: 3668, category: 'chapter6', keywords: ['PMDD treatment resistance'], question: "What is discussed for treatment-resistant PMDD?", response: "For treatment-resistant cases, options include switching SSRIs, adding CBT, hormonal suppression, or referral to a reproductive psychiatrist. Surgical options (oophorectomy) are last resort." },
+
+  { id: 3669, category: 'chapter6', keywords: ['Luna safety netting PMDD'], question: "What safety netting should Luna include for PMDD?", response: "Luna should advise users experiencing severe premenstrual suicidality, functional impairment, or worsening symptoms to contact their psychiatrist or seek emergency care immediately." },
+
+  { id: 3670, category: 'chapter6', keywords: ['PMDD adolescents'], question: "Does Chapter 6 address PMDD in adolescents?", response: "Yes. PMDD can begin after menarche. Diagnosis requires the same prospective charting standards, and treatment must consider developmental stage and contraceptive needs." },
+
+  { id: 3671, category: 'chapter6', keywords: ['CycleMind feature ideas Chapter 6'], question: "What CycleMind features are directly inspired by Chapter 6?", response: "Full digital DRSP implementation, luteal-phase symptom alerts, PMDD education library, treatment response tracking, and clinician-export reports." },
+
+  { id: 3672, category: 'chapter6', keywords: ['serotonin allopregnanolone PMDD'], question: "What neurotransmitter and neurosteroid mechanisms are discussed?", response: "Dysregulated serotonin transmission and abnormal sensitivity to allopregnanolone (a progesterone metabolite) in the luteal phase are central to PMDD pathophysiology." },
+
+  { id: 3673, category: 'chapter6', keywords: ['Chapter 6 key takeaway for app'], question: "What is the primary takeaway from Chapter 6 for CycleMind?", response: "Accurate PMDD diagnosis requires prospective daily charting with the DRSP; CycleMind should make this process easy, accurate, and clinically useful while maintaining strict boundaries." },
+
+  { id: 3674, category: 'chapter6', keywords: ['Luna response boundaries Chapter 6'], question: "What overarching boundaries apply to Luna for PMDD content?", response: "Luna must never diagnose PMDD, interpret DRSP scores clinically, or recommend specific treatments. All responses must remain educational and end with a clinician redirect." },
+
+  { id: 3675, category: 'chapter6', keywords: ['PMDD lifetime course'], question: "What is the lifetime course of PMDD per Chapter 6?", response: "PMDD typically begins in the early 20s, persists until menopause, and may worsen during perimenopause. Symptoms remit after menopause or with ovulation suppression." },
 ];
