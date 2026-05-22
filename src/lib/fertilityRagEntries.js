@@ -694,4 +694,65 @@ export const fertilityRagEntries = [
   { id: 3734, category: 'chapter8', keywords: ['Luna safety netting Chapter 8'], question: "What safety netting should Luna include for pregnancy topics?", response: "Luna should direct users with worsening psychiatric symptoms, suicidal ideation, or safety concerns to contact their perinatal mental health team or emergency services immediately." },
 
   { id: 3735, category: 'chapter8', keywords: ['Chapter 8 key takeaway for app'], question: "What is the primary takeaway from Chapter 8 for CycleMind development?", response: "Pregnancy requires a nuanced, collaborative approach to psychiatric care; the app should support symptom monitoring and education while maintaining strict clinical boundaries." },
+
+  // === Chapter 9: Postpartum Psychiatric Diagnosis and Treatment (IDs 3736–3765) ===
+  { id: 3736, category: 'chapter9', keywords: ['postpartum psychiatric diagnosis treatment overview'], question: "What does Chapter 9 of the Textbook of Women's Reproductive Mental Health cover?", response: "Chapter 9 provides a practical clinical framework for diagnosing and treating psychiatric disorders in the postpartum period, emphasizing rapid assessment, safety, breastfeeding considerations, and collaborative care with obstetrics and pediatrics." },
+
+  { id: 3737, category: 'chapter9', keywords: ['postpartum depression diagnosis'], question: "How is postpartum depression diagnosed per Chapter 9?", response: "Postpartum depression is diagnosed using standard DSM-5 criteria for major depressive episode, with onset typically within the first 4 weeks but can occur up to 12 months postpartum. Screening tools and clinical interview are essential." },
+
+  { id: 3738, category: 'chapter9', keywords: ['postpartum psychosis emergency'], question: "How is postpartum psychosis addressed?", response: "Postpartum psychosis is a psychiatric emergency requiring immediate hospitalization, antipsychotics, and often mood stabilizers. It carries high risk of infanticide and suicide and demands urgent intervention." },
+
+  { id: 3739, category: 'chapter9', keywords: ['CycleMind postpartum tracker'], question: "How can CycleMind support postpartum users per Chapter 9?", response: "CycleMind can include a dedicated postpartum mode with daily mood, sleep, anxiety, bonding, and functioning trackers to help users monitor the high-risk postpartum period and generate reports for their clinician." },
+
+  { id: 3740, category: 'chapter9', keywords: ['Luna boundaries postpartum psychiatry'], question: "What boundaries should Luna observe for postpartum mental health?", response: "Luna must state she is not a perinatal psychiatrist and cannot diagnose or treat postpartum disorders. She can share general education from Chapter 9 and support symptom tracking but must always redirect to the user's psychiatrist and OB/GYN." },
+
+  { id: 3741, category: 'chapter9', keywords: ['breastfeeding psychotropic medications'], question: "What does Chapter 9 say about breastfeeding and medications?", response: "Chapter 9 reviews lactation safety data for antidepressants, antipsychotics, and mood stabilizers, emphasizing shared decision-making that balances maternal mental health needs with infant exposure risks." },
+
+  { id: 3742, category: 'chapter9', keywords: ['postpartum anxiety OCD'], question: "How are postpartum anxiety and OCD managed?", response: "CBT is first-line; SSRIs are commonly used when symptoms are moderate to severe. Scrupulosity and harm obsessions are common presentations in postpartum OCD." },
+
+  { id: 3743, category: 'chapter9', keywords: ['postpartum sleep deprivation'], question: "What role does sleep play in postpartum mental health?", response: "Severe sleep disruption is both a symptom and a major risk factor for postpartum depression and psychosis. Chapter 9 stresses sleep protection strategies and early intervention." },
+
+  { id: 3744, category: 'chapter9', keywords: ['CycleMind postpartum mood tracking'], question: "What postpartum-specific tracking should CycleMind include?", response: "Daily mood, anxiety, sleep, infant bonding, and intrusive thought logs with gentle prompts and easy clinician export to support early detection and treatment." },
+
+  { id: 3745, category: 'chapter9', keywords: ['Luna response template Chapter 9'], question: "What template should Luna use for postpartum questions?", response: "1. Clear disclaimer. 2. General educational summary from Chapter 9. 3. Offer CycleMind postpartum tracking. 4. Strong redirect to perinatal psychiatrist or emergency services if safety concerns exist." },
+
+  { id: 3746, category: 'chapter9', keywords: ['infant safety postpartum psychosis'], question: "What infant safety considerations are emphasized?", response: "Chapter 9 stresses assessment of maternal capacity to care for the infant, especially in cases of postpartum psychosis or severe depression, and the need for family/support involvement." },
+
+  { id: 3747, category: 'chapter9', keywords: ['Chapter 9 authors'], question: "Who authored Chapter 9?", response: "Alyson Gorun, M.D., Mira Zein, M.D., Melisa Olgun, B.A., and Lisa A. Catapano, M.D., Ph.D." },
+
+  { id: 3748, category: 'chapter9', keywords: ['postpartum bipolar relapse'], question: "What is the risk of bipolar relapse postpartum?", response: "Women with bipolar disorder have a markedly elevated risk of postpartum mood episodes; prophylactic medication adjustment and close monitoring are recommended." },
+
+  { id: 3749, category: 'chapter9', keywords: ['CycleMind data export postpartum'], question: "How can CycleMind data support postpartum psychiatric care?", response: "Users can export daily mood, sleep, and functioning logs to share with their perinatal mental health team for rapid treatment adjustment." },
+
+  { id: 3750, category: 'chapter9', keywords: ['Luna disclaimer postpartum'], question: "What disclaimer is required for Chapter 9 topics?", response: "Luna must state she is not a clinician and cannot diagnose or treat postpartum psychiatric conditions. This is general information only." },
+
+  { id: 3751, category: 'chapter9', keywords: ['postpartum PTSD'], question: "Is PTSD discussed in the postpartum period?", response: "Yes. Traumatic birth experiences, emergency cesarean, or perinatal loss can trigger postpartum PTSD that requires specific trauma-focused treatment." },
+
+  { id: 3752, category: 'chapter9', keywords: ['integrated care postpartum'], question: "What model of care is advocated?", response: "Close collaboration between reproductive psychiatrists, obstetricians, pediatricians, and lactation consultants is essential for optimal postpartum mental health outcomes." },
+
+  { id: 3753, category: 'chapter9', keywords: ['CycleMind postpartum education'], question: "How should CycleMind incorporate Chapter 9 education?", response: "Create postpartum-specific education cards on common disorders, warning signs, sleep hygiene, and the importance of prompt professional evaluation." },
+
+  { id: 3754, category: 'chapter9', keywords: ['Luna safety netting postpartum'], question: "What safety netting should Luna include?", response: "Luna should direct users with thoughts of harming themselves or the infant, severe mood changes, or inability to care for the baby to seek immediate emergency care or contact their provider." },
+
+  { id: 3755, category: 'chapter9', keywords: ['postpartum psychosis treatment'], question: "How is postpartum psychosis treated per Chapter 9?", response: "Immediate hospitalization, antipsychotics, mood stabilizers, and often ECT are used. Breastfeeding decisions must be made with safety as the priority." },
+
+  { id: 3756, category: 'chapter9', keywords: ['Luna response boundaries Chapter 9'], question: "What overarching boundaries apply to Luna for Chapter 9 content?", response: "Luna must never diagnose postpartum depression, psychosis, or anxiety, or recommend medications. All responses remain general education and end with a clinician redirect." },
+
+  { id: 3757, category: 'chapter9', keywords: ['Chapter 9 key takeaway for app'], question: "What is the primary takeaway from Chapter 9 for CycleMind?", response: "The postpartum period is a high-risk time for psychiatric illness; the app should provide sensitive tracking tools and education while ensuring users connect with professional care." },
+
+  { id: 3758, category: 'chapter9', keywords: ['postpartum anxiety screening'], question: "What screening is recommended postpartum?", response: "Routine screening for depression (Edinburgh Postnatal Depression Scale) and anxiety is recommended, with clinical interview for full assessment." },
+
+  { id: 3759, category: 'chapter9', keywords: ['CycleMind bonding tracker'], question: "Should CycleMind include infant bonding tracking?", response: "Optional, sensitive bonding and attachment questions can be included to help users monitor their experience and discuss with their clinician if concerns arise." },
+
+  { id: 3760, category: 'chapter9', keywords: ['Luna educational content Chapter 9'], question: "How should Luna present Chapter 9 content?", response: "Luna should deliver compassionate, non-stigmatizing education on postpartum psychiatric disorders while offering CycleMind tracking and always emphasizing professional support." },
+
+  { id: 3761, category: 'chapter9', keywords: ['partner postpartum mental health'], question: "Does Chapter 9 address partners?", response: "Yes. Partners can also experience depression and anxiety postpartum; family-wide support is important for optimal maternal and infant outcomes." },
+
+  { id: 3762, category: 'chapter9', keywords: ['CycleMind feature ideas Chapter 9'], question: "What CycleMind features are inspired by Chapter 9?", response: "Postpartum dashboard, daily mood/sleep/bonding logs, warning sign alerts, and clinician-export reports tailored to the postpartum period." },
+
+  { id: 3763, category: 'chapter9', keywords: ['postpartum relapse prevention'], question: "What relapse prevention strategies are discussed?", response: "Proactive medication planning, sleep protection, social support, and early symptom monitoring are key to preventing postpartum psychiatric relapse." },
+
+  { id: 3764, category: 'chapter9', keywords: ['Luna safety netting Chapter 9'], question: "What safety netting should Luna include for postpartum topics?", response: "Luna should advise immediate help for thoughts of harm to self or infant, severe insomnia, or inability to care for the baby." },
+
+  { id: 3765, category: 'chapter9', keywords: ['Chapter 9 key takeaway for app'], question: "What is the primary takeaway from Chapter 9 for CycleMind development?", response: "The postpartum period requires vigilant monitoring; CycleMind should provide practical, compassionate tracking tools while ensuring users remain connected to their clinical team." },
 ];
