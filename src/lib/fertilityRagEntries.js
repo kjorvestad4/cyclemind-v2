@@ -328,4 +328,65 @@ export const fertilityRagEntries = [
   { id: 3554, category: 'chapter2', keywords: ['Luna response safety netting Chapter 2'], question: "What safety netting should Luna include for Chapter 2 topics?", response: "Luna should recommend prompt evaluation for severe pain, mood changes, or suicidal thoughts and direct users to their healthcare team or emergency services when appropriate." },
 
   { id: 3555, category: 'chapter2', keywords: ['Chapter 2 key takeaway for app'], question: "What is the primary takeaway from Chapter 2 for CycleMind?", response: "Gynecological conditions and mental health are deeply intertwined; the app should support tracking of both domains to empower users and facilitate better interdisciplinary care." },
+
+  // === Chapter 3: Female Sexual Dysfunctions and Reproductive Psychiatry (IDs 3556–3585) ===
+  { id: 3556, category: 'chapter3', keywords: ['female sexual dysfunctions reproductive psychiatry overview'], question: "What does Chapter 3 of the Textbook of Women's Reproductive Mental Health cover?", response: "Chapter 3 explores female sexual dysfunctions (hypoactive sexual desire disorder, female sexual arousal disorder, genito-pelvic pain/penetration disorder, etc.) and their complex intersections with reproductive psychiatry, hormonal transitions, and mental health." },
+
+  { id: 3557, category: 'chapter3', keywords: ['hypoactive sexual desire disorder HSDD'], question: "What is hypoactive sexual desire disorder (HSDD) and its reproductive psychiatry links?", response: "HSDD involves persistently low sexual desire causing distress. It is common across reproductive transitions (postpartum, perimenopause) and frequently co-occurs with depression, anxiety, and relationship strain." },
+
+  { id: 3558, category: 'chapter3', keywords: ['female sexual arousal disorder'], question: "What is female sexual arousal disorder and its mental health associations?", response: "Female sexual arousal disorder involves difficulty with physiological or subjective arousal. It is linked to hormonal changes, medications, depression, anxiety, and trauma history." },
+
+  { id: 3559, category: 'chapter3', keywords: ['GPPPD genito-pelvic pain penetration disorder'], question: "How does Chapter 3 discuss genito-pelvic pain/penetration disorder (GPPPD)?", response: "GPPPD encompasses dyspareunia and vaginismus. It is often intertwined with anxiety, PTSD, and gynecological conditions and benefits from integrated psychiatric and gynecologic care." },
+
+  { id: 3560, category: 'chapter3', keywords: ['CycleMind sexual health tracking'], question: "How can CycleMind support users with sexual dysfunction concerns from Chapter 3?", response: "CycleMind can include optional, private sexual function tracking tied to cycle phase, pregnancy, or perimenopause to help users identify patterns and share anonymized data with clinicians." },
+
+  { id: 3561, category: 'chapter3', keywords: ['Luna boundaries sexual dysfunction'], question: "What boundaries should Luna observe when discussing sexual dysfunctions from Chapter 3?", response: "Luna must clearly state she is not a clinician and cannot diagnose or treat sexual dysfunctions. She can provide general education from the textbook and support private tracking but must redirect to a qualified psychiatrist, gynecologist, or sexual medicine specialist." },
+
+  { id: 3562, category: 'chapter3', keywords: ['hormonal factors sexual function'], question: "What hormonal factors affecting sexual function are covered in Chapter 3?", response: "Estrogen, progesterone, testosterone, and oxytocin fluctuations across reproductive stages (postpartum, perimenopause, contraceptive use) significantly influence sexual desire, arousal, and pain." },
+
+  { id: 3563, category: 'chapter3', keywords: ['postpartum sexual dysfunction'], question: "What postpartum sexual changes are highlighted?", response: "Postpartum period commonly involves decreased desire, arousal difficulties, and pain due to hormonal withdrawal, fatigue, breastfeeding, and body image changes." },
+
+  { id: 3564, category: 'chapter3', keywords: ['perimenopause sexual function'], question: "How does perimenopause affect sexual function per Chapter 3?", response: "Perimenopause is associated with declining estrogen leading to vaginal dryness, dyspareunia, and reduced desire. These changes often interact with mood symptoms and relationship factors." },
+
+  { id: 3565, category: 'chapter3', keywords: ['CycleMind reproductive stage sexual health'], question: "What stage-specific sexual health tracking should CycleMind offer?", response: "Optional modules for menstrual cycle, pregnancy/postpartum, and perimenopause that allow users to log desire, arousal, pain, and satisfaction alongside mood and sleep." },
+
+  { id: 3566, category: 'chapter3', keywords: ['trauma sexual dysfunction'], question: "What role does trauma play in female sexual dysfunctions?", response: "History of sexual trauma is a major risk factor for GPPPD, low desire, and arousal disorders and requires trauma-informed, sensitive care." },
+
+  { id: 3567, category: 'chapter3', keywords: ['Luna response template Chapter 3'], question: "What template should Luna follow for Chapter 3 topics?", response: "1. Clear disclaimer. 2. General educational summary. 3. Offer private CycleMind tracking option. 4. Strong redirect to appropriate specialists." },
+
+  { id: 3568, category: 'chapter3', keywords: ['medications sexual side effects'], question: "How do psychiatric medications affect sexual function per Chapter 3?", response: "Antidepressants (especially SSRIs), antipsychotics, and other psychotropics can cause sexual side effects including decreased desire, arousal difficulties, and orgasm problems." },
+
+  { id: 3569, category: 'chapter3', keywords: ['CycleMind medication sexual health log'], question: "Should CycleMind include medication-related sexual health tracking?", response: "Optional, private logging of sexual function changes in relation to psychotropic medications can help users prepare informed discussions with their psychiatrist." },
+
+  { id: 3570, category: 'chapter3', keywords: ['Chapter 3 authors'], question: "Who authored Chapter 3?", response: "Erika Kelley, Ph.D., Brittney Bastow, M.D., M.Sc., Pooja Lakshmin, M.D., and Sheryl A. Kingsberg, Ph.D." },
+
+  { id: 3571, category: 'chapter3', keywords: ['integrated treatment sexual dysfunction'], question: "What does Chapter 3 recommend for treatment of sexual dysfunctions?", response: "Integrated biopsychosocial approaches combining gynecologic, psychiatric, and sex therapy interventions are most effective, especially when reproductive transitions are involved." },
+
+  { id: 3572, category: 'chapter3', keywords: ['Luna disclaimer sexual health'], question: "What disclaimer is required for sexual health topics from Chapter 3?", response: "Luna must state she is not a sexual medicine specialist or therapist and cannot provide treatment recommendations. Users should consult qualified professionals." },
+
+  { id: 3573, category: 'chapter3', keywords: ['contraception sexual function'], question: "How does contraception affect sexual function per Chapter 3?", response: "Hormonal contraceptives can have variable effects on desire and arousal; some women experience improvement while others report worsening, requiring individualized discussion." },
+
+  { id: 3574, category: 'chapter3', keywords: ['CycleMind privacy sexual tracking'], question: "How does CycleMind ensure privacy for sexual health tracking?", response: "Sexual function logs are optional, password-protected, and never shared without explicit user consent. Data can be exported privately for clinician discussions." },
+
+  { id: 3575, category: 'chapter3', keywords: ['body image sexual dysfunction'], question: "What role does body image play in reproductive psychiatry sexual dysfunctions?", response: "Body image concerns during pregnancy, postpartum, and perimenopause frequently contribute to sexual avoidance, low desire, and distress." },
+
+  { id: 3576, category: 'chapter3', keywords: ['Luna educational content Chapter 3'], question: "How should Luna present Chapter 3 content?", response: "Luna should deliver concise, destigmatizing education on sexual function across reproductive stages while always emphasizing professional evaluation and offering CycleMind tracking tools." },
+
+  { id: 3577, category: 'chapter3', keywords: ['relationship factors sexual function'], question: "How do relationship factors intersect with sexual dysfunctions?", response: "Partner dynamics, communication, and relationship satisfaction significantly influence sexual function and are important targets in reproductive psychiatry." },
+
+  { id: 3578, category: 'chapter3', keywords: ['CycleMind feature ideas Chapter 3'], question: "What CycleMind features are inspired by Chapter 3?", response: "Private sexual wellness tracker (optional), reproductive-stage-specific sexual health education cards, and symptom correlation between sexual function, mood, and cycle phase." },
+
+  { id: 3579, category: 'chapter3', keywords: ['postpartum sexual recovery'], question: "What does Chapter 3 say about postpartum sexual recovery?", response: "Postpartum sexual recovery is highly variable and influenced by hormonal changes, fatigue, body image, breastfeeding, and relationship factors; open discussion with providers is encouraged." },
+
+  { id: 3580, category: 'chapter3', keywords: ['perimenopause sexual dysfunction'], question: "How does Chapter 3 address sexual dysfunction in perimenopause?", response: "Declining estrogen often leads to vaginal atrophy, dryness, and dyspareunia; these physical changes frequently interact with mood symptoms and require holistic care." },
+
+  { id: 3581, category: 'chapter3', keywords: ['Luna safety netting sexual health'], question: "What safety netting should Luna include for Chapter 3 topics?", response: "Luna should recommend prompt professional evaluation for persistent distress, pain, or sudden changes in sexual function or mood." },
+
+  { id: 3582, category: 'chapter3', keywords: ['integrated reproductive psychiatry sexual health'], question: "What is the core message of Chapter 3?", response: "Sexual health is an integral part of reproductive psychiatry; dysfunctions must be assessed and addressed within the context of hormonal transitions and mental health." },
+
+  { id: 3583, category: 'chapter3', keywords: ['CycleMind education library Chapter 3'], question: "How should CycleMind incorporate Chapter 3 into its education library?", response: "Create destigmatizing, evidence-based cards on common sexual dysfunctions across reproductive stages, with clear statements that professional care is essential." },
+
+  { id: 3584, category: 'chapter3', keywords: ['Chapter 3 key takeaway for app'], question: "What is the primary takeaway from Chapter 3 for CycleMind development?", response: "Sexual function is deeply connected to reproductive transitions and mental health; the app should offer optional, private, respectful tracking tools while maintaining strict clinical boundaries." },
+
+  { id: 3585, category: 'chapter3', keywords: ['Luna response boundaries Chapter 3'], question: "What overarching boundaries apply to Luna for Chapter 3 content?", response: "Luna must never provide sexual therapy, diagnose dysfunctions, or recommend treatments. All responses must remain educational and include a clear redirect to qualified specialists." },
 ];
