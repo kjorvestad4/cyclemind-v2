@@ -219,4 +219,36 @@ export const ragEntries = [
 
   // General Support
   { id: 1710, category: 'pregnancy', keywords: ['planning pregnancy with chronic hypertension'], question: "Can I have a healthy pregnancy with chronic hypertension?", response: "Yes, many people do. Good blood pressure control before and during pregnancy, close monitoring, low-dose aspirin, and a strong care team significantly improve outcomes for both you and your baby." },
+
+  // === NEW UpToDate Treatment of Hypertension in Pregnancy & Postpartum RAG Entries (IDs 1731–1743) ===
+  // Blood Pressure Measurement
+  { id: 1731, category: 'pregnancy', keywords: ['how to measure blood pressure accurately in pregnancy'], question: "How should blood pressure be measured during pregnancy?", response: "Use the correct cuff size, have the patient rest for 5 minutes with feet on the floor and arm supported at heart level. Avoid caffeine or smoking for 30–60 minutes before. Confirm high readings with repeat measurements. Home monitoring is very helpful between visits." },
+
+  // When to Treat
+  { id: 1732, category: 'pregnancy', keywords: ['when to treat high blood pressure in pregnancy'], question: "When should high blood pressure be treated during pregnancy?", response: "Severe hypertension (≥160/110) should be treated promptly (within 30–60 minutes). For milder chronic hypertension, treatment is usually started at ≥140/90. Decisions for new gestational hypertension or preeclampsia depend on how high the pressure is and how far along you are." },
+  { id: 1733, category: 'pregnancy', keywords: ['target blood pressure in pregnancy'], question: "What is the goal blood pressure during pregnancy if I have hypertension?", response: "Most experts aim to keep blood pressure below 140/90 after starting treatment. Very low pressures (below 120/80) are generally avoided because they can reduce blood flow to the baby." },
+
+  // Acute Treatment of Severe Hypertension
+  { id: 1734, category: 'pregnancy', keywords: ['treatment of severe hypertension in pregnancy'], question: "How is severe high blood pressure treated during pregnancy?", response: "Intravenous labetalol or hydralazine are commonly used first-line options. Oral immediate-release nifedipine can be used if IV access is not available. The goal is to lower pressure gradually and safely while monitoring the baby." },
+  { id: 1735, category: 'pregnancy', keywords: ['labetalol vs hydralazine in pregnancy'], question: "Which is better for severe high blood pressure in pregnancy — labetalol or hydralazine?", response: "Both are effective and considered safe. Labetalol is often preferred because it is easier to titrate and has a good safety profile. The choice depends on your heart rate, other medical conditions, and provider preference." },
+
+  // Maintenance Therapy
+  { id: 1736, category: 'pregnancy', keywords: ['safe blood pressure medications in pregnancy'], question: "Which blood pressure medications are commonly used during pregnancy?", response: "Labetalol and extended-release nifedipine are first-line choices for most people. Methyldopa is an older but still acceptable option. ACE inhibitors, ARBs, and some other drugs are not safe and should be avoided." },
+  { id: 1737, category: 'pregnancy', keywords: ['nifedipine in pregnancy'], question: "Is nifedipine safe during pregnancy?", response: "Yes, extended-release or intermediate-acting nifedipine is commonly used and considered safe. Immediate-release nifedipine is sometimes used for very high blood pressure when quick effect is needed, but extended-release is generally preferred for ongoing control." },
+
+  // Postpartum Hypertension
+  { id: 1738, category: 'postpartum', keywords: ['postpartum high blood pressure'], question: "Why does blood pressure often go up after giving birth?", response: "Blood pressure commonly rises in the first few days to a week after delivery as fluid shifts and pregnancy-related changes reverse. Close monitoring (in person or at home) is very important during this time." },
+  { id: 1739, category: 'postpartum', keywords: ['managing high blood pressure after birth'], question: "How is high blood pressure managed after delivery?", response: "Medications similar to those used in pregnancy (labetalol, nifedipine) are often continued or started. Brief use of furosemide can help if there is significant fluid retention. Blood pressure should be checked frequently in the first 1–2 weeks after going home." },
+
+  // Breastfeeding
+  { id: 1740, category: 'postpartum', keywords: ['blood pressure medication while breastfeeding'], question: "Which blood pressure medications are safe while breastfeeding?", response: "Labetalol, nifedipine, and several other common medications are generally considered compatible with breastfeeding. Always confirm with your provider or pediatrician, especially if your baby is premature or has other health issues." },
+
+  // Drugs to Avoid
+  { id: 1741, category: 'pregnancy', keywords: ['blood pressure medications to avoid in pregnancy'], question: "Which blood pressure medications should be avoided during pregnancy?", response: "ACE inhibitors, ARBs, and direct renin inhibitors are generally avoided because they can harm the baby's kidneys and development. Atenolol is also often avoided due to concerns about fetal growth. Always review your medications with your provider if you are planning pregnancy or become pregnant." },
+
+  // Long-Term Follow-Up
+  { id: 1742, category: 'postpartum', keywords: ['long term follow up after pregnancy hypertension'], question: "Do I need long-term follow-up after having high blood pressure in pregnancy?", response: "Yes. People who had hypertension, preeclampsia, or gestational hypertension in pregnancy have a higher lifetime risk of cardiovascular disease and chronic hypertension. Annual blood pressure checks and attention to other risk factors (weight, cholesterol, diabetes, lifestyle) are important." },
+
+  // General Support
+  { id: 1743, category: 'pregnancy', keywords: ['living with high blood pressure in pregnancy'], question: "What can I do to help manage high blood pressure during pregnancy?", response: "Take medications as prescribed, attend all prenatal visits, monitor blood pressure at home if recommended, eat a balanced diet, stay active as advised, get adequate rest, and report symptoms like headache, vision changes, or swelling promptly. A strong partnership with your care team makes a big difference." },
 ];
