@@ -267,4 +267,65 @@ export const fertilityRagEntries = [
   { id: 3524, category: 'chapter1', keywords: ['CycleMind inclusive language Chapter 1'], question: "How should CycleMind apply inclusive language from the Introduction when using Chapter 1 content?", response: "All cycle and reproductive tracking features and education should use affirming, non-assumptive language that acknowledges diverse gender identities and reproductive experiences." },
 
   { id: 3525, category: 'chapter1', keywords: ['Chapter 1 key takeaway for app'], question: "What is the primary takeaway from Chapter 1 for CycleMind development?", response: "The reproductive life cycle provides the physiologic framework for understanding mental health vulnerabilities across stages; CycleMind should make these stages trackable and understandable while always connecting users to professional care." },
+
+  // === Chapter 2: Gynecological Conditions and Mental Health (IDs 3526–3555) ===
+  { id: 3526, category: 'chapter2', keywords: ['gynecological conditions mental health overview'], question: "What does Chapter 2 of the Textbook of Women's Reproductive Mental Health cover?", response: "Chapter 2 examines common gynecological conditions (endometriosis, PCOS, chronic pelvic pain, fibroids, genito-pelvic pain/penetration disorder) and their bidirectional relationships with mental health disorders including depression, anxiety, trauma, and substance use." },
+
+  { id: 3527, category: 'chapter2', keywords: ['endometriosis mental health'], question: "What is the relationship between endometriosis and mental health per Chapter 2?", response: "Endometriosis is associated with higher rates of depression, anxiety, and chronic pain syndromes. Pain, infertility, and hormonal treatments contribute to psychosocial burden." },
+
+  { id: 3528, category: 'chapter2', keywords: ['PCOS mental health'], question: "What mental health associations are discussed for polycystic ovary syndrome (PCOS)?", response: "PCOS is linked to increased risk of depression, anxiety, eating disorders, and body image distress due to androgen excess, metabolic issues, and infertility concerns." },
+
+  { id: 3529, category: 'chapter2', keywords: ['chronic pelvic pain mental health'], question: "How does chronic pelvic pain intersect with mental health according to Chapter 2?", response: "Chronic pelvic pain frequently co-occurs with depression, anxiety, PTSD, and somatic symptom disorders. Bidirectional relationships exist between pain and psychiatric symptoms." },
+
+  { id: 3530, category: 'chapter2', keywords: ['CycleMind gynecological comorbidity tracking'], question: "How can CycleMind support users with gynecological conditions and mental health?", response: "CycleMind can include comorbidity trackers that log pelvic pain, PCOS symptoms, or endometriosis flares alongside mood, sleep, and anxiety to help users identify patterns and share data with clinicians." },
+
+  { id: 3531, category: 'chapter2', keywords: ['Luna boundaries gynecological conditions'], question: "What boundaries should Luna observe when discussing gynecological conditions from Chapter 2?", response: "Luna must emphasize she is not a medical provider and cannot diagnose or treat gynecological or psychiatric conditions. She can share general education and support symptom tracking but must always redirect to the user's gynecologist and psychiatrist." },
+
+  { id: 3532, category: 'chapter2', keywords: ['fibroids mental health'], question: "What mental health considerations are noted for uterine fibroids?", response: "Uterine fibroids can cause heavy bleeding, pain, and infertility stress that contribute to depression, anxiety, and reduced quality of life." },
+
+  { id: 3533, category: 'chapter2', keywords: ['GPPPD genito-pelvic pain penetration disorder'], question: "What is GPPPD and its mental health links per Chapter 2?", response: "Genito-pelvic pain/penetration disorder (GPPPD) involves pain with penetration and is often associated with anxiety, trauma history, and sexual dysfunction that require integrated mental health care." },
+
+  { id: 3534, category: 'chapter2', keywords: ['CycleMind pain mood correlation'], question: "How should CycleMind handle pain-mood correlations from gynecological conditions?", response: "CycleMind can generate reports showing temporal relationships between pelvic pain flares and mood/anxiety symptoms to support clinical discussions." },
+
+  { id: 3535, category: 'chapter2', keywords: ['hormonal treatments gynecological conditions mental health'], question: "What impact do hormonal treatments for gynecological conditions have on mental health?", response: "Hormonal therapies (e.g., GnRH agonists, progestins, combined contraceptives) used for endometriosis, PCOS, or fibroids can affect mood and require monitoring for psychiatric side effects." },
+
+  { id: 3536, category: 'chapter2', keywords: ['Luna response template Chapter 2'], question: "What template should Luna use for Chapter 2 topics?", response: "1. Disclaimer (not a clinician). 2. General educational summary. 3. Offer CycleMind tracking for symptoms. 4. Strong redirect to gynecologist and psychiatrist." },
+
+  { id: 3537, category: 'chapter2', keywords: ['infertility gynecological conditions'], question: "How does infertility related to gynecological conditions affect mental health?", response: "Infertility from endometriosis, PCOS, or fibroids is associated with grief, depression, anxiety, and relationship strain that warrant mental health support." },
+
+  { id: 3538, category: 'chapter2', keywords: ['CycleMind PCOS symptom tracker'], question: "What PCOS-specific tracking should CycleMind include?", response: "CycleMind can track irregular cycles, hirsutism, acne, weight, mood, and metabolic symptoms together with menstrual mental health markers." },
+
+  { id: 3539, category: 'chapter2', keywords: ['trauma gynecological pain'], question: "What role does trauma play in gynecological conditions per Chapter 2?", response: "History of trauma (including sexual trauma) is common in women with chronic pelvic pain and GPPPD and can exacerbate pain perception and psychiatric comorbidity." },
+
+  { id: 3540, category: 'chapter2', keywords: ['Luna boundaries pain conditions'], question: "What boundaries apply when Luna discusses chronic pelvic pain or endometriosis?", response: "Luna cannot assess or advise on pain management. She must limit responses to general information and strongly recommend evaluation by a gynecologist and mental health professional." },
+
+  { id: 3541, category: 'chapter2', keywords: ['Chapter 2 authors'], question: "Who authored Chapter 2?", response: "Brittney Bastow, M.D., M.Sc. and Pooja Lakshmin, M.D." },
+
+  { id: 3542, category: 'chapter2', keywords: ['mental health screening gynecological care'], question: "What screening recommendations are implied for gynecological conditions?", response: "Routine mental health screening is recommended in women with endometriosis, PCOS, chronic pelvic pain, and other gynecological disorders due to high psychiatric comorbidity." },
+
+  { id: 3543, category: 'chapter2', keywords: ['CycleMind comorbidity dashboard'], question: "What comorbidity dashboard feature should CycleMind include based on Chapter 2?", response: "A dedicated section showing overlapping gynecological and psychiatric symptoms with visualizations and exportable reports for shared care with providers." },
+
+  { id: 3544, category: 'chapter2', keywords: ['sexual dysfunction gynecological conditions'], question: "How are sexual dysfunctions addressed in Chapter 2?", response: "Sexual dysfunction (including dyspareunia and GPPPD) frequently co-occurs with gynecological conditions and mental health disorders and benefits from integrated treatment." },
+
+  { id: 3545, category: 'chapter2', keywords: ['Luna educational content Chapter 2'], question: "How should Luna present Chapter 2 educational content?", response: "Luna should deliver concise summaries of gynecological–mental health links while always encouraging professional evaluation and offering CycleMind symptom logging tools." },
+
+  { id: 3546, category: 'chapter2', keywords: ['endometriosis depression anxiety'], question: "What specific psychiatric risks are noted for endometriosis?", response: "Women with endometriosis have elevated rates of depression and anxiety, partly mediated by chronic pain, inflammation, and infertility stress." },
+
+  { id: 3547, category: 'chapter2', keywords: ['PCOS body image mental health'], question: "What body image and mental health issues are linked to PCOS in Chapter 2?", response: "Androgen excess symptoms (hirsutism, acne, alopecia) and metabolic changes in PCOS often lead to body image distress, disordered eating, and depression." },
+
+  { id: 3548, category: 'chapter2', keywords: ['CycleMind export for gynecologist'], question: "How can CycleMind data support gynecological care?", response: "Users can export symptom timelines that correlate gynecological symptoms (pain, bleeding, cycle irregularity) with mood and anxiety for discussion with their gynecologist or psychiatrist." },
+
+  { id: 3549, category: 'chapter2', keywords: ['Luna disclaimer Chapter 2'], question: "What disclaimer is mandatory for Chapter 2 topics?", response: "Luna must state: 'I am not a doctor. This is general information from the textbook. Please consult your gynecologist and psychiatrist for individualized care.'" },
+
+  { id: 3550, category: 'chapter2', keywords: ['fibroids depression'], question: "What mental health impacts of fibroids are discussed?", response: "Heavy bleeding, pain, and pressure symptoms from fibroids can contribute to anemia-related fatigue, depression, and anxiety." },
+
+  { id: 3551, category: 'chapter2', keywords: ['GPPPD anxiety trauma'], question: "What psychological factors are associated with GPPPD?", response: "GPPPD is frequently linked to anxiety disorders, history of sexual trauma, and hypervigilance that require trauma-informed mental health care." },
+
+  { id: 3552, category: 'chapter2', keywords: ['CycleMind feature ideas Chapter 2'], question: "What CycleMind features are inspired by Chapter 2?", response: "Comorbidity symptom trackers for endometriosis/PCOS/pelvic pain, pain-mood correlation charts, and educational cards linking gynecological conditions with mental health." },
+
+  { id: 3553, category: 'chapter2', keywords: ['integrated care gynecological mental health'], question: "What does Chapter 2 emphasize about integrated care?", response: "Integrated gynecological and psychiatric care is essential for women with chronic gynecological conditions due to high rates of psychiatric comorbidity and bidirectional influences." },
+
+  { id: 3554, category: 'chapter2', keywords: ['Luna response safety netting Chapter 2'], question: "What safety netting should Luna include for Chapter 2 topics?", response: "Luna should recommend prompt evaluation for severe pain, mood changes, or suicidal thoughts and direct users to their healthcare team or emergency services when appropriate." },
+
+  { id: 3555, category: 'chapter2', keywords: ['Chapter 2 key takeaway for app'], question: "What is the primary takeaway from Chapter 2 for CycleMind?", response: "Gynecological conditions and mental health are deeply intertwined; the app should support tracking of both domains to empower users and facilitate better interdisciplinary care." },
 ];
