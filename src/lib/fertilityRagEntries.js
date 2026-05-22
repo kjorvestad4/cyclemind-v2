@@ -633,4 +633,65 @@ export const fertilityRagEntries = [
   { id: 3704, category: 'chapter7', keywords: ['perimenopause LGBTQ+ considerations'], question: "Does Chapter 7 address diverse populations?", response: "The chapter notes the need for inclusive care and acknowledges that data on gender-diverse individuals in perimenopause are limited but growing." },
 
   { id: 3705, category: 'chapter7', keywords: ['perimenopause lifetime course'], question: "What is the typical course of perimenopause?", response: "Perimenopause lasts 4–8 years on average, beginning around age 47. Symptoms peak during the late transition and generally improve after menopause." },
+
+  // === Chapter 8: Psychiatric Diagnosis and Treatment During Pregnancy (IDs 3706–3735) ===
+  { id: 3706, category: 'chapter8', keywords: ['psychiatric diagnosis treatment pregnancy overview'], question: "What does Chapter 8 of the Textbook of Women's Reproductive Mental Health cover?", response: "Chapter 8 presents a practical clinical framework for diagnosing and treating psychiatric disorders during pregnancy, including risk-benefit analysis, medication safety, non-pharmacologic options, and collaborative care with obstetrics." },
+
+  { id: 3707, category: 'chapter8', keywords: ['risk benefit analysis pregnancy psychotropics'], question: "What is the core approach to treatment decisions in pregnancy?", response: "Chapter 8 emphasizes individualized risk-benefit analysis weighing untreated psychiatric illness risks against medication exposure risks, using the most up-to-date safety data." },
+
+  { id: 3708, category: 'chapter8', keywords: ['untreated psychiatric illness pregnancy risks'], question: "What risks are associated with untreated psychiatric illness in pregnancy?", response: "Untreated depression, anxiety, bipolar disorder, or psychosis increase risks of preterm birth, low birth weight, preeclampsia, poor prenatal care, substance use, and postpartum worsening." },
+
+  { id: 3709, category: 'chapter8', keywords: ['CycleMind pregnancy mode'], question: "How can CycleMind support pregnant users per Chapter 8?", response: "CycleMind can switch to a pregnancy-specific mode with mood, sleep, anxiety, and functioning trackers to help users monitor symptoms and generate reports for their perinatal psychiatrist." },
+
+  { id: 3710, category: 'chapter8', keywords: ['Luna boundaries pregnancy psychiatry'], question: "What boundaries should Luna observe for pregnancy mental health topics?", response: "Luna must state she is not a perinatal psychiatrist and cannot make treatment recommendations. She can share general educational information from Chapter 8 and support symptom tracking but must always redirect to the user's psychiatrist and OB/GYN." },
+
+  { id: 3711, category: 'chapter8', keywords: ['psychotropic medication pregnancy'], question: "How does Chapter 8 address psychotropic medications in pregnancy?", response: "Chapter 8 reviews safety data for antidepressants, mood stabilizers, antipsychotics, and anxiolytics, emphasizing that decisions must balance maternal illness severity with fetal risks and include shared decision-making." },
+
+  { id: 3712, category: 'chapter8', keywords: ['non-pharmacologic treatments pregnancy'], question: "What non-pharmacologic options are recommended?", response: "Psychotherapy (CBT, IPT), bright light therapy, exercise, and supportive care are first-line or adjunctive options for mild-to-moderate symptoms during pregnancy." },
+
+  { id: 3713, category: 'chapter8', keywords: ['collaborative care pregnancy'], question: "What model of care is advocated in Chapter 8?", response: "Close collaboration between reproductive psychiatrists, obstetricians, and other specialists is essential for optimal outcomes in pregnant women with psychiatric illness." },
+
+  { id: 3714, category: 'chapter8', keywords: ['CycleMind symptom tracking pregnancy'], question: "What pregnancy-specific tracking should CycleMind include?", response: "Mood, anxiety, sleep, functioning, and side-effect tracking tailored to each trimester, with easy export for the perinatal mental health team." },
+
+  { id: 3715, category: 'chapter8', keywords: ['Luna response template Chapter 8'], question: "What template should Luna use for pregnancy psychiatry questions?", response: "1. Clear disclaimer. 2. General educational summary from Chapter 8. 3. Offer CycleMind pregnancy tracking. 4. Strong redirect to perinatal psychiatrist and OB/GYN." },
+
+  { id: 3716, category: 'chapter8', keywords: ['postpartum planning pregnancy'], question: "Does Chapter 8 address postpartum planning?", response: "Yes. Chapter 8 stresses proactive planning for the high-risk postpartum period, including medication adjustments, sleep support, and close monitoring." },
+
+  { id: 3717, category: 'chapter8', keywords: ['Chapter 8 authors'], question: "Who authored Chapter 8?", response: "Elizabeth M. Fitelson, M.D., Lauren M. Osborne, M.D., and Jennifer L. Payne, M.D." },
+
+  { id: 3718, category: 'chapter8', keywords: ['depression pregnancy treatment'], question: "What is the recommended approach to depression in pregnancy?", response: "For moderate-to-severe depression, antidepressants (especially SSRIs with the most safety data) are often continued or initiated after risk-benefit discussion." },
+
+  { id: 3719, category: 'chapter8', keywords: ['bipolar disorder pregnancy'], question: "How is bipolar disorder managed in pregnancy per Chapter 8?", response: "Mood stabilizer selection requires careful balancing of teratogenic risks versus relapse risk; lithium, lamotrigine, and atypical antipsychotics are discussed with monitoring recommendations." },
+
+  { id: 3720, category: 'chapter8', keywords: ['anxiety disorders pregnancy'], question: "What guidance is given for anxiety disorders in pregnancy?", response: "CBT is first-line; SSRIs or benzodiazepines (short-term, low-dose) may be considered when non-pharmacologic approaches are insufficient." },
+
+  { id: 3721, category: 'chapter8', keywords: ['CycleMind data export pregnancy'], question: "How can CycleMind data support prenatal psychiatric care?", response: "Users can export trimester-specific mood and symptom timelines to share with their perinatal mental health team for informed treatment planning." },
+
+  { id: 3722, category: 'chapter8', keywords: ['Luna disclaimer pregnancy treatment'], question: "What disclaimer is mandatory for Chapter 8 topics?", response: "Luna must state she is not a perinatal psychiatrist and cannot recommend medications or treatment plans. This is general information only." },
+
+  { id: 3723, category: 'chapter8', keywords: ['psychosis pregnancy'], question: "How is psychosis addressed in pregnancy?", response: "Acute psychosis in pregnancy is a psychiatric emergency requiring prompt treatment with antipsychotics and close obstetric monitoring." },
+
+  { id: 3724, category: 'chapter8', keywords: ['Luna safety netting pregnancy'], question: "What safety netting should Luna include?", response: "Luna should advise immediate contact with the perinatal psychiatrist or OB/GYN for worsening mood, suicidal thoughts, or any safety concerns during pregnancy." },
+
+  { id: 3725, category: 'chapter8', keywords: ['integrated obstetric psychiatric care'], question: "What is the core message of Chapter 8?", response: "Psychiatric illness in pregnancy requires a thoughtful, individualized, collaborative approach that prioritizes maternal and fetal safety through shared decision-making." },
+
+  { id: 3726, category: 'chapter8', keywords: ['Chapter 8 key takeaway for app'], question: "What is the primary takeaway from Chapter 8 for CycleMind?", response: "Pregnancy is a high-stakes period for mental health; the app should provide optional, respectful tracking tools and education while always directing users to their clinical team." },
+
+  { id: 3727, category: 'chapter8', keywords: ['Luna response boundaries Chapter 8'], question: "What overarching boundaries apply to Luna for Chapter 8 content?", response: "Luna must never interpret symptoms, recommend medications, or alter treatment plans. All responses remain general education and end with a clinician redirect." },
+
+  { id: 3728, category: 'chapter8', keywords: ['SSRIs pregnancy safety'], question: "What does Chapter 8 say about SSRIs in pregnancy?", response: "SSRIs (particularly sertraline) have the most reassuring safety data; risks of specific malformations are small but must be discussed in context of untreated illness risks." },
+
+  { id: 3729, category: 'chapter8', keywords: ['CycleMind pregnancy education'], question: "How should CycleMind incorporate Chapter 8 education?", response: "Create trimester-aware educational cards on psychiatric treatment considerations in pregnancy with clear statements about the need for professional care." },
+
+  { id: 3730, category: 'chapter8', keywords: ['perinatal mental health planning'], question: "Does Chapter 8 address planning for the postpartum period?", response: "Yes. Proactive planning for medication adjustments, sleep support, and close monitoring in the immediate postpartum period is strongly recommended." },
+
+  { id: 3731, category: 'chapter8', keywords: ['Luna educational content Chapter 8'], question: "How should Luna present Chapter 8 content?", response: "Luna should deliver balanced, non-directive education on the risk-benefit framework while offering CycleMind tracking and always emphasizing consultation with the clinical team." },
+
+  { id: 3732, category: 'chapter8', keywords: ['anxiety OCD pregnancy'], question: "What guidance is provided for anxiety and OCD in pregnancy?", response: "CBT is preferred; SSRIs are commonly used when needed, with careful discussion of risks versus benefits of untreated illness." },
+
+  { id: 3733, category: 'chapter8', keywords: ['CycleMind feature ideas Chapter 8'], question: "What CycleMind features are inspired by Chapter 8?", response: "Pregnancy-mode symptom tracker, trimester-specific mood/sleep logs, treatment response tracking, and clinician-export functionality." },
+
+  { id: 3734, category: 'chapter8', keywords: ['Luna safety netting Chapter 8'], question: "What safety netting should Luna include for pregnancy topics?", response: "Luna should direct users with worsening psychiatric symptoms, suicidal ideation, or safety concerns to contact their perinatal mental health team or emergency services immediately." },
+
+  { id: 3735, category: 'chapter8', keywords: ['Chapter 8 key takeaway for app'], question: "What is the primary takeaway from Chapter 8 for CycleMind development?", response: "Pregnancy requires a nuanced, collaborative approach to psychiatric care; the app should support symptom monitoring and education while maintaining strict clinical boundaries." },
 ];
