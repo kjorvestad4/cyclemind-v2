@@ -1449,6 +1449,31 @@ const RAG_KNOWLEDGE_BASE = [
   // General Support
   { id: 1487, category: 'postpartum', keywords: ['getting help for postpartum depression'], question: "What should I do if I think I have postpartum depression?", response: "Reach out to your OB, midwife, or primary care provider. Screening and talking openly are the first steps. Treatment (therapy, medication, or both) is effective for most people. You deserve support." },
   { id: 1488, category: 'postpartum', keywords: ['postpartum depression treatment overview'], question: "How is postpartum depression treated?", response: "Treatment often includes therapy (such as cognitive behavioral therapy), antidepressant medication when appropriate, and strong social support. Many people improve significantly with the right help. Your provider will work with you to find the best plan, including considerations for breastfeeding." },
+
+  // === NEW UpToDate Postpartum Paternal Depression RAG Entries (IDs 1520–1531) ===
+  // Overview
+  { id: 1520, category: 'postpartum', keywords: ['postpartum depression in fathers'], question: "Can fathers get postpartum depression?", response: "Yes. New fathers can develop depressive symptoms or major depression after their partner gives birth. It is sometimes called paternal postnatal depression. It is real, common enough to matter, and treatable." },
+  { id: 1521, category: 'postpartum', keywords: ['how common is depression in new fathers'], question: "How common is depression in new fathers?", response: "Studies using clinical interviews suggest that about 3 to 5 percent of new fathers experience major depression in the first year after birth. Rates may be higher when using screening questionnaires. It is less common than in mothers but still significant." },
+
+  // Risk Factors
+  { id: 1522, category: 'postpartum', keywords: ['risk factors for paternal postpartum depression'], question: "What increases the risk of depression in new fathers?", response: "Key risk factors include a personal history of depression, depression or anxiety during the pregnancy, unplanned pregnancy, poor social support, financial stress or unemployment, relationship difficulties, and having a partner who is experiencing postpartum depression." },
+  { id: 1523, category: 'postpartum', keywords: ['partner depression and father depression'], question: "If my partner has postpartum depression, does that affect me?", response: "Yes. When one parent is depressed, the other parent's risk of depression also increases. Supporting each other and seeking help together can make a big difference for the whole family." },
+
+  // Clinical Features
+  { id: 1524, category: 'postpartum', keywords: ['symptoms of depression in new fathers'], question: "What does depression look like in new fathers?", response: "Symptoms are similar to depression in general: persistent sadness, loss of interest or pleasure, fatigue, changes in sleep or appetite, irritability, difficulty concentrating, feelings of worthlessness, and sometimes thoughts of self-harm. In fathers, it may also show up as withdrawal, anger, or increased substance use." },
+
+  // Impact on Family
+  { id: 1525, category: 'postpartum', keywords: ['paternal depression and bonding with baby'], question: "Can a father's depression affect bonding with the baby?", response: "Yes. Postpartum paternal depression can make it harder to feel connected, engaged, or responsive with the baby. Depressed fathers may read, play, or interact less, and sometimes show more negative parenting behaviors. Getting help can improve bonding." },
+  { id: 1526, category: 'postpartum', keywords: ['effects of father depression on child development'], question: "Can a father's postpartum depression affect the child?", response: "Research suggests it can be associated with language delays, behavioral problems, hyperactivity, and emotional difficulties in children. Supporting the father's mental health is an important part of supporting the child's development." },
+
+  // Screening & When to Seek Help
+  { id: 1527, category: 'postpartum', keywords: ['screening fathers for postpartum depression'], question: "Should new fathers be screened for depression?", response: "Yes. Screening new fathers (using tools like the Edinburgh Postnatal Depression Scale or PHQ-9) is recommended when support systems are in place. Many fathers do not bring it up on their own, so proactive screening helps." },
+  { id: 1528, category: 'postpartum', keywords: ['when should a new father get help for depression'], question: "When should a new father seek help for how he's feeling?", response: "If sadness, irritability, withdrawal, or loss of interest lasts more than two weeks and affects daily life or parenting, it's worth reaching out. Early support helps both the father and the family." },
+  { id: 1529, category: 'postpartum', keywords: ['thoughts of self harm in new fathers'], question: "What if a new father is having thoughts of harming himself?", response: "This is serious. Encourage him to seek immediate help by calling 911, going to the ER, or contacting the 988 Suicide & Crisis Lifeline (call or text 988). Postpartum depression in fathers is treatable, and help is available." },
+
+  // Management
+  { id: 1530, category: 'postpartum', keywords: ['treatment for postpartum depression in fathers'], question: "How is postpartum depression in fathers treated?", response: "Treatment is similar to general depression and often includes therapy (such as cognitive behavioral therapy), medication when appropriate, and support. Programs that include parenting skills and father-infant bonding activities can be especially helpful." },
+  { id: 1531, category: 'postpartum', keywords: ['support for new fathers mental health'], question: "What kind of support helps new fathers with depression?", response: "Therapy, medication if needed, peer support, and involving fathers in parenting education and bonding activities all help. Treating paternal depression benefits the father, the partner, and the child." },
 ];
 
 const EMOTIONAL_CATEGORIES = new Set(['emotional', 'life_events', 'postpartum']);
