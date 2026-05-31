@@ -782,13 +782,16 @@ export const ragKnowledgeBase = [
 ];
 
 // ============================================================
-// Import and merge fertilityRagEntries (IDs 3306–4185, Chapters 1–23)
-// These are kept in their own file due to size
+// Import and merge all additional RAG entry files
 // ============================================================
 import { fertilityRagEntries } from './fertilityRagEntries';
+import { ragEntriesMid } from './ragEntriesMid';
+import { ragEntriesPregnancy } from './ragEntriesPregnancy';
 
-// The complete master export merges both arrays
+// The complete master export merges all arrays
 export const allRagEntries = [
   ...ragKnowledgeBase,
+  ...ragEntriesMid,
+  ...ragEntriesPregnancy,
   ...fertilityRagEntries,
 ];
