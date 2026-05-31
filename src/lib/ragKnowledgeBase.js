@@ -787,11 +787,15 @@ export const ragKnowledgeBase = [
 import { fertilityRagEntries } from './fertilityRagEntries';
 import { ragEntriesMid } from './ragEntriesMid';
 import { ragEntriesPregnancy } from './ragEntriesPregnancy';
+import { ragEntriesClinical1 } from './ragEntriesClinical1';
+import { ragEntriesClinical2 } from './ragEntriesClinical2';
 
 // The complete master export merges all arrays
 export const allRagEntries = [
   ...ragKnowledgeBase,
   ...ragEntriesMid,
   ...ragEntriesPregnancy,
+  ...ragEntriesClinical1,
+  ...ragEntriesClinical2,
   ...fertilityRagEntries,
 ];
