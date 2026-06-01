@@ -81,15 +81,15 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
       return;
     }
 
-    let greeting = "Hi, I'm Luna 🌙 — your CycleMind companion. How are you feeling today?";
-    if (fertilityMode) greeting += " I'm here to support your fertility journey.";
-    else if (menopauseStage) greeting += ` I'm here to support you through menopause (${menopauseStage}).`;
-    else if (cycleDay) greeting += ` You're on cycle day ${cycleDay} — I'm here to listen.`;
+    let greeting = "Hello, I'm Luna — your CycleMind companion. How are you feeling today?";
+    if (fertilityMode) greeting += " I'm here to support you through your fertility journey.";
+    else if (menopauseStage) greeting += ` I'm here to support you through this transition (${menopauseStage}).`;
+    else if (cycleDay) greeting += ` You're on cycle day ${cycleDay}. I'm here to listen.`;
 
     setMessages([{
       role: 'assistant',
       content: greeting,
-      disclaimer: "This is not a substitute for professional medical advice. Please consult your doctor or a mental health professional.",
+      disclaimer: "This information is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult your doctor or a qualified mental health professional with questions about your health.",
       source: 'rag',
       suggestedActions: ["Track today's symptoms", "Cycle phase tips", "I need support"],
       flags: { escalate: false, crisis: false }
@@ -130,6 +130,7 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
         content: botReply.mainContent || botReply.message || '',
         disclaimer: botReply.disclaimer || null,
         source: botReply.source || null,
+        ragTopic: botReply.ragTopic || null,
         suggestedActions: botReply.suggestedActions || [],
         flags: botReply.flags || { escalate: false, crisis: false },
         detectedSymptoms: botReply.detectedSymptoms || [],
@@ -439,10 +440,17 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
                   </div>
                 )}
 
+                {/* RAG source badge */}
+                {msg.role === 'assistant' && msg.ragTopic && (
+                  <p className="mt-2 text-[9px] text-teal-500 dark:text-teal-600 font-medium uppercase tracking-wide">
+                    Clinical reference: {msg.ragTopic.replace(/_/g, ' ')}
+                  </p>
+                )}
+
                 {/* Disclaimer */}
                 {msg.role === 'assistant' && msg.disclaimer && (
                   <p className="mt-3 text-[10px] text-muted-foreground border-t border-teal-100 dark:border-teal-900 pt-2 leading-snug">
-                    ⚕️ {msg.disclaimer}
+                    This information is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult your doctor or a qualified mental health professional.
                   </p>
                 )}
               </div>
