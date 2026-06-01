@@ -1,6 +1,8 @@
-// ============================================================
 // Master CycleMind RAG Knowledge Base — 4245 entries — consolidated on 2026-06-01
-// ALL entries from all source files are merged into allRagEntries / ragKnowledgeBase:
+// Single consolidated master RAG file. All source files are imported and merged here.
+// Export `allRagEntries` is the deduplicated master array used everywhere in the app.
+// ============================================================
+// Source files merged:
 //   IDs 1–50:    lib/lunaResponseLibrary.js (different format, kept as LUNA_RESPONSE_LIBRARY)
 //   IDs 51–800:  PMDD lifestyle, medication, support, postpartum, pregnancy, perimenopause, fertility, wellness, app
 //   IDs 581–1084: lib/ragEntriesMid.js (safety, TCAs, MAOIs, depression, anxiety, exercise, stress)
@@ -786,7 +788,7 @@ export const ragKnowledgeBase = [
 ];
 
 // ============================================================
-// Import and merge all additional RAG entry files
+// Import and merge all source RAG entry files
 // ============================================================
 import { fertilityRagEntries } from './fertilityRagEntries';
 import { ragEntriesMid } from './ragEntriesMid';
@@ -794,8 +796,8 @@ import { ragEntriesPregnancy } from './ragEntriesPregnancy';
 import { ragEntriesClinical1 } from './ragEntriesClinical1';
 import { ragEntriesClinical2 } from './ragEntriesClinical2';
 
-// The complete master export merges all arrays
-export const allRagEntries = [
+// Deduplicate by id then export as the master ragKnowledgeBase array
+const _merged = [
   ...ragKnowledgeBase,
   ...ragEntriesMid,
   ...ragEntriesPregnancy,
@@ -803,6 +805,9 @@ export const allRagEntries = [
   ...ragEntriesClinical2,
   ...fertilityRagEntries,
 ];
-
-// Alias: masterRagEntries export (same data as allRagEntries, for external consumers)
-export { allRagEntries as masterRagEntries };
+const _seen = new Set();
+export const allRagEntries = _merged.filter(e => {
+  if (_seen.has(e.id)) return false;
+  _seen.add(e.id);
+  return true;
+});
