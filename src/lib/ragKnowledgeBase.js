@@ -1,10 +1,14 @@
 // ============================================================
-// CycleMind Luna — MASTER RAG Knowledge Base (Single File)
-// ALL entries consolidated here:
-//   IDs 1–50:    lib/lunaResponseLibrary.js (different format/system, kept separate)
+// Master CycleMind RAG Knowledge Base — 4245 entries — consolidated on 2026-06-01
+// ALL entries from all source files are merged into allRagEntries / ragKnowledgeBase:
+//   IDs 1–50:    lib/lunaResponseLibrary.js (different format, kept as LUNA_RESPONSE_LIBRARY)
 //   IDs 51–800:  PMDD lifestyle, medication, support, postpartum, pregnancy, perimenopause, fertility, wellness, app
-//   IDs 1520–3495: Postpartum, fertility, pregnancy, textbook intro entries
-//   IDs 3496–4185: fertilityRagEntries (Chapters 1–23 of textbook)
+//   IDs 581–1084: lib/ragEntriesMid.js (safety, TCAs, MAOIs, depression, anxiety, exercise, stress)
+//   IDs 1085–1395: lib/ragEntriesPregnancy.js (prenatal, nutrition, ectopic, postpartum clinical)
+//   IDs 1386–2200: lib/ragEntriesClinical1.js (postpartum physiology, menopause, menstrual, cancer, sexual health, bone health)
+//   IDs 2200–3305 + 4186–4245: lib/ragEntriesClinical2.js (psych therapies, depression, anxiety, OCD, PTSD, eating disorders, forensic, appendix)
+//   IDs 1520–3495: Postpartum, fertility, pregnancy, textbook intro entries (this file)
+//   IDs 3306–4185: lib/fertilityRagEntries.js (Chapters 1–23 fertility/reproductive psychiatry)
 // ============================================================
 
 export const ragKnowledgeBase = [
@@ -799,3 +803,6 @@ export const allRagEntries = [
   ...ragEntriesClinical2,
   ...fertilityRagEntries,
 ];
+
+// Alias: masterRagEntries export (same data as allRagEntries, for external consumers)
+export { allRagEntries as masterRagEntries };

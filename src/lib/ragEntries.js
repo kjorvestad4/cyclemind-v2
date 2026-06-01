@@ -7,4 +7,4 @@
 // IDs 2200–3305 + 4186–4245: lib/ragEntriesClinical2.js (psych therapies, depression, anxiety, OCD, PTSD, eating disorders, forensic, appendix)
 // IDs 3306–4185: lib/fertilityRagEntries.js (Chapters 1–23 fertility/reproductive psychiatry)
 
-export { allRagEntries as ragEntries } from './ragKnowledgeBase';
+export { allRagEntries as ragEntries, allRagEntries as ragKnowledgeBase } from './ragKnowledgeBase';
