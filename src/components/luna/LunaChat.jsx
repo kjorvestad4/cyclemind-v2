@@ -10,6 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
+
 // Actions that should navigate to the log page instead of sending a chat message
 const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log', 'log my mood today', 'log today', 'log my symptoms', 'log symptoms today', 'track my symptoms today'];
 // Actions that should navigate to the journal section of the log page
@@ -45,6 +46,7 @@ function saveSession(messages, savedIndexes) {
 
 export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fertilityMode, menopauseStage, onClose }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' or 'notifications'
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -167,7 +169,9 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
   const saveSymptoms = async (symptoms, msgIdx) => {
     try {
       const today = format(new Date(), 'yyyy-MM-dd');
-      const existing = await base44.entities.DailyEntry.filter({ date: today });
+      const user = await base44.auth.me();
+      // Filter by both date and owner so we find the correct entry
+      const existing = await base44.entities.DailyEntry.filter({ date: today, created_by_id: user.id });
       const entry = existing[0];
       const newSymptoms = symptoms.map(s => typeof s === 'string' ? { name: s, severity: 3 } : s);
       if (entry) {
@@ -179,6 +183,8 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
       } else {
         await base44.entities.DailyEntry.create({ date: today, custom_symptoms: newSymptoms });
       }
+      // Invalidate the DailyLog query cache so it picks up the new data immediately
+      queryClient.invalidateQueries({ queryKey: ['entries'] });
       setSavedSymptomIndexes(prev => new Set([...prev, msgIdx]));
       toast.success(`${newSymptoms.length} symptom(s) saved to today's log!`);
     } catch (err) {
