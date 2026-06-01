@@ -444,6 +444,11 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
                 {msg.role === 'assistant' && msg.ragTopic && (
                   <p className="mt-2 text-[9px] text-teal-500 dark:text-teal-600 font-medium uppercase tracking-wide">
                     Clinical reference: {msg.ragTopic.replace(/_/g, ' ')}
+                    {msg.source && msg.source !== 'ollama_primary' && (
+                      <span className="ml-2 text-slate-400 normal-case tracking-normal">
+                        · via {msg.source === 'invokellm_fallback' ? 'cloud' : msg.source === 'grok_fallback' ? 'Grok' : 'cached'}
+                      </span>
+                    )}
                   </p>
                 )}
 

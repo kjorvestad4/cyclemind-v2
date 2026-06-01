@@ -249,61 +249,92 @@ Deno.serve(async (req) => {
     const userPrompt = lastUserMsg;
 
     let llmResponse = null;
-    let source = 'rag_grounded_llm';
+    let source = 'ollama_primary';
 
-    // Primary LLM call
+    const ollamaMessages = [
+      { role: 'system', content: systemPrompt },
+      ...messages.slice(0, -1).map(m => ({ role: m.role, content: m.content })),
+      { role: 'user', content: lastUserMsg },
+    ];
+
+    // ── TIER 1: Ollama local model ───────────────────────────────────────────
     try {
-      const raw = await base44.integrations.Core.InvokeLLM({
-        prompt: userPrompt,
-        file_urls: [],
-        add_context_from_internet: false,
-        model: 'gpt_5_mini',
+      const ollamaResp = await fetch('http://localhost:11434/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama3.2',
+          messages: ollamaMessages,
+          stream: false,
+          options: {
+            temperature: 0.7,
+            num_predict: mode === 'quick' ? 200 : 500,
+          },
+        }),
+        signal: AbortSignal.timeout(15000),
       });
 
-      // ── TIER 3: Coherence check — fallback to Grok/XAPI if failed ─────────
-      const responseText = typeof raw === 'string' ? raw : JSON.stringify(raw);
-      if (checkCoherence(responseText, lastUserMsg, ragResult?.topic)) {
-        llmResponse = responseText;
-      } else {
-        // Coherence failed — try Grok via XAI API (XAPI fallback)
-        throw new Error('Coherence check failed — triggering XAPI fallback');
-      }
-    } catch (_primaryErr) {
-      // XAPI / Grok fallback
-      try {
-        const xApiKey = Deno.env.get('XAI_API_KEY');
-        if (!xApiKey) throw new Error('XAI_API_KEY not set');
+      if (!ollamaResp.ok) throw new Error(`Ollama error: ${ollamaResp.status}`);
+      const ollamaData = await ollamaResp.json();
+      const ollamaText = ollamaData?.message?.content || null;
 
-        const grokMessages = [
-          { role: 'system', content: systemPrompt },
-          ...messages.slice(0, -1).map(m => ({ role: m.role, content: m.content })),
-          { role: 'user', content: lastUserMsg },
-        ];
-        const grokResp = await fetch('https://api.x.ai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${xApiKey}`,
-          },
-          body: JSON.stringify({
-            model: 'grok-3-mini',
-            messages: grokMessages,
-            max_tokens: mode === 'quick' ? 200 : 500,
-            temperature: 0.7,
-          }),
+      if (checkCoherence(ollamaText, lastUserMsg, ragResult?.topic)) {
+        llmResponse = ollamaText;
+      } else {
+        throw new Error('Ollama coherence check failed — triggering Tier 2');
+      }
+    } catch (ollamaErr) {
+      console.warn('Ollama Tier 1 failed:', ollamaErr.message);
+
+      // ── TIER 2: InvokeLLM (cloud fallback) ──────────────────────────────
+      try {
+        const raw = await base44.integrations.Core.InvokeLLM({
+          prompt: `${systemPrompt}\n\n${lastUserMsg}`,
+          file_urls: [],
+          add_context_from_internet: false,
+          model: 'gpt_5_mini',
         });
 
-        if (!grokResp.ok) throw new Error(`Grok API error: ${grokResp.status}`);
-        const grokData = await grokResp.json();
-        llmResponse = grokData.choices?.[0]?.message?.content || null;
-        source = 'grok_fallback';
-      } catch (grokErr) {
-        console.error('Grok fallback also failed:', grokErr);
-        // Hard fallback — use RAG summary directly if available
-        llmResponse = ragResult?.summary
-          ? `Based on what you've shared, here is some information that may be helpful:\n\n${ragResult.summary}`
-          : "I'm here with you. It sounds like you may be going through something difficult. While I work through a brief technical issue, please know that your feelings are valid. If you need support right now, consider reaching out to your healthcare provider or calling the 988 Lifeline.";
-        source = 'rag_direct_fallback';
+        const responseText = typeof raw === 'string' ? raw : JSON.stringify(raw);
+        if (checkCoherence(responseText, lastUserMsg, ragResult?.topic)) {
+          llmResponse = responseText;
+          source = 'invokellm_fallback';
+        } else {
+          throw new Error('InvokeLLM coherence check failed — triggering Tier 3');
+        }
+      } catch (_tier2Err) {
+
+        // ── TIER 3: Grok / XAPI fallback ──────────────────────────────────
+        try {
+          const xApiKey = Deno.env.get('XAI_API_KEY');
+          if (!xApiKey) throw new Error('XAI_API_KEY not set');
+
+          const grokResp = await fetch('https://api.x.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${xApiKey}`,
+            },
+            body: JSON.stringify({
+              model: 'grok-3-mini',
+              messages: ollamaMessages,
+              max_tokens: mode === 'quick' ? 200 : 500,
+              temperature: 0.7,
+            }),
+          });
+
+          if (!grokResp.ok) throw new Error(`Grok API error: ${grokResp.status}`);
+          const grokData = await grokResp.json();
+          llmResponse = grokData.choices?.[0]?.message?.content || null;
+          source = 'grok_fallback';
+        } catch (grokErr) {
+          console.error('Grok Tier 3 also failed:', grokErr);
+          // Hard fallback — RAG summary or generic message
+          llmResponse = ragResult?.summary
+            ? `Based on what you've shared, here is some information that may be helpful:\n\n${ragResult.summary}`
+            : "I'm here with you. It sounds like you may be going through something difficult. While I work through a brief technical issue, please know that your feelings are valid. If you need support right now, consider reaching out to your healthcare provider or calling the 988 Lifeline.";
+          source = 'rag_direct_fallback';
+        }
       }
     }
 
