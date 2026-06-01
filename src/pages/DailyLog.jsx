@@ -718,7 +718,7 @@ export default function DailyLog() {
         onChange={(v) => { setVitals(v); setHasUnsavedChanges(true); }}
       />
 
-      <Section title="Custom Symptoms">
+      <Section title="Custom Symptoms" defaultOpen={customSymptoms.length > 0}>
         <div className="pt-1">
           <CustomSymptoms
             value={customSymptoms}
