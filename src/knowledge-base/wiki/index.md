@@ -1,128 +1,99 @@
 ---
-title: CycleMind Knowledge Base Index
-tags: [index, overview, reproductive-psychiatry]
-source: Synthesized from Textbook of Women's Reproductive Mental Health (786pp, 23 Ch.) + clinical guidelines
+title: CycleMind Knowledge Base — Master Index
+tags: [index, navigation, overview]
 date: 2026-06-01
-version: 2.0 — expanded June 2026
 ---
 
-# CycleMind Knowledge Base
-*Women's Reproductive Mental Health — Clinical Reference Wiki*
+# CycleMind Clinical Knowledge Base
 
-> **For the clinical team:** This vault synthesizes the full clinical knowledge base underpinning Luna. Use Obsidian's Graph View (Ctrl/Cmd + G) to explore concept relationships. All pages use `[[wiki links]]` for cross-navigation.
-
----
-
-## 🗺️ Graph View Instructions
-1. Open Obsidian → press **Ctrl+G** (Windows/Linux) or **Cmd+G** (Mac)
-2. Enable **Local Graph** to see connections from any page
-3. Filter by tag (e.g., `#PMDD`, `#perinatal`, `#menopause`) to isolate topic clusters
-4. Node size = number of incoming links — larger nodes are the most referenced concepts
+> Welcome to CycleMind's second brain — a living, interlinked clinical reference powering Luna's responses and the psychiatry team's workflows.
 
 ---
 
-## 📚 Table of Contents
+## Quick Navigation
 
-### 🧠 Foundations — Reproductive Psychiatry
-- [[Reproductive-Psychiatry-Overview]] — Scope, lifespan framework, biopsychosocial model
-- [[Hormones-Brain-Interface]] — Estrogen, progesterone/ALLO, HPA axis, neurotransmitter systems
-
-### 🔴 Menstrual Cycle & Premenstrual Disorders
-- [[PMDD]] — DSM-5 criteria, DRSP tracking, full treatment algorithm
-- [[Premenstrual-Disorders-Spectrum]] — PMS vs. PMDD vs. PME; differential diagnosis matrix
-- [[Luteal-Phase-SSRI-Dosing]] — Intermittent vs. continuous dosing; agent comparison table
-- [[Cycle-Tracking-Mental-Health]] — Follicular/luteal mood effects; DRSP; Luna data intelligence
-- [[Menstrual-Suppression]] — Indications, methods, safety, gender-affirming use
-- [[Menarche-Adolescent-Mental-Health]] — Puberty, dysmenorrhea, PMDD in adolescents, OCP considerations
-
-### 💊 Contraception
-- [[Contraception-Mental-Health]] — OCP mood effects, progestin types, Skovlund study, depression risk
-- [[PCOS-Mental-Health]] — Polycystic ovary syndrome, comorbid depression/anxiety/BED, integrated treatment
-
-### 🌿 Reproductive Conditions
-- [[Endometriosis-Mental-Health]] — Chronic pain, diagnostic delay, mental health burden, treatment
-- [[Menstrual-Suppression]] *(also cross-listed above)*
-
-### 🤰 Fertility & Pregnancy Planning
-- [[Fertility-Mental-Health]] — POI, oncofertility, egg freezing, infertility psychology overview
-- [[Infertility-ART-Psychology]] — IVF stages, RPL, third-party reproduction, male factor
-- [[PCOS-Mental-Health]] *(also cross-listed above)*
-
-### 🍼 Perinatal Mental Health — Pregnancy
-- [[Perinatal-Depression]] — Epidemiology, screening (EPDS), risk factors, treatment overview
-- [[Depression-in-Pregnancy]] — Detailed clinical management; psychotherapy; medication decisions
-- [[Antidepressants-Pregnancy-Safety]] — SSRI/SNRI safety data; NAS; breastfeeding RID table
-- [[Anxiety-in-Pregnancy]] — GAD, panic, OCD, PTSD, tokophobia; benzodiazepines
-- [[Prenatal-Stress]] — HPA axis, fetal programming, interventions
-- [[Pregnancy-Loss-Grief]] — Miscarriage, stillbirth, TFMR, rainbow pregnancy psychology
-- [[Perinatal-Suicide-Safety]] — Risk assessment, safety planning, lethal means restriction
-
-### 🤱 Perinatal Mental Health — Postpartum
-- [[Postpartum-Depression]] — Baby blues vs. PPD; brexanolone/zuranolone; SSRI selection
-- [[Postpartum-Anxiety]] — GAD, panic, birth trauma PTSD, SIDS fear; treatment
-- [[Postpartum-Psychosis]] — Emergency recognition, lithium prophylaxis, safety
-- [[Postpartum-OCD]] — Harm obsessions, CBT/ERP, differential from psychosis
-- [[Infant-Mental-Health]] — Attachment theory, dyadic therapy, CPP, Circle of Security
-- [[Breastfeeding-Psychotropics]] — RID tables; SSRIs, mood stabilizers, antipsychotics in lactation
-
-### 🧬 Mood & Psychotic Disorders in Reproductive Context
-- [[Bipolar-Disorder-Reproductive-Context]] — Overview of relapse risk across lifespan
-- [[Perinatal-Bipolar-Management]] — Lithium protocols, lamotrigine PK, valproate risks, postpartum prophylaxis
-- [[Schizophrenia-Reproductive-Context]] — Antipsychotic safety, parenting, perimenopause
-
-### 🌡️ Perimenopause & Menopause
-- [[Perimenopause-Mental-Health]] — Depression risk, HPA axis, STRAW staging, treatment
-- [[Menopause-Hormone-Therapy]] — MHT, GSM, vasomotor, non-hormonal alternatives
-
-### 🌱 Integrative & Lifestyle
-- [[Integrative-Perinatal-Depression]] — Omega-3, exercise, yoga, CBT-I, light therapy, acupuncture
-
-### ⚠️ Specific Conditions
-- [[ADHD-Reproductive-Transitions]] — Stimulant safety; perimenopause exacerbation; cycle-phase worsening
-- [[Eating-Disorders-Perinatal]] — AN, BN, BED in pregnancy; screening; treatment
-- [[Substance-Use-Perinatal]] — OUD/MAT, alcohol, cannabis, nicotine
-- [[Trauma-Reproductive-Health]] — IPV, sexual trauma, ACEs, birth trauma, PTSD treatment
-
----
-
-## 🔑 Key Cross-Links
-
-| Concept | Links To |
+### Core Clinical Areas
+| Area | Key Pages |
 |---|---|
-| **PMDD** | [[Luteal-Phase-SSRI-Dosing]], [[Premenstrual-Disorders-Spectrum]], [[Hormones-Brain-Interface]], [[ADHD-Reproductive-Transitions]] |
-| **Postpartum Psychosis** | [[Perinatal-Bipolar-Management]], [[Postpartum-OCD]], [[Postpartum-Depression]], [[Perinatal-Suicide-Safety]] |
-| **HRT/MHT** | [[Perimenopause-Mental-Health]], [[Menopause-Hormone-Therapy]], [[Hormones-Brain-Interface]] |
-| **Trauma** | [[Pregnancy-Anxiety-Disorders]], [[Postpartum-PTSD]], [[Trauma-Reproductive-Health]], [[Pregnancy-Loss-Grief]] |
-| **Lithium** | [[Perinatal-Bipolar-Management]], [[Bipolar-Disorder-Reproductive-Context]], [[Breastfeeding-Psychotropics]] |
-| **SSRIs** | [[Antidepressants-Pregnancy-Safety]], [[Luteal-Phase-SSRI-Dosing]], [[Breastfeeding-Psychotropics]], [[Depression-in-Pregnancy]] |
-| **Infertility** | [[Infertility-ART-Psychology]], [[Fertility-Mental-Health]], [[PCOS-Mental-Health]], [[Endometriosis-Mental-Health]] |
-| **Suicide** | [[Perinatal-Suicide-Safety]], [[Postpartum-Psychosis]], [[Perinatal-Bipolar-Management]] |
+| **PMDD** | [[PMDD-Overview]] · [[Luteal-Phase-Patterns]] · [[Luteal-Phase-SSRI-Dosing]] |
+| **Cycle Tracking** | [[Cycle-Tracking-Mental-Health]] · [[DRSP-Guide]] |
+| **Pregnancy** | [[Perinatal-Depression]] · [[Pregnancy-Anxiety-Disorders]] |
+| **Postpartum** | [[Postpartum-Depression]] · [[Postpartum-Psychosis]] · [[Postpartum-OCD]] · [[Postpartum-Anxiety]] |
+| **Perimenopause** | [[Perimenopause-Mental-Health]] · [[Menopause-Hormone-Therapy]] |
+| **Special Topics** | [[Bipolar-Disorder-Reproductive-Context]] · [[Fertility-Mental-Health]] |
 
 ---
 
-## 📊 Wiki Statistics
-- **Total pages:** 33 (20 original + 13 new in June 2026 expansion)
-- **Source:** Textbook of Women's Reproductive Mental Health (786pp, 23 chapters)
-- **RAG entries:** 4,245 synthesized clinical entries in `src/lib/ragKnowledgeBase.js`
+## Full Page Index
+
+### PMDD Management
+- [[PMDD-Overview]] — DSM-5 criteria, epidemiology, treatment algorithm
+- [[Luteal-Phase-Patterns]] — Symptom timing, DRSP interpretation, pattern recognition
+- [[Luteal-Phase-SSRI-Dosing]] — Intermittent vs continuous dosing protocols
+- [[DRSP-Guide]] — How to use the Daily Record of Severity of Problems
+
+### Cycle Phases
+- [[Cycle-Tracking-Mental-Health]] — How hormones drive mood across the cycle
+- [[Follicular-Phase]] — Estrogen rise, mood lift, energy patterns
+- [[Ovulatory-Phase]] — LH surge, fertility window, mood peak
+- [[Luteal-Phase-Patterns]] — Progesterone drop, PMDD onset, vulnerability window
+
+### Pregnancy & Postpartum
+- [[Perinatal-Depression]] — Antenatal + postpartum depression overview
+- [[Postpartum-Depression]] — PPD diagnosis, screening (EPDS), treatment
+- [[Postpartum-Psychosis]] — Emergency recognition and management
+- [[Postpartum-OCD]] — Intrusive thoughts, ERP treatment
+- [[Postpartum-Anxiety]] — GAD, panic, birth trauma PTSD
+- [[Pregnancy-Anxiety-Disorders]] — Anxiety management during pregnancy
+- [[Breastfeeding-Psychotropics]] — Medication safety while nursing
+
+### Perimenopause & Menopause
+- [[Perimenopause-Mental-Health]] — Hormonal transition, mood vulnerability, STRAW staging
+- [[Menopause-Hormone-Therapy]] — MHT protocols, safety, GSM management
+
+### Special Clinical Topics
+- [[Bipolar-Disorder-Reproductive-Context]] — Relapse risk, lithium in pregnancy, postpartum psychosis
+- [[Fertility-Mental-Health]] — IVF emotional stages, POI, pregnancy after loss
+- [[Pregnancy-Loss-Grief]] — Miscarriage, stillbirth, TFMR support
+- [[Endometriosis-Mental-Health]] — Chronic pain psychology, ACT approach
+- [[PCOS-Mental-Health]] — Metabolic syndrome, body image, depression risk
+- [[Contraception-Mental-Health]] — Hormonal contraceptives and mood
+- [[Trauma-Reproductive-Health]] — Birth trauma, PTSD, trauma-informed care
+- [[Integrative-Perinatal-Depression]] — Exercise, omega-3, sleep, CBT-I
+
+### Luna-Specific References
+- [[Luna-Clinical-Boundaries]] — What Luna will and won't say
+- [[Luna-Crisis-Protocol]] — Escalation scripts and resources
+- [[Luna-RAG-Architecture]] — How the knowledge base powers Luna's responses
 
 ---
 
-## 📖 Source Documents
-- **Textbook of Women's Reproductive Mental Health** (786 pages, 23 chapters) — `../raw/`
-- CycleMind RAG Knowledge Base — 4,245 synthesized entries (`src/lib/ragKnowledgeBase.js`)
-- ACOG Practice Bulletins and Committee Opinions
-- DSM-5-TR (American Psychiatric Association, 2022)
-- North American Menopause Society Guidelines
-- FDA Pregnancy and Lactation Labeling Rule (PLLR, 2015)
-- Edinburgh Postnatal Depression Scale (EPDS) — Cox et al.
-- Columbia Suicide Severity Rating Scale (C-SSRS)
+## Graph View Instructions
+
+Open **Graph View** (Cmd+G / Ctrl+G) in Obsidian to see how all pages connect.
+
+**Color coding (set in Graph View settings):**
+- 🔴 Red nodes → Crisis/safety pages
+- 🟣 Purple nodes → PMDD pages
+- 🩷 Pink nodes → Pregnancy/postpartum pages
+- 🟠 Orange nodes → Menopause/perimenopause pages
+- 🔵 Blue nodes → General clinical reference
+
+**Key hub nodes** (most connected pages):
+1. [[PMDD-Overview]]
+2. [[Perinatal-Depression]]
+3. [[Cycle-Tracking-Mental-Health]]
+4. [[Bipolar-Disorder-Reproductive-Context]]
 
 ---
 
-## 🔬 For the Clinical Reviewers (Psychiatrists)
-> Pages marked with ⭐ are highest clinical priority for review:
-> - [[Perinatal-Suicide-Safety]] ⭐ — Luna's mandatory crisis protocol
-> - [[Antidepressants-Pregnancy-Safety]] ⭐ — medication safety data
-> - [[Perinatal-Bipolar-Management]] ⭐ — lithium/lamotrigine protocols
-> - [[Postpartum-Psychosis]] ⭐ — emergency recognition criteria
-> - [[PMDD]] ⭐ — treatment algorithm (highest user relevance)
+## Recently Updated
+*Auto-updated by Luna and clinical team edits*
+
+- [[Postpartum-Depression]] — Added zuranolone protocol
+- [[Perimenopause-Mental-Health]] — Updated STRAW+10 staging
+- [[PMDD-Overview]] — Expanded treatment algorithm to include fezolinetant
+
+---
+
+*CycleMind Knowledge Base · Master Index · Last updated 2026-06-01*

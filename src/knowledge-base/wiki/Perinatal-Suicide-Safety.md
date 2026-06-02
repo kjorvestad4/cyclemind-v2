@@ -1,147 +1,162 @@
 ---
-title: Perinatal Suicide & Safety Planning
-tags: [suicide, self-harm, safety-planning, perinatal, crisis, postpartum, risk-assessment]
-source: Textbook of Women's Reproductive Mental Health Ch. 9
-pages: 291–318
+title: Perinatal Suicide Safety
+tags: [suicide, safety-planning, perinatal, crisis, maternal-mortality]
+source: ACOG; CDC; PSI; ZERO Suicide; Wisner KL et al.
 date: 2026-06-01
+related:
+  - "[[Luna-Crisis-Protocol]]"
+  - "[[Perinatal-Depression]]"
+  - "[[Postpartum-Depression]]"
+  - "[[Postpartum-Psychosis]]"
 ---
 
-# Perinatal Suicide & Safety Planning
+# Perinatal Suicide Safety
 
-> **Related:** [[Depression-in-Pregnancy]] · [[Postpartum-Depression]] · [[Postpartum-Psychosis]] · [[Perinatal-Depression]] · [[Trauma-Reproductive-Health]]
+> **Related:** [[Luna-Crisis-Protocol]] · [[Perinatal-Depression]] · [[Postpartum-Depression]]
+
+> ⚠️ **Critical safety content — review with clinical team.**
 
 ---
 
-## The Magnitude of the Problem
-- Suicide is a **leading cause of maternal mortality** — accounts for 10–20% of postpartum deaths in some national audits
-- In the UK MBRRACE audit: suicide was the #1 cause of maternal death in the first postnatal year
-- In the USA: suicide + drug overdose account for a significant fraction of pregnancy-associated deaths
-- **Critical gap:** Many providers do not assess suicidal ideation during prenatal care
+## Why This Matters
+
+**Suicide is a leading cause of maternal mortality.** In the United States:
+- Suicide and drug overdose together account for **23% of late maternal deaths** (deaths 42 days to 1 year postpartum)
+- Suicide is consistently in the **top 3 causes of maternal mortality** across high-income countries
+- Perinatal suicidal ideation affects approximately **10–15%** of pregnant and postpartum women
+- **Most suicidal perinatal women are not identified before crisis** — they present to OB, not mental health, settings
+
+This is a preventable tragedy. Screening, safety planning, and clinical follow-through save lives.
 
 ---
 
 ## Epidemiology
 
-### Rates
-- Perinatal suicide rate: approximately **2 per 100,000** — lower than age-matched non-pregnant women
-- HOWEVER: methods used perinatally are more often violent (firearms, hanging) — higher lethality
-- The **proportion** of maternal deaths attributable to suicide is disproportionately high
+### Risk Periods
+| Period | Risk Level | Notes |
+|---|---|---|
+| First trimester | Elevated | Ambivalence, hyperemesis, prior history activation |
+| Late third trimester | Elevated | Fear of delivery, depression worsening |
+| First 3 months postpartum | **Highest** | Hormone crash, sleep deprivation, PPD peak onset |
+| 3–12 months postpartum | Elevated | Ongoing PPD, return to work stress, relationship strain |
+| Pregnancy loss (any trimester) | Elevated | Grief, guilt, trauma |
+| TFMR | Elevated | Compound grief + moral distress |
 
 ### Risk Factors
-- **Strongest:** Prior suicide attempt (strongest single predictor)
-- Severe postpartum depression
-- Postpartum psychosis (especially with command hallucinations)
-- Postpartum PTSD
+**Individual:**
+- Prior suicide attempt (strongest predictor)
+- Personal history of depression, bipolar, or PTSD
+- Family history of suicide
+- Trauma history (especially childhood abuse)
 - Substance use disorder
-- IPV and domestic abuse
-- Social isolation; lack of support
-- Adolescent pregnancy
-- History of childhood abuse/trauma
-- Ambivalence about pregnancy
 
-### Protective Factors
-- Strong support network (partner, family)
-- Religious/cultural proscriptions against suicide
-- Responsibility for other children ("I couldn't leave them")
-- Therapeutic alliance
-- Access to care
+**Perinatal-specific:**
+- Unwanted or unplanned pregnancy
+- Intimate partner violence
+- Infant illness or NICU admission
+- Loss of support system
+- Financial stress or housing instability
+- Prior perinatal loss
+
+**Clinical:**
+- Untreated or undertreated postpartum depression
+- Postpartum psychosis (higher lethality risk due to command hallucinations)
+- Bipolar disorder postpartum (highest single risk factor for postpartum psychosis → suicide)
 
 ---
 
-## Suicide Risk Assessment in Perinatal Settings
+## Protective Factors
+- Social support (partner, family, friends)
+- Religious or spiritual beliefs (varies)
+- **Infant attachment and bonding** (often protective — "I can't leave my baby")
+- Access to and engagement with mental health care
+- Reasons for living identified in safety planning
+- Means restriction (removing firearms from home)
 
-### When to Assess
-- At every prenatal and postpartum visit (EPDS Question 10)
-- Any patient presenting with moderate-severe depression or anxiety
-- Any patient with psychotic symptoms
-- After pregnancy loss (miscarriage, stillbirth, neonatal death)
-- At postpartum discharge from hospital
+---
 
-### Columbia Suicide Severity Rating Scale (C-SSRS)
-Clinical standard for structured suicide risk assessment:
-1. **Passive ideation:** "I wish I were dead / wish I could go to sleep and not wake up"
-2. **Active ideation without plan**
-3. **Active ideation with plan**
-4. **Active ideation with intent**
-5. **Behavior:** Preparatory acts, interrupted attempts, aborted attempts, actual attempts
+## Screening
 
-### Safety Assessment Framework
-| Domain | Questions to Explore |
+### When to Screen
+- **Every prenatal visit** — normalize it: "We ask everyone these questions as part of our standard care"
+- **At postpartum 2-week visit** (often the highest risk point)
+- **6-week postpartum visit**
+- **Whenever PHQ-9 or EPDS scores are elevated**
+- **At any visit where the patient seems distressed**
+
+### Screening Tools
+- **EPDS Item 10** — "The thought of harming myself has occurred to me" — single-item screen specifically for suicidal ideation in perinatal women
+- **PHQ-9 Item 9** — "Thoughts that you would be better off dead, or of hurting yourself"
+- **C-SSRS (Columbia Suicide Severity Rating Scale)** — when further assessment is needed after positive screen
+
+### The Words to Use
+Ask directly. Research shows that asking about suicide does **not** increase risk — it often reduces distress by opening the conversation.
+
+> *"I want to ask you directly — have you had any thoughts of hurting yourself or not wanting to be alive?"*
+
+> *"Sometimes when people feel as overwhelmed as you're describing, they have thoughts of suicide. Have you had thoughts like that?"*
+
+---
+
+## Safety Planning
+
+When suicidal ideation is identified, a **Safety Plan** (not a "no-harm contract") is the evidence-based standard:
+
+### Stanley-Brown Safety Planning Intervention (SPI)
+
+1. **Warning signs** — What does the patient notice before crisis escalates?
+2. **Internal coping strategies** — What can the patient do alone to distract or soothe?
+3. **Social contacts for distraction** — People to contact who can help distract (not necessarily disclose crisis to)
+4. **People to ask for help** — Trusted people who know about the crisis
+5. **Professional/crisis contacts** — 988, PSI, therapist, ER
+6. **Means restriction** — Make home safer: store medications out of reach, remove firearms
+
+**Key principle:** Safety plans are collaborative, specific, and written. A verbal agreement is not a safety plan.
+
+### Means Restriction Counseling
+In the perinatal period:
+- Firearms: Ask about access; strongly encourage storage outside home or locking; provide resources (gunlockproject.org)
+- Medications: Store in locked box or with trusted person
+- This conversation saves lives — do it at every high-risk visit
+
+---
+
+## Clinical Pathways
+
+| Risk Level | Action |
 |---|---|
-| Ideation | Nature, frequency, duration, controllability |
-| Intent | Does she intend to act? |
-| Plan | Has she identified a method? |
-| Access | Does she have access to that method? |
-| Protective factors | What is keeping her safe right now? |
-| Prior history | Previous attempts? Lethality? |
+| **Passive ideation** (wish to be dead, no plan) | Safety plan, increased follow-up (weekly), PHQ-9 next visit |
+| **Active ideation, no plan** | Safety plan, same-day psychiatry consult or crisis line, next-day follow-up |
+| **Active ideation with plan** | Emergency evaluation — accompany to ER or call 988 warm transfer to ER |
+| **Active plan + intent** | 911 / emergency services; inpatient psychiatric admission |
 
 ---
 
-## Means Safety Counseling — Lethal Means Restriction
+## Postpartum Psychosis and Suicide
 
-### Evidence Base
-- Restricting access to lethal means (especially firearms) is one of the most effective suicide prevention interventions
-- **Firearms:** Highest lethality; account for majority of fatal suicide attempts
-- Prescribers should ask about firearm access in all high-risk patients
+Postpartum psychosis carries the highest lethality risk due to:
+- Command hallucinations (voices telling patient to harm self or baby)
+- Confusion and impaired reality testing
+- Rapid deterioration — hours, not days
 
-### Practical Approach
-- "During this difficult time, is there anything at home that could be used to hurt yourself that we should think about securing?"
-- Involve trusted support person in safe storage
-- Firearms: trigger locks, gun safe, temporary transfer to trusted party
-- Medications: dispense in small quantities; involve family in medication storage
+**Protocol:** Any suspected postpartum psychosis = emergency psychiatric evaluation. Do not attempt outpatient management.
 
 ---
 
-## Safety Planning Intervention (Stanley-Brown Model)
-Not a "safety contract" — an individualized, collaborative plan:
+## Luna's Role
 
-1. **Warning signs:** Identify personal warning signs of crisis escalating
-2. **Internal coping strategies:** Things she can do alone (distraction, exercise, grounding)
-3. **Social contacts:** People she can contact for distraction (not crisis — just support)
-4. **People to ask for help:** Specific supportive people who know about her situation
-5. **Crisis resources:** Crisis line numbers, ER location, clinician emergency contact
-6. **Make environment safe:** Remove or secure lethal means
+Luna provides immediate crisis resources for any suicidal disclosure. Luna cannot:
+- Assess suicide risk clinically
+- Conduct a safety planning intervention
+- Replace emergency services
 
-**Safe Messaging:** Provide in writing; review at next appointment; update as needed
+Luna's crisis response is designed to be a bridge to professional help — never a substitute.
 
----
-
-## Crisis Resources (for Clinical and Luna Use)
-
-| Resource | Contact |
-|---|---|
-| 988 Suicide & Crisis Lifeline | Call or text **988** (USA) |
-| Crisis Text Line | Text HOME to **741741** |
-| Postpartum Support International Helpline | 1-800-944-4773 |
-| Emergency Services | **911** |
+For clinical team: any Luna alert with `flags.crisis = true` requires same-day clinical follow-up.
 
 ---
 
-## Hospitalization Criteria
-Consider inpatient psychiatric admission when:
-- Active suicidal ideation with plan AND intent
-- Access to lethal means cannot be secured
-- No support system; cannot be safely monitored at home
-- Postpartum psychosis (always warrants consideration for hospitalization)
-- Severe self-neglect
-
----
-
-## Infanticide Risk — Critical Assessment
-- Women with **postpartum psychosis** are at risk of filicide (rare but devastating)
-- Assess for: command hallucinations about harming baby, delusions involving baby
-- If present: **emergency hospitalization; supervised contact only**
-- See [[Postpartum-Psychosis]] for full assessment protocol
-
----
-
-## After Pregnancy Loss — Elevated Risk Period
-- Miscarriage, stillbirth, neonatal death: significantly elevated suicide risk
-- Screen using PHQ-9 + specific grief and suicidality assessment
-- Refer to perinatal loss support services
-- See [[Pregnancy-Loss-Grief]] for full bereavement framework
-
----
-
-## Luna Protocol — Mandatory Response
-> **CRITICAL:** Any disclosure of suicidal ideation in Luna — active OR passive — triggers an immediate, non-dismissable safety resource display including 988, PSI Helpline, and 911. Luna does NOT attempt to assess suicide risk or provide therapy. Luna immediately redirects to crisis support. This is non-negotiable.
+## Key References
+- Wisner KL et al. Onset timing, thoughts of self-harm, and diagnoses in postpartum women with screen-positive depression results. *JAMA Psychiatry.* 2013.
+- CDC Maternal Mortality Data. Pregnancy Mortality Surveillance System. 2022.
+- Stanley B, Brown GK. Safety Planning Intervention: A Brief Intervention to Mitigate Suicide Risk. *Cogn Behav Pract.* 2012.

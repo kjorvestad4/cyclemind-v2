@@ -1,132 +1,148 @@
 ---
 title: PCOS & Mental Health
-tags: [PCOS, polycystic-ovary-syndrome, depression, anxiety, metabolic, insulin-resistance, androgens, infertility]
-source: Textbook of Women's Reproductive Mental Health Ch. 5; ACOG; Endocrine Society
-pages: 158–178
+tags: [pcos, polycystic-ovary-syndrome, depression, anxiety, body-image, insulin-resistance]
+source: Textbook of Women's Reproductive Mental Health; Endocrine Society; ESHRE PCOS Guidelines 2023
 date: 2026-06-01
+related:
+  - "[[Endometriosis-Mental-Health]]"
+  - "[[Fertility-Mental-Health]]"
+  - "[[Cycle-Tracking-Mental-Health]]"
+  - "[[Contraception-Mental-Health]]"
 ---
 
 # PCOS & Mental Health
 
-> **Related:** [[Contraception-Mental-Health]] · [[Infertility-ART-Psychology]] · [[Hormones-Brain-Interface]] · [[Fertility-Mental-Health]] · [[Reproductive-Psychiatry-Overview]]
+> **Related:** [[Endometriosis-Mental-Health]] · [[Fertility-Mental-Health]] · [[Cycle-Tracking-Mental-Health]]
 
 ---
 
 ## Overview
-Polycystic Ovary Syndrome (PCOS) is the most common endocrine disorder in women of reproductive age. Its psychological burden — depression, anxiety, eating disorders, body image disturbance — is significant and under-addressed.
+
+Polycystic Ovary Syndrome (PCOS) is the most common endocrine disorder in reproductive-age women, affecting **8–13%** globally. It is defined by two of three Rotterdam criteria:
+1. Oligo/anovulation (irregular or absent periods)
+2. Clinical or biochemical hyperandrogenism (hirsutism, acne, elevated androgens)
+3. Polycystic ovarian morphology on ultrasound
+
+PCOS is significantly under-recognized and under-treated as a mental health condition.
 
 ---
 
-## Epidemiology
-- Prevalence: **8–13%** of reproductive-age women globally
-- One of the most common causes of anovulatory infertility
-- Significantly under-diagnosed (often takes years)
-- Lifetime mental health comorbidity rates 2–3× higher than general population
+## Mental Health Comorbidities
 
----
-
-## Diagnostic Criteria (Rotterdam 2003 — 2 of 3 required)
-1. **Oligo/anovulation** (irregular or absent periods)
-2. **Clinical or biochemical hyperandrogenism** (hirsutism, acne, elevated testosterone)
-3. **Polycystic ovarian morphology** on ultrasound (≥20 follicles per ovary or ovarian volume >10mL)
-
-*Must exclude other causes: CAH, Cushing's, hyperprolactinemia, thyroid disease*
-
----
-
-## Mental Health Comorbidities in PCOS
-
-### Depression
-- **Prevalence:** 2–3× higher than controls; ~27–50% in some studies
-- Mechanism: Insulin resistance, inflammation, sleep disruption, androgenic effects on serotonin
-- Body image disturbance (hirsutism, obesity, acne) is significant contributor
-- Chronic condition → demoralization and grief over lost fertility
-
-### Anxiety
-- Prevalence: ~34–57% — significantly elevated
-- Health anxiety about long-term complications
-- Social anxiety related to physical symptoms (hirsutism, weight)
-- Infertility anxiety
-
-### Eating Disorders
-- **Binge-Eating Disorder (BED):** Elevated prevalence — insulin dysregulation drives binge-restrict cycles
-- Anorexia and bulimia also elevated
-- Treatment of eating disorder may improve PCOS metabolic parameters
-
-### ADHD
-- Emerging research: ADHD may be more prevalent in PCOS
-- Shared androgen-dopamine pathway hypothesis
-
-### Body Image and Self-Esteem
-- Hirsutism: often rated as most distressing symptom
-- Acne: major self-esteem impact
-- Weight/BMI: PCOS associated with weight gain, obesity
-- Combination → significant body image disturbance, social withdrawal
-
----
-
-## Biological Mechanisms Linking PCOS to Mental Health
-
-| Mechanism | Psychiatric Effect |
+| Condition | Relative Risk vs General Population |
 |---|---|
-| **Insulin resistance** | Inflammation → depression; reward dysregulation → binge eating |
-| **Androgen excess** | Serotonin dysregulation; mood effects |
-| **Sleep apnea** (common in PCOS) | Depression, cognitive impairment, fatigue |
-| **Chronic inflammation** | Elevated CRP → depression pathway |
-| **Hypothalamic-pituitary disruption** | Stress axis dysregulation |
-| **Infertility stress** | Anxiety, grief, depression |
+| **Depression** | 3× higher |
+| **Anxiety** | 5× higher |
+| **Binge eating disorder** | 3× higher |
+| **Body dysmorphic disorder** | Elevated |
+| **ADHD** | 2× higher |
+| **Disordered eating (general)** | 2–3× higher |
+
+### Why Mental Health Suffers in PCOS
+
+**Biological drivers:**
+- Androgen excess: directly affects mood, energy, libido
+- Insulin resistance: associated with inflammation and depression risk
+- Sleep apnea (common in PCOS): severely impacts mood, cognition, energy
+- Hypothyroidism (co-occurs more often): fatigue, mood effects
+
+**Psychological drivers:**
+- **Hirsutism** (unwanted facial/body hair): significant body image disturbance, shame
+- **Weight gain / difficulty losing weight**: diet culture pressure, self-blame
+- **Acne**: social anxiety, self-esteem impacts, especially in adults
+- **Hair loss (androgenic alopecia)**: identity and femininity concerns
+- **Irregular periods**: uncertainty, difficulty planning, fertility anxiety
+- **Infertility**: grief, relationship strain, medical treatment burden
 
 ---
 
-## Assessment in PCOS Patients
-- Screen: PHQ-9, GAD-7 at diagnosis and annually
-- Ask specifically about: eating behaviors, body image, infertility distress, sexual function
-- Sleep study if symptoms of sleep apnea (snoring, daytime somnolence)
-- Thyroid panel (overlap with hypothyroidism)
+## The Self-Blame Trap
+
+A common and harmful pattern: women with PCOS internalize their condition as a personal failure:
+- "If I just ate better / exercised more, this would be fixed"
+- "I must be lazy — that's why I can't lose weight"
+- Medical providers sometimes reinforce this with weight-first counseling
+
+**Clinical reality:** PCOS is a genetic, metabolic, and endocrine condition. Insulin resistance makes weight management genuinely harder. Lifestyle helps but is not a cure. Body shame worsens binge eating, which worsens insulin resistance — a harmful cycle.
 
 ---
 
-## Treatment — Integrated Approach
+## Assessment
 
-### Metabolic / Medical
-- **Lifestyle intervention:** Cornerstone — 5–10% weight loss restores cycles in ~50%
-- **Metformin:** Improves insulin resistance; can restore ovulation; some antidepressant-adjacent effects
-- **Combined OCP:** Regulates cycles; reduces androgens; improves acne/hirsutism; screen for mood effects (see [[Contraception-Mental-Health]])
-- **Spironolactone:** Anti-androgen; reduces hirsutism; check for mood effects
+### Recommended Screens
+- **PHQ-9** — depression
+- **GAD-7** — anxiety
+- **EDE-Q or SCOFF** — eating disorder screening (disordered eating is common)
+- **PSQI** — sleep quality (screen for OSA in high-BMI PCOS)
+- **Body Image Questionnaire** (body dissatisfaction, social comparison)
 
-### Psychological
-- **CBT:** Effective for depression, anxiety, eating disorders, body image
-- **DBT:** Especially for BED
-- **Motivational Interviewing:** For lifestyle change
-- **Body-acceptance approaches:** Health at Every Size (HAES) framework; reduce weight stigma in clinical care
-
-### Fertility
-- **Clomiphene citrate, letrozole:** First-line ovulation induction
-- **IVF:** For those who don't respond to ovulation induction
-- Psychological support critical throughout fertility treatment (see [[Infertility-ART-Psychology]])
-
-### Mental Health Medications
-- **SSRIs:** First-line for comorbid depression/anxiety
-- **Bupropion:** Useful when weight and ADHD are comorbid factors
-- **Naltrexone:** For BED (off-label)
+### PCOS-Specific Questions to Ask
+- How does having PCOS affect how you feel about your body?
+- Have you noticed changes in your eating patterns — restricting, bingeing?
+- How much mental energy goes into thinking about your weight or appearance?
+- How is PCOS affecting your relationship?
 
 ---
 
-## Hirsutism — Addressing the Psychological Burden
-- Normalize that hirsutism is a medical symptom, not a hygiene or grooming failure
-- Validate distress — it significantly affects quality of life
-- Cosmetic options: laser hair removal, electrolysis, eflornithine cream, shaving/waxing — all medically appropriate
-- Address body shame: connect with PCOS-specific peer communities (PCOS Awareness Association)
+## Evidence-Based Treatment
+
+### Psychological Interventions
+| Intervention | Evidence | Indication |
+|---|---|---|
+| **CBT** | Strong | Depression, anxiety, body image, disordered eating |
+| **HAES-aligned therapy** | Moderate | Body acceptance, breaking diet-binge cycle |
+| **ACT** | Moderate | Acceptance, values-based living with chronic condition |
+| **DBT (Dialectical Behavior Therapy)** | Moderate | Binge eating, emotional dysregulation |
+
+### Medical Interventions with Mood Considerations
+| Treatment | Mood Effect |
+|---|---|
+| **Metformin** | Generally mood-neutral; reduces insulin resistance |
+| **Combined OCP** | Can improve hirsutism, acne, periods — but monitor mood (see [[Contraception-Mental-Health]]) |
+| **Spironolactone** | Androgen blocker; often improves mood in hyperandrogenic PCOS |
+| **Letrozole** (for fertility) | Short-term only — generally mood-neutral |
+| **GLP-1 agonists** (e.g., semaglutide) | Emerging for weight/metabolic management — general mood improvement with weight loss |
+
+### Lifestyle as Medicine (Framed Without Shame)
+- 5–10% weight loss (if overweight) restores ovulatory cycles in ~50% of women
+- Low-GI diet reduces insulin resistance — without moralistic framing
+- 150 min/week aerobic exercise improves mood, insulin sensitivity, cycle regularity
+- Sleep treatment (CPAP for OSA if present) dramatically improves energy and mood
 
 ---
 
-## PCOS and Pregnancy
-- Higher rates of: gestational diabetes, preeclampsia, preterm birth, perinatal depression
-- Require closer OB monitoring
-- Metformin: sometimes continued in first trimester to reduce miscarriage risk; discuss with provider
-- Mental health screening intensified throughout pregnancy
+## Fertility and PCOS
+
+PCOS is the most common cause of anovulatory infertility. See [[Fertility-Mental-Health]] for full fertility-related psychological support.
+
+Key points:
+- Letrozole (first-line) or clomiphene for ovulation induction
+- IVF if other methods fail — PCOS patients have good egg quantity but higher OHSS risk
+- The fertility journey can be shorter than expected for many PCOS women
+- Anxiety about fertility is valid — normalize and monitor
 
 ---
 
-## Luna Clinical Boundaries
-> Luna supports symptom tracking for PCOS (cycle irregularity, acne, mood patterns) and can flag irregular cycles for provider review. Luna never diagnoses PCOS or recommends hormonal medications. Eating disorder concerns → clinical referral.
+## Luna's Role
+
+Luna will:
+- Validate that PCOS is a medical condition, not a lifestyle failure
+- Avoid weight-shaming language — never suggest weight as the primary focus
+- Provide psychoeducation on PCOS-depression connection
+- Suggest HAES-aligned resources and therapy approaches
+- Flag elevated PHQ-9/GAD-7 scores in PCOS users for clinical attention
+
+---
+
+## Support Resources
+- **PCOS Awareness Association:** pcosaa.org
+- **PCOS Challenge:** pcoschallenge.org
+- **Cysters (UK):** cysters.org
+- **Verity (UK):** verity-pcos.org.uk
+
+---
+
+## Key References
+- Dokras A et al. Increased prevalence of anxiety symptoms in women with PCOS. *Fertil Steril.* 2012.
+- ESHRE PCOS International Evidence-Based Guidelines. 2023.
+- Cooney LG, Dokras A. Depression and anxiety in PCOS: etiology and treatment. *Curr Psychiatry Rep.* 2017.

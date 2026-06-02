@@ -1,145 +1,135 @@
 ---
-title: Pregnancy Loss & Perinatal Grief
-tags: [pregnancy-loss, miscarriage, stillbirth, grief, bereavement, TFMR, neonatal-death]
-source: Textbook of Women's Reproductive Mental Health Ch. 10
-pages: 319–358
+title: Pregnancy Loss & Grief
+tags: [pregnancy-loss, miscarriage, stillbirth, grief, tfmr, bereavement]
+source: Textbook of Women's Reproductive Mental Health; ACOG; SHARE Pregnancy & Infant Loss Support
 date: 2026-06-01
+related:
+  - "[[Perinatal-Depression]]"
+  - "[[Postpartum-Anxiety]]"
+  - "[[Trauma-Reproductive-Health]]"
+  - "[[Fertility-Mental-Health]]"
 ---
 
-# Pregnancy Loss & Perinatal Grief
+# Pregnancy Loss & Grief
 
-> **Related:** [[Perinatal-Suicide-Safety]] · [[Perinatal-Depression]] · [[Infertility-ART-Psychology]] · [[Trauma-Reproductive-Health]] · [[Anxiety-in-Pregnancy]]
+> **Related:** [[Perinatal-Depression]] · [[Postpartum-Anxiety]] · [[Trauma-Reproductive-Health]] · [[Fertility-Mental-Health]]
 
 ---
 
-## Types of Pregnancy and Perinatal Loss
+## Types of Pregnancy Loss
 
-| Loss Type | Definition | Notes |
+| Type | Definition | Notes |
 |---|---|---|
-| **Biochemical pregnancy** | Positive hCG; loss before ultrasound viability | Often minimized by clinicians; real grief |
-| **Miscarriage (SAB)** | Loss before 20 weeks | Most common; affects ~15–20% of known pregnancies |
-| **Ectopic pregnancy** | Implantation outside uterus; requires treatment | Emergency + loss simultaneously |
-| **Molar pregnancy** | Abnormal trophoblastic proliferation | Complex medical + psychological |
-| **TFMR** | Termination for medical reasons (fetal anomaly) | Grief + stigma + often secrecy |
-| **Stillbirth** | Fetal death ≥20 weeks | Most devastating; profound grief |
-| **Neonatal death** | Death in first 28 days of life | NICU experience + loss |
-| **SIDS/SUID** | Unexpected infant death | Traumatic, often involving emergency response |
+| **Early miscarriage** | Loss before 12 weeks | ~10–20% of known pregnancies |
+| **Late miscarriage** | Loss 12–20 weeks | Less common; often has identifiable cause |
+| **Stillbirth** | Fetal death ≥20 weeks gestation | 1 in 160 pregnancies in the US |
+| **Neonatal death** | Death within 28 days of birth | Often due to prematurity or congenital anomaly |
+| **TFMR** | Termination for medical reasons | After prenatal diagnosis of fetal anomaly or maternal health |
+| **Ectopic pregnancy** | Implantation outside uterus | Medical/surgical emergency — also a loss |
+| **Molar pregnancy** | Abnormal trophoblastic tissue | Loss + medical follow-up required |
 
 ---
 
-## Epidemiology
-- **Miscarriage:** 10–20% of recognized pregnancies; 30–40% of all conceptions
-- **Stillbirth:** ~1 in 100 pregnancies in USA; higher in Black women (racial disparity)
-- **Neonatal death:** ~4 per 1,000 live births
-- **TFMR:** ~2% of pregnancies in USA where prenatal diagnosis is offered
+## Psychological Impact
+
+### The Grief Is Real at Every Gestational Age
+Grief after pregnancy loss does not correlate with gestational age. A first-trimester loss can be as devastating as a term stillbirth. Never minimize a loss based on "how early it was."
+
+### Common Presentations
+- **Acute grief:** Intense sadness, shock, numbness, crying, physical aching
+- **Prolonged grief disorder:** Grief that significantly impairs function >12 months after loss (formerly called complicated grief)
+- **PTSD:** Especially after stillbirth (up to 30%), traumatic delivery, or TFMR
+- **Depression:** Affects 20–50% of women after pregnancy loss
+- **Anxiety:** Especially in subsequent pregnancies ("rainbow pregnancies")
+- **Guilt and self-blame:** Extremely common — almost never clinically justified
+- **Social isolation:** Women often feel others don't understand or dismiss their loss
+
+### TFMR-Specific Grief
+Termination for medical reasons carries a unique grief burden:
+- Decision-making grief layered on top of pregnancy loss grief
+- Stigma and isolation — many women don't disclose TFMR
+- Moral injury — even when decision was clearly right
+- May be excluded from typical "miscarriage" support groups
+- Requires specialized support: TFMR support groups, individual therapy
 
 ---
 
-## Psychological Response to Pregnancy Loss
+## Screening and Assessment
 
-### Normal Grief
-- **Shock and disbelief**
-- **Intense sadness and crying**
-- **Anger** — at self ("What did I do?"), at others, at randomness of loss
-- **Guilt and self-blame** — often irrational but intense; "Was it because I exercised/ate that/worked too much?"
-- **Anxiety** about future pregnancies
-- **Physical grief:** Empty arms, milk coming in after stillbirth, phantom kicks
-- **Social withdrawal** — difficulty with social situations involving babies/pregnant women
+### When to Screen
+- At follow-up OB/midwife appointment after loss
+- 4–6 weeks post-loss
+- At subsequent pregnancy first visit
+- Ongoing if new pregnancy — throughout gestation
 
-### Complicated Grief (Prolonged Grief Disorder)
-- Grief lasting >12 months with significant impairment
-- Yearning, preoccupation with the loss
-- Difficulty accepting the death
-- Inability to trust others, bitterness
-- Difficulty engaging in life activities
-- DSM-5-TR: now formally classified as **Prolonged Grief Disorder**
-
-### PTSD Following Loss
-- Up to 30% of women develop PTSD after stillbirth
-- Higher risk with: traumatic or emergency delivery, prior trauma, no social support
-- Symptoms: intrusive images of delivery, avoidance of hospitals/nurseries, hypervigilance
+### Tools
+- **PHQ-9** — depression screening
+- **GAD-7** — anxiety screening
+- **PCL-5** — PTSD screening (especially after stillbirth or traumatic loss)
+- **PGD-13** — Prolonged Grief Disorder assessment
+- **EPDS** — in subsequent pregnancy postpartum period
 
 ---
 
-## Cultural Considerations in Perinatal Grief
-- Grief expressions vary greatly across cultures — do not assume Western model
-- Some cultures have rituals for naming, blessing, burying — support engagement
-- Stigma around miscarriage in some cultures: "shame," "punishment," "bad luck"
-- Clinician should ask: "Are there rituals or practices that are important to you at this time?"
+## Treatment Approaches
+
+### Psychotherapy
+| Approach | Indication |
+|---|---|
+| **Grief-focused CBT** | Complicated grief, depression after loss |
+| **IPT (Interpersonal Therapy)** | Role transitions, relationship strain after loss |
+| **EMDR** | Traumatic aspects of loss (especially stillbirth or TFMR) |
+| **CPT (Cognitive Processing Therapy)** | PTSD, guilt, self-blame |
+| **Support groups** | Normalization, community, validation |
+
+### Pharmacotherapy
+- SSRIs (sertraline preferred): for comorbid depression or anxiety
+- Treat as perinatal depression if loss occurs during planned pregnancy
+- Consider starting prophylactically in subsequent pregnancy for women with prior PPD
+
+### Support Resources
+- **SHARE Pregnancy & Infant Loss Support:** sharepregnancy.org
+- **Star Legacy Foundation:** (stillbirth focus) starlegacyfoundation.org
+- **TFMR Support:** tfmr.support
+- **March of Dimes:** marchofdimes.org
+- **PSI Pregnancy Loss Support:** postpartum.net/get-help/pregnancy-loss
 
 ---
 
-## TFMR (Termination for Medical Reasons)
+## Rainbow Pregnancies (Subsequent Pregnancy After Loss)
 
-### Unique Psychological Challenges
-- Often a **wanted pregnancy** — grief is profound and real
-- Stigma: "Did she abort the baby?" — secrecy and social isolation
-- Moral injury: decision-making weight; second-guessing
-- Lack of community support (cannot share due to stigma)
-- Grief often disenfranchised — others don't know to offer condolences
+A "rainbow pregnancy" — the pregnancy after a loss — is emotionally complex:
 
-### Clinical Support
-- Acknowledge: "You loved this baby. This was a devastating situation."
-- Peer support: TFMR-specific groups (Support Organization for TFMR)
-- Psychotherapy: grief-focused CBT or IPT
-- Do not project values onto decision — affirm whatever decision was made
+### Common Experiences
+- **Persistent anxiety** throughout pregnancy — often does not resolve after viability milestones
+- Difficulty bonding with new baby (protective emotional distancing)
+- Anniversaries and due dates of prior loss are especially difficult
+- Reluctance to "celebrate" or prepare (buying baby items, showers)
+- Hypervigilance about fetal movement, symptoms, test results
 
----
-
-## Stillbirth — Clinical Care Principles
-
-### At the Time of Loss
-- **Offer choice:** Some parents want to hold the baby; some don't — both are valid
-- **Memory-making:** Photographs, handprints/footprints, locks of hair (offer, don't assume)
-- **Naming:** Acknowledge the baby as a person
-- **Funeral/burial decisions:** Provide information sensitively; don't rush
-- **Medical information:** Parents often desperately want to know "why" — autopsy, placental pathology
-
-### Medical Follow-Up
-- Follow-up appointment at 4–6 weeks with results of any investigations
-- Discuss subsequent pregnancy planning when ready
-- Arrange psychological support
+### Clinical Approach
+- Screen early and frequently with EPDS and GAD-7
+- Validate that anxiety is normal and adaptive — does not require immediate treatment
+- Consider additional monitoring appointments for reassurance
+- Involve MFM (maternal-fetal medicine) for medical reassurance
+- CBT with pregnancy-specific protocols; mindfulness-based approaches
 
 ---
 
-## Subsequent Pregnancy After Loss
+## Luna's Role
 
-### Rainbow Baby Pregnancy — Unique Psychology
-- **High anxiety throughout** — every appointment, movement change, symptom
-- Difficulty bonding in case of another loss ("protective emotional distance")
-- Dates have emotional significance (due date of prior loss, gestational age of loss)
-- **Complicated by:** Happy feelings + guilt ("betraying the baby I lost")
-- May request additional monitoring (non-medically indicated but psychologically important)
+Luna acknowledges pregnancy loss with full empathy. Luna will:
+- Validate grief without minimizing based on gestational age
+- Offer appropriate support resources (SHARE, PSI, TFMR)
+- Note that grief is a natural and healthy response — not a disorder
+- Gently suggest professional support if symptoms suggest complicated grief or PTSD
+- Never suggest "you can try again" or minimize loss in any way
 
-### Clinical Support for Rainbow Pregnancies
-- Acknowledge both babies: "Your first baby is part of your story too."
-- Consider additional reassurance appointments
-- Refer to perinatal psychologist or therapist specializing in pregnancy after loss
-- "PALS" programs (Pregnancy After Loss Support) — specialized support groups
+Luna will **not** attempt to clinically assess grief severity or recommend specific pharmacotherapy.
 
 ---
 
-## Grief After Neonatal Death (NICU)
-- Parents have often bonded deeply during NICU care
-- Anticipatory grief during uncertain NICU course
-- Decision-making around withdrawal of care: significant moral injury
-- Parents may feel guilt for decisions made during life-support discussions
-- Sibling grief when other children are present
-
----
-
-## Evidence-Based Interventions
-
-| Intervention | Evidence | Notes |
-|---|---|---|
-| **Grief-focused CBT** | Moderate-strong | For complicated grief; address maladaptive cognitions |
-| **IPT** | Moderate | Especially for role transition; relationship disruption |
-| **EMDR** | Moderate | When PTSD features present |
-| **Peer support groups** | Good | SHARE, MISS Foundation, Star Legacy Foundation |
-| **SSRIs** | Evidence for comorbid MDD/PTSD | Not for uncomplicated grief alone |
-| **Couple therapy** | Important | Grief often strains relationships; different coping styles |
-
----
-
-## Luna Clinical Boundaries
-> Luna provides gentle, non-intrusive tracking for users who have experienced pregnancy loss. Luna never minimizes loss ("It was early") or rushes grief ("You can try again"). Any expression of severe distress or suicidal ideation → immediate crisis resources. Luna can track cycles and provide emotional support while always directing clinical concerns to providers.
+## Key References
+- Gold KJ et al. Pregnancy after stillbirth and risk of perinatal mental health. *Obstet Gynecol.* 2016.
+- Farren J et al. Posttraumatic stress, anxiety, and depression following miscarriage. *BMJ Open.* 2020.
+- ACOG Committee Opinion on Grief after Pregnancy Loss. 2021.

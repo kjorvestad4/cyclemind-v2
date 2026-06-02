@@ -1,144 +1,133 @@
 ---
 title: Endometriosis & Mental Health
-tags: [endometriosis, chronic-pain, depression, anxiety, fertility, laparoscopy, dyspareunia]
-source: Textbook of Women's Reproductive Mental Health; ACOG; ESHRE Guidelines
-pages: 101–120
+tags: [endometriosis, chronic-pain, depression, anxiety, pelvic-pain, endo]
+source: Textbook of Women's Reproductive Mental Health; ACOG; World Endometriosis Society
 date: 2026-06-01
+related:
+  - "[[PMDD-Overview]]"
+  - "[[PCOS-Mental-Health]]"
+  - "[[Cycle-Tracking-Mental-Health]]"
+  - "[[Trauma-Reproductive-Health]]"
 ---
 
 # Endometriosis & Mental Health
 
-> **Related:** [[PCOS-Mental-Health]] · [[Fertility-Mental-Health]] · [[Infertility-ART-Psychology]] · [[Menstrual-Suppression]] · [[Chronic-Pain-Pelvic]]
+> **Related:** [[PMDD-Overview]] · [[PCOS-Mental-Health]] · [[Cycle-Tracking-Mental-Health]]
 
 ---
 
 ## Overview
-Endometriosis is a chronic, systemic inflammatory condition with profound mental health impact. The average **7–10 year diagnostic delay** compounds psychological suffering through years of invalidated pain.
+
+Endometriosis is a chronic inflammatory condition where endometrial-like tissue grows outside the uterus. It affects **6–10% of reproductive-age women** — approximately 190 million people globally.
+
+**Average diagnostic delay: 7–10 years.** This delay itself is a significant source of psychological harm — years of pain dismissed, minimized, or attributed to "normal periods."
 
 ---
 
-## Epidemiology
-- Prevalence: **6–10%** of reproductive-age women; **~35–50%** of women with infertility
-- Estimated 190 million women worldwide
-- Diagnostic delay: 7–10 years (USA average) due to normalization of pelvic pain
-- Racial disparities: historically under-diagnosed in Black women despite similar or higher prevalence
+## The Psychological Burden
 
----
+### Prevalence of Mental Health Comorbidities
+- **Depression:** 2–3× more prevalent than the general population
+- **Anxiety:** 2× more prevalent
+- **Chronic pain catastrophizing:** Common; amplifies pain perception
+- **Sexual dysfunction:** Dyspareunia affects 50–70% of women with endo
+- **Infertility-related grief:** 30–50% experience fertility challenges
 
-## Mental Health Comorbidities
+### Why Mental Health Suffers
 
-### Depression
-- **2–3× higher** prevalence than general population
-- Mechanisms:
-  - Chronic pain → demoralization, disability
-  - Sleep disruption from pain
-  - Fertility loss → grief
-  - HPA axis dysregulation from chronic pain/inflammation
-  - Years of not being believed → learned helplessness
-
-### Anxiety
-- Anticipatory anxiety about pain during menstruation, sex, medical procedures
-- Health anxiety about disease progression
-- Fertility anxiety
-- Medical trauma anxiety (repeated procedures)
-
-### PTSD / Medical Trauma
-- Invalidating medical encounters ("It's just normal periods")
-- Painful pelvic exams and procedures without adequate pain management
-- Emergency presentations for severe pain
-- Diagnostic laparoscopy experiences
-
-### Relationship and Sexual Impact
-- **Dyspareunia (painful intercourse):** Extremely common; ~70% of women with endometriosis
-- Sexual avoidance → relationship strain
-- Guilt about partner's needs vs. own pain
-- Loss of libido (pain, fatigue, medication effects)
-
----
-
-## The "Validation Gap"
-- Many women with endometriosis are told their pain is:
-  - "Normal periods"
-  - "Psychosomatic"
-  - "Anxiety"
-  - "Just stress"
-- This invalidation causes its own psychological harm — forms of medical gaslighting
-- Clinical principle: **validate the pain before treating it**
-
----
-
-## Pain Classification
-| Type | Description |
+| Factor | Impact |
 |---|---|
-| **Dysmenorrhea** | Severe menstrual cramping — often the first symptom |
-| **Dyspareunia** | Pain with penetrative intercourse |
-| **Dyschezia** | Painful bowel movements |
-| **Dysuria** | Painful urination |
-| **Chronic pelvic pain** | Non-cyclic, ongoing pelvic pain |
-| **Referred pain** | Sciatic, rectal, shoulder (diaphragmatic lesions) |
+| **Chronic pain** | Constant nociceptive input activates HPA axis, depletes dopamine/serotonin |
+| **Medical gaslighting** | Years of being told pain is normal creates self-doubt and learned helplessness |
+| **Diagnostic odyssey** | Multiple providers, dismissals, and misdiagnoses before diagnosis |
+| **Unpredictability** | Flares disrupt work, relationships, plans — erodes sense of control |
+| **Dyspareunia** | Sexual pain impacts relationships, intimacy, and self-image |
+| **Fertility uncertainty** | Anticipatory grief and medical treatment pressure |
 
 ---
 
-## Staging (American Society for Reproductive Medicine)
-| Stage | Severity | Clinical Correlation |
+## Psychological Assessment
+
+### Screening Recommendations
+- **PHQ-9** — depression at each visit
+- **GAD-7** — anxiety
+- **PCS (Pain Catastrophizing Scale)** — identifies catastrophizing patterns amenable to CBT
+- **FSFI (Female Sexual Function Index)** — sexual function, especially dyspareunia
+- **BPI (Brief Pain Inventory)** — pain interference with daily function
+
+### The "Pain + Dismissal" Pattern
+A common psychological profile in endo patients:
+1. Legitimate severe pain dismissed → self-doubt ("maybe I'm exaggerating")
+2. Delayed diagnosis → confirmation that pain was real → anger/relief mixture
+3. Post-diagnosis: reclaiming narrative, processing years of medical gaslighting
+4. Ongoing: grief over lost years, fertility concerns, chronic disease adjustment
+
+---
+
+## Evidence-Based Treatment
+
+### Psychological Interventions
+
+| Intervention | Evidence | Indication |
 |---|---|---|
-| I (Minimal) | Few superficial implants | Pain severity poorly correlates with stage |
-| II (Mild) | More implants, small adhesions | — |
-| III (Moderate) | Multiple implants, significant adhesions | Fertility often affected |
-| IV (Severe) | Large endometriomas, dense adhesions | Significant fertility impact |
+| **CBT for Chronic Pain** | Strong | Pain catastrophizing, depression, anxiety |
+| **ACT (Acceptance & Commitment Therapy)** | Strong | Pain acceptance, values-based living despite endo |
+| **Mindfulness-Based Stress Reduction (MBSR)** | Moderate | Stress reduction, pain relationship |
+| **Pelvic Floor Physical Therapy** | Strong | Dyspareunia, pelvic tension, post-surgical rehabilitation |
+| **Sex therapy / couples counseling** | Moderate | Dyspareunia, relationship strain |
+| **Grief counseling** | Moderate | Fertility grief, diagnostic grief |
 
-**Key insight:** **Stage does NOT correlate with pain severity.** Some women with Stage I have debilitating pain; some with Stage IV have minimal symptoms.
+### ACT for Endometriosis — Core Concepts
+ACT is particularly well-suited for endo because it addresses the central challenge: living a full life despite ongoing pain.
 
----
+Key ACT processes for endo:
+- **Defusion:** Separating from thoughts like "I'm broken" or "I'll never feel normal"
+- **Acceptance:** Making room for pain without it controlling all decisions
+- **Values clarification:** What matters most beyond endo?
+- **Committed action:** Taking steps toward values even on pain days
 
-## Treatment Overview
-
-### Hormonal Suppression (First-Line Medical)
-- **Combined OCP (continuous):** Reduces pain, lesion activity
-- **Progestin-only methods:** Norethindrone acetate, dienogest, DMPA
-- **GnRH agonists + add-back:** Highly effective; used for refractory cases; bone density monitoring required
-- **Danazol:** Older; androgenic side effects; rarely used now
-- Goal: Suppress menstruation and hormonal stimulation of lesions
-
-### Surgical
-- **Laparoscopic excision:** Gold standard; removes lesions completely
-- **Laparoscopic ablation:** Destroys lesions; higher recurrence than excision
-- **Hysterectomy ± oophorectomy:** Last resort for severe disease; not guaranteed cure if ovaries retained; surgical menopause considerations
-
-### Pain Management
-- NSAIDs (naproxen, ibuprofen) — first-line for acute pain
-- Tramadol, opioids — minimize opioid use; risk of dependency in chronic pain context
-- Gabapentin, pregabalin — neuropathic pain component
-- Physical therapy — pelvic floor therapy; highly effective for pain and dyspareunia
-- Heat therapy; TENS
+### Pharmacotherapy
+- **SSRIs/SNRIs:** For comorbid depression and anxiety; some evidence SNRIs (duloxetine) help with pain
+- **Antidepressants for pain:** Amitriptyline, nortriptyline at low doses for central sensitization
+- **Note:** Hormonal treatments (GnRH agonists, progestins) may have mood side effects — monitor
 
 ---
 
-## Psychological Interventions
+## Surgical and Medical Management (Psychological Context)
 
-### Evidence-Based
-- **CBT for chronic pain:** Addresses pain catastrophizing, avoidance, depression
-- **ACT (Acceptance and Commitment Therapy):** Particularly suited to chronic pain; values-based living despite pain
-- **Sex therapy / couples therapy:** For dyspareunia-related relationship difficulties
-- **EMDR:** For medical trauma and PTSD component
-- **Peer support:** Endometriosis Foundation of America; Nancy's Nook (online community)
+### After Surgery
+- Relief is common — but full pain resolution is not guaranteed
+- Post-surgical anxiety ("Will it come back?") is normal and should be addressed
+- Realistic expectations counseling pre-surgery improves post-surgical psychological outcomes
 
-### Patient-Centered Communication
-- Believe the patient's pain reports
-- Validate the diagnostic delay
-- Set realistic expectations (endometriosis is often a lifelong condition, not cured by surgery)
-- Involve patient in decision-making about treatment options
+### GnRH Agonists and Mood
+- Leuprolide and similar GnRH agonists create temporary menopause
+- Vasomotor symptoms, mood changes, cognitive effects are common
+- Add-back therapy (low-dose estrogen/progesterone) reduces but doesn't eliminate mood effects
+- Monitor with PHQ-9 during treatment
 
 ---
 
-## Endometriosis and Fertility
-- Leading cause of infertility requiring IVF
-- Even Stage I-II can impair fertility
-- Egg quality and ovarian reserve may be reduced
-- **Laparoscopic surgery before IVF:** Evidence that excision can improve IVF outcomes in some women
-- See [[Infertility-ART-Psychology]] for psychological support during fertility treatment
+## Luna's Role
+
+Luna will:
+- Validate the pain and the diagnostic journey without minimizing
+- Provide psychoeducation on the endo-mental health connection
+- Suggest appropriate resources and therapeutic approaches
+- Flag depression or anxiety signals in daily logs for clinical review
+- Never suggest pain is "just period pain" or dismiss symptoms
 
 ---
 
-## Luna Clinical Boundaries
-> Luna tracks menstrual pain severity and can correlate with cycle phase. Luna never diagnoses endometriosis or recommends hormonal treatments. Severe pain → recommendation to see gynecologist. Any diagnostic conversation is redirected to clinical providers.
+## Support Resources
+- **Endometriosis Foundation of America:** endofound.org
+- **Nancy's Nook Endometriosis Education:** (Facebook group with curated research)
+- **RESOLVE:** resolve.org (for endo + infertility)
+- **iCareBetter:** icarebetter.com (excision surgeon directory)
+
+---
+
+## Key References
+- Laganà AS et al. Anxiety and depression in women with endometriosis. *J Affect Disord.* 2017.
+- Nnoaham KE et al. Impact of endometriosis on quality of life and work productivity. *Fertil Steril.* 2011.
+- World Endometriosis Society Consensus on the Classification of Endometriosis. 2021.

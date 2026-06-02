@@ -1,129 +1,117 @@
 ---
-title: Menstrual Suppression — Clinical Indications & Methods
-tags: [menstrual-suppression, amenorrhea, endometriosis, gender-affirming, PMDD, heavy-bleeding, IUD]
-source: Textbook of Women's Reproductive Mental Health Ch. 4; ACOG
-pages: 120–138
+title: Menstrual Suppression — Clinical Overview
+tags: [menstrual-suppression, pmdd, endometriosis, gnrh, contraception, period-management]
+source: ACOG; NAMS; Textbook of Women's Reproductive Mental Health
 date: 2026-06-01
+related:
+  - "[[PMDD-Overview]]"
+  - "[[Endometriosis-Mental-Health]]"
+  - "[[Contraception-Mental-Health]]"
+  - "[[Luteal-Phase-SSRI-Dosing]]"
 ---
 
-# Menstrual Suppression — Clinical Indications & Methods
+# Menstrual Suppression — Clinical Overview
 
-> **Related:** [[Contraception-Mental-Health]] · [[PMDD]] · [[Premenstrual-Disorders-Spectrum]] · [[Hormones-Brain-Interface]]
+> **Related:** [[PMDD-Overview]] · [[Endometriosis-Mental-Health]] · [[Contraception-Mental-Health]]
 
 ---
 
 ## Overview
-Menstrual suppression — intentionally reducing or eliminating menstruation — is **medically safe** for most women and can dramatically improve quality of life for those with period-related conditions.
+
+Menstrual suppression — reducing or eliminating menstruation through hormonal or surgical means — is a legitimate, evidence-based treatment for multiple conditions. It is not merely "convenience"; for many patients with PMDD, endometriosis, or other cycle-driven conditions, it is transformative.
 
 ---
 
 ## Medical Indications
 
-| Condition | Evidence for Suppression |
+| Condition | Rationale for Suppression |
 |---|---|
-| **Endometriosis** | Strong — reduces pain, lesion activity |
-| **PMDD/PME** | Strong — eliminates luteal phase trigger |
-| **Heavy menstrual bleeding (HMB)** | Strong — reduces blood loss, anemia |
-| **Dysmenorrhea** | Strong — reduces cramping |
-| **Iron deficiency anemia** | Strong — stops ongoing blood loss |
-| **Menstrual migraine** | Moderate — reduces perimenstrual trigger |
-| **Menstrual exacerbation of epilepsy** | Moderate |
-| **Bleeding disorders** (von Willebrand, hemophilia carriers) | Strong |
-| **Gender dysphoria** | Strong — reduces dysphoria from menstruation |
+| **PMDD** | Eliminating the luteal phase eliminates PMDD symptoms |
+| **Severe PMS** | Reduces cyclic physical symptoms |
+| **Endometriosis** | Reduces lesion activity, pain, disease progression |
+| **Adenomyosis** | Reduces heavy bleeding and pain |
+| **Heavy menstrual bleeding (HMB)** | Reduces blood loss, anemia |
+| **Dysmenorrhea** | Eliminates or reduces menstrual pain |
+| **Gender-affirming care** | For transgender and non-binary individuals |
+| **Disability** | When menstruation creates care challenges (e.g., severe intellectual disability) |
+| **Athletic performance** | Reduction in iron deficiency, physical symptoms |
 
 ---
 
-## Methods & Efficacy
+## Methods of Menstrual Suppression
 
-### 1. Levonorgestrel-Releasing IUD (Mirena 52mg, Liletta 52mg)
+### Combined Oral Contraceptives (COC) — Continuous Regimen
+- **Mechanism:** Suppresses FSH/LH → no ovulation → no luteal phase → no period
+- **How to use:** Skip the placebo/pill-free week; take active pills continuously
+- **Effectiveness:** ~70–90% achieve amenorrhea with consistent use; breakthrough bleeding in some
+- **PMDD advantage:** Drospirenone-containing COC (Yaz) eliminates the luteal phase entirely
+- **Mood consideration:** See [[Contraception-Mental-Health]] — monitor mood, especially in the first 3 months
 
-| Feature | Detail |
-|---|---|
-| Mechanism | Progestin thins endometrium; local effect |
-| Amenorrhea rate | ~20% at 1 year; ~30–50% at 2–3 years |
-| Duration | Up to 8 years (Mirena); 8 years (Liletta) |
-| Systemic effects | Minimal — primarily local |
-| Fertility return | Rapid after removal |
-| **Best for** | Long-term suppression; HMB; endometriosis |
+### Progestin-Only Implant (Nexplanon)
+- **Mechanism:** Continuous low-dose etonogestrel → suppresses ovulation in most
+- **Amenorrhea rate:** ~20% at 1 year; irregular bleeding in others
+- **Use case:** Highly effective contraception + menstrual reduction; not ideal for guaranteed amenorrhea
 
-### 2. Depo-Provera (DMPA — Medroxyprogesterone Acetate)
+### Hormonal IUD (Levonorgestrel — Mirena, Liletta)
+- **Mechanism:** Local progestin → endometrial atrophy → reduced/absent periods
+- **Amenorrhea rate:** ~50% at 1 year
+- **Advantages:** Highly effective, local effect, non-oral
+- **Limitations:** Doesn't reliably suppress ovulation — luteal phase continues (less helpful for PMDD than OCP)
 
-| Feature | Detail |
-|---|---|
-| Mechanism | Systemic progestin; suppresses ovulation |
-| Amenorrhea rate | ~50% at 1 year; ~80% at 2 years |
-| Duration | Injection every 12–13 weeks |
-| Bone density | Reversible loss with long-term use; monitor in adolescents |
-| Fertility return | Delayed — up to 12–18 months |
-| Mood | Some depression signal — monitor (see [[Contraception-Mental-Health]]) |
-| **Best for** | Rapid suppression; compliance challenges; disability |
+### Depo-Provera (DMPA Injection)
+- **Mechanism:** High-dose progestin → anovulation + endometrial atrophy
+- **Amenorrhea rate:** ~50% at 1 year, ~70% at 2 years
+- **Caution:** Mood effects (see [[Contraception-Mental-Health]]); bone density loss with long-term use (>2 years)
 
-### 3. Continuous Combined OCP or Ring
+### GnRH Agonists (Leuprolide, Goserelin, Nafarelin)
+- **Mechanism:** Pituitary downregulation → medical menopause (profound FSH/LH suppression)
+- **Indications:** Severe refractory PMDD, endometriosis, uterine fibroids
+- **Amenorrhea:** Near-universal
+- **Critical requirement:** Add-back therapy (low-dose estrogen + progesterone) is **essential** to prevent:
+  - Bone loss (osteoporosis risk)
+  - Vasomotor symptoms (hot flashes, night sweats)
+  - Mood effects of estrogen deprivation
+- **Duration:** Typically 6 months; longer use requires bone density monitoring
+- **Use in PMDD:** Third-line — highly effective (proof-of-concept that PMDD is hormone-driven); reserved for refractory cases
 
-| Feature | Detail |
-|---|---|
-| Method | Skip placebo week; take active pills continuously |
-| Amenorrhea rate | ~50–80% with strict continuous use |
-| Breakthrough bleeding | Common initially; usually resolves 3–6 months |
-| Duration | Can continue indefinitely |
-| **Best for** | PMDD; dysmenorrhea; patient prefers oral method |
-
-### 4. Progestin-Only Pill (Norethindrone, Desogestrel)
-
-| Feature | Detail |
-|---|---|
-| Amenorrhea rate | Variable — 30–40% |
-| Advantages | Safe in migraine with aura; breastfeeding-compatible |
-| Timing | Must be taken at same time daily |
-
-### 5. Etonogestrel Implant (Nexplanon)
-
-| Feature | Detail |
-|---|---|
-| Mechanism | Systemic progestin; continuous release 3 years |
-| Amenorrhea rate | ~20% at 1 year |
-| Bleeding pattern | Unpredictable — major reason for removal |
-| Fertility return | Rapid |
-
-### 6. GnRH Agonists (Leuprolide, Nafarelin, Goserelin) — For Severe Cases
-
-| Feature | Detail |
-|---|---|
-| Mechanism | Downregulates pituitary; "medical menopause" |
-| Amenorrhea | Near-universal; highly reliable |
-| Bone density | Significant loss without add-back HRT |
-| **Add-back required** | Estrogen + progestin to prevent bone loss and vasomotor symptoms |
-| Cost | High; usually requires specialist management |
-| Duration | Typically ≤6 months without add-back; longer with |
-| **Best for** | Severe PMDD; endometriosis; diagnostic trial |
+### GnRH Antagonists (Elagolix/Orilissa)
+- **Mechanism:** Rapid GnRH blockade → rapid hormone suppression (unlike agonists, no initial flare)
+- **Indications:** Endometriosis, uterine fibroids
+- **Dose-dependent suppression:** Lower doses = partial suppression; higher doses = near-amenorrhea
+- **Mood effect:** Can cause depressive symptoms — monitor carefully
+- **Contraindication:** Osteoporosis risk with high-dose, long-term use
 
 ---
 
-## Gender-Affirming Menstrual Suppression
-- Many transgender men and non-binary AFAB individuals experience menstruation as gender-dysphoria-inducing
-- Menstrual suppression can be an important part of **gender-affirming care**
-- Preferred methods: Depo-Provera (fast, reliable), hormonal IUD (local; minimal systemic effect), testosterone (often causes amenorrhea — primary agent in masculinizing HRT)
-- Clinical approach: center patient autonomy; avoid requiring gender dysphoria diagnosis to access suppression
+## Discussing Suppression with Patients
+
+### Common Patient Concerns
+| Concern | Clinical Response |
+|---|---|
+| "Is it safe to not have a period?" | Yes — the monthly period on hormonal contraception is a withdrawal bleed, not a physiological necessity |
+| "Won't I lose fertility?" | No — fertility returns quickly (weeks to months) after stopping most hormonal methods |
+| "Will toxins build up?" | No — this is a myth; the uterine lining does not need to shed monthly for health |
+| "Is this natural?" | Frame around goals: reducing suffering is natural and legitimate |
+
+### Shared Decision-Making
+- Explore patient's relationship with menstruation (cultural, identity, fertility planning)
+- Assess mood history before starting hormonal suppression
+- Set realistic expectations: breakthrough bleeding is common initially
+- Have a clear plan for mood monitoring (PHQ-9 at baseline and 3 months)
 
 ---
 
-## Safety: Is It Harmful to Stop Having Periods?
-- **No** — the menstrual period is not physiologically necessary
-- Endometrial safety: progestin-containing methods protect endometrium
-- Bone density: varies by method (estrogen-containing methods maintain bone; Depo reduces it)
-- Fertility: returns with all methods (some delay with Depo)
-- Long-term health risks: not increased; may decrease ovarian and endometrial cancer risk
+## Luna's Role
+
+Luna will:
+- Provide accurate psychoeducation about menstrual suppression as a legitimate medical option
+- Not recommend a specific method — direct to prescribing clinician
+- Validate that wanting to reduce menstruation for medical reasons is reasonable and clinically supported
+- Flag if a user reports mood changes after starting suppression
 
 ---
 
-## Practical Counseling Points
-1. Amenorrhea is the goal for many patients — normalize it
-2. Spotting/irregular bleeding common initially — expected, not dangerous
-3. Pregnancy can still occur if method is not used perfectly (especially POP, continuous COC with missed pills)
-4. No "cleansing" of blood is needed — dispel common myths
-5. If premenstrual symptoms persist on suppression → reassess diagnosis; may suggest PME of underlying disorder
-
----
-
-## Luna Clinical Application
-> Luna's cycle tracking mode supports menstrual suppression users — the cycle calendar adapts to reflect absent or irregular periods. Luna can track breakthrough bleeding and mood patterns without normalizing menstruation as required.
+## Key References
+- ACOG Practice Bulletin No. 110: Noncontraceptive Uses of Hormonal Contraceptives. 2010 (reaffirmed 2020).
+- Edelman A et al. Extended or continuous combined oral contraceptives for menstrual suppression. *Cochrane.* 2014.
+- Ferrero S et al. GnRH agonists for the treatment of endometriosis. *Eur J Obstet Gynecol Reprod Biol.* 2021.
