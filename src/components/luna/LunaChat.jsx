@@ -136,7 +136,8 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
         suggestedActions: botReply.suggestedActions || [],
         flags: botReply.flags || { escalate: false, crisis: false },
         detectedSymptoms: botReply.detectedSymptoms || [],
-        codedSymptoms: botReply.codedSymptoms || {}
+        codedSymptoms: botReply.codedSymptoms || {},
+        knowledgeUpdated: botReply.knowledgeUpdated || false,
       }]);
     } catch (err) {
       console.error(err);
@@ -455,6 +456,13 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
                         · via {msg.source === 'invokellm_fallback' ? 'cloud' : msg.source === 'grok_fallback' ? 'Grok' : 'cached'}
                       </span>
                     )}
+                  </p>
+                )}
+
+                {/* Knowledge updated indicator — subtle, no technical language */}
+                {msg.role === 'assistant' && msg.knowledgeUpdated && (
+                  <p className="mt-1 text-[9px] text-teal-400/70 dark:text-teal-600/70 italic">
+                    Luna is learning from this conversation.
                   </p>
                 )}
 

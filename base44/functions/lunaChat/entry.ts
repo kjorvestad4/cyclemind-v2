@@ -168,6 +168,58 @@ function detectSymptoms(text, alreadySaved = []) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// AUTO-UPDATE TRIGGER — decides whether to invoke lunaAutoUpdate in background
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SYMPTOM_UPDATE_SIGNALS = [
+  'mood', 'feeling', 'tired', 'exhausted', 'fatigue', 'cramp', 'bloat', 'insomnia',
+  'sleep', 'cravings', 'irritable', 'anxious', 'depressed', 'headache', 'pain',
+  'spotting', 'bleeding', 'hot flash', 'night sweat', 'brain fog', 'nausea',
+  'breast', 'overwhelmed', 'sad', 'hopeless', 'cry', 'appetite', 'energy'
+];
+
+const CLINICAL_UPDATE_SIGNALS = [
+  'my doctor said', 'my psychiatrist', 'i read that', 'i learned', 'research says',
+  'study shows', 'medication', 'diagnosed', 'prescription', 'treatment', 'therapy',
+  'doctor told me', 'my ob', 'my midwife', 'my therapist', 'clinical trial',
+  'new study', 'published', 'evidence'
+];
+
+function detectAutoUpdateMode(userMessage) {
+  const lower = userMessage.toLowerCase();
+  const symptomScore = SYMPTOM_UPDATE_SIGNALS.filter(s => lower.includes(s)).length;
+  const clinicalScore = CLINICAL_UPDATE_SIGNALS.filter(s => lower.includes(s)).length;
+  if (symptomScore >= 2) return 'user_logs';
+  if (clinicalScore >= 1) return 'clinical_text';
+  return null;
+}
+
+async function fireAutoUpdate(base44, mode, user, userMessage, ragTopic) {
+  try {
+    if (mode === 'user_logs') {
+      await base44.asServiceRole.functions.invoke('lunaAutoUpdate', {
+        mode: 'user_logs',
+        userId: user.id,
+        days: 14,
+      });
+    } else if (mode === 'clinical_text') {
+      const title = ragTopic
+        ? `User-reported clinical info — ${ragTopic} — ${new Date().toISOString().split('T')[0]}`
+        : `User-reported clinical info — ${new Date().toISOString().split('T')[0]}`;
+      await base44.asServiceRole.functions.invoke('lunaAutoUpdate', {
+        mode: 'clinical_text',
+        title,
+        text: userMessage,
+        source: 'User conversation — Luna Chat',
+      });
+    }
+  } catch (err) {
+    // Background task — never throw, never surface to user
+    console.warn('[lunaAutoUpdate background] silently failed:', err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // MAIN HANDLER
 // ─────────────────────────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
@@ -356,6 +408,13 @@ Deno.serve(async (req) => {
     // Deduplicate
     const uniqueActions = [...new Set(suggestedActions)];
 
+    // ── Auto-update pipeline — fire-and-forget, never blocks response ─────────
+    const autoUpdateMode = detectAutoUpdateMode(lastUserMsg);
+    if (autoUpdateMode) {
+      // Do not await — intentionally fire-and-forget
+      fireAutoUpdate(base44, autoUpdateMode, user, lastUserMsg, ragResult?.topic).catch(() => {});
+    }
+
     return Response.json({
       mainContent: llmResponse,
       disclaimer,
@@ -365,6 +424,7 @@ Deno.serve(async (req) => {
       detectedSymptoms,
       codedSymptoms: {},
       ragTopic: ragResult?.topic || null,
+      knowledgeUpdated: !!autoUpdateMode,
     });
 
   } catch (error) {
