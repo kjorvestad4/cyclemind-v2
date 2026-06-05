@@ -47,6 +47,7 @@ const RAG_TOPICS = {
   pregnancy_loss: ['miscarriage', 'pregnancy loss', 'stillbirth', 'tfmr', 'termination medical', 'ectopic', 'rainbow pregnancy'],
   endometriosis: ['endometriosis', 'endo pain', 'painful periods', 'dysmenorrhea', 'pelvic pain'],
   pcos: ['pcos', 'polycystic', 'irregular periods', 'androgen', 'insulin resistance'],
+  calcium: ['calcium supplement', 'calcium pmdd', 'supplement for pms', 'vitamin supplement pmdd', 'non-medication pmdd', 'non-pharma pmdd'],
   contraception: ['birth control', 'pill mood', 'ocp depression', 'iud mood', 'depo mood', 'contraception depression'],
   ssri: ['ssri', 'sertraline', 'fluoxetine', 'antidepressant', 'medication mood', 'escitalopram', 'snri'],
   breastfeeding: ['breastfeeding medication', 'nursing medication', 'lactation medication', 'breastfeed antidepressant'],
@@ -92,7 +93,12 @@ const WIKI_EXCERPTS = {
   pmdd: {
     title: 'PMDD Overview',
     keywords: ['pmdd', 'premenstrual dysphoric', 'luteal phase', 'drsp', 'severe pms', 'pms mood'],
-    content: `Diagnosis requires prospective daily DRSP tracking for 2 full cycles. ≥5 symptoms in the luteal phase, ≥1 core mood symptom (mood swings, irritability/anger, depressed mood, anxiety/tension), absent/minimal in follicular phase. Confirmed by pattern, not blood tests.\n\nFirst-line treatment: SSRIs (sertraline, fluoxetine) continuous or luteal-phase-only; calcium 1200 mg/day; CBT. Second-line: drospirenone OCP (Yaz). Third-line: GnRH agonists + add-back HRT.\n\nIntermittent luteal-phase SSRIs work via neurosteroid modulation — effect within 1 cycle, not 4–6 weeks. PMDD stops completely during pregnancy and after menopause, confirming its cycle-driven nature.`,
+    content: `Diagnosis requires prospective daily DRSP tracking for 2 full cycles. ≥5 symptoms in the luteal phase, ≥1 core mood symptom (mood swings, irritability/anger, depressed mood, anxiety/tension), absent/minimal in follicular phase. Confirmed by pattern, not blood tests.\n\nFirst-line treatment: SSRIs (sertraline, fluoxetine) continuous or luteal-phase-only; calcium supplementation (dose per clinician guidance); CBT. Second-line: drospirenone OCP (Yaz). Third-line: GnRH agonists + add-back HRT.\n\nIntermittent luteal-phase SSRIs work via neurosteroid modulation — effect within 1 cycle, not 4–6 weeks. PMDD stops completely during pregnancy and after menopause, confirming its cycle-driven nature.`,
+  },
+  calcium: {
+    title: 'Calcium Supplementation for PMDD/PMS',
+    keywords: ['calcium supplement', 'calcium pmdd', 'supplement for pms', 'non-medication pmdd', 'vitamins pmdd'],
+    content: `Calcium supplementation is evidence-based for PMDD and PMS, supported by multiple RCTs (Thys-Jacobs 1998). Studies have explored doses in the 1000–1200 mg/day elemental calcium range. Effects include reductions in luteal-phase mood symptoms, cravings, bloating, and pain.\n\nNever volunteer a specific dose unprompted. When asked directly, reference the studied range and always add: "Discuss the right dose and any needed bloodwork with your clinician."\n\nMost useful when user reports luteal-phase irritability, cravings, or low mood and is asking about non-medication options. Always encourage DRSP daily logging so patterns can be shared with their clinician.`,
   },
   postpartum_depression: {
     title: 'Postpartum Depression',
