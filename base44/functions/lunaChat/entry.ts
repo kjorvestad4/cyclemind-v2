@@ -30,7 +30,7 @@ You are now fully equipped with the complete CycleMind knowledge base.`;
 
 // Keyword → topic mapping for deterministic RAG routing
 const RAG_TOPICS = {
-  pmdd: ['pmdd', 'premenstrual dysphoric', 'luteal phase', 'premenstrual', 'pms', 'period mood', 'cycle mood', 'drsp'],
+  pmdd: ['pmdd', 'premenstrual dysphoric', 'luteal phase', 'premenstrual', 'pms', 'period mood', 'cycle mood', 'drsp', 'before my period', 'before period', 'right before period', 'week before period', 'days before period'],
   postpartum_depression: ['postpartum depression', 'ppd', 'baby blues', 'after birth depression', 'postnatal depression'],
   postpartum_psychosis: ['postpartum psychosis', 'hearing voices after birth', 'pp psychosis', 'postnatal psychosis'],
   postpartum_ocd: ['postpartum ocd', 'thoughts about harming baby', 'intrusive thoughts baby', 'harm obsessions'],
