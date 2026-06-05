@@ -21,6 +21,9 @@ const LUNA_PERSONA = `You are Luna, the supportive AI companion inside CycleMind
 - Suggest logging mood, sleep, cravings, or symptoms **only when it feels natural and helpful** — never in every response.
 - Offer insights only from the user's own logged data + the RAG + wiki layer.
 
+## Knowledge Base
+You also have access to the rich Obsidian wiki layer in knowledge-base/wiki/ for deeper context and interconnections. When clinical wiki context is provided in the prompt, integrate it naturally into your response.
+
 You are now fully equipped with the complete CycleMind knowledge base.`;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -78,6 +81,140 @@ const TOPIC_SUMMARIES = {
   trauma: `Trauma — including childhood abuse, sexual assault, intimate partner violence, and birth trauma — has profound reproductive mental health implications. PTSD affects 6–8% of the general obstetric population; higher in those with prior trauma. Trauma-informed prenatal care asks permission before procedures, explains every step, and supports patient control. Treatment: EMDR, CPT (Cognitive Processing Therapy), TF-CBT. Birth trauma PTSD responds well to birth debriefing and EMDR. IPV screening is part of standard prenatal care.`,
   crisis: null, // Handled separately with immediate escalation
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WIKI LAYER — inline excerpts from knowledge-base/wiki/
+// These mirror the Obsidian vault so the backend can enrich responses without
+// file-system access. Keep in sync with lib/wikiReader.js on the frontend.
+// ─────────────────────────────────────────────────────────────────────────────
+const WIKI_EXCERPTS = {
+  pmdd: {
+    title: 'PMDD Overview',
+    keywords: ['pmdd', 'premenstrual dysphoric', 'luteal phase', 'drsp', 'severe pms', 'pms mood'],
+    content: `Diagnosis requires prospective daily DRSP tracking for 2 full cycles. ≥5 symptoms in the luteal phase, ≥1 core mood symptom (mood swings, irritability/anger, depressed mood, anxiety/tension), absent/minimal in follicular phase. Confirmed by pattern, not blood tests.\n\nFirst-line treatment: SSRIs (sertraline, fluoxetine) continuous or luteal-phase-only; calcium 1200 mg/day; CBT. Second-line: drospirenone OCP (Yaz). Third-line: GnRH agonists + add-back HRT.\n\nIntermittent luteal-phase SSRIs work via neurosteroid modulation — effect within 1 cycle, not 4–6 weeks. PMDD stops completely during pregnancy and after menopause, confirming its cycle-driven nature.`,
+  },
+  postpartum_depression: {
+    title: 'Postpartum Depression',
+    keywords: ['postpartum depression', 'ppd', 'baby blues', 'postnatal depression', 'new mom sad'],
+    content: `Affects 10–15% of new mothers. Baby blues resolve by day 10–14; PPD persists beyond 2 weeks. Screen with EPDS (score ≥10 warrants evaluation).\n\nTreatment: SSRIs (sertraline preferred, RID <3% — lowest breastfeeding exposure), CBT or IPT psychotherapy. Severe: brexanolone (Zulresso) or zuranolone (Zurzuvae). Sleep protection (partner sharing night feeds) is a critical prevention component.\n\nStrongest predictor of PPD: prior depressive episodes. Breastfeeding is compatible with most SSRIs.`,
+  },
+  postpartum_psychosis: {
+    title: 'Postpartum Psychosis',
+    keywords: ['postpartum psychosis', 'postnatal psychosis', 'voices after birth'],
+    content: `Psychiatric emergency. 1–2 per 1,000 births. Rapid onset within first 2 weeks: confusion, hallucinations (often auditory), delusions about baby, severe insomnia, disorganized behavior.\n\nMost cases represent bipolar disorder triggered by postpartum estrogen crash. Requires immediate hospitalization. Lithium + antipsychotic. Women with Bipolar I: 25–50% risk — prophylactic lithium started immediately postpartum is strongly recommended.`,
+  },
+  postpartum_ocd: {
+    title: 'Postpartum OCD',
+    keywords: ['postpartum ocd', 'intrusive thoughts baby', 'harm obsessions'],
+    content: `Affects 2–4% of new parents. Ego-dystonic intrusive thoughts about harming the baby — the mother finds them horrifying and would never act on them. Insight is intact (differs from psychosis).\n\nDistress about the thoughts is protective. Treatment: CBT with ERP first-line; SSRIs at therapeutic doses for moderate-severe cases.`,
+  },
+  postpartum_anxiety: {
+    title: 'Postpartum Anxiety',
+    keywords: ['postpartum anxiety', 'new mom anxiety', 'worried after birth'],
+    content: `Up to 20% of new mothers. Types: GAD, panic disorder, PTSD from birth trauma, OCD. Often overlooked. Screen with EPDS anxiety subscale or GAD-7.\n\nBirth trauma PTSD: flashbacks, avoidance of hospitals, hyperarousal. Treatment: CBT, EMDR for birth trauma, SSRIs (sertraline preferred, breastfeeding-safe).`,
+  },
+  pregnancy_depression: {
+    title: 'Perinatal (Antenatal) Depression',
+    keywords: ['depression in pregnancy', 'antenatal depression', 'prenatal depression', 'antidepressant pregnancy'],
+    content: `Affects 10–15% of pregnant women. Under-recognized. Untreated antenatal depression is the strongest predictor of PPD and carries real risks: preterm birth, low birth weight, poor prenatal care engagement.\n\nTreatment: psychotherapy (CBT or IPT) first-line for mild-moderate; SSRIs (sertraline preferred) for moderate-severe. Risk of untreated depression outweighs small SSRI risks for most patients. Neonatal Adaptation Syndrome is transient and self-limiting. Never stop antidepressants abruptly without clinical guidance.`,
+  },
+  pregnancy_anxiety: {
+    title: 'Pregnancy Anxiety Disorders',
+    keywords: ['anxiety in pregnancy', 'pregnant and anxious', 'panic pregnancy', 'fear childbirth'],
+    content: `Most common psychiatric conditions in pregnancy (15–21%). GAD, panic disorder, OCD, and PTSD all occur.\n\nCBT first-line. SSRIs safe and effective. Benzodiazepines: avoid if possible; short-term low-dose lorazepam acceptable for acute anxiety. Tokophobia (severe birth fear): treatable with CBT and detailed birth planning.`,
+  },
+  bipolar: {
+    title: 'Bipolar Disorder — Reproductive Context',
+    keywords: ['bipolar', 'mania', 'hypomania', 'mood stabilizer', 'lithium pregnancy', 'lamotrigine'],
+    content: `Highest postpartum relapse risk of any psychiatric condition. Bipolar I: 25–50% risk of postpartum psychosis if mood stabilizers are stopped.\n\nLithium: effective prophylaxis; starts immediately postpartum dramatically reduces relapse; compatible with careful breastfeeding monitoring. Lamotrigine: levels drop 50–65% during pregnancy — proactive dose increases needed. Valproate: CONTRAINDICATED in pregnancy (9–10% malformation rate, neural tube defects, significant cognitive impairment in exposed children). Never stop mood stabilizers without psychiatric guidance.`,
+  },
+  perimenopause: {
+    title: 'Perimenopause Mental Health',
+    keywords: ['perimenopause', 'hot flash', 'night sweats', 'irregular period menopause', 'perimenopausal'],
+    content: `4–8 year hormonal transition before menopause. Erratic estrogen fluctuations (not simply decline) drive symptoms. Women with prior PMDD have higher risk for perimenopausal depression.\n\nSymptoms: hot flashes, night sweats, mood changes, irritability, brain fog, sleep disruption, vaginal dryness, irregular cycles. Treatment: MHT (most effective for vasomotor + mood), SSRIs/SNRIs, CBT-I. Fezolinetant (NK3R antagonist) for hot flashes if hormones are contraindicated. PMDD typically worsens during perimenopause.`,
+  },
+  menopause: {
+    title: 'Menopause & Hormone Therapy',
+    keywords: ['menopause', 'hrt', 'hormone therapy', 'mht', 'gsm', 'vaginal dryness menopause'],
+    content: `Confirmed after 12 consecutive months of amenorrhea. Average age 51. MHT is most effective for vasomotor symptoms and protects bone density. WHI findings recontextualized — transdermal estrogen + micronized progesterone has favorable safety profile.\n\nGSM (vaginal dryness/dyspareunia): ultra-low-dose vaginal estrogen is safe and highly effective. Non-hormonal options: fezolinetant, SSRIs/SNRIs. Estrogen-only HRT (post-hysterectomy) has minimal/no increased breast cancer risk.`,
+  },
+  fertility: {
+    title: 'Fertility & Mental Health',
+    keywords: ['fertility', 'ivf', 'trying to conceive', 'ttc', 'infertility', 'egg freezing'],
+    content: `Infertility affects 10–15% of couples. Psychological impact comparable to serious medical diagnoses. Each IVF cycle brings distinct emotional stages — stimulation, retrieval, two-week wait. Grief after failed cycles is cumulative.\n\nEvidence-based support: CBT, Domar mind-body protocol, RESOLVE groups. SSRIs for comorbid depression do not negatively affect IVF outcomes. Rainbow pregnancy anxiety (after loss) often needs additional psychological support.`,
+  },
+  pregnancy_loss: {
+    title: 'Pregnancy Loss & Grief',
+    keywords: ['miscarriage', 'pregnancy loss', 'stillbirth', 'tfmr', 'ectopic', 'rainbow pregnancy'],
+    content: `Grief is real at any gestational age. PTSD common after stillbirth (up to 30%). Complicated grief responds to grief-focused CBT or IPT.\n\nRainbow pregnancies: heightened anxiety and hypervigilance are common and normal. Support groups: SHARE, Star Legacy Foundation, Support Organization for TFMR.`,
+  },
+  endometriosis: {
+    title: 'Endometriosis & Mental Health',
+    keywords: ['endometriosis', 'endo pain', 'painful periods', 'pelvic pain', 'endometriosis depression'],
+    content: `Affects 6–10% of reproductive-age women with 7–10 year average diagnostic delay. Depression and anxiety 2–3× more prevalent, largely driven by chronic pain and medical dismissal.\n\nTreatment: ACT and CBT for chronic pain; pelvic floor physical therapy; hormonal suppression (continuous OCP, progestins, GnRH agonists). Validate that dismissed symptoms are real.`,
+  },
+  pcos: {
+    title: 'PCOS & Mental Health',
+    keywords: ['pcos', 'polycystic', 'insulin resistance', 'pcos depression'],
+    content: `Most common endocrine disorder in reproductive-age women (8–13%). Mental health comorbidities 2–3× elevated: depression, anxiety, binge-eating disorder.\n\nCBT for mood and body image (HAES-aligned). SSRIs for depression. Metformin for insulin resistance. Frame as endocrine/metabolic condition, not lifestyle failure.`,
+  },
+  contraception: {
+    title: 'Contraception & Mental Health',
+    keywords: ['birth control mood', 'ocp depression', 'iud mood', 'pill depression'],
+    content: `Drospirenone OCPs (Yaz) are FDA-approved for PMDD and most favorable for mood. Etonogestrel implant had the highest depression signal in cohort data.\n\nScreen PHQ-9 before prescribing and at 3 months in mood-vulnerable patients. Copper IUD: hormone-free option.`,
+  },
+  ssri: {
+    title: 'Luteal-Phase SSRI Dosing',
+    keywords: ['ssri', 'sertraline', 'fluoxetine', 'antidepressant cycle', 'ssri pmdd'],
+    content: `SSRIs first-line for PMDD, perinatal depression, PPD, and anxiety disorders. In PMDD, work via rapid neurosteroid modulation — onset within 1 cycle.\n\nSertraline preferred in pregnancy and breastfeeding (RID <3%). Intermittent luteal-phase dosing: start day 14, stop day 2 of period. As effective as daily dosing with fewer side effects.`,
+  },
+  breastfeeding: {
+    title: 'Psychotropics During Breastfeeding',
+    keywords: ['breastfeeding medication', 'nursing antidepressant', 'lactation medication'],
+    content: `Relative Infant Dose (RID) <10% generally considered safe. Sertraline and paroxetine: RID <1–3% — preferred antidepressants. Quetiapine: RID <1% — preferred antipsychotic. Lithium: RID 12–30% — requires close monitoring.\n\nResources: LactMed (NIH, free), Infant Risk Center (1-806-352-2519).`,
+  },
+  sleep: {
+    title: 'Sleep & Reproductive Mental Health',
+    keywords: ['insomnia', 'sleep problems', 'cant sleep', 'sleep cycle', 'sleep pmdd'],
+    content: `Sleep disruption is both a symptom and driver of mood disorders across the reproductive lifespan. Postpartum sleep deprivation is the single most powerful mood destabilizer.\n\nCBT-I (Cognitive Behavioral Therapy for Insomnia) is first-line and highly effective. Sleep protection (partner sharing night feeds) is a critical PPD prevention strategy. HRT can dramatically improve sleep in perimenopause.`,
+  },
+  anxiety: {
+    title: 'Anxiety in Reproductive Context',
+    keywords: ['anxiety', 'panic attack', 'gad', 'anxious', 'worry'],
+    content: `Anxiety disorders are most common psychiatric conditions in women, with a significant hormonal component. Perinatal anxiety is more prevalent than perinatal depression.\n\nCBT first-line. SSRIs for chronic anxiety. Acute coping: 4-7-8 breathing; 5-4-3-2-1 grounding (5 things seen, 4 touched, 3 heard, 2 smelled, 1 tasted); progressive muscle relaxation.`,
+  },
+  depression: {
+    title: 'Depression in Women',
+    keywords: ['depression', 'depressed', 'hopeless', 'worthless', 'low mood', 'anhedonia'],
+    content: `Depression in women is twice as prevalent as in men, with the gender gap emerging at puberty. Brain-based condition, not a character flaw.\n\nCBT, IPT, behavioral activation, SSRIs. Strong lifestyle evidence: exercise (equivalent to medication in mild-moderate), omega-3 EPA (1–2 g/day), sleep hygiene, light therapy. Always screen for bipolar before starting antidepressants.`,
+  },
+  trauma: {
+    title: 'Trauma & Reproductive Health',
+    keywords: ['trauma', 'ptsd', 'birth trauma', 'abuse', 'assault', 'domestic violence'],
+    content: `PTSD affects 6–8% of the general obstetric population; higher with prior trauma. Birth trauma PTSD: flashbacks, avoidance of medical settings, hyperarousal.\n\nTreatment: EMDR, CPT, TF-CBT. Birth trauma responds well to debriefing and EMDR. Trauma-informed care: ask permission before procedures, explain every step, support patient control.`,
+  },
+};
+
+function readWikiContext(userMessage, ragTopic) {
+  const lower = userMessage.toLowerCase();
+
+  // If we already have a RAG topic, check if the wiki has that topic first
+  if (ragTopic && WIKI_EXCERPTS[ragTopic]) {
+    return { topic: ragTopic, title: WIKI_EXCERPTS[ragTopic].title, content: WIKI_EXCERPTS[ragTopic].content };
+  }
+
+  // Otherwise score by keyword match
+  let best = null;
+  let bestScore = -1;
+
+  for (const [key, entry] of Object.entries(WIKI_EXCERPTS)) {
+    const score = entry.keywords.reduce((acc, kw) => lower.includes(kw) ? acc + kw.split(' ').length : acc, 0);
+    if (score > bestScore) { bestScore = score; best = { key, entry }; }
+  }
+
+  if (!best || bestScore === 0) return null;
+  return { topic: best.key, title: best.entry.title, content: best.entry.content };
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DETERMINISTIC RAG SEARCH
@@ -285,6 +422,12 @@ Deno.serve(async (req) => {
       ? `\n\nCLINICAL REFERENCE (from CycleMind knowledge base, topic: ${ragResult.topic}):\n${ragResult.summary}\n\nUse this as background context — weave the relevant parts naturally into your response rather than quoting it directly.`
       : '';
 
+    // ── Wiki layer — richer interconnected context from knowledge-base/wiki/ ─
+    const wikiResult = readWikiContext(lastUserMsg, ragResult?.topic);
+    const wikiContext = wikiResult
+      ? `\n\nWIKI CONTEXT (${wikiResult.title}, from CycleMind Obsidian wiki):\n${wikiResult.content}\n\nDraw on this wiki knowledge naturally. Do not quote it verbatim.`
+      : '';
+
     const modeInstruction = (mode === 'quick' || isQuickReply)
       ? 'Respond in 2–4 sentences. Be warm and conversational. Validate feelings first.'
       : 'Provide a thoughtful, structured response (up to 8 sentences). Use markdown formatting (bold key terms, bullet points if listing items). Validate feelings first, then provide information.';
@@ -297,7 +440,7 @@ Deno.serve(async (req) => {
       ? `\n\nSymptoms already saved to today's log: ${alreadySavedSymptoms.join(', ')}. Do not offer to save these again.`
       : '';
 
-    const systemPrompt = `${LUNA_PERSONA}\n\nCURRENT CONTEXT:\nDate: ${new Date().toLocaleDateString()}\n${cycleContext}${ragContext}${alreadySavedCtx}\n\nINSTRUCTION: ${modeInstruction}${logSuggestion} Respond directly to the user as Luna. Do not describe what you are going to do — just do it.`;
+    const systemPrompt = `${LUNA_PERSONA}\n\nCURRENT CONTEXT:\nDate: ${new Date().toLocaleDateString()}\n${cycleContext}${ragContext}${wikiContext}${alreadySavedCtx}\n\nINSTRUCTION: ${modeInstruction}${logSuggestion} Respond directly to the user as Luna. Do not describe what you are going to do — just do it.`;
     // Pass the entire conversation; final user message is already last in the array
     const userPrompt = lastUserMsg;
 
