@@ -1,0 +1,204 @@
+{
+  "main": {
+    "id": "72b82d5fa28b398c",
+    "type": "split",
+    "children": [
+      {
+        "id": "b600ef0641e210b4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "afa495c5d08533f5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Bipolar-Disorder-Reproductive-Context.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Bipolar-Disorder-Reproductive-Context"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "3258853938e6c2de",
+    "type": "split",
+    "children": [
+      {
+        "id": "10c00f9e8097fdd6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e87277349ed07ac6",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "1687827a02a24af5",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "b2f8b5bd673de369",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "2fd252b3091026ce",
+    "type": "split",
+    "children": [
+      {
+        "id": "2a56a09d579605a8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "33fbbbeb4948f60e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Bipolar-Disorder-Reproductive-Context.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Bipolar-Disorder-Reproductive-Context"
+            }
+          },
+          {
+            "id": "3ba966f8bb8eeb03",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Bipolar-Disorder-Reproductive-Context.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Bipolar-Disorder-Reproductive-Context"
+            }
+          },
+          {
+            "id": "00a1760b2fe1140d",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "012c4887ee60ef5c",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "2486bb2bbb3f45a8",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Bipolar-Disorder-Reproductive-Context.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Bipolar-Disorder-Reproductive-Context"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "e87277349ed07ac6",
+  "lastOpenFiles": [
+    "Untitled",
+    "Luna Outputs/2026-06-05_pmdd_luteal_phase_symptoms.md.md",
+    "Calcium-Supplementation-PMDD.md",
+    "Luna Outputs/2026-06-04-sample-pattern-analysis.md",
+    "Untitled 2.canvas",
+    "Untitled 1.canvas",
+    "Untitled.canvas",
+    "Luna-RAG-Architecture.md",
+    "Luna-Crisis-Protocol.md",
+    "Luna-Clinical-Boundaries.md",
+    "Luna Outputs/2026-06-04-user-pattern-test-patient-001.md",
+    "Luna Outputs/2026-06-04-synthesis-pmdd-luteal-phase-management.md",
+    "Luna Outputs",
+    "DRSP-Guide.md",
+    "Contraception-Mental-Health.md",
+    "index.md"
+  ]
+}
