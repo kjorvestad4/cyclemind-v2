@@ -13,14 +13,14 @@ const RATINGS = [
 
 function RatingRow({ label, value, onChange }) {
   return (
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-xs font-medium text-slate-600 dark:text-slate-300 w-36 shrink-0">{label}</span>
-      <div className="flex gap-1">
+    <div className="flex flex-col gap-1">
+      <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{label}</span>
+      <div className="flex gap-1.5">
         {[1, 2, 3, 4, 5].map((n) => (
           <button
             key={n}
             onClick={() => onChange(n)}
-            className={`w-7 h-7 rounded-full text-xs font-semibold border transition-all ${
+            className={`flex-1 h-8 rounded-lg text-xs font-semibold border transition-all ${
               value === n
                 ? 'bg-teal-600 text-white border-teal-600 shadow'
                 : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600 hover:border-teal-400 hover:text-teal-600'
