@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import PsychTestFeedback from '@/components/luna/PsychTestFeedback';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2, Mic, MicOff, FileDown, Bell, Eye, EyeOff, HelpCircle } from 'lucide-react';
@@ -15,6 +16,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms', 'go to log', 'log my mood today', 'log today', 'log my symptoms', 'log symptoms today', 'track my symptoms today'];
 // Actions that should navigate to the journal section of the log page
 const JOURNAL_ACTIONS = ['journal your feelings', 'journal', 'write in your journal', 'log your feelings', 'start a journaling session', 'start journaling', 'journaling session', 'open journal', 'note down what you\'re feeling', 'note down what your feeling', 'note down', 'write down your feelings', 'write down what you\'re feeling'];
+
+const PSYCH_TEST_SEPARATOR = '--- PSYCH TEST MODE ---';
+
+function extractPsychTestContent(content) {
+  if (!content) return { mainContent: content, isPsychTest: false };
+  const idx = content.indexOf(PSYCH_TEST_SEPARATOR);
+  if (idx === -1) return { mainContent: content, isPsychTest: false };
+  return { mainContent: content.slice(0, idx).trim(), isPsychTest: true };
+}
 
 const SESSION_KEY = 'luna_chat_session';
 const SESSION_TTL_MS = 7 * 60 * 1000; // 7 minutes
@@ -358,11 +368,19 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
                   <div className={`max-w-[80%] min-w-0 rounded-3xl px-5 py-3.5 text-[15px] leading-relaxed shadow-sm overflow-hidden ${
                     msg.role === 'user' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 border border-teal-100 dark:border-teal-900 rounded-bl-none'
                   }`}>
-                    {msg.role === 'assistant' ? (
-                      <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
-                        {msg.content}
-                      </ReactMarkdown>
-                    ) : (
+                    {msg.role === 'assistant' ? (() => {
+                      const { mainContent, isPsychTest } = extractPsychTestContent(msg.content);
+                      return (
+                        <>
+                          <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
+                            {mainContent}
+                          </ReactMarkdown>
+                          {isPsychTest && (
+                            <PsychTestFeedback messageContent={mainContent} msgIdx={idx} />
+                          )}
+                        </>
+                      );
+                    })() : (
                       <p>{msg.content}</p>
                     )}
 
