@@ -15,7 +15,8 @@ function RatingRow({ label, value, onChange }) {
   return (
     <div className="flex flex-col gap-1">
       <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{label}</span>
-      <div className="flex gap-1.5">
+      <div className="flex gap-1.5 items-center">
+        <span className="text-[10px] text-slate-400 shrink-0">worst</span>
         {[1, 2, 3, 4, 5].map((n) => (
           <button
             key={n}
@@ -29,6 +30,7 @@ function RatingRow({ label, value, onChange }) {
             {n}
           </button>
         ))}
+        <span className="text-[10px] text-slate-400 shrink-0">best</span>
       </div>
     </div>
   );
