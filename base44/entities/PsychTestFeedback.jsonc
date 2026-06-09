@@ -1,0 +1,39 @@
+{
+  "name": "PsychTestFeedback",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID of the tester"
+    },
+    "message_content": {
+      "type": "string",
+      "description": "Luna's response that was rated (first 500 chars)"
+    },
+    "tone_rating": {
+      "type": "number",
+      "description": "Tone rating 1-5"
+    },
+    "personalization_rating": {
+      "type": "number",
+      "description": "Personalization rating 1-5"
+    },
+    "safety_clinical_rating": {
+      "type": "number",
+      "description": "Safety/clinical feel rating 1-5"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional free-text suggested changes"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When feedback was submitted"
+    }
+  },
+  "required": [
+    "user_id",
+    "submitted_at"
+  ]
+}
