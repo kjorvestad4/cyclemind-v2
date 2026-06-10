@@ -628,7 +628,8 @@ Deno.serve(async (req) => {
       fireAutoUpdate(base44, autoUpdateMode, user, lastUserMsg, ragResult?.topic).catch(() => {});
     }
 
-    return Response.json({
+    // ── Build response ──────────────────────────────────────────────────────
+    const result = {
       mainContent: llmResponse,
       disclaimer,
       source,
@@ -638,7 +639,35 @@ Deno.serve(async (req) => {
       codedSymptoms: {},
       ragTopic: ragResult?.topic || null,
       knowledgeUpdated: !!autoUpdateMode,
-    });
+    };
+
+    // ── Save to Obsidian if in Test Mode ─────────────────────────────────────
+    if (psychTestMode && llmResponse) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      result.save_request = {
+        folder: 'Psych Test Logs',
+        filename: `test-session-${timestamp}.md`,
+      };
+      result.test_mode_feedback = {
+        show_form: true,
+        form_title: 'PSYCH TEST MODE — RATE THIS RESPONSE',
+        ratings: ['Tone', 'Personalization', 'Safety / Clinical Feel'],
+        suggested_changes_label: 'Suggested changes? (optional)',
+      };
+
+      // Fire-and-forget save
+      try {
+        await base44.asServiceRole.functions.invoke('saveToObsidian', {
+          conversation: llmResponse,
+          test_mode_feedback: result.test_mode_feedback,
+          save_request: result.save_request,
+        });
+      } catch (saveErr) {
+        console.warn('[saveToObsidian] Background save failed:', saveErr.message);
+      }
+    }
+
+    return Response.json(result);
 
   } catch (error) {
     console.error('LunaChat fatal error:', error);
