@@ -50,9 +50,20 @@ const PSYCH_TEST_FOOTER = [
   "Feedback requested: Rate tone (1-5), personalization (1-5), safety/clinical feel. Any suggested changes?",
 ].join('\n');
 
-function isPsychTestMode(message) {
-  const lower = (message || '').toLowerCase();
-  return lower.includes('psychtestmode') || lower.startsWith('i am testing in psychtestmode');
+function resolveTestMode(messages) {
+  // Walk through all messages to determine current test mode state
+  let active = false;
+  for (const msg of messages) {
+    if (msg.role !== 'user') continue;
+    const lower = (msg.content || '').toLowerCase().trim();
+    if (lower.includes('enter test mode') || lower.includes('psychtestmode') || lower.startsWith('i am testing in psychtestmode')) {
+      active = true;
+    }
+    if (lower.includes('exit test mode')) {
+      active = false;
+    }
+  }
+  return active;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -405,9 +416,39 @@ Deno.serve(async (req) => {
     } = await req.json();
 
     const lastUserMsg = messages[messages.length - 1]?.content || '';
+    const lastUserMsgLower = lastUserMsg.toLowerCase().trim();
 
-    // ── Detect PsychTestMode ─────────────────────────────────────────────────
-    const psychTestMode = isPsychTestMode(lastUserMsg);
+    // ── Detect PsychTestMode (persistent — scans full conversation history) ──
+    const psychTestMode = resolveTestMode(messages);
+
+    // ── Handle "Enter Test Mode" / "Exit Test Mode" commands directly ────────
+    if (lastUserMsgLower === 'enter test mode') {
+      return Response.json({
+        mainContent: "🔬 **Test Mode activated.** I'll respond normally as Luna, and you'll see a feedback form after each response to rate tone, personalization, and safety. Say **\"Exit Test Mode\"** when you're done.",
+        disclaimer: null,
+        source: 'test_mode_command',
+        suggestedActions: [],
+        flags: { escalate: false, crisis: false, psychTestMode: true },
+        detectedSymptoms: [],
+        codedSymptoms: {},
+        ragTopic: null,
+        knowledgeUpdated: false,
+      });
+    }
+
+    if (lastUserMsgLower === 'exit test mode') {
+      return Response.json({
+        mainContent: "Test Mode deactivated. Back to normal mode. How can I support you?",
+        disclaimer: null,
+        source: 'test_mode_command',
+        suggestedActions: [],
+        flags: { escalate: false, crisis: false, psychTestMode: false },
+        detectedSymptoms: [],
+        codedSymptoms: {},
+        ragTopic: null,
+        knowledgeUpdated: false,
+      });
+    }
 
     // ── TIER 1: Deterministic RAG search ────────────────────────────────────
     const ragResult = searchRAG(lastUserMsg);
@@ -464,7 +505,7 @@ Deno.serve(async (req) => {
       : '';
 
     const psychTestInstruction = psychTestMode
-      ? '\n\nNOTE: This is a PsychTestMode session. Respond normally as Luna. The system will append the PsychTestMode footer automatically — do NOT add it yourself.'
+      ? '\n\nNOTE: This is a PSYCH TEST MODE session. Respond normally as Luna. Do NOT add any test mode footer or ratings form yourself — the UI handles that automatically.'
       : '';
 
     const systemPrompt = `${LUNA_PERSONA}\n\nCURRENT CONTEXT:\nDate: ${new Date().toLocaleDateString()}\n${cycleContext}${ragContext}${wikiContext}${alreadySavedCtx}${psychTestInstruction}\n\nINSTRUCTION: ${modeInstruction}${logSuggestion} Respond directly to the user as Luna. Do not describe what you are going to do — just do it.`;

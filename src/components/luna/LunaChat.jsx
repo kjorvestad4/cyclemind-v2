@@ -17,13 +17,15 @@ const LOG_ACTIONS = ['track today\'s symptoms', 'log symptoms', 'track symptoms'
 // Actions that should navigate to the journal section of the log page
 const JOURNAL_ACTIONS = ['journal your feelings', 'journal', 'write in your journal', 'log your feelings', 'start a journaling session', 'start journaling', 'journaling session', 'open journal', 'note down what you\'re feeling', 'note down what your feeling', 'note down', 'write down your feelings', 'write down what you\'re feeling'];
 
+// Legacy separator support (no longer appended, but kept for backward compat with old messages)
 const PSYCH_TEST_SEPARATOR = '--- PSYCH TEST MODE ---';
 
-function extractPsychTestContent(content) {
+function extractPsychTestContent(content, flagFromResponse) {
   if (!content) return { mainContent: content, isPsychTest: false };
   const idx = content.indexOf(PSYCH_TEST_SEPARATOR);
-  if (idx === -1) return { mainContent: content, isPsychTest: false };
-  return { mainContent: content.slice(0, idx).trim(), isPsychTest: true };
+  if (idx !== -1) return { mainContent: content.slice(0, idx).trim(), isPsychTest: true };
+  // Use the flag from the response if no legacy separator
+  return { mainContent: content, isPsychTest: !!flagFromResponse };
 }
 
 const SESSION_KEY = 'luna_chat_session';
@@ -369,7 +371,7 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
                     msg.role === 'user' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 border border-teal-100 dark:border-teal-900 rounded-bl-none'
                   }`}>
                     {msg.role === 'assistant' ? (() => {
-                      const { mainContent, isPsychTest } = extractPsychTestContent(msg.content);
+                      const { mainContent, isPsychTest } = extractPsychTestContent(msg.content, msg.flags?.psychTestMode);
                       return (
                         <>
                           <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
