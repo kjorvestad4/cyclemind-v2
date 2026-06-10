@@ -43,9 +43,6 @@ const LUNA_PERSONA = [
 // ─────────────────────────────────────────────────────────────────────────────
 const PSYCH_TEST_FOOTER = [
   "",
-  "---",
-  "**This is AI-generated pattern recognition and not a substitute for professional medical advice. Please discuss with your psychiatrist.**",
-  "",
   "--- PSYCH TEST MODE ---",
   "Feedback requested: Rate tone (1-5), personalization (1-5), safety/clinical feel. Any suggested changes?",
 ].join('\n');
