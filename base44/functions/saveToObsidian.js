@@ -1,5 +1,3 @@
-import { Octokit } from "@octokit/rest";
-
 export async function saveToObsidian({ conversation, test_mode_feedback, save_request }) {
   if (!save_request || !save_request.folder) {
     return { success: false, message: "No save_request provided" };
@@ -22,25 +20,37 @@ export async function saveToObsidian({ conversation, test_mode_feedback, save_re
     content += `- Suggested changes: ${test_mode_feedback.suggested_changes || 'None'}\n\n`;
   }
 
-  try {
-    const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) {
+    return { success: false, message: "GITHUB_TOKEN secret is missing" };
+  }
 
-    await octokit.repos.createOrUpdateFileContents({
-      owner: "kjorvestad4",
-      repo: "cyclemind",
-      path,
+  try {
+    const url = `https://api.github.com/repos/kjorvestad4/cyclemind/contents/${encodeURIComponent(path)}`;
+
+    const body = {
       message: `chore: save Luna ${folder} conversation`,
-      content: Buffer.from(content).toString("base64"),
+      content: btoa(unescape(encodeURIComponent(content))),
       branch: "main",
+    };
+
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `token ${token}`,
+        "Accept": "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
     });
 
-    return {
-      success: true,
-      filePath: path,
-      message: `Saved to GitHub → ${path}`,
-    };
+    if (!res.ok) {
+      const errText = await res.text();
+      return { success: false, message: `GitHub API error: ${res.status} ${errText}` };
+    }
+
+    return { success: true, filePath: path, message: `Saved to ${path}` };
   } catch (err) {
-    console.error("GitHub write failed:", err);
     return { success: false, message: err.message };
   }
 }
