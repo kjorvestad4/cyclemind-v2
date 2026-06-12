@@ -8,6 +8,8 @@ export async function saveToObsidian({ conversation, test_mode_feedback, save_re
   const filename = save_request.filename || `conversation-${timestamp}.md`;
 
   // ✅ Fixed path
+  
+  // ✅ Updated correct path
   const path = `src/knowledge-base/wiki/cyclemind-wiki/${folder}/${filename}`;
 
   let content = `# Conversation - ${new Date().toLocaleString()}\n\n`;
