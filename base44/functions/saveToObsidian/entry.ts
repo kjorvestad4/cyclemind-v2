@@ -6,7 +6,9 @@ export async function saveToObsidian({ conversation, test_mode_feedback, save_re
   const folder = save_request.folder;
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const filename = save_request.filename || `conversation-${timestamp}.md`;
-  const path = `wiki/cyclemind-wiki/${folder}/${filename}`;
+  
+  // ✅ Updated correct path
+  const path = `src/knowledge-base/wiki/cyclemind-wiki/${folder}/${filename}`;
 
   let content = `# Conversation - ${new Date().toLocaleString()}\n\n`;
 
@@ -30,7 +32,7 @@ export async function saveToObsidian({ conversation, test_mode_feedback, save_re
 
     const body = {
       message: `chore: save Luna ${folder} conversation`,
-      content: btoa(unescape(encodeURIComponent(content))), // base64
+      content: btoa(unescape(encodeURIComponent(content))),
       branch: "main",
     };
 
