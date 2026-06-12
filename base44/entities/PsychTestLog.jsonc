@@ -1,0 +1,39 @@
+{
+  "name": "PsychTestLog",
+  "type": "object",
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the session was saved"
+    },
+    "conversation": {
+      "type": "string",
+      "description": "Full conversation history as text"
+    },
+    "tone": {
+      "type": "number",
+      "description": "Tone rating 1-5"
+    },
+    "personalization": {
+      "type": "number",
+      "description": "Personalization rating 1-5"
+    },
+    "safety": {
+      "type": "number",
+      "description": "Safety / clinical feel rating 1-5"
+    },
+    "suggested_changes": {
+      "type": "string",
+      "description": "Free-text suggested changes from tester"
+    },
+    "tester_email": {
+      "type": "string",
+      "format": "email",
+      "description": "Optional tester email"
+    }
+  },
+  "required": [
+    "timestamp"
+  ]
+}

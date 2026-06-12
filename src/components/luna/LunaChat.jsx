@@ -378,7 +378,7 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
                             {mainContent}
                           </ReactMarkdown>
                           {isPsychTest && (
-                            <PsychTestFeedback messageContent={mainContent} msgIdx={idx} />
+                            <PsychTestFeedback messageContent={mainContent} msgIdx={idx} allMessages={messages} />
                           )}
                         </>
                       );

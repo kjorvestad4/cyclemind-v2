@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Save } from 'lucide-react';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
 
 const RATINGS = [
   { key: 'tone_rating', label: 'Tone' },
@@ -36,11 +35,13 @@ function RatingRow({ label, value, onChange }) {
   );
 }
 
-export default function PsychTestFeedback({ messageContent, msgIdx }) {
+export default function PsychTestFeedback({ messageContent, msgIdx, allMessages }) {
   const [ratings, setRatings] = useState({ tone_rating: null, personalization_rating: null, safety_clinical_rating: null });
   const [notes, setNotes] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [sessionSaved, setSessionSaved] = useState(false);
+  const [savingSession, setSavingSession] = useState(false);
 
   const allRated = RATINGS.every(r => ratings[r.key] !== null);
 
@@ -68,11 +69,56 @@ export default function PsychTestFeedback({ messageContent, msgIdx }) {
     }
   };
 
+  const handleSaveSession = async () => {
+    setSavingSession(true);
+    try {
+      const conversationText = (allMessages || [])
+        .map(m => `[${m.role.toUpperCase()}]: ${m.content}`)
+        .join('\n\n');
+
+      await base44.entities.PsychTestLog.create({
+        timestamp: new Date().toISOString(),
+        conversation: conversationText,
+        tone: ratings.tone_rating,
+        personalization: ratings.personalization_rating,
+        safety: ratings.safety_clinical_rating,
+        suggested_changes: notes.trim() || null,
+      });
+
+      setSessionSaved(true);
+      toast.success('Session saved! Thank you for helping train Luna. 💚');
+    } catch (err) {
+      console.error(err);
+      toast.error('Could not save session. Please try again.');
+    } finally {
+      setSavingSession(false);
+    }
+  };
+
   if (submitted) {
     return (
-      <div className="mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-300 font-medium">
-        <CheckCircle2 className="w-4 h-4 shrink-0" />
-        Feedback saved — thank you for testing Luna!
+      <div className="mt-3 space-y-2">
+        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-300 font-medium">
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
+          Feedback saved — thank you for testing Luna!
+        </div>
+        {!sessionSaved && (
+          <Button
+            size="sm"
+            onClick={handleSaveSession}
+            disabled={savingSession}
+            className="w-full rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 gap-1.5"
+          >
+            <Save className="w-3 h-3" />
+            {savingSession ? 'Saving...' : '💾 Save Test Session for Luna'}
+          </Button>
+        )}
+        {sessionSaved && (
+          <div className="p-2 bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800 rounded-xl flex items-center gap-2 text-xs text-violet-700 dark:text-violet-300 font-medium">
+            <CheckCircle2 className="w-3 h-3 shrink-0" />
+            Full session saved to database!
+          </div>
+        )}
       </div>
     );
   }
@@ -100,14 +146,25 @@ export default function PsychTestFeedback({ messageContent, msgIdx }) {
         className="w-full text-xs rounded-xl border border-violet-200 dark:border-violet-700 bg-white dark:bg-slate-800 px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-violet-400 text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
       />
 
-      <Button
-        size="sm"
-        onClick={handleSubmit}
-        disabled={saving || !allRated}
-        className="w-full rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs h-8"
-      >
-        {saving ? 'Saving...' : 'Submit Feedback'}
-      </Button>
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          onClick={handleSubmit}
+          disabled={saving || !allRated}
+          className="flex-1 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs h-8"
+        >
+          {saving ? 'Saving...' : 'Submit Feedback'}
+        </Button>
+        <Button
+          size="sm"
+          onClick={handleSaveSession}
+          disabled={savingSession || sessionSaved}
+          className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 gap-1"
+        >
+          <Save className="w-3 h-3" />
+          {savingSession ? 'Saving...' : sessionSaved ? '✓ Saved!' : '💾 Save Session'}
+        </Button>
+      </div>
     </div>
   );
 }
