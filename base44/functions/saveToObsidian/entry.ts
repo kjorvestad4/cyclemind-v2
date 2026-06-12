@@ -1,57 +1,56 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
+export async function saveToObsidian({ conversation, test_mode_feedback, save_request }) {
+  if (!save_request || !save_request.folder) {
+    return { success: false, message: "No save_request provided" };
+  }
 
-Deno.serve(async (req) => {
+  const folder = save_request.folder;
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const filename = save_request.filename || `conversation-${timestamp}.md`;
+  const path = `wiki/cyclemind-wiki/${folder}/${filename}`;
+
+  let content = `# Conversation - ${new Date().toLocaleString()}\n\n`;
+
+  if (conversation) content += `## Conversation\n${conversation}\n\n`;
+
+  if (test_mode_feedback) {
+    content += `## Psychiatrist Feedback\n`;
+    content += `- Tone: ${test_mode_feedback.tone || 'N/A'}\n`;
+    content += `- Personalization: ${test_mode_feedback.personalization || 'N/A'}\n`;
+    content += `- Safety / Clinical Feel: ${test_mode_feedback.safety || 'N/A'}\n`;
+    content += `- Suggested changes: ${test_mode_feedback.suggested_changes || 'None'}\n\n`;
+  }
+
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) {
+    return { success: false, message: "GITHUB_TOKEN secret is missing" };
+  }
+
   try {
-    const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
+    const url = `https://api.github.com/repos/kjorvestad4/cyclemind/contents/${encodeURIComponent(path)}`;
 
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const body = {
+      message: `chore: save Luna ${folder} conversation`,
+      content: btoa(unescape(encodeURIComponent(content))), // base64
+      branch: "main",
+    };
 
-    const { conversation, test_mode_feedback, save_request } = await req.json();
-
-    if (!save_request || !save_request.folder || !save_request.filename) {
-      return Response.json({ 
-        success: false, 
-        error: 'Missing save_request with folder and filename' 
-      }, { status: 400 });
-    }
-
-    // Build markdown content
-    let markdownContent = `# Luna Conversation Log\n\n`;
-    markdownContent += `**User:** ${user.full_name}\n`;
-    markdownContent += `**Date:** ${new Date().toISOString()}\n`;
-    markdownContent += `**Folder:** ${save_request.folder}\n\n`;
-    markdownContent += `## Conversation\n\n`;
-    markdownContent += conversation + '\n\n';
-
-    if (test_mode_feedback && test_mode_feedback.show_form) {
-      markdownContent += `## Test Mode Feedback\n\n`;
-      markdownContent += `**Form Title:** ${test_mode_feedback.form_title}\n\n`;
-      markdownContent += `**Ratings:**\n`;
-      if (test_mode_feedback.ratings) {
-        test_mode_feedback.ratings.forEach(r => {
-          markdownContent += `- ${r}\n`;
-        });
-      }
-      markdownContent += `\n**Suggested Changes Label:** ${test_mode_feedback.suggested_changes_label}\n\n`;
-    }
-
-    // For now, log to console (in a real impl, write to Obsidian vault)
-    console.log(`[saveToObsidian] Saving to ${save_request.folder}/${save_request.filename}`);
-    console.log(markdownContent);
-
-    // Return success response
-    return Response.json({
-      success: true,
-      filePath: `${save_request.folder}/${save_request.filename}`,
-      message: `Conversation saved to ${save_request.folder}`,
-      content: markdownContent
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `token ${token}`,
+        "Accept": "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
     });
 
-  } catch (error) {
-    console.error('saveToObsidian error:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    if (!res.ok) {
+      const errText = await res.text();
+      return { success: false, message: `GitHub API error: ${res.status} ${errText}` };
+    }
+
+    return { success: true, filePath: path, message: `Saved to ${path}` };
+  } catch (err) {
+    return { success: false, message: err.message };
   }
-});
+}
