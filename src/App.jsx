@@ -19,6 +19,7 @@ import Billing from '@/pages/Billing';
 import LunaCapabilitiesDemo from '@/pages/LunaCapabilitiesDemo';
 import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import Terms from '@/pages/Terms';
+import SubmissionsReview from '@/pages/SubmissionsReview';
 
 const pageVariants = {
   initial: { opacity: 0, x: 24 },
@@ -40,6 +41,7 @@ const AnimatedOutlet = () => {
         <Route path="/luna-demo" element={<LunaCapabilitiesDemo />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/admin/submissions" element={<SubmissionsReview />} />
 
         {/* Welcome + Onboarding */}
         <Route path="/welcome" element={<Welcome />} />

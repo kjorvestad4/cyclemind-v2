@@ -1,6 +1,7 @@
 {
   "name": "PsychTestLog",
   "type": "object",
+  "description": "Stores psychiatrist test session logs. HIPAA NOTE: Treat conversation field as PHI. Minimize data collected. Fields should be encrypted at rest. Consent must be obtained before saving (consent_given=true).",
   "properties": {
     "timestamp": {
       "type": "string",
@@ -9,7 +10,7 @@
     },
     "conversation": {
       "type": "string",
-      "description": "Full conversation history as text"
+      "description": "Full conversation history as text \u2014 PHI, handle with care"
     },
     "tone": {
       "type": "number",
@@ -31,6 +32,16 @@
       "type": "string",
       "format": "email",
       "description": "Optional tester email"
+    },
+    "is_phi": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this record contains Protected Health Information"
+    },
+    "consent_given": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has explicitly consented to this data being stored and used for training"
     }
   },
   "required": [

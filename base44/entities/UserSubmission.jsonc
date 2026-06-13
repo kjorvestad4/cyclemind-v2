@@ -1,6 +1,7 @@
 {
   "name": "UserSubmission",
   "type": "object",
+  "description": "Stores regular user feedback for RAG ingestion. HIPAA NOTE: conversation_or_message may contain PHI. Minimize data collected. Fields should be encrypted at rest. Do not store raw health data without consent_given=true.",
   "properties": {
     "timestamp": {
       "type": "string",
@@ -13,7 +14,7 @@
     },
     "conversation_or_message": {
       "type": "string",
-      "description": "Full conversation history or message content for RAG ingestion"
+      "description": "Full conversation history or message content for RAG ingestion \u2014 may contain PHI"
     },
     "symptoms_ratings": {
       "type": "string",
@@ -37,6 +38,16 @@
       ],
       "default": "pending",
       "description": "Processing status for RAG ingestion pipeline"
+    },
+    "is_phi": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this record contains Protected Health Information"
+    },
+    "consent_given": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has explicitly consented to this data being stored and used for training"
     }
   },
   "required": [

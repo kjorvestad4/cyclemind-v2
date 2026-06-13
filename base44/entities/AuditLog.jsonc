@@ -1,0 +1,43 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "description": "HIPAA audit trail. Records every create/update/delete action on sensitive tables. Do not store raw PHI here \u2014 use record_id references only.",
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the action occurred"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user who performed the action"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "create",
+        "update",
+        "delete",
+        "view"
+      ],
+      "description": "Type of action performed"
+    },
+    "table_affected": {
+      "type": "string",
+      "description": "Name of the entity/table that was affected"
+    },
+    "record_id": {
+      "type": "string",
+      "description": "ID of the affected record"
+    },
+    "details": {
+      "type": "string",
+      "description": "JSON string with non-PHI metadata about the action (e.g. changed fields, source)"
+    }
+  },
+  "required": [
+    "timestamp",
+    "action",
+    "table_affected"
+  ]
+}
