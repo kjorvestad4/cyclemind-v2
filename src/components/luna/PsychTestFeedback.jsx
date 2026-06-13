@@ -35,14 +35,15 @@ function RatingRow({ label, value, onChange }) {
   );
 }
 
-export default function PsychTestFeedback({ messageContent, msgIdx, allMessages }) {
+export default function PsychTestFeedback({ messageContent, msgIdx, allMessages, sessionConsent, onConsentGiven }) {
   const [ratings, setRatings] = useState({ tone_rating: null, personalization_rating: null, safety_clinical_rating: null });
   const [notes, setNotes] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sessionSaved, setSessionSaved] = useState(false);
   const [savingSession, setSavingSession] = useState(false);
-  const [consentGiven, setConsentGiven] = useState(false);
+  const consentGiven = sessionConsent;
+  const setConsentGiven = (val) => { if (val && onConsentGiven) onConsentGiven(); };
 
   const allRated = RATINGS.every(r => ratings[r.key] !== null);
 

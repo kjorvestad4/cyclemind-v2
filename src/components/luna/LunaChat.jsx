@@ -65,6 +65,7 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
   const [loading, setLoading] = useState(false);
   const [savedSymptomIndexes, setSavedSymptomIndexes] = useState(new Set());
   const [responseMode, setResponseMode] = useState('quick'); // 'quick' | 'deep'
+  const [psychConsent, setPsychConsent] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [voiceTranscript, setVoiceTranscript] = useState('');
   const voiceTranscriptRef = useRef('');
@@ -387,7 +388,7 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
                             {mainContent}
                           </ReactMarkdown>
                           {isPsychTest && (
-                            <PsychTestFeedback messageContent={mainContent} msgIdx={idx} allMessages={messages} />
+                            <PsychTestFeedback messageContent={mainContent} msgIdx={idx} allMessages={messages} sessionConsent={psychConsent} onConsentGiven={() => setPsychConsent(true)} />
                           )}
                         </>
                       );
