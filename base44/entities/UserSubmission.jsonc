@@ -1,0 +1,45 @@
+{
+  "name": "UserSubmission",
+  "type": "object",
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the submission was created"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID or email of the submitting user"
+    },
+    "conversation_or_message": {
+      "type": "string",
+      "description": "Full conversation history or message content for RAG ingestion"
+    },
+    "symptoms_ratings": {
+      "type": "string",
+      "description": "JSON string of symptom keys and ratings logged during the session"
+    },
+    "source": {
+      "type": "string",
+      "description": "Context label e.g. 'regular user', 'PMDD flare', 'pregnancy mode', 'perimenopause'"
+    },
+    "suggested_improvements": {
+      "type": "string",
+      "description": "Free-text improvement suggestions from the user"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "ingested",
+        "archived"
+      ],
+      "default": "pending",
+      "description": "Processing status for RAG ingestion pipeline"
+    }
+  },
+  "required": [
+    "timestamp"
+  ]
+}
