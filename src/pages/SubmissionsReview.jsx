@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, FileText, FlaskConical, ScrollText } from 'lucide-react';
+import { Shield, FileText, FlaskConical, ScrollText, Upload, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const STATUS_COLORS = {
   pending: 'bg-amber-100 text-amber-700',
@@ -16,6 +17,16 @@ const STATUS_COLORS = {
 
 export default function SubmissionsReview() {
   const [tab, setTab] = useState('psych');
+  const [exporting, setExporting] = useState(false);
+  const [exportResult, setExportResult] = useState(null);
+
+  const handleExport = async () => {
+    setExporting(true);
+    setExportResult(null);
+    const resp = await base44.functions.invoke('exportPsychLogsToObsidian', {});
+    setExportResult(resp.data);
+    setExporting(false);
+  };
 
   const { data: psychLogs = [], isLoading: loadingPsych } = useQuery({
     queryKey: ['psych-test-logs'],
@@ -39,11 +50,32 @@ export default function SubmissionsReview() {
           <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
             <Shield className="w-5 h-5 text-violet-600" />
           </div>
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold text-foreground">Submissions Review</h1>
             <p className="text-sm text-muted-foreground">HIPAA-compliant view of test logs, user feedback, and audit trail</p>
           </div>
+          <Button
+            onClick={handleExport}
+            disabled={exporting}
+            className="gap-2 bg-violet-600 hover:bg-violet-700 text-white"
+          >
+            <Upload className="w-4 h-4" />
+            {exporting ? 'Exporting...' : 'Export All Psych Logs to Obsidian'}
+          </Button>
         </div>
+
+        {exportResult && (
+          <div className={`flex items-start gap-2 p-3 rounded-xl border text-sm ${
+            exportResult.errors > 0
+              ? 'bg-amber-50 border-amber-300 text-amber-800'
+              : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+          }`}>
+            {exportResult.errors > 0
+              ? <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              : <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />}
+            <span>{exportResult.message}{exportResult.errors > 0 ? ` (${exportResult.errors} failed)` : ''}</span>
+          </div>
+        )}
 
         {/* Summary Cards */}
         <div className="grid grid-cols-3 gap-4">
