@@ -42,6 +42,7 @@ export default function PsychTestFeedback({ messageContent, msgIdx, allMessages 
   const [saving, setSaving] = useState(false);
   const [sessionSaved, setSessionSaved] = useState(false);
   const [savingSession, setSavingSession] = useState(false);
+  const [consentGiven, setConsentGiven] = useState(false);
 
   const allRated = RATINGS.every(r => ratings[r.key] !== null);
 
@@ -83,6 +84,8 @@ export default function PsychTestFeedback({ messageContent, msgIdx, allMessages 
         personalization: ratings.personalization_rating,
         safety: ratings.safety_clinical_rating,
         suggested_changes: notes.trim() || null,
+        consent_given: true,
+        is_phi: false,
       });
 
       setSessionSaved(true);
@@ -124,46 +127,69 @@ export default function PsychTestFeedback({ messageContent, msgIdx, allMessages 
   }
 
   return (
-    <div className="mt-3 p-3 bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800 rounded-2xl space-y-3">
-      <p className="text-xs font-bold text-violet-700 dark:text-violet-300 uppercase tracking-wide">
-        ⚗️ PSYCH TEST MODE — Rate this response
-      </p>
+    <div className="mt-3 space-y-2">
+      {/* HIPAA Disclaimer Banner */}
+      <div className="p-2.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700 rounded-xl flex items-start gap-2 text-[11px] text-amber-800 dark:text-amber-300 leading-snug">
+        <span className="shrink-0 mt-0.5">⚠️</span>
+        <span>
+          <strong>Test Mode:</strong> This is clinician feedback mode. Data is saved for AI improvement only and is <strong>not used for clinical decisions</strong>.
+        </span>
+      </div>
 
-      {RATINGS.map(({ key, label }) => (
-        <RatingRow
-          key={key}
-          label={label}
-          value={ratings[key]}
-          onChange={(v) => setRatings(prev => ({ ...prev, [key]: v }))}
+      <div className="p-3 bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800 rounded-2xl space-y-3">
+        <p className="text-xs font-bold text-violet-700 dark:text-violet-300 uppercase tracking-wide">
+          ⚗️ PSYCH TEST MODE — Rate this response
+        </p>
+
+        {RATINGS.map(({ key, label }) => (
+          <RatingRow
+            key={key}
+            label={label}
+            value={ratings[key]}
+            onChange={(v) => setRatings(prev => ({ ...prev, [key]: v }))}
+          />
+        ))}
+
+        <textarea
+          placeholder="Suggested changes? (optional)"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={2}
+          className="w-full text-xs rounded-xl border border-violet-200 dark:border-violet-700 bg-white dark:bg-slate-800 px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-violet-400 text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
         />
-      ))}
 
-      <textarea
-        placeholder="Suggested changes? (optional)"
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        rows={2}
-        className="w-full text-xs rounded-xl border border-violet-200 dark:border-violet-700 bg-white dark:bg-slate-800 px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-violet-400 text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
-      />
+        {/* Consent Checkbox */}
+        <label className="flex items-start gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={consentGiven}
+            onChange={(e) => setConsentGiven(e.target.checked)}
+            className="mt-0.5 accent-violet-600"
+          />
+          <span className="text-[11px] text-slate-600 dark:text-slate-400 leading-snug">
+            I confirm this is test data and consent to it being used for Luna improvement (anonymized).
+          </span>
+        </label>
 
-      <div className="flex gap-2">
-        <Button
-          size="sm"
-          onClick={handleSubmit}
-          disabled={saving || !allRated}
-          className="flex-1 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs h-8"
-        >
-          {saving ? 'Saving...' : 'Submit Feedback'}
-        </Button>
-        <Button
-          size="sm"
-          onClick={handleSaveSession}
-          disabled={savingSession || sessionSaved}
-          className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 gap-1"
-        >
-          <Save className="w-3 h-3" />
-          {savingSession ? 'Saving...' : sessionSaved ? '✓ Saved!' : '💾 Save Session'}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            onClick={handleSubmit}
+            disabled={saving || !allRated}
+            className="flex-1 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs h-8"
+          >
+            {saving ? 'Saving...' : 'Submit Feedback'}
+          </Button>
+          <Button
+            size="sm"
+            onClick={handleSaveSession}
+            disabled={savingSession || sessionSaved || !consentGiven}
+            className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 gap-1 disabled:opacity-40"
+          >
+            <Save className="w-3 h-3" />
+            {savingSession ? 'Saving...' : sessionSaved ? '✓ Saved!' : '💾 Save Session'}
+          </Button>
+        </div>
       </div>
     </div>
   );

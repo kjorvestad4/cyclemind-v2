@@ -365,6 +365,15 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
         <div className="flex-1 overflow-y-auto">
           {activeTab === 'chat' && (
             <div className="p-5 space-y-6">
+              {/* Test Mode Banner */}
+              {messages.some(m => m.flags?.psychTestMode) && (
+                <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700 rounded-2xl text-[11px] text-amber-800 dark:text-amber-300 leading-snug">
+                  <span className="shrink-0">⚠️</span>
+                  <span>
+                    <strong>Clinician Test Mode active.</strong> Data is saved for AI improvement but is <strong>not used for clinical decisions</strong>. Exit by typing "Exit Test Mode".
+                  </span>
+                </div>
+              )}
               {messages.map((msg, idx) => (
                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[80%] min-w-0 rounded-3xl px-5 py-3.5 text-[15px] leading-relaxed shadow-sm overflow-hidden ${
