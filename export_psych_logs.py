@@ -1,37 +1,53 @@
 import os
+import requests
 from datetime import datetime
 
-print("🔄 Exporting Psych Test Logs from Base44 to Obsidian...")
+print("🔄 Pulling LIVE data from your Base44 workspace...")
 
-# TODO: Replace this with actual Base44 query later
-logs = [
-    {"id": "TEST001", "timestamp": "2026-06-12_21-37", "conversation": "Test message from psychiatrist: Patient reported severe irritability and bloating in luteal phase.", "tone": 5, "personalization": 4, "safety": 5, "suggested_changes": "Add more validation and suggest tracking food triggers"},
-]
+headers = {
+    "Authorization": "Bearer 74955646a7434787a6f0e6bea0d4d5f4",
+    "Content-Type": "application/json"
+}
+
+workspace_id = "69d93cb8c911ac4cb1905e0"
+
+# Try to fetch from the table (adjust table name if needed)
+url = f"https://api.base44.com/v1/workspaces/{workspace_id}/tables/psych_test_logs/records"
+
+response = requests.get(url, headers=headers)
+
+if response.status_code == 200:
+    logs = response.json().get("data", [])
+    print(f"✅ Found {len(logs)} records")
+else:
+    print(f"❌ API error {response.status_code}: {response.text}")
+    logs = []
 
 for log in logs:
-    filename = f"psych-test-{log['timestamp']}-{log['id']}.md"
+    timestamp = log.get("created_at", "unknown")[:19].replace("T", "_")
+    filename = f"psych-test-{timestamp}-{log.get('id', 'unknown')[:8]}.md"
     path = f"src/knowledge-base/wiki/cyclemind-wiki/Psych Test Logs/{filename}"
-    
-    content = f"""# Psych Test Session - {log['timestamp']}
+
+    content = f"""# Psych Test Session - {timestamp}
 
 ## Conversation
-{log['conversation']}
+{log.get("conversation", log.get("message_content", "No conversation"))}
 
 ## Ratings
-- Tone: {log['tone']}/5
-- Personalization: {log['personalization']}/5
-- Safety/Clinical Feel: {log['safety']}/5
+- Tone: {log.get("tone_rating", "N/A")}/5
+- Personalization: {log.get("personalization_rating", "N/A")}/5
+- Safety / Clinical Feel: {log.get("safety_clinical_rating", "N/A")}/5
 
 ## Suggested Changes
-{log['suggested_changes']}
+{log.get("suggested_changes", "None")}
 
 ---
-Saved for Luna learning • {datetime.now().strftime('%Y-%m-%d %H:%M')}
+Saved from Base44 • {datetime.now().strftime('%Y-%m-%d %H:%M')}
 """
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         f.write(content)
-    print(f"✅ Created {filename}")
+    print(f"✅ Saved {filename}")
 
-print("\n🎉 Done! Now open GitHub Desktop and commit/push the new files in the 'Psych Test Logs' folder.")
+print("\n🎉 Done! Open GitHub Desktop and push.")

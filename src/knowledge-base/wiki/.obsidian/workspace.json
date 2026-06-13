@@ -11,10 +11,14 @@
             "id": "72d556227fb8fd3d",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "cyclemind-wiki/Psych Test Logs/psych-test-2026-06-12_21-37-TEST001.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "psych-test-2026-06-12_21-37-TEST001"
             }
           }
         ]
@@ -90,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "cyclemind-wiki/Psych Test Logs/psych-test-2026-06-12_21-37-TEST001.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for psych-test-2026-06-12_21-37-TEST001"
             }
           },
           {
@@ -108,11 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "cyclemind-wiki/Psych Test Logs/psych-test-2026-06-12_21-37-TEST001.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from psych-test-2026-06-12_21-37-TEST001"
             }
           },
           {
@@ -150,12 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "cyclemind-wiki/Psych Test Logs/psych-test-2026-06-12_21-37-TEST001.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of psych-test-2026-06-12_21-37-TEST001"
             }
           }
         ]
@@ -175,8 +182,9 @@
       "bases:Create new base": false
     }
   },
-  "active": "e87277349ed07ac6",
+  "active": "72d556227fb8fd3d",
   "lastOpenFiles": [
+    "cyclemind-wiki/Psych Test Logs/psych-test-2026-06-12_21-45-LOG001.md",
     "cyclemind-wiki/Psych Test Logs/psych-test-2026-06-12_21-37-TEST001.md",
     "cyclemind-wiki/User comments",
     "cyclemind-wiki/untitled folder",
