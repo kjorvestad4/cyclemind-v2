@@ -60,7 +60,7 @@ export default function SubmissionsReview() {
             className="gap-2 bg-violet-600 hover:bg-violet-700 text-white"
           >
             <Upload className="w-4 h-4" />
-            {exporting ? 'Exporting...' : 'Export All Psych Logs to Obsidian'}
+            {exporting ? 'Exporting...' : 'Export Psych Test Logs to Obsidian + Opik'}
           </Button>
         </div>
 
