@@ -1,0 +1,50 @@
+{
+  "name": "UserComment",
+  "type": "object",
+  "description": "Stores regular user comments and feedback for RAG ingestion and evaluation. May contain PHI \u2014 handle with care.",
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the comment was submitted"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID or email of the submitting user"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Free-text comment from the user"
+    },
+    "symptoms": {
+      "type": "string",
+      "description": "Comma-separated or JSON list of symptoms mentioned"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "PMDD",
+        "pregnancy",
+        "postpartum",
+        "perimenopause",
+        "menopause",
+        "fertility",
+        "general"
+      ],
+      "default": "general",
+      "description": "Lifecycle/mode context at time of comment"
+    },
+    "suggested_improvements": {
+      "type": "string",
+      "description": "Optional improvement suggestions from the user"
+    },
+    "exported": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this comment has been exported to Obsidian/Opik"
+    }
+  },
+  "required": [
+    "timestamp"
+  ]
+}
