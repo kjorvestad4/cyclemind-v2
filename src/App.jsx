@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 
 import AppLayout from '@/components/layout/AppLayout';
+import SessionTimeout from '@/components/common/SessionTimeout';
 import Dashboard from '@/pages/Dashboard';
 import DailyLog from '@/pages/DailyLog';
 import Insights from '@/pages/Insights';
@@ -48,7 +49,7 @@ const AnimatedOutlet = () => {
         <Route path="/start" element={<Onboarding />} />
 
         {/* Main app - protected by auth only */}
-        <Route element={<AppLayout />}>
+        <Route element={<><SessionTimeout /><AppLayout /></>}>
           <Route path="/dashboard" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Dashboard /></motion.div>} />
           <Route path="/log" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><DailyLog /></motion.div>} />
           <Route path="/insights" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Insights /></motion.div>} />
