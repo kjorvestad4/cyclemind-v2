@@ -106,10 +106,14 @@ async function logToOpik(opikKey, log, ts) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
 
-    if (!user || user.role !== 'admin') {
-      return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+    // Allow scheduled automations (no auth header) or admin users
+    const isScheduled = !req.headers.get('authorization');
+    if (!isScheduled) {
+      const user = await base44.auth.me();
+      if (!user || user.role !== 'admin') {
+        return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+      }
     }
 
     const token = Deno.env.get('GITHUB_TOKEN');

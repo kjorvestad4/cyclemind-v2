@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, FileText, FlaskConical, ScrollText, Upload, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Shield, FileText, FlaskConical, ScrollText, Upload, CheckCircle2, AlertCircle, MessageSquare } from 'lucide-react';
 
 const STATUS_COLORS = {
   pending: 'bg-amber-100 text-amber-700',
@@ -19,6 +19,8 @@ export default function SubmissionsReview() {
   const [tab, setTab] = useState('psych');
   const [exporting, setExporting] = useState(false);
   const [exportResult, setExportResult] = useState(null);
+  const [exportingComments, setExportingComments] = useState(false);
+  const [exportCommentsResult, setExportCommentsResult] = useState(null);
 
   const handleExport = async () => {
     setExporting(true);
@@ -26,6 +28,14 @@ export default function SubmissionsReview() {
     const resp = await base44.functions.invoke('exportPsychLogsToObsidian', {});
     setExportResult(resp.data);
     setExporting(false);
+  };
+
+  const handleExportComments = async () => {
+    setExportingComments(true);
+    setExportCommentsResult(null);
+    const resp = await base44.functions.invoke('exportUserCommentsToObsidian', {});
+    setExportCommentsResult(resp.data);
+    setExportingComments(false);
   };
 
   const { data: psychLogs = [], isLoading: loadingPsych } = useQuery({
@@ -36,6 +46,11 @@ export default function SubmissionsReview() {
   const { data: userSubs = [], isLoading: loadingUser } = useQuery({
     queryKey: ['user-submissions'],
     queryFn: () => base44.entities.UserSubmission.list('-created_date', 50),
+  });
+
+  const { data: userComments = [], isLoading: loadingComments } = useQuery({
+    queryKey: ['user-comments'],
+    queryFn: () => base44.entities.UserComment.list('-created_date', 50),
   });
 
   const { data: auditLogs = [], isLoading: loadingAudit } = useQuery({
@@ -54,31 +69,41 @@ export default function SubmissionsReview() {
             <h1 className="text-2xl font-bold text-foreground">Submissions Review</h1>
             <p className="text-sm text-muted-foreground">HIPAA-compliant view of test logs, user feedback, and audit trail</p>
           </div>
-          <Button
-            onClick={handleExport}
-            disabled={exporting}
-            className="gap-2 bg-violet-600 hover:bg-violet-700 text-white"
-          >
-            <Upload className="w-4 h-4" />
-            {exporting ? 'Exporting...' : 'Export Psych Test Logs to Obsidian + Opik'}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleExport}
+              disabled={exporting}
+              className="gap-2 bg-violet-600 hover:bg-violet-700 text-white"
+            >
+              <Upload className="w-4 h-4" />
+              {exporting ? 'Exporting...' : 'Export Psych Test Logs to Obsidian + Opik'}
+            </Button>
+            <Button
+              onClick={handleExportComments}
+              disabled={exportingComments}
+              className="gap-2 bg-teal-600 hover:bg-teal-700 text-white"
+            >
+              <MessageSquare className="w-4 h-4" />
+              {exportingComments ? 'Exporting...' : 'Export User Comments to Obsidian + Opik'}
+            </Button>
+          </div>
         </div>
 
         {exportResult && (
-          <div className={`flex items-start gap-2 p-3 rounded-xl border text-sm ${
-            exportResult.errors > 0
-              ? 'bg-amber-50 border-amber-300 text-amber-800'
-              : 'bg-emerald-50 border-emerald-300 text-emerald-800'
-          }`}>
-            {exportResult.errors > 0
-              ? <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              : <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />}
+          <div className={`flex items-start gap-2 p-3 rounded-xl border text-sm ${exportResult.errors > 0 ? 'bg-amber-50 border-amber-300 text-amber-800' : 'bg-emerald-50 border-emerald-300 text-emerald-800'}`}>
+            {exportResult.errors > 0 ? <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" /> : <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />}
             <span>{exportResult.message}{exportResult.errors > 0 ? ` (${exportResult.errors} failed)` : ''}</span>
+          </div>
+        )}
+        {exportCommentsResult && (
+          <div className={`flex items-start gap-2 p-3 rounded-xl border text-sm ${exportCommentsResult.errors > 0 ? 'bg-amber-50 border-amber-300 text-amber-800' : 'bg-emerald-50 border-emerald-300 text-emerald-800'}`}>
+            {exportCommentsResult.errors > 0 ? <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" /> : <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />}
+            <span>{exportCommentsResult.message}{exportCommentsResult.errors > 0 ? ` (${exportCommentsResult.errors} failed)` : ''}</span>
           </div>
         )}
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <Card>
             <CardContent className="pt-5 flex items-center gap-3">
               <FlaskConical className="w-5 h-5 text-violet-500" />
@@ -99,6 +124,15 @@ export default function SubmissionsReview() {
           </Card>
           <Card>
             <CardContent className="pt-5 flex items-center gap-3">
+              <MessageSquare className="w-5 h-5 text-teal-500" />
+              <div>
+                <p className="text-2xl font-bold">{userComments.length}</p>
+                <p className="text-xs text-muted-foreground">User Comments</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-5 flex items-center gap-3">
               <ScrollText className="w-5 h-5 text-slate-500" />
               <div>
                 <p className="text-2xl font-bold">{auditLogs.length}</p>
@@ -112,6 +146,7 @@ export default function SubmissionsReview() {
           <TabsList>
             <TabsTrigger value="psych">Psych Test Logs</TabsTrigger>
             <TabsTrigger value="user">User Submissions</TabsTrigger>
+            <TabsTrigger value="comments">User Comments</TabsTrigger>
             <TabsTrigger value="audit">Audit Log</TabsTrigger>
           </TabsList>
 
@@ -189,6 +224,39 @@ export default function SubmissionsReview() {
                           {sub.conversation_or_message}
                         </pre>
                       </details>
+                    )}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* User Comments */}
+          <TabsContent value="comments">
+            <Card>
+              <CardHeader><CardTitle className="text-base">Latest User Comments</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                {loadingComments && <p className="text-sm text-muted-foreground">Loading...</p>}
+                {!loadingComments && userComments.length === 0 && <p className="text-sm text-muted-foreground">No comments yet.</p>}
+                {userComments.map(comment => (
+                  <div key={comment.id} className="border rounded-xl p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">
+                        {comment.timestamp ? format(new Date(comment.timestamp), 'MMM d, yyyy HH:mm') : '—'}
+                      </span>
+                      <div className="flex gap-2">
+                        {comment.mode && <Badge className="bg-teal-100 text-teal-700 text-[10px]">{comment.mode}</Badge>}
+                        {comment.exported && <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">Exported ✓</Badge>}
+                      </div>
+                    </div>
+                    {comment.symptoms && (
+                      <p className="text-xs text-slate-600"><span className="font-medium">Symptoms:</span> {comment.symptoms}</p>
+                    )}
+                    {comment.comment && (
+                      <p className="text-xs text-slate-700 bg-slate-50 rounded-lg px-3 py-2">{comment.comment}</p>
+                    )}
+                    {comment.suggested_improvements && (
+                      <p className="text-xs text-slate-500 italic">"{comment.suggested_improvements}"</p>
                     )}
                   </div>
                 ))}
