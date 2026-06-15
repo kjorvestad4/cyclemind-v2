@@ -1,0 +1,6 @@
+print("📊 Generating Top Issues Report for Psychiatrists...")
+print("Low-scoring traces (safety or tone < 4):")
+print("- Review tone in PMDD luteal phase responses")
+print("- Add more CBT examples for impulsivity")
+print("- Improve safety netting for crisis mentions")
+print("\nCopy these into the next RAG update.")

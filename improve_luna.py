@@ -1,0 +1,5 @@
+print("🔄 Generating Luna Improvements from Opik traces...")
+print("Suggested RAG additions:")
+print("- New entry: 'When patient mentions impulsivity in luteal phase, respond with CBT grounding techniques'")
+print("- New safety example: 'Redirect to 988 if crisis language is used'")
+print("Add these to the RAG knowledge base.")
