@@ -44,6 +44,22 @@ export default function Dashboard() {
     await queryClient.refetchQueries({ queryKey: ["entries"] });
   };
 
+  const handleSeedDemoData = async () => {
+    try {
+      const response = await base44.functions.invoke('seedSampleCycles', {});
+      if (response.data?.message === 'Cycle history already exists') {
+        toast.info('Demo data already loaded — check your Cycle History below');
+      } else {
+        toast.success('Demo cycles loaded! Check your Cycle History');
+      }
+      await queryClient.invalidateQueries({ queryKey: ["cycles"] });
+      await queryClient.refetchQueries({ queryKey: ["cycles"] });
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to load demo data');
+    }
+  };
+
   const { containerRef, isPulling, pullProgress } = usePullToRefresh(handlePullRefresh);
 
   useEffect(() => {
@@ -307,13 +323,23 @@ export default function Dashboard() {
           ) : (
             <div className="text-center py-3 space-y-2">
               <p className="text-xs text-muted-foreground">No cycles logged yet</p>
-              <Button
-                size="sm"
-                className="h-8 text-xs gap-1 rounded-xl"
-                onClick={() => setLogNewCycle(true)}
-              >
-                <Plus className="w-3.5 h-3.5" /> Add Your First Cycle Entry
-              </Button>
+              <div className="flex gap-2 justify-center">
+                <Button
+                  size="sm"
+                  className="h-8 text-xs gap-1 rounded-xl"
+                  onClick={() => setLogNewCycle(true)}
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add Cycle
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 text-xs gap-1 rounded-xl"
+                  onClick={handleSeedDemoData}
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> Load Demo Data
+                </Button>
+              </div>
             </div>
           )}
         </div>
