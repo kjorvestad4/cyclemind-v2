@@ -21,6 +21,7 @@ import OnboardingNudge from "@/components/dashboard/OnboardingNudge";
 import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBanner";
 import CycleBanners from "@/components/dashboard/CycleBanners";
 import NewCycleModal from "@/components/dashboard/NewCycleModal";
+import CycleDetailModal from "@/components/dashboard/CycleDetailModal";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -36,6 +37,7 @@ export default function Dashboard() {
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [logNewCycle, setLogNewCycle] = useState(false);
+  const [selectedCycle, setSelectedCycle] = useState(null);
 
   const handlePullRefresh = async () => {
     await queryClient.refetchQueries({ queryKey: ["cycles"] });
@@ -240,16 +242,22 @@ export default function Dashboard() {
                   .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
                   .slice(1)
                   .slice(0, 3)
-                  .map((cycle, i) => (
-                    <div key={cycle.id} className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        {i === 0 ? 'Last cycle' : i === 1 ? '2 cycles ago' : '3 cycles ago'}
-                      </span>
-                      <span className="font-semibold text-foreground">
-                        {cycle.cycle_length ? `${cycle.cycle_length} days` : '–'}
-                      </span>
-                    </div>
-                  ))}
+                  .map((cycle, i) => {
+                    const label = i === 0 ? 'Last cycle' : i === 1 ? '2 cycles ago' : '3 cycles ago';
+                    return (
+                      <button
+                        key={cycle.id}
+                        onClick={() => setSelectedCycle({ cycle, label })}
+                        className="w-full flex items-center justify-between text-sm py-1 hover:bg-muted/50 rounded-lg px-2 -mx-2 transition-colors"
+                      >
+                        <span className="text-muted-foreground">{label}</span>
+                        <span className="font-semibold text-foreground flex items-center gap-1">
+                          {cycle.cycle_length ? `${cycle.cycle_length} days` : '–'}
+                          <span className="text-muted-foreground text-xs">›</span>
+                        </span>
+                      </button>
+                    );
+                  })}
                 {cycles.length === 1 && (
                   <p className="text-xs text-muted-foreground text-center py-2">
                     Log your next period to see cycle history
@@ -262,6 +270,15 @@ export default function Dashboard() {
               </p>
             )}
           </div>
+        )}
+
+        {/* Cycle Detail Modal */}
+        {selectedCycle && (
+          <CycleDetailModal
+            cycle={selectedCycle.cycle}
+            label={selectedCycle.label}
+            onClose={() => setSelectedCycle(null)}
+          />
         )}
 
         {/* New Cycle Entry Modal */}
