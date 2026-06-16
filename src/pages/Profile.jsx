@@ -583,39 +583,18 @@ export default function Profile() {
             sublabel="Download CSV with all entries"
             onClick={exportCSV}
           />
-          {user && getUserTier(user) === TIERS.FREE ? (
-            <>
-              <ActionRow
-                icon={Link2}
-                label="Doctor Share Link"
-                sublabel="Requires Premium — tap to upgrade"
-                onClick={() => navigate('/billing')}
-                rightEl={<Crown className="w-4 h-4 text-primary shrink-0" />}
-              />
-              <ActionRow
-                icon={FileDown}
-                label="Download Clinical Report"
-                sublabel="Requires Premium — tap to upgrade"
-                onClick={() => navigate('/billing')}
-                rightEl={<Crown className="w-4 h-4 text-primary shrink-0" />}
-              />
-            </>
-          ) : (
-            <>
-              <ActionRow
-                icon={Link2}
-                label="Doctor Share Link"
-                sublabel="Secure, 30-day view-only link for your clinician"
-                onClick={() => setShowSharePanel(!showSharePanel)}
-              />
-              <div className="pt-3">
-                <PdfReportButton />
-              </div>
-            </>
-          )}
+          <ActionRow
+            icon={Link2}
+            label="Doctor Share Link"
+            sublabel="Secure, 30-day view-only link for your clinician"
+            onClick={() => setShowSharePanel(!showSharePanel)}
+          />
+          <div className="pt-3">
+            <PdfReportButton />
+          </div>
         </div>
 
-        {showSharePanel && user && getUserTier(user) !== TIERS.FREE && (
+        {showSharePanel && (
           <div className="mt-4 pt-4 border-t border-border/40">
             <ShareWithDoctor cycles={cycles} entries={entries} analysis={{}} />
           </div>

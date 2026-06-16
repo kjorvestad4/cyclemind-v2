@@ -32,7 +32,8 @@ export const FEATURES = {
 
   // Insights
   FULL_INSIGHTS: { tier: TIERS.PREMIUM, name: 'Advanced Insights' },
-  PDF_REPORTS: { tier: TIERS.PREMIUM, name: 'PDF Reports' },
+  PDF_REPORTS: { tier: TIERS.FREE, name: 'PDF Reports' },
+  DOCTOR_SHARE: { tier: TIERS.FREE, name: 'Doctor Share Link' },
   VITALS_TRACKING: { tier: TIERS.FREE, name: 'Vitals Tracking' },
   CYCLE_LENGTH_INSIGHTS: { tier: TIERS.FREE, name: 'Average Cycle Length' },
   BLEEDING_INTENSITY_INSIGHTS: { tier: TIERS.FREE, name: 'Bleeding Intensity' },
