@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 const CYCLE_TYPES = [
   { id: "menstrual", label: "🌙 Menstrual / PMDD" },
+  { id: "pregnancy", label: "🤰 Pregnancy" },
   { id: "postpartum", label: "🍼 Postpartum" },
   { id: "perimenopause", label: "🔦 Perimenopause" },
 ];

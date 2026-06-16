@@ -39,7 +39,11 @@ export default function Dashboard() {
   const [logNewCycle, setLogNewCycle] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState(null);
   const [dismissedPregnancyStatus, setDismissedPregnancyStatus] = useState(() => {
-    return localStorage.getItem("dismissed-pregnancy-status") === "true";
+    try {
+      return localStorage.getItem("dismissed-pregnancy-status") === "true";
+    } catch {
+      return false;
+    }
   });
 
   const handlePullRefresh = async () => {
