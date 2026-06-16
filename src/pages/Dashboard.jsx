@@ -38,6 +38,9 @@ export default function Dashboard() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [logNewCycle, setLogNewCycle] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState(null);
+  const [dismissedPregnancyStatus, setDismissedPregnancyStatus] = useState(() => {
+    return localStorage.getItem("dismissed-pregnancy-status") === "true";
+  });
 
   const handlePullRefresh = async () => {
     await queryClient.refetchQueries({ queryKey: ["cycles"] });
@@ -236,10 +239,19 @@ export default function Dashboard() {
               {cycleType === "pregnancy" && <span className="text-[11px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 font-semibold">🤰 Pregnancy</span>}
             </div>
           )}
-          {cycleType === "pregnancy" && latestCycle && (
+          {cycleType === "pregnancy" && latestCycle && !dismissedPregnancyStatus && (
             <div className="mt-2.5 flex gap-2 flex-wrap">
               <span className="text-[11px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300 font-semibold">🤰 Pregnancy tracking</span>
               <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold">Pregnancy status logged</span>
+              <button
+                onClick={() => {
+                  setDismissedPregnancyStatus(true);
+                  localStorage.setItem("dismissed-pregnancy-status", "true");
+                }}
+                className="text-[10px] text-muted-foreground hover:text-foreground underline"
+              >
+                Dismiss
+              </button>
             </div>
           )}
           {cycleType === "postpartum" && (
