@@ -15,10 +15,11 @@
       "type": "string",
       "enum": [
         "free",
-        "premium"
+        "premium",
+        "premium_plus"
       ],
       "default": "free",
-      "description": "User's subscription tier (free or premium)"
+      "description": "User's subscription tier: free, premium, or premium_plus"
     },
     "onboarded": {
       "type": "boolean",
