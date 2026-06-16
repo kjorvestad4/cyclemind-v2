@@ -70,15 +70,19 @@ export default function Billing() {
   const [billingCycle, setBillingCycle] = useState("monthly"); // "monthly" | "annual"
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => navigate("/welcome")).finally(() => setLoading(false));
-  }, [navigate]);
+    base44.auth.me().then(setUser).catch(() => {}).finally(() => setLoading(false));
+  }, []);
 
   const handleUpgrade = (planId) => {
     // TODO: Integrate with Stripe payment
     alert(`Stripe integration coming soon! (Plan: ${planId})`);
   };
 
-  if (loading) return null;
+  if (loading) return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 
   const currentTier = user?.tier || "free";
 
