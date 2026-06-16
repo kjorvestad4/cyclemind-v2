@@ -597,162 +597,201 @@ export default function DailyLog() {
       {/* PREGNANCY MODE */}
       {isPregnancy && (
         <>
-          <EDDDisplay
-            lmp={latestCycle?.last_menstrual_period}
-            ovulationDate={latestCycle?.ovulation_date}
-            estimatedDueDate={latestCycle?.estimated_due_date}
-            pregnancyWeek={pregnancyWeek}
-          />
-          <Section
-            title="Pregnancy Symptoms"
-            subtitle={trimester ? `${trimester.charAt(0).toUpperCase() + trimester.slice(1)} trimester${pregnancyWeek ? ` · Week ${pregnancyWeek}` : ""}` : undefined}
-            defaultOpen={true}
-            badge={trimester ? trimester.charAt(0).toUpperCase() + trimester.slice(1) : undefined}
-          >
-            <div className="pt-2">
-              <PregnancySymptoms
-                scores={scores}
-                onChange={handleScoreChange}
-                trimester={trimester}
+          {canAccessMode(user, "pregnancy") ? (
+            <>
+              <EDDDisplay
+                lmp={latestCycle?.last_menstrual_period}
+                ovulationDate={latestCycle?.ovulation_date}
+                estimatedDueDate={latestCycle?.estimated_due_date}
                 pregnancyWeek={pregnancyWeek}
-                fetalMovementFelt={fetalMovementFelt}
-                fetalMovementCount={fetalMovementCount}
-                onFetalChange={handleFetalChange}
               />
+              <Section
+                title="Pregnancy Symptoms"
+                subtitle={trimester ? `${trimester.charAt(0).toUpperCase() + trimester.slice(1)} trimester${pregnancyWeek ? ` · Week ${pregnancyWeek}` : ""}` : undefined}
+                defaultOpen={true}
+                badge={trimester ? trimester.charAt(0).toUpperCase() + trimester.slice(1) : undefined}
+              >
+                <div className="pt-2">
+                  <PregnancySymptoms
+                    scores={scores}
+                    onChange={handleScoreChange}
+                    trimester={trimester}
+                    pregnancyWeek={pregnancyWeek}
+                    fetalMovementFelt={fetalMovementFelt}
+                    fetalMovementCount={fetalMovementCount}
+                    onFetalChange={handleFetalChange}
+                  />
+                </div>
+              </Section>
+              <EpdsScale
+                responses={epdsResponses}
+                isPostpartum={false}
+                trimester={trimester}
+                entries={entries}
+                onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+              />
+              <MoodScales
+                phq9Responses={phq9Responses}
+                gad7Responses={gad7Responses}
+                hidePhq9={true}
+                onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+                onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+                showPCL5={!isFreeUser}
+                pcl5Responses={pcl5Responses}
+                onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+                showFSFI={!isFreeUser}
+                fsfiResponses={fsfiResponses}
+                onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+              />
+              <Section title="Spotting / Bleeding" subtitle="Note any spotting — always inform your healthcare provider if unexpected">
+                <div className="pt-1">
+                  <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); scheduleAutoSave(); }} />
+                </div>
+              </Section>
+              <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — track emotional wellbeing alongside pregnancy symptoms">
+                <div className="pt-2 space-y-2">
+                  <p className="text-xs text-muted-foreground">Prenatal mood tracking can be valuable for your care team. Rate 1–6 if relevant.</p>
+                  <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
+                </div>
+              </Section>
+            </>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-900 rounded-2xl p-5 space-y-3 text-center">
+                <p className="text-2xl">🤰</p>
+                <p className="text-sm font-semibold text-pink-800 dark:text-pink-200">Pregnancy Mode (Preview)</p>
+                <p className="text-xs text-pink-700 dark:text-pink-300">You can view pregnancy mode, but Premium is required to log symptoms and access pregnancy-specific features.</p>
+              </div>
+              <UpgradeBanner feature="Pregnancy Tracking" />
             </div>
-          </Section>
-          <EpdsScale
-            responses={epdsResponses}
-            isPostpartum={false}
-            trimester={trimester}
-            entries={entries}
-            onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-          />
-          <MoodScales
-            phq9Responses={phq9Responses}
-            gad7Responses={gad7Responses}
-            hidePhq9={true}
-            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-            showPCL5={!isFreeUser}
-            pcl5Responses={pcl5Responses}
-            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-            showFSFI={!isFreeUser}
-            fsfiResponses={fsfiResponses}
-            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-          />
-          <Section title="Spotting / Bleeding" subtitle="Note any spotting — always inform your healthcare provider if unexpected">
-            <div className="pt-1">
-              <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); scheduleAutoSave(); }} />
-            </div>
-          </Section>
-          <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — track emotional wellbeing alongside pregnancy symptoms">
-            <div className="pt-2 space-y-2">
-              <p className="text-xs text-muted-foreground">Prenatal mood tracking can be valuable for your care team. Rate 1–6 if relevant.</p>
-              <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
-            </div>
-          </Section>
+          )}
         </>
       )}
 
       {/* POSTPARTUM MODE */}
       {isPostpartum && (
         <>
-          <Section title="Postpartum Symptoms" subtitle="Rate physical recovery and emotional wellbeing" defaultOpen={true} badge="Postpartum">
-            <div className="pt-2">
-              <PostpartumSymptoms
-                scores={scores}
-                onChange={handleScoreChange}
-                postpartumDay={latestCycle?.start_date ? Math.max(1, Math.floor((new Date(selectedDate) - new Date(latestCycle.start_date)) / 86400000) + 1) : null}
+          {canAccessMode(user, "postpartum") ? (
+            <>
+              <Section title="Postpartum Symptoms" subtitle="Rate physical recovery and emotional wellbeing" defaultOpen={true} badge="Postpartum">
+                <div className="pt-2">
+                  <PostpartumSymptoms
+                    scores={scores}
+                    onChange={handleScoreChange}
+                    postpartumDay={latestCycle?.start_date ? Math.max(1, Math.floor((new Date(selectedDate) - new Date(latestCycle.start_date)) / 86400000) + 1) : null}
+                  />
+                </div>
+              </Section>
+              <EpdsScale
+                responses={epdsResponses}
+                isPostpartum={true}
+                onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
               />
+              <MoodScales
+                phq9Responses={phq9Responses}
+                gad7Responses={gad7Responses}
+                hidePhq9={true}
+                onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+                onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+                showPCL5={!isFreeUser}
+                pcl5Responses={pcl5Responses}
+                onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+                showFSFI={!isFreeUser}
+                fsfiResponses={fsfiResponses}
+                onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+              />
+              <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — classic mood/symptom grid for comparison">
+                <div className="pt-2">
+                  <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
+                </div>
+              </Section>
+            </>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900 rounded-2xl p-5 space-y-3 text-center">
+                <p className="text-2xl">🍼</p>
+                <p className="text-sm font-semibold text-purple-800 dark:text-purple-200">Postpartum Mode (Preview)</p>
+                <p className="text-xs text-purple-700 dark:text-purple-300">You can view postpartum mode, but Premium is required to log symptoms and access postpartum-specific features.</p>
+              </div>
+              <UpgradeBanner feature="Postpartum Tracking" />
             </div>
-          </Section>
-          <EpdsScale
-            responses={epdsResponses}
-            isPostpartum={true}
-            onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-          />
-          <MoodScales
-            phq9Responses={phq9Responses}
-            gad7Responses={gad7Responses}
-            hidePhq9={true}
-            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-            showPCL5={!isFreeUser}
-            pcl5Responses={pcl5Responses}
-            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-            showFSFI={!isFreeUser}
-            fsfiResponses={fsfiResponses}
-            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-          />
-          <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — classic mood/symptom grid for comparison">
-            <div className="pt-2">
-              <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
-            </div>
-          </Section>
+          )}
         </>
       )}
 
       {/* MENOPAUSE MODE */}
       {isMenopause && (
         <>
-          <Section
-            title={cycleType === "perimenopause" ? "Perimenopause Symptoms" : "Menopause Symptoms"}
-            subtitle="Track hot flashes, mood, sleep and more"
-            defaultOpen={true}
-            badge={cycleType === "perimenopause" ? "Peri" : "Meno"}
-          >
-            <div className="pt-2">
-              <MenopauseSymptoms
-                scores={scores}
-                onChange={handleScoreChange}
-                hrtType={latestCycle?.hrt_type}
-                cycleType={cycleType}
-              />
-            </div>
-          </Section>
-          <MoodScales
-            phq9Responses={phq9Responses}
-            gad7Responses={gad7Responses}
-            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-            showPCL5={!isFreeUser}
-            pcl5Responses={pcl5Responses}
-            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-            showFSFI={!isFreeUser}
-            fsfiResponses={fsfiResponses}
-            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-          />
-          {cycleType === "perimenopause" && (
+          {canAccessMode(user, cycleType) ? (
             <>
-              <Section title="Bleeding / Spotting" subtitle="Irregular bleeding is common in perimenopause">
-                <div className="pt-1">
-                  <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); scheduleAutoSave(); }} />
+              <Section
+                title={cycleType === "perimenopause" ? "Perimenopause Symptoms" : "Menopause Symptoms"}
+                subtitle="Track hot flashes, mood, sleep and more"
+                defaultOpen={true}
+                badge={cycleType === "perimenopause" ? "Peri" : "Meno"}
+              >
+                <div className="pt-2">
+                  <MenopauseSymptoms
+                    scores={scores}
+                    onChange={handleScoreChange}
+                    hrtType={latestCycle?.hrt_type}
+                    cycleType={cycleType}
+                  />
                 </div>
               </Section>
-              <OvulationTracking
-                ovulationTest={ovulationTest}
-                ovulationDate={ovulationDate}
-                cervicalMucus={cervicalMucus}
-                onChange={handleOvulationChange}
+              <MoodScales
+                phq9Responses={phq9Responses}
+                gad7Responses={gad7Responses}
+                onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+                onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+                showPCL5={!isFreeUser}
+                pcl5Responses={pcl5Responses}
+                onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+                showFSFI={!isFreeUser}
+                fsfiResponses={fsfiResponses}
+                onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
               />
+              {cycleType === "perimenopause" && (
+                <>
+                  <Section title="Bleeding / Spotting" subtitle="Irregular bleeding is common in perimenopause">
+                    <div className="pt-1">
+                      <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); scheduleAutoSave(); }} />
+                    </div>
+                  </Section>
+                  <OvulationTracking
+                    ovulationTest={ovulationTest}
+                    ovulationDate={ovulationDate}
+                    cervicalMucus={cervicalMucus}
+                    onChange={handleOvulationChange}
+                  />
+                </>
+              )}
+
+              {/* MRS — Menopause Rating Scale */}
+              {!isFreeUser && (
+                <MRSScale
+                  responses={mrsResponses}
+                  onComplete={(total, responses) => { setMrsScore(total); setMrsResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+                />
+              )}
+
+              {/* Collapsible DRSP for menopause — hidden by default */}
+              <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — classic PMDD/PMS symptom grid for comparison">
+                <div className="pt-2">
+                  <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
+                </div>
+              </Section>
             </>
-          )}
-
-          {/* MRS — Menopause Rating Scale */}
-          {!isFreeUser && (
-            <MRSScale
-              responses={mrsResponses}
-              onComplete={(total, responses) => { setMrsScore(total); setMrsResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
-            />
-          )}
-
-          {/* Collapsible DRSP for menopause — hidden by default */}
-          <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — classic PMDD/PMS symptom grid for comparison">
-            <div className="pt-2">
-              <SymptomGrid categories={SYMPTOM_CATEGORIES} scores={scores} onChange={handleScoreChange} />
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900 rounded-2xl p-5 space-y-3 text-center">
+                <p className="text-2xl">{cycleType === "perimenopause" ? "🔦" : "🔥"}</p>
+                <p className="text-sm font-semibold text-orange-800 dark:text-orange-200">{cycleType === "perimenopause" ? "Perimenopause" : "Menopause"} Mode (Preview)</p>
+                <p className="text-xs text-orange-700 dark:text-orange-300">You can view {cycleType === "perimenopause" ? "perimenopause" : "menopause"} mode, but Premium is required to log symptoms and access {cycleType === "perimenopause" ? "perimenopause" : "menopause"}-specific features.</p>
+              </div>
+              <UpgradeBanner feature={cycleType === "perimenopause" ? "Perimenopause Tracking" : "Menopause Tracking"} />
             </div>
-          </Section>
+          )}
         </>
       )}
 
