@@ -228,32 +228,36 @@ export default function DailyLog() {
 
   // Auto-save: debounce 3s after any change
   const scheduleAutoSave = useCallback(() => {
+    if (!hasUnsavedChanges) return;
     setAutoSaveTimer((prev) => {
       if (prev) clearTimeout(prev);
       return setTimeout(() => {
-        // saveMutation.mutate() called via ref to avoid stale closure
+        saveMutation.mutate();
         setAutoSaveTimer(null);
       }, 3000);
     });
-  }, []);
+  }, [hasUnsavedChanges]);
 
   const handleScoreChange = useCallback((key, value) => {
     setScores((prev) => ({ ...prev, [key]: value }));
     setHasUnsavedChanges(true);
-  }, []);
+    scheduleAutoSave();
+  }, [scheduleAutoSave]);
 
   const handleFetalChange = useCallback((field, value) => {
     if (field === "felt") setFetalMovementFelt(value);
     else setFetalMovementCount(value);
     setHasUnsavedChanges(true);
-  }, []);
+    scheduleAutoSave();
+  }, [scheduleAutoSave]);
 
   const handleOvulationChange = useCallback((field, value) => {
     if (field === "ovulation_test") setOvulationTest(value);
     else if (field === "ovulation_date") setOvulationDate(value);
     else if (field === "cervical_mucus") setCervicalMucus(value);
     setHasUnsavedChanges(true);
-  }, []);
+    scheduleAutoSave();
+  }, [scheduleAutoSave]);
 
   const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
 
@@ -541,7 +545,7 @@ export default function DailyLog() {
         <>
           <Section title="Bleeding & Flow" defaultOpen={true}>
             <div className="pt-1">
-              <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
+              <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); scheduleAutoSave(); }} />
             </div>
           </Section>
           <OvulationTracking
@@ -560,14 +564,14 @@ export default function DailyLog() {
               <MoodScales
                 phq9Responses={phq9Responses}
                 gad7Responses={gad7Responses}
-                onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
-                onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+                onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+                onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
                 showPCL5={!isFreeUser}
                 pcl5Responses={pcl5Responses}
-                onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); }}
+                onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
                 showFSFI={!isFreeUser}
                 fsfiResponses={fsfiResponses}
-                onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); }}
+                onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
               />
             </>
           ) : (
@@ -608,24 +612,24 @@ export default function DailyLog() {
             isPostpartum={false}
             trimester={trimester}
             entries={entries}
-            onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); }}
+            onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
           />
           <MoodScales
             phq9Responses={phq9Responses}
             gad7Responses={gad7Responses}
             hidePhq9={true}
-            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
-            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
             showPCL5={!isFreeUser}
             pcl5Responses={pcl5Responses}
-            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); }}
+            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
             showFSFI={!isFreeUser}
             fsfiResponses={fsfiResponses}
-            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); }}
+            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
           />
           <Section title="Spotting / Bleeding" subtitle="Note any spotting — always inform your healthcare provider if unexpected">
             <div className="pt-1">
-              <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
+              <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); scheduleAutoSave(); }} />
             </div>
           </Section>
           <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — track emotional wellbeing alongside pregnancy symptoms">
@@ -652,20 +656,20 @@ export default function DailyLog() {
           <EpdsScale
             responses={epdsResponses}
             isPostpartum={true}
-            onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); }}
+            onComplete={(total, responses) => { setEpdsScore(total); setEpdsResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
           />
           <MoodScales
             phq9Responses={phq9Responses}
             gad7Responses={gad7Responses}
             hidePhq9={true}
-            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
-            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
             showPCL5={!isFreeUser}
             pcl5Responses={pcl5Responses}
-            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); }}
+            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
             showFSFI={!isFreeUser}
             fsfiResponses={fsfiResponses}
-            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); }}
+            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
           />
           <Section title="DRSP Mood & Symptom Tracking" subtitle="Optional — classic mood/symptom grid for comparison">
             <div className="pt-2">
@@ -696,20 +700,20 @@ export default function DailyLog() {
           <MoodScales
             phq9Responses={phq9Responses}
             gad7Responses={gad7Responses}
-            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); }}
-            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); }}
+            onPHQ9Change={(total, responses) => { setPhq9Score(total); setPhq9Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
+            onGAD7Change={(total, responses) => { setGad7Score(total); setGad7Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
             showPCL5={!isFreeUser}
             pcl5Responses={pcl5Responses}
-            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); }}
+            onPCL5Change={(total, responses) => { setPcl5Score(total); setPcl5Responses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
             showFSFI={!isFreeUser}
             fsfiResponses={fsfiResponses}
-            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); }}
+            onFSFIChange={(total, responses) => { setFsfiScore(total); setFsfiResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
           />
           {cycleType === "perimenopause" && (
             <>
               <Section title="Bleeding / Spotting" subtitle="Irregular bleeding is common in perimenopause">
                 <div className="pt-1">
-                  <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); }} />
+                  <BleedingPicker value={bleedingIntensity} onChange={(v) => { setBleedingIntensity(v); setHasUnsavedChanges(true); scheduleAutoSave(); }} />
                 </div>
               </Section>
               <OvulationTracking
@@ -725,7 +729,7 @@ export default function DailyLog() {
           {!isFreeUser && (
             <MRSScale
               responses={mrsResponses}
-              onComplete={(total, responses) => { setMrsScore(total); setMrsResponses(responses); setHasUnsavedChanges(true); }}
+              onComplete={(total, responses) => { setMrsScore(total); setMrsResponses(responses); setHasUnsavedChanges(true); scheduleAutoSave(); }}
             />
           )}
 
@@ -743,7 +747,7 @@ export default function DailyLog() {
         <div className="pt-1">
           <MedicationsTaken
             value={medications}
-            onChange={(v) => { setMedications(v); setHasUnsavedChanges(true); }}
+            onChange={(v) => { setMedications(v); setHasUnsavedChanges(true); scheduleAutoSave(); }}
             previousDayMeds={(() => {
               const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
               const yesterday = format(subDays(parseLocalDate(selectedDate), 1), "yyyy-MM-dd");
@@ -755,14 +759,14 @@ export default function DailyLog() {
 
       <VitalsTracking
         values={vitals}
-        onChange={(v) => { setVitals(v); setHasUnsavedChanges(true); }}
+        onChange={(v) => { setVitals(v); setHasUnsavedChanges(true); scheduleAutoSave(); }}
       />
 
       <Section title="Custom Symptoms" defaultOpen={customSymptoms.length > 0}>
         <div className="pt-1">
           <CustomSymptoms
             value={customSymptoms}
-            onChange={(v) => { setCustomSymptoms(v); setHasUnsavedChanges(true); }}
+            onChange={(v) => { setCustomSymptoms(v); setHasUnsavedChanges(true); scheduleAutoSave(); }}
             pastSymptoms={[...new Set(
               entries
                 .filter((e) => e.date !== selectedDate && e.custom_symptoms?.length)
@@ -785,7 +789,7 @@ export default function DailyLog() {
                 : "How are you feeling today? Any patterns, triggers, or observations..."
             }
             value={journalEntry}
-            onChange={(e) => { setJournalEntry(e.target.value); setHasUnsavedChanges(true); }}
+            onChange={(e) => { setJournalEntry(e.target.value); setHasUnsavedChanges(true); scheduleAutoSave(); }}
             className="min-h-[120px] resize-none text-sm"
           />
           <button
@@ -820,8 +824,8 @@ export default function DailyLog() {
           >
             {saveMutation.isPending
               ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              : hasUnsavedChanges ? <Save className="w-4 h-4" /> : <Check className="w-4 h-4" />}
-            {hasUnsavedChanges ? "Save Entry" : existingEntry ? "Saved ✓" : "Save Entry"}
+              : autoSaveTimer ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : hasUnsavedChanges ? <Save className="w-4 h-4" /> : <Check className="w-4 h-4" />}
+            {saveMutation.isPending ? "Saving..." : autoSaveTimer ? "Auto-saving..." : hasUnsavedChanges ? "Save Entry" : existingEntry ? "Saved ✓" : "Save Entry"}
           </button>
           <button
             onClick={() => saveTomorrowMutation.mutate()}
