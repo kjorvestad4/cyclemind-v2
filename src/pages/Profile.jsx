@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
   User, Settings, LogOut, Shield, Trash2, FileDown, Link2,
-  ChevronRight, Moon, Sun, Bell, Heart, Bookmark, CalendarDays, X, ChevronDown, ChevronUp, Edit, HelpCircle
+  ChevronRight, Moon, Sun, Bell, Heart, Bookmark, CalendarDays, X, ChevronDown, ChevronUp, Edit, HelpCircle, Plus
 } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -778,8 +778,24 @@ export default function Profile() {
       </Section>
 
       {/* ── Cycle History ── */}
-      {cycles.length > 0 && (
-        <Section title="Cycle History">
+      <Section title="Cycle History" icon={CalendarDays}>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs text-muted-foreground">
+            {cycles.length === 0 ? "No cycles logged yet" : `${cycles.length} cycle${cycles.length !== 1 ? "s" : ""} recorded`}
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 text-xs gap-1 rounded-xl"
+            onClick={() => {
+              // Import NewCycleModal dynamically or navigate to dashboard
+              window.dispatchEvent(new CustomEvent("open-new-cycle-modal"));
+            }}
+          >
+            <Plus className="w-3.5 h-3.5" /> Add New Cycle
+          </Button>
+        </div>
+        {cycles.length > 0 ? (
           <div className="space-y-1">
             {[...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date)).map((cycle) => (
               <div key={cycle.id} className="flex items-center justify-between py-2.5 border-b border-border/30 last:border-0">
@@ -809,8 +825,22 @@ export default function Profile() {
               </div>
             ))}
           </div>
-        </Section>
-      )}
+        ) : (
+          <div className="text-center py-6 space-y-2">
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto">
+              <CalendarDays className="w-6 h-6 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">Log your first cycle to start tracking</p>
+            <Button
+              size="sm"
+              className="h-9 text-sm gap-2"
+              onClick={() => window.dispatchEvent(new CustomEvent("open-new-cycle-modal"))}
+            >
+              <Plus className="w-4 h-4" /> Add Your First Cycle
+            </Button>
+          </div>
+        )}
+      </Section>
 
       {/* ── Footer ── */}
       <div className="text-center space-y-1 pt-2 pb-4">

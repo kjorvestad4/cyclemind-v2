@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { PenLine, Check, Calendar as CalendarIcon, RefreshCw, Plus } from "lucide-react";
+import { PenLine, Check, Calendar as CalendarIcon, RefreshCw, Plus, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Button } from "@/components/ui/button";
@@ -82,7 +82,15 @@ export default function Dashboard() {
     }).catch(() => {});
     // Re-fetch after a short delay to pick up any AuthContext sync (e.g. onboarding data)
     const t = setTimeout(() => base44.auth.me().then(setUser).catch(() => {}), 2000);
-    return () => clearTimeout(t);
+    
+    // Listen for custom event from Profile page to open new cycle modal
+    const handleOpenModal = () => setLogNewCycle(true);
+    window.addEventListener("open-new-cycle-modal", handleOpenModal);
+    
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("open-new-cycle-modal", handleOpenModal);
+    };
   }, [queryClient]);
 
 
