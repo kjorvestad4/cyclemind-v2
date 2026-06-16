@@ -223,54 +223,60 @@ export default function Dashboard() {
         />
 
         {/* Cycle History Widget */}
-        {isMenstrual && (
-          <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Cycle History</p>
+        <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Cycle History</p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-xs gap-1 rounded-xl"
+              onClick={() => setLogNewCycle(true)}
+            >
+              <Plus className="w-3.5 h-3.5" /> Log Cycle
+            </Button>
+          </div>
+          {cycles.length > 0 ? (
+            <div className="space-y-2">
+              {[...cycles]
+                .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
+                .slice(0, 4)
+                .map((cycle, i) => {
+                  const labels = ['Current / latest', 'Last cycle', '2 cycles ago', '3 cycles ago'];
+                  const label = labels[i] || `${i + 1} cycles ago`;
+                  return (
+                    <button
+                      key={cycle.id}
+                      onClick={() => setSelectedCycle({ cycle, label })}
+                      className="w-full flex items-center justify-between text-sm py-1.5 hover:bg-muted/50 rounded-lg px-2 -mx-2 transition-colors"
+                    >
+                      <div className="flex flex-col items-start">
+                        <span className="text-muted-foreground text-xs">{label}</span>
+                        <span className="text-xs text-muted-foreground/70">
+                          {cycle.start_date ? cycle.start_date : ''}
+                          {cycle.cycle_type && cycle.cycle_type !== 'menstrual' ? ` · ${cycle.cycle_type}` : ''}
+                        </span>
+                      </div>
+                      <span className="font-semibold text-foreground flex items-center gap-1">
+                        {cycle.cycle_length ? `${cycle.cycle_length} days` : '–'}
+                        <span className="text-muted-foreground text-xs">›</span>
+                      </span>
+                    </button>
+                  );
+                })}
+            </div>
+          ) : (
+            <div className="text-center py-3 space-y-2">
+              <p className="text-xs text-muted-foreground">No cycles logged yet</p>
               <Button
                 size="sm"
-                variant="outline"
-                className="h-7 text-xs gap-1 rounded-xl"
+                className="h-8 text-xs gap-1 rounded-xl"
                 onClick={() => setLogNewCycle(true)}
               >
-                <Plus className="w-3.5 h-3.5" /> Log Period
+                <Plus className="w-3.5 h-3.5" /> Add Your First Cycle Entry
               </Button>
             </div>
-            {cycles.length > 0 ? (
-              <div className="space-y-2">
-                {[...cycles]
-                  .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
-                  .slice(1)
-                  .slice(0, 3)
-                  .map((cycle, i) => {
-                    const label = i === 0 ? 'Last cycle' : i === 1 ? '2 cycles ago' : '3 cycles ago';
-                    return (
-                      <button
-                        key={cycle.id}
-                        onClick={() => setSelectedCycle({ cycle, label })}
-                        className="w-full flex items-center justify-between text-sm py-1 hover:bg-muted/50 rounded-lg px-2 -mx-2 transition-colors"
-                      >
-                        <span className="text-muted-foreground">{label}</span>
-                        <span className="font-semibold text-foreground flex items-center gap-1">
-                          {cycle.cycle_length ? `${cycle.cycle_length} days` : '–'}
-                          <span className="text-muted-foreground text-xs">›</span>
-                        </span>
-                      </button>
-                    );
-                  })}
-                {cycles.length === 1 && (
-                  <p className="text-xs text-muted-foreground text-center py-2">
-                    Log your next period to see cycle history
-                  </p>
-                )}
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground text-center py-2">
-                No cycles logged yet — tap "Log Period" to get started
-              </p>
-            )}
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Cycle Detail Modal */}
         {selectedCycle && (
