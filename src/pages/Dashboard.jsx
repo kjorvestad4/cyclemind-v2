@@ -327,6 +327,16 @@ export default function Dashboard() {
                     </button>
                   );
                 })}
+              {cycles.length < 4 && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full h-8 text-xs gap-1 rounded-xl mt-1"
+                  onClick={handleSeedDemoData}
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> Load Demo History
+                </Button>
+              )}
             </div>
           ) : (
             <div className="text-center py-3 space-y-2">

@@ -11,32 +11,42 @@ Deno.serve(async (req) => {
         }
 
         const today = new Date();
-        
-        // Create 4 sample cycles spanning ~4 months
-        const sampleCycles = [
+
+        // Check existing cycles
+        const existingCycles = await base44.entities.Cycle.filter({ created_by: user.email }, '-start_date', 10);
+
+        if (existingCycles.length >= 4) {
+            return Response.json({
+                message: 'Cycle history already exists',
+                existing_count: existingCycles.length
+            });
+        }
+
+        // Build the 4 historical cycles (current + 3 past)
+        const allSamples = [
             {
-                start_date: format(subDays(today, 10), 'yyyy-MM-dd'), // Current cycle started 10 days ago
+                start_date: format(subDays(today, 10), 'yyyy-MM-dd'),
                 end_date: null,
                 cycle_length: 28,
                 cycle_type: 'menstrual',
                 phase: 'luteal',
             },
             {
-                start_date: format(subDays(today, 38), 'yyyy-MM-dd'), // Last cycle (38 days ago)
-                end_date: format(subDays(today, 33), 'yyyy-MM-dd'), // Lasted 5 days
+                start_date: format(subDays(today, 38), 'yyyy-MM-dd'),
+                end_date: format(subDays(today, 33), 'yyyy-MM-dd'),
                 cycle_length: 28,
                 cycle_type: 'menstrual',
                 phase: 'menstrual',
             },
             {
-                start_date: format(subDays(today, 66), 'yyyy-MM-dd'), // 2 cycles ago (66 days ago)
+                start_date: format(subDays(today, 66), 'yyyy-MM-dd'),
                 end_date: format(subDays(today, 61), 'yyyy-MM-dd'),
                 cycle_length: 28,
                 cycle_type: 'menstrual',
                 phase: 'menstrual',
             },
             {
-                start_date: format(subDays(today, 94), 'yyyy-MM-dd'), // 3 cycles ago (94 days ago)
+                start_date: format(subDays(today, 94), 'yyyy-MM-dd'),
                 end_date: format(subDays(today, 89), 'yyyy-MM-dd'),
                 cycle_length: 28,
                 cycle_type: 'menstrual',
@@ -44,19 +54,12 @@ Deno.serve(async (req) => {
             },
         ];
 
-        // Check if cycles already exist to avoid duplicates
-        const existingCycles = await base44.entities.Cycle.filter({ created_by: user.email }, '-start_date', 10);
-        
-        if (existingCycles.length > 0) {
-            return Response.json({ 
-                message: 'Cycle history already exists',
-                existing_count: existingCycles.length
-            });
-        }
+        // Only create cycles whose start_date doesn't already exist
+        const existingDates = new Set(existingCycles.map(c => c.start_date));
+        const toCreate = allSamples.filter(s => !existingDates.has(s.start_date));
 
-        // Create sample cycles
         const created = [];
-        for (const cycle of sampleCycles) {
+        for (const cycle of toCreate) {
             const result = await base44.entities.Cycle.create({
                 ...cycle,
                 user_id: user.id,
@@ -64,7 +67,7 @@ Deno.serve(async (req) => {
             created.push(result);
         }
 
-        return Response.json({ 
+        return Response.json({
             success: true,
             message: `Created ${created.length} sample cycles`,
             cycles: created
