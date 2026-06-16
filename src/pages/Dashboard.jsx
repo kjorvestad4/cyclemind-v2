@@ -199,6 +199,46 @@ export default function Dashboard() {
           />
         )}
 
+        {/* Daily Health Log CTA */}
+        <button
+          onClick={() => navigate("/log")}
+          className="w-full rounded-2xl border-2 border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors p-4 text-left"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                <PenLine className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground">Log Today's Health</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {todayEntry
+                    ? `Entry saved · ${filledCount} symptom${filledCount !== 1 ? "s" : ""} rated — tap to update`
+                    : `Record symptoms${isMenstrual && cycleDay ? `, cycle day ${cycleDay}` : ""}, flow, ovulation & more`}
+                </p>
+              </div>
+            </div>
+            <span className="text-primary font-bold text-lg shrink-0">›</span>
+          </div>
+          {isMenstrual && cycleDay && (
+            <div className="mt-2.5 flex gap-2 flex-wrap">
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">Cycle Day {cycleDay}</span>
+              {cycleType === "pregnancy" && <span className="text-[11px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 font-semibold">🤰 Pregnancy</span>}
+            </div>
+          )}
+          {cycleType === "pregnancy" && latestCycle && (
+            <div className="mt-2.5 flex gap-2 flex-wrap">
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300 font-semibold">🤰 Pregnancy tracking</span>
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold">Pregnancy status logged</span>
+            </div>
+          )}
+          {cycleType === "postpartum" && (
+            <div className="mt-2.5">
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 font-semibold">🍼 Postpartum recovery</span>
+            </div>
+          )}
+        </button>
+
         {/* Today's Severity Card — primary CTA, clickable to /log */}
         <TodaySeverityCard entries={entries} cycleType={cycleType} isFreeUser={isFreeUser} />
 

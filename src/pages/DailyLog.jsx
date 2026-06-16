@@ -776,16 +776,12 @@ export default function DailyLog() {
           <button
             onClick={() => saveMutation.mutate()}
             disabled={saveMutation.isPending}
-            className={`flex-1 h-11 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-sm ${
-              hasUnsavedChanges
-                ? "bg-primary text-primary-foreground shadow-primary/20"
-                : "bg-primary/10 text-primary"
-            }`}
+            className="flex-1 h-11 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-sm bg-primary text-primary-foreground shadow-primary/20"
           >
             {saveMutation.isPending
               ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
               : hasUnsavedChanges ? <Save className="w-4 h-4" /> : <Check className="w-4 h-4" />}
-            {hasUnsavedChanges ? "Save Entry" : "Saved ✓"}
+            {hasUnsavedChanges ? "Save Entry" : existingEntry ? "Saved ✓" : "Save Entry"}
           </button>
           <button
             onClick={() => saveTomorrowMutation.mutate()}
