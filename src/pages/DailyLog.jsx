@@ -698,6 +698,46 @@ export default function DailyLog() {
         </>
       )}
 
+      {/* PREGNANCY STATUS — visible in all modes so users can always find it */}
+      <Section
+        title="Pregnancy Status"
+        subtitle={isPregnancy ? `Currently tracking pregnancy${pregnancyWeek ? ` · Week ${pregnancyWeek}` : ""}` : "Are you pregnant or trying to conceive?"}
+        defaultOpen={isPregnancy}
+      >
+        <div className="pt-2 space-y-3">
+          {isPregnancy ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800">
+                <span className="text-xl">🤰</span>
+                <div>
+                  <p className="text-sm font-semibold text-pink-800 dark:text-pink-200">Pregnancy mode active</p>
+                  {pregnancyWeek && <p className="text-xs text-pink-600 dark:text-pink-400">Week {pregnancyWeek}{trimester ? ` · ${trimester.charAt(0).toUpperCase() + trimester.slice(1)} trimester` : ""}</p>}
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">Use the pregnancy symptoms section above to log daily pregnancy details. To update your LMP or due date, use "Switch Mode" above.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-xs text-muted-foreground">If you are pregnant, switch to Pregnancy mode to access pregnancy-specific symptom tracking, EDD calculation, and EPDS screening.</p>
+              <button
+                onClick={() => setShowModeSwitcher(true)}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 border-pink-200 bg-pink-50/50 dark:border-pink-900 dark:bg-pink-950/20 hover:bg-pink-50 dark:hover:bg-pink-950/40 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">🤰</span>
+                  <div className="text-left">
+                    <p className="text-sm font-semibold">Switch to Pregnancy Mode</p>
+                    <p className="text-xs text-muted-foreground">Log LMP, track symptoms & get EDD</p>
+                  </div>
+                </div>
+                <span className="text-muted-foreground text-sm">›</span>
+              </button>
+              <p className="text-[11px] text-muted-foreground text-center">Currently in {cycleType} mode</p>
+            </div>
+          )}
+        </div>
+      </Section>
+
       {/* SHARED SECTIONS */}
       <Section title="Medications Taken Today">
         <div className="pt-1">
