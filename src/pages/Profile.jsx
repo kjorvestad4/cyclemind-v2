@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, differenceInDays, differenceInYears } from "date-fns";
@@ -295,6 +296,7 @@ function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLen
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function Profile() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
@@ -587,14 +589,14 @@ export default function Profile() {
                 icon={Link2}
                 label="Doctor Share Link"
                 sublabel="Requires Premium — tap to upgrade"
-                onClick={() => window.location.href = '/billing'}
+                onClick={() => navigate('/billing')}
                 rightEl={<Crown className="w-4 h-4 text-primary shrink-0" />}
               />
               <ActionRow
                 icon={FileDown}
                 label="Download Clinical Report"
                 sublabel="Requires Premium — tap to upgrade"
-                onClick={() => window.location.href = '/billing'}
+                onClick={() => navigate('/billing')}
                 rightEl={<Crown className="w-4 h-4 text-primary shrink-0" />}
               />
             </>
@@ -729,7 +731,7 @@ export default function Profile() {
               icon={Crown}
               label="Upgrade to Premium"
               sublabel="Unlock all tracking modes and features"
-              onClick={() => window.location.href = '/billing'}
+              onClick={() => navigate('/billing')}
             />
           )}
           <ActionRow
