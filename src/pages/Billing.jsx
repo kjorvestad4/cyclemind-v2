@@ -33,14 +33,14 @@ const PLANS = [
     features: [
       { name: "Everything in Free", included: true },
       { name: "All 5 life stage modes", included: true },
-      { name: "Clinical-grade symptom tracking", included: true, highlight: true },
-      { name: "Luna AI — personalized health companion 🌙", included: true, highlight: true },
-      { name: "Shareable doctor reports (PDF)", included: true },
-      { name: "Secure doctor sharing links", included: true },
-      { name: "Validated mental health screenings", included: true },
-      { name: "Cycle & pattern analysis", included: true },
-      { name: "Luna deep-dive responses", included: false },
-      { name: "Luna's latest clinical knowledge updates", included: false },
+      { name: "Advanced symptom tracking", included: true, highlight: true },
+      { name: "Luna AI — your personal health companion 🌙", included: true, highlight: true },
+      { name: "Doctor reports (PDF)", included: true },
+      { name: "Secure sharing with your doctor", included: true },
+      { name: "Mental health check-ins", included: true },
+      { name: "Cycle insights & patterns", included: true },
+      { name: "Luna detailed responses", included: false },
+      { name: "Latest Luna improvements", included: false },
     ],
   },
   {
@@ -54,11 +54,11 @@ const PLANS = [
     highlighted: true,
     features: [
       { name: "Everything in Premium", included: true },
-      { name: "Luna deep-dive responses ✨", included: true, highlight: true },
-      { name: "Always-on Luna — even under high demand", included: true, highlight: true },
-      { name: "Luna's latest clinical knowledge updates", included: true, highlight: true },
-      { name: "Continuously improving AI, trained by psychiatrists", included: true, highlight: true },
-      { name: "Priority access to new features", included: true },
+      { name: "Luna detailed responses ✨", included: true, highlight: true },
+      { name: "Always available — even during busy times", included: true, highlight: true },
+      { name: "Latest Luna improvements", included: true, highlight: true },
+      { name: "AI that learns & gets better", included: true, highlight: true },
+      { name: "First access to new features", included: true },
     ],
   },
 ];
@@ -258,21 +258,21 @@ export default function Billing() {
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <div className="space-y-1.5">
-                <p className="font-semibold text-foreground">Premium — Luna Essentials</p>
+                <p className="font-semibold text-foreground">Premium — Luna Basics</p>
                 <ul className="text-muted-foreground space-y-1 text-xs">
-                  <li>• Answers questions about your cycle & symptoms</li>
-                  <li>• Personalized to your logged health data</li>
-                  <li>• Grounded in clinical women's health knowledge</li>
-                  <li>• Quick, conversational responses</li>
+                  <li>• Answers your cycle & symptom questions</li>
+                  <li>• Uses your health data for personal advice</li>
+                  <li>• Based on women's health research</li>
+                  <li>• Fast, friendly chat responses</li>
                 </ul>
               </div>
               <div className="space-y-1.5">
-                <p className="font-semibold text-primary">Premium+ — Luna Full Power</p>
+                <p className="font-semibold text-primary">Premium+ — Luna Complete</p>
                 <ul className="text-primary/80 space-y-1 text-xs">
-                  <li>• Everything in Luna Essentials</li>
-                  <li>• Deeper, more thorough responses when you need them</li>
-                  <li>• Always available, even during peak times</li>
-                  <li>• Gets smarter over time with psychiatrist-guided updates</li>
+                  <li>• Everything in Luna Basics</li>
+                  <li>• More detailed answers when you need them</li>
+                  <li>• Always there, even when many people use it</li>
+                  <li>• Improves over time with expert guidance</li>
                 </ul>
               </div>
             </div>
@@ -291,7 +291,7 @@ export default function Billing() {
             </div>
             <div>
               <p className="font-medium text-foreground">How does Luna keep getting better?</p>
-              <p className="text-muted-foreground">Premium+ users always have the most up-to-date Luna. Our clinical team continuously improves her knowledge and responses — so the more you use her, the more helpful she becomes.</p>
+              <p className="text-muted-foreground">Premium+ users get the newest Luna first. Our team keeps making her smarter and more helpful based on user feedback and the latest health research.</p>
             </div>
           </div>
 
