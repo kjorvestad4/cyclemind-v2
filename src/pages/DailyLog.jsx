@@ -456,7 +456,7 @@ export default function DailyLog() {
       <Section
         title="Pregnancy Status"
         subtitle={isPregnancy ? `Currently tracking pregnancy${pregnancyWeek ? ` · Week ${pregnancyWeek}` : ""}` : "Are you pregnant or trying to conceive?"}
-        defaultOpen={true}
+        defaultOpen={isPregnancy}
       >
         <div className="pt-2 space-y-3">
           {isPregnancy ? (
