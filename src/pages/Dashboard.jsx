@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { PenLine, Check, Calendar as CalendarIcon, RefreshCw } from "lucide-react";
+import { PenLine, Check, Calendar as CalendarIcon, RefreshCw, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import { StreakWidget, RecentInsightsWidget, NextMilestoneWidget, QuickLinksRow 
 import OnboardingNudge from "@/components/dashboard/OnboardingNudge";
 import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBanner";
 import CycleBanners from "@/components/dashboard/CycleBanners";
+import NewCycleModal from "@/components/dashboard/NewCycleModal";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -34,6 +35,7 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [logNewCycle, setLogNewCycle] = useState(false);
 
   const handlePullRefresh = async () => {
     await queryClient.refetchQueries({ queryKey: ["cycles"] });
@@ -219,31 +221,57 @@ export default function Dashboard() {
         />
 
         {/* Cycle History Widget */}
-        {isMenstrual && cycles.length > 0 && (
+        {isMenstrual && (
           <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Cycle History</p>
-            <div className="space-y-2">
-              {[...cycles]
-                .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
-                .slice(1) // Skip current active cycle (most recent)
-                .slice(0, 3)
-                .map((cycle, i) => (
-                  <div key={cycle.id} className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {i === 0 ? 'Last cycle' : i === 1 ? '2 cycles ago' : '3 cycles ago'}
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      {cycle.cycle_length ? `${cycle.cycle_length} days` : '–'}
-                    </span>
-                  </div>
-                ))}
-              {cycles.length === 1 && (
-                <p className="text-xs text-muted-foreground text-center py-2">
-                  Log your next period to see cycle history
-                </p>
-              )}
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Cycle History</p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs gap-1 rounded-xl"
+                onClick={() => setLogNewCycle(true)}
+              >
+                <Plus className="w-3.5 h-3.5" /> Log Period
+              </Button>
             </div>
+            {cycles.length > 0 ? (
+              <div className="space-y-2">
+                {[...cycles]
+                  .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
+                  .slice(1)
+                  .slice(0, 3)
+                  .map((cycle, i) => (
+                    <div key={cycle.id} className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {i === 0 ? 'Last cycle' : i === 1 ? '2 cycles ago' : '3 cycles ago'}
+                      </span>
+                      <span className="font-semibold text-foreground">
+                        {cycle.cycle_length ? `${cycle.cycle_length} days` : '–'}
+                      </span>
+                    </div>
+                  ))}
+                {cycles.length === 1 && (
+                  <p className="text-xs text-muted-foreground text-center py-2">
+                    Log your next period to see cycle history
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground text-center py-2">
+                No cycles logged yet — tap "Log Period" to get started
+              </p>
+            )}
           </div>
+        )}
+
+        {/* New Cycle Entry Modal */}
+        {logNewCycle && (
+          <NewCycleModal
+            onClose={() => {
+              setLogNewCycle(false);
+              queryClient.invalidateQueries({ queryKey: ["cycles"] });
+            }}
+          />
         )}
 
         {/* Universal widgets */}
