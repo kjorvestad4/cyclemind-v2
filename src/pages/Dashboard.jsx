@@ -44,21 +44,7 @@ export default function Dashboard() {
     await queryClient.refetchQueries({ queryKey: ["entries"] });
   };
 
-  const handleSeedDemoData = async () => {
-    try {
-      const response = await base44.functions.invoke('seedSampleCycles', {});
-      if (response.data?.message === 'Cycle history already exists') {
-        toast.info('Demo data already loaded — check your Cycle History below');
-      } else {
-        toast.success('Demo cycles loaded! Check your Cycle History');
-      }
-      await queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      await queryClient.refetchQueries({ queryKey: ["cycles"] });
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to load demo data');
-    }
-  };
+
 
   const { containerRef, isPulling, pullProgress } = usePullToRefresh(handlePullRefresh);
 
@@ -305,8 +291,8 @@ export default function Dashboard() {
                 .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
                 .slice(0, 4)
                 .map((cycle, i) => {
-                  const labels = ['Current / latest', 'Last cycle', '2 cycles ago', '3 cycles ago'];
-                  const label = labels[i] || `${i + 1} cycles ago`;
+                  const labels = ['Current / latest', 'Last cycle', 'Previous cycle', 'Earlier cycle'];
+                  const label = labels[i] || 'Earlier cycle';
                   return (
                     <button
                       key={cycle.id}
@@ -327,37 +313,17 @@ export default function Dashboard() {
                     </button>
                   );
                 })}
-              {cycles.length < 4 && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full h-8 text-xs gap-1 rounded-xl mt-1"
-                  onClick={handleSeedDemoData}
-                >
-                  <RefreshCw className="w-3.5 h-3.5" /> Load Demo History
-                </Button>
-              )}
             </div>
           ) : (
             <div className="text-center py-3 space-y-2">
               <p className="text-xs text-muted-foreground">No cycles logged yet</p>
-              <div className="flex gap-2 justify-center">
-                <Button
-                  size="sm"
-                  className="h-8 text-xs gap-1 rounded-xl"
-                  onClick={() => setLogNewCycle(true)}
-                >
-                  <Plus className="w-3.5 h-3.5" /> Add Cycle
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-8 text-xs gap-1 rounded-xl"
-                  onClick={handleSeedDemoData}
-                >
-                  <RefreshCw className="w-3.5 h-3.5" /> Load Demo Data
-                </Button>
-              </div>
+              <Button
+              size="sm"
+              className="h-8 text-xs gap-1 rounded-xl w-full"
+              onClick={() => setLogNewCycle(true)}
+            >
+              <Plus className="w-3.5 h-3.5" /> Add Your First Cycle
+            </Button>
             </div>
           )}
         </div>
