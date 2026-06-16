@@ -9,16 +9,16 @@ const PLANS = [
     id: "free",
     name: "Free",
     monthlyPrice: "$0",
-    description: "Essential cycle tracking",
+    description: "Start your tracking journey",
     features: [
       { name: "Menstrual cycle tracking", included: true },
-      { name: "Daily symptom logging (mood, vitals)", included: true },
-      { name: "Basic insights", included: true },
-      { name: "Pregnancy & postpartum modes", included: false },
-      { name: "Menopause tracking", included: false },
-      { name: "DRSP symptom tracking", included: false },
-      { name: "Advanced scales (EPDS, PHQ-9, GAD-7)", included: false },
-      { name: "Doctor sharing & PDF reports", included: false },
+      { name: "Daily symptom & mood logging", included: true },
+      { name: "Basic cycle insights", included: true },
+      { name: "Pregnancy & postpartum tracking", included: false },
+      { name: "Menopause & perimenopause modes", included: false },
+      { name: "Clinical symptom tracking", included: false },
+      { name: "Mental health screenings", included: false },
+      { name: "Doctor reports & sharing", included: false },
       { name: "Luna AI companion 🌙", included: false },
     ],
   },
@@ -29,18 +29,18 @@ const PLANS = [
     annualPrice: "$99",
     annualNote: "Save $20.88/year",
     period: "/month",
-    description: "Full tracking + basic Luna AI",
+    description: "Full tracking + Luna AI support",
     features: [
       { name: "Everything in Free", included: true },
-      { name: "All 5 lifecycle modes", included: true },
-      { name: "DRSP symptom tracking (clinical-grade)", included: true, highlight: true },
-      { name: "Luna AI — RAG-powered responses 🌙", included: true, highlight: true },
-      { name: "Clinical-grade PDF reports", included: true },
-      { name: "Shareable doctor links", included: true },
-      { name: "EPDS, PHQ-9, GAD-7 screening", included: true },
-      { name: "Advanced PMDD pattern analysis", included: true },
-      { name: "Luna deep mode (Let me think on it)", included: false },
-      { name: "API backup + ongoing psychiatrist training", included: false },
+      { name: "All 5 life stage modes", included: true },
+      { name: "Clinical-grade symptom tracking", included: true, highlight: true },
+      { name: "Luna AI — personalized health companion 🌙", included: true, highlight: true },
+      { name: "Shareable doctor reports (PDF)", included: true },
+      { name: "Secure doctor sharing links", included: true },
+      { name: "Validated mental health screenings", included: true },
+      { name: "Cycle & pattern analysis", included: true },
+      { name: "Luna deep-dive responses", included: false },
+      { name: "Luna's latest clinical knowledge updates", included: false },
     ],
   },
   {
@@ -50,14 +50,14 @@ const PLANS = [
     annualPrice: "$150",
     annualNote: "Save $29.88/year",
     period: "/month",
-    description: "Everything + full Luna AI power",
+    description: "The most powerful Luna experience",
     highlighted: true,
     features: [
       { name: "Everything in Premium", included: true },
-      { name: "Luna deep mode — Let me think on it ✨", included: true, highlight: true },
-      { name: "API backup (Grok / cloud fallback)", included: true, highlight: true },
-      { name: "Markdown knowledge files", included: true, highlight: true },
-      { name: "Ongoing psychiatrist training updates", included: true, highlight: true },
+      { name: "Luna deep-dive responses ✨", included: true, highlight: true },
+      { name: "Always-on Luna — even under high demand", included: true, highlight: true },
+      { name: "Luna's latest clinical knowledge updates", included: true, highlight: true },
+      { name: "Continuously improving AI, trained by psychiatrists", included: true, highlight: true },
       { name: "Priority access to new features", included: true },
     ],
   },
@@ -67,14 +67,13 @@ export default function Billing() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [billingCycle, setBillingCycle] = useState("monthly"); // "monthly" | "annual"
+  const [billingCycle, setBillingCycle] = useState("monthly");
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   const handleUpgrade = (planId) => {
-    // TODO: Integrate with Stripe payment
     alert(`Stripe integration coming soon! (Plan: ${planId})`);
   };
 
@@ -110,7 +109,7 @@ export default function Billing() {
               Choose Your Plan
             </h2>
             <p className="text-muted-foreground max-w-md mx-auto">
-              From essential tracking to full AI-powered clinical insights — find the plan that fits your journey.
+              From essential tracking to full AI-powered support — find the plan that fits your journey.
             </p>
 
             {/* Billing Toggle */}
@@ -259,22 +258,21 @@ export default function Billing() {
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <div className="space-y-1.5">
-                <p className="font-semibold text-foreground">Premium — Basic Luna</p>
+                <p className="font-semibold text-foreground">Premium — Luna Essentials</p>
                 <ul className="text-muted-foreground space-y-1 text-xs">
-                  <li>• RAG-powered clinical knowledge</li>
-                  <li>• Contextual cycle & symptom responses</li>
-                  <li>• Quick reply mode only</li>
-                  <li>• "Let me think on it" grayed out</li>
+                  <li>• Answers questions about your cycle & symptoms</li>
+                  <li>• Personalized to your logged health data</li>
+                  <li>• Grounded in clinical women's health knowledge</li>
+                  <li>• Quick, conversational responses</li>
                 </ul>
               </div>
               <div className="space-y-1.5">
-                <p className="font-semibold text-primary">Premium+ — Full Luna</p>
+                <p className="font-semibold text-primary">Premium+ — Luna Full Power</p>
                 <ul className="text-primary/80 space-y-1 text-xs">
-                  <li>• Everything in Basic Luna</li>
-                  <li>• Deep mode: "Let me think on it"</li>
-                  <li>• Markdown knowledge files</li>
-                  <li>• API cloud fallback (Grok)</li>
-                  <li>• Ongoing psychiatrist training updates</li>
+                  <li>• Everything in Luna Essentials</li>
+                  <li>• Deeper, more thorough responses when you need them</li>
+                  <li>• Always available, even during peak times</li>
+                  <li>• Gets smarter over time with psychiatrist-guided updates</li>
                 </ul>
               </div>
             </div>
@@ -292,8 +290,8 @@ export default function Billing() {
               <p className="text-muted-foreground">Yes — you can cancel or downgrade your subscription at any time. Annual plans are non-refundable after 14 days.</p>
             </div>
             <div>
-              <p className="font-medium text-foreground">What is "ongoing psychiatrist training"?</p>
-              <p className="text-muted-foreground">Premium+ users get access to Luna's newest capabilities as our clinical team continuously fine-tunes her responses with psychiatric expertise.</p>
+              <p className="font-medium text-foreground">How does Luna keep getting better?</p>
+              <p className="text-muted-foreground">Premium+ users always have the most up-to-date Luna. Our clinical team continuously improves her knowledge and responses — so the more you use her, the more helpful she becomes.</p>
             </div>
           </div>
 
