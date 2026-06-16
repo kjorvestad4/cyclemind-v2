@@ -5,11 +5,12 @@
 export const TIERS = {
   FREE: 'free',
   PREMIUM: 'premium',
+  PREMIUM_PLUS: 'premium_plus',
 };
 
 export const DEFAULT_TIER = TIERS.FREE;
 
-// Determine user tier (default to Free for now; integrate with payment later)
+// Determine user tier (default to Free; integrate with payment later)
 export function getUserTier(user) {
   return user?.tier || DEFAULT_TIER;
 }
@@ -40,13 +41,22 @@ export const FEATURES = {
   MENSTRUAL_RESOURCES: { tier: TIERS.FREE, name: 'Menstrual Resources' },
   ALL_RESOURCES: { tier: TIERS.PREMIUM, name: 'All Resources' },
 
-  // AI
-  AI_COMPANION: { tier: TIERS.PREMIUM, name: 'AI Companion (Lumen)' },
+  // AI — Luna
+  AI_COMPANION: { tier: TIERS.PREMIUM, name: 'Luna AI (Basic)' },
+  AI_COMPANION_FULL: { tier: TIERS.PREMIUM_PLUS, name: 'Luna AI (Full — API fallback + deep mode + ongoing training)' },
+};
+
+// Tier hierarchy for comparisons
+const TIER_RANK = {
+  [TIERS.FREE]: 0,
+  [TIERS.PREMIUM]: 1,
+  [TIERS.PREMIUM_PLUS]: 2,
 };
 
 export function canAccessFeature(user, feature) {
   const userTier = getUserTier(user);
-  return FEATURES[feature]?.tier === TIERS.FREE || userTier === TIERS.PREMIUM;
+  const requiredTier = FEATURES[feature]?.tier || TIERS.FREE;
+  return (TIER_RANK[userTier] ?? 0) >= (TIER_RANK[requiredTier] ?? 0);
 }
 
 export function getFeatureRequiredTier(feature) {
@@ -86,4 +96,13 @@ export function canAccessScale(user, scaleType) {
   };
   const feature = scaleFeatures[scaleType];
   return feature ? canAccessFeature(user, feature) : true;
+}
+
+// Luna-specific access helpers
+export function canAccessLunaDeepMode(user) {
+  return canAccessFeature(user, 'AI_COMPANION_FULL');
+}
+
+export function canAccessLuna(user) {
+  return canAccessFeature(user, 'AI_COMPANION');
 }

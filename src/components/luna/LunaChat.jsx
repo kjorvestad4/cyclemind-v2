@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { canAccessLunaDeepMode } from '@/lib/freemium';
 import PsychTestFeedback from '@/components/luna/PsychTestFeedback';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,6 +60,7 @@ function saveSession(messages, savedIndexes) {
 export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fertilityMode, menopauseStage, onClose }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' or 'notifications'
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -72,6 +74,10 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
   const messagesEndRef = useRef(null);
   const initializedRef = useRef(false);
   const recognitionRef = useRef(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -553,16 +559,27 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
           >
             ⚡ Quick reply
           </button>
-          <button
-            onClick={() => setResponseMode('deep')}
-            className={`flex-1 text-xs font-medium py-1.5 rounded-full border transition-all ${
-              responseMode === 'deep'
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
-            }`}
-          >
-            🌊 Let me think on it
-          </button>
+          {canAccessLunaDeepMode(user) ? (
+            <button
+              onClick={() => setResponseMode('deep')}
+              className={`flex-1 text-xs font-medium py-1.5 rounded-full border transition-all ${
+                responseMode === 'deep'
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
+              }`}
+            >
+              🌊 Let me think on it
+            </button>
+          ) : (
+            <button
+              onClick={() => window.location.href = '/billing'}
+              className="flex-1 text-xs font-medium py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-transparent text-slate-400 dark:text-slate-600 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-1"
+              title="Upgrade to Premium+ to unlock deep mode"
+            >
+              🌊 Let me think on it
+              <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-semibold">Premium+</span>
+            </button>
+          )}
         </div>
 
         {/* Input */}
