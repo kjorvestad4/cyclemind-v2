@@ -131,16 +131,18 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
               <button
                 key={mode.id}
                 onClick={() => {
-                  if (isPremiumOnly) {
-                    toast.error("This mode requires Premium");
-                  } else {
-                    setSelected(mode.id);
+                  if (isPremiumOnly && !isActive) {
+                    toast("This mode requires Premium", {
+                      description: "Upgrade to unlock full pregnancy tracking features",
+                      action: {
+                        label: "Upgrade",
+                        onClick: () => window.location.href = '/billing'
+                      }
+                    });
                   }
+                  setSelected(mode.id);
                 }}
-                disabled={isPremiumOnly && !isActive}
                 className={`w-full text-left rounded-2xl border-2 p-4 transition-all active:scale-[0.99] ${
-                  isPremiumOnly && !isActive ? "opacity-50 cursor-not-allowed" : ""
-                } ${
                   isActive ? mode.activeColor : mode.color + " hover:opacity-80"
                 }`}
               >
