@@ -304,22 +304,14 @@ export default function Dashboard() {
           {cycles.length > 0 ? (
             <div className="space-y-2">
               {(() => {
-                // Deduplicate cycles by start_date to avoid showing the same cycle multiple times
-                const uniqueCycles = [];
-                const seenDates = new Set();
-                
-                [...cycles]
-                  .filter((cycle) => cycle.start_date) // Only include cycles with a valid start_date
+                // Show only actual logged cycles, up to 3 previous cycles
+                const loggedCycles = [...cycles]
+                  .filter((cycle) => cycle.start_date)
                   .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
-                  .forEach((cycle) => {
-                    if (!seenDates.has(cycle.start_date)) {
-                      seenDates.add(cycle.start_date);
-                      uniqueCycles.push(cycle);
-                    }
-                  });
+                  .slice(0, 3); // Maximum 3 cycles total
                 
-                return uniqueCycles.slice(0, 4).map((cycle, i) => {
-                  const labels = ['Current / latest', 'Last cycle', 'Previous cycle', 'Earlier cycle'];
+                return loggedCycles.map((cycle, i) => {
+                  const labels = ['Current cycle', 'Last cycle', 'Previous cycle'];
                   const label = labels[i] || 'Earlier cycle';
                   return (
                     <button
