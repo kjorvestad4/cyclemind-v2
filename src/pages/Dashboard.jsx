@@ -309,6 +309,7 @@ export default function Dashboard() {
                 const seenDates = new Set();
                 
                 [...cycles]
+                  .filter((cycle) => cycle.start_date) // Only include cycles with a valid start_date
                   .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
                   .forEach((cycle) => {
                     if (!seenDates.has(cycle.start_date)) {
