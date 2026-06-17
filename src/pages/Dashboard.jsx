@@ -22,6 +22,7 @@ import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBan
 import CycleBanners from "@/components/dashboard/CycleBanners";
 import NewCycleModal from "@/components/dashboard/NewCycleModal";
 import CycleDetailModal from "@/components/dashboard/CycleDetailModal";
+import PeriodEndReminder from "@/components/dashboard/PeriodEndReminder";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -43,6 +44,13 @@ export default function Dashboard() {
       return localStorage.getItem("dismissed-pregnancy-status") === "true";
     } catch {
       return false;
+    }
+  });
+  const [dismissedPeriodEndReminder, setDismissedPeriodEndReminder] = useState(() => {
+    try {
+      return localStorage.getItem("dismissed-period-end-reminder") || "";
+    } catch {
+      return "";
     }
   });
 
@@ -120,11 +128,19 @@ export default function Dashboard() {
   const cycleDay = isMenstrual ? getCycleDay(todayStr, cycles) : null;
   const cycleLength = latestCycle?.cycle_length || user?.cycle_length || 28;
 
+  // Find active cycles (no end date) for period end reminder
+  const activeCycles = cycles.filter(c => !c.end_date && c.cycle_type === 'menstrual');
+  const showPeriodEndReminder = activeCycles.length > 0 && dismissedPeriodEndReminder !== activeCycles[0]?.id;
+
   const filledCount = todayEntry ? ALL_SYMPTOMS.filter((s) => (todayEntry[s.key] || 0) > 0).length : 0;
   
   const userTier = getUserTier(user);
   const isFreeUser = userTier === TIERS.FREE;
   const isModeRestricted = isFreeUser && cycleType !== 'menstrual';
+
+  // Find active menstrual cycles for period end reminder
+  const activeCycles = cycles.filter(c => !c.end_date && c.cycle_type === 'menstrual');
+  const showPeriodEndReminder = activeCycles.length > 0 && !dismissedPeriodEndReminder;
 
   return (
     <div className="space-y-5 relative">
@@ -204,6 +220,14 @@ export default function Dashboard() {
           cycleDay={cycleDay}
           onSwitchMode={() => setShowModeSwitcher(true)}
         />
+
+        {/* Period End Reminder */}
+        {showPeriodEndReminder && activeCycles.length > 0 && (
+          <PeriodEndReminder
+            cycle={activeCycles[0]}
+            onDismiss={() => setDismissedPeriodEndReminder(activeCycles[0].id)}
+          />
+        )}
 
         {showModeSwitcher && (
           <QuickModeSwitcher
