@@ -303,10 +303,21 @@ export default function Dashboard() {
           </div>
           {cycles.length > 0 ? (
             <div className="space-y-2">
-              {[...cycles]
-                .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
-                .slice(0, 4)
-                .map((cycle, i) => {
+              {(() => {
+                // Deduplicate cycles by start_date to avoid showing the same cycle multiple times
+                const uniqueCycles = [];
+                const seenDates = new Set();
+                
+                [...cycles]
+                  .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
+                  .forEach((cycle) => {
+                    if (!seenDates.has(cycle.start_date)) {
+                      seenDates.add(cycle.start_date);
+                      uniqueCycles.push(cycle);
+                    }
+                  });
+                
+                return uniqueCycles.slice(0, 4).map((cycle, i) => {
                   const labels = ['Current / latest', 'Last cycle', 'Previous cycle', 'Earlier cycle'];
                   const label = labels[i] || 'Earlier cycle';
                   return (
@@ -328,7 +339,8 @@ export default function Dashboard() {
                       </span>
                     </button>
                   );
-                })}
+                });
+              })()}
             </div>
           ) : (
             <div className="text-center py-3 space-y-2">
