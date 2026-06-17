@@ -128,10 +128,6 @@ export default function Dashboard() {
   const cycleDay = isMenstrual ? getCycleDay(todayStr, cycles) : null;
   const cycleLength = latestCycle?.cycle_length || user?.cycle_length || 28;
 
-  // Find active cycles (no end date) for period end reminder
-  const activeCycles = cycles.filter(c => !c.end_date && c.cycle_type === 'menstrual');
-  const showPeriodEndReminder = activeCycles.length > 0 && dismissedPeriodEndReminder !== activeCycles[0]?.id;
-
   const filledCount = todayEntry ? ALL_SYMPTOMS.filter((s) => (todayEntry[s.key] || 0) > 0).length : 0;
   
   const userTier = getUserTier(user);
@@ -140,7 +136,7 @@ export default function Dashboard() {
 
   // Find active menstrual cycles for period end reminder
   const activeCycles = cycles.filter(c => !c.end_date && c.cycle_type === 'menstrual');
-  const showPeriodEndReminder = activeCycles.length > 0 && !dismissedPeriodEndReminder;
+  const showPeriodEndReminder = activeCycles.length > 0 && dismissedPeriodEndReminder !== activeCycles[0]?.id;
 
   return (
     <div className="space-y-5 relative">
