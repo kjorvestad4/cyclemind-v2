@@ -1,4 +1,4 @@
-import { Settings } from "lucide-react";
+import { Settings, SlidersHorizontal } from "lucide-react";
 import { format } from "date-fns";
 
 const parseLocal = (str) => {
@@ -22,7 +22,7 @@ function getPhase(cycleDay) {
   return "luteal";
 }
 
-export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode }) {
+export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode, onCycleSettings }) {
   const cycleType = latestCycle?.cycle_type || "menstrual";
   const isPregnancy = cycleType === "pregnancy";
   const isPostpartum = cycleType === "postpartum";
@@ -72,14 +72,25 @@ export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode }) {
           )}
         </div>
       </div>
-      <button
-        id="tour-switch"
-        onClick={onSwitchMode}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all shrink-0"
-      >
-        <Settings className="w-3.5 h-3.5" />
-        Switch
-      </button>
+      <div className="flex flex-col gap-1.5 shrink-0">
+        <button
+          id="tour-switch"
+          onClick={onSwitchMode}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+        >
+          <Settings className="w-3.5 h-3.5" />
+          Switch
+        </button>
+        {isMenstrual && onCycleSettings && (
+          <button
+            onClick={onCycleSettings}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            Settings
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -20,6 +20,7 @@ import { StreakWidget, RecentInsightsWidget, NextMilestoneWidget, QuickLinksRow 
 import OnboardingNudge from "@/components/dashboard/OnboardingNudge";
 import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBanner";
 import CycleBanners from "@/components/dashboard/CycleBanners";
+import CycleSettingsModal from "@/components/dashboard/CycleSettingsModal";
 import NewCycleModal from "@/components/dashboard/NewCycleModal";
 import CycleDetailModal from "@/components/dashboard/CycleDetailModal";
 import PeriodEndReminder from "@/components/dashboard/PeriodEndReminder";
@@ -36,6 +37,7 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
+  const [showCycleSettings, setShowCycleSettings] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [logNewCycle, setLogNewCycle] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState(null);
@@ -215,6 +217,7 @@ export default function Dashboard() {
           latestCycle={latestCycle}
           cycleDay={cycleDay}
           onSwitchMode={() => setShowModeSwitcher(true)}
+          onCycleSettings={() => setShowCycleSettings(true)}
         />
 
         {/* Period End Reminder */}
@@ -222,6 +225,17 @@ export default function Dashboard() {
           <PeriodEndReminder
             cycle={activeCycles[0]}
             onDismiss={() => setDismissedPeriodEndReminder(activeCycles[0].id)}
+          />
+        )}
+
+        {showCycleSettings && (
+          <CycleSettingsModal
+            latestCycle={latestCycle}
+            user={user}
+            onClose={() => {
+              setShowCycleSettings(false);
+              queryClient.invalidateQueries({ queryKey: ["cycles"] });
+            }}
           />
         )}
 
