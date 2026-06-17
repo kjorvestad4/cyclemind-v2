@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Calendar, Check, Clock } from "lucide-react";
+import { AlertCircle, Clock, Droplet } from "lucide-react";
 import { toast } from "sonner";
 
 export default function PeriodEndReminder({ cycle, onDismiss }) {
@@ -30,15 +30,13 @@ export default function PeriodEndReminder({ cycle, onDismiss }) {
   return (
     <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 space-y-3">
       <div className="flex items-start gap-3">
-        <Calendar className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
         <div className="flex-1">
           <h4 className="text-sm font-semibold text-amber-800 dark:text-amber-200">
-            Period End Check-in
+            Cycle Reminder Check-In
           </h4>
           <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
-            {daysOverdue >= 0 
-              ? `Your period started ${daysSinceStart} days ago. Typical periods last 3-7 days.`
-              : `Your period started ${daysSinceStart} days ago. Expected to end in ${Math.abs(daysOverdue)} day${Math.abs(daysOverdue) !== 1 ? 's' : ''}.`}
+            You're on day {daysSinceStart} of your cycle ({daysOverdue} days late based on your 28-day average). Has your period started? Tap to log it now.
           </p>
           
           <div className="flex gap-2 mt-3 flex-wrap">
@@ -46,10 +44,10 @@ export default function PeriodEndReminder({ cycle, onDismiss }) {
               size="sm"
               variant="default"
               className="h-8 text-xs gap-1.5"
-              onClick={handleMarkComplete}
+              onClick={() => window.location.href = "/log"}
             >
-              <Check className="w-3.5 h-3.5" />
-              Mark as Ended
+              <Droplet className="w-3.5 h-3.5" />
+              Log Period
             </Button>
             
             <Button
