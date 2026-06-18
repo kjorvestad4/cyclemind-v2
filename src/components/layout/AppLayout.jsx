@@ -104,19 +104,6 @@ export default function AppLayout() {
                   Not medical advice. Always consult your doctor.
                 </p>
                 <button
-                  onClick={() => {
-                    navigate("/dashboard");
-                    setTimeout(() => {
-                      document.getElementById("streak-section")?.scrollIntoView({ behavior: "smooth", block: "center" });
-                    }, 150);
-                  }}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 hover:bg-amber-200 dark:hover:bg-amber-900/60 transition-colors"
-                  aria-label={`${streak} day streak`}
-                >
-                  <Flame className="w-3.5 h-3.5 text-amber-500" />
-                  <span className="text-xs font-bold text-amber-700 dark:text-amber-400">{streak}</span>
-                </button>
-                <button
                   onClick={() => base44.auth.logout("/welcome")}
                   className="flex flex-col items-center gap-0.5 hover:bg-muted rounded-xl px-2 py-1 transition-colors"
                   aria-label="Sign out"

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { PenLine, Check, Calendar as CalendarIcon, RefreshCw, Plus, ChevronRight } from "lucide-react";
+import { PenLine, Check, Calendar as CalendarIcon, RefreshCw, Plus, ChevronRight, Flame } from "lucide-react";
 import { toast } from "sonner";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import ModeContent from "@/components/dashboard/ModeContent";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
 import TodaySeverityCard from "@/components/dashboard/TodaySeverityCard";
-import { StreakWidget, RecentInsightsWidget, NextMilestoneWidget, QuickLinksRow } from "@/components/dashboard/UniversalWidgets";
+import { StreakWidget, RecentInsightsWidget, NextMilestoneWidget, QuickLinksRow, calculateStreak } from "@/components/dashboard/UniversalWidgets";
 import StreakBadges from "@/components/dashboard/StreakBadges";
 import OnboardingNudge from "@/components/dashboard/OnboardingNudge";
 import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBanner";
@@ -171,6 +171,7 @@ export default function Dashboard() {
   const cycleLength = latestCycle?.cycle_length || user?.cycle_length || 28;
 
   const filledCount = todayEntry ? ALL_SYMPTOMS.filter((s) => (todayEntry[s.key] || 0) > 0).length : 0;
+  const streak = calculateStreak(entries);
 
   const userTier = getUserTier(user);
   const isFreeUser = userTier === TIERS.FREE;
@@ -207,15 +208,25 @@ export default function Dashboard() {
             </h2>
             <p className="text-sm text-muted-foreground mt-1">{getRotatingSubcopy(cycleType, latestCycle?.phase)}</p>
           </div>
-          <Button
-            id="tour-calendar"
-            variant="default"
-            size="icon"
-            className="h-11 w-11 rounded-xl shrink-0 mt-1 shadow-md"
-            onClick={() => setShowCalendar(true)}
-          >
-            <CalendarIcon className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center gap-2 shrink-0 mt-1">
+            <button
+              onClick={() => document.getElementById("streak-section")?.scrollIntoView({ behavior: "smooth", block: "center" })}
+              className="flex items-center gap-1 h-11 px-3 rounded-xl bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 hover:bg-amber-200 dark:hover:bg-amber-900/60 transition-colors"
+              aria-label={`${streak} day streak`}
+            >
+              <Flame className="w-4 h-4 text-amber-500" />
+              <span className="text-sm font-bold text-amber-700 dark:text-amber-400">{streak}</span>
+            </button>
+            <Button
+              id="tour-calendar"
+              variant="default"
+              size="icon"
+              className="h-11 w-11 rounded-xl shadow-md"
+              onClick={() => setShowCalendar(true)}
+            >
+              <CalendarIcon className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
 
         {/* Profile Completion Banner */}
