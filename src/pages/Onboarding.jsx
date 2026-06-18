@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import DOBPicker from "@/components/common/DOBPicker";
 import OnboardingStep3 from "@/components/onboarding/OnboardingStep3";
+import Step1ModeSelection from "@/components/onboarding/Step1ModeSelection";
+import Step2CycleSetup from "@/components/onboarding/Step2CycleSetup";
 
-// Step 1: Personal Info (Name + DOB)
+// Step: Personal Info (Name + DOB)
 function PersonalInfoStep({ fullName, setFullName, dateOfBirth, setDateOfBirth }) {
   return (
     <div className="flex flex-col items-center justify-center flex-1 space-y-6 text-center max-w-md mx-auto w-full">
@@ -50,10 +52,15 @@ function PersonalInfoStep({ fullName, setFullName, dateOfBirth, setDateOfBirth }
   );
 }
 
+// Steps: 1=Personal Info, 2=Mode Selection, 3=Cycle Setup, 4=Preferences
+const TOTAL_STEPS = 4;
+
 export default function Onboarding() {
-  const [currentStep, setCurrentStep] = useState(null); // null = checking auth
+  const [currentStep, setCurrentStep] = useState(null); // null = loading
   const [fullName, setFullName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [selectedMode, setSelectedMode] = useState("menstrual");
+  const [cycleFormData, setCycleFormData] = useState({ cycle_length: 28, track_ovulation: "yes" });
   const [reminderTime, setReminderTime] = useState("19:00");
   const [unitSystem, setUnitSystem] = useState("imperial");
   const [saving, setSaving] = useState(false);
@@ -65,7 +72,6 @@ export default function Onboarding() {
       if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
       setCurrentStep(1);
     }).catch(() => {
-      // Not authenticated — still show the onboarding UI
       setCurrentStep(1);
     });
   }, []);
@@ -84,10 +90,18 @@ export default function Onboarding() {
         const u = await base44.auth.me();
         const existingCycles = await base44.entities.Cycle.filter({ created_by: u.email }, "-start_date", 1);
         if (existingCycles.length === 0) {
-          await base44.entities.Cycle.create({ cycle_type: "menstrual", cycle_length: 28, start_date: today });
+          const cyclePayload = {
+            cycle_type: selectedMode,
+            cycle_length: cycleFormData.cycle_length || 28,
+            start_date: cycleFormData.lmp || today,
+          };
+          if (cycleFormData.lmp) cyclePayload.last_menstrual_period = cycleFormData.lmp;
+          if (cycleFormData.ovulation_date) cyclePayload.ovulation_date = cycleFormData.ovulation_date;
+          if (cycleFormData.birth_date) cyclePayload.start_date = cycleFormData.birth_date;
+          if (cycleFormData.hrt_type) cyclePayload.hrt_type = cycleFormData.hrt_type;
+          await base44.entities.Cycle.create(cyclePayload);
         }
       } catch (apiErr) {
-        // Not authenticated (e.g. preview mode) — skip saving and proceed
         console.warn("Skipping profile save (not authenticated):", apiErr.message);
       }
 
@@ -98,8 +112,10 @@ export default function Onboarding() {
     }
   };
 
-  const totalSteps = 2;
-  const progress = currentStep ? (currentStep / totalSteps) * 100 : 0;
+  const goNext = () => setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS));
+  const goBack = () => setCurrentStep((s) => Math.max(s - 1, 1));
+
+  const progress = currentStep ? (currentStep / TOTAL_STEPS) * 100 : 0;
 
   if (currentStep === null) {
     return (
@@ -110,7 +126,7 @@ export default function Onboarding() {
   }
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-background flex flex-col"
       style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
     >
@@ -119,11 +135,11 @@ export default function Onboarding() {
         <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
       </div>
 
-      {/* Back button for step 2 */}
-      {currentStep === 2 && (
+      {/* Back button */}
+      {currentStep > 1 && (
         <div className="px-4 pt-3">
           <button
-            onClick={() => setCurrentStep(1)}
+            onClick={goBack}
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -132,10 +148,15 @@ export default function Onboarding() {
         </div>
       )}
 
+      {/* Step counter */}
+      <div className="px-5 pt-3 text-center">
+        <p className="text-xs text-muted-foreground">Step {currentStep} of {TOTAL_STEPS}</p>
+      </div>
+
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto p-5 pb-8 flex flex-col max-w-lg mx-auto w-full">
 
-          {/* Step 1: Name + DOB */}
+          {/* Step 1: Personal Info */}
           {currentStep === 1 && (
             <PersonalInfoStep
               fullName={fullName}
@@ -145,8 +166,25 @@ export default function Onboarding() {
             />
           )}
 
-          {/* Step 2: Preferences + Finish */}
+          {/* Step 2: Mode Selection */}
           {currentStep === 2 && (
+            <Step1ModeSelection
+              selectedMode={selectedMode}
+              onSelect={setSelectedMode}
+            />
+          )}
+
+          {/* Step 3: Cycle Setup */}
+          {currentStep === 3 && (
+            <Step2CycleSetup
+              selectedMode={selectedMode}
+              formData={cycleFormData}
+              onUpdate={setCycleFormData}
+            />
+          )}
+
+          {/* Step 4: Preferences */}
+          {currentStep === 4 && (
             <div className="flex flex-col items-center justify-center flex-1 space-y-6 text-center max-w-md mx-auto">
               <OnboardingStep3
                 reminderTime={reminderTime}
@@ -156,27 +194,30 @@ export default function Onboarding() {
                 onNext={() => {}}
                 onSkipReminder={handleComplete}
               />
-              <div className="w-full pt-4 border-t border-border/40">
-                <Button
-                  onClick={handleComplete}
-                  disabled={saving}
-                  className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
-                >
-                  {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
-                  Get Started
-                </Button>
-              </div>
             </div>
           )}
 
-          {/* Continue button for step 1 */}
-          {currentStep === 1 && (
-            <div className="mt-8 pt-4 border-t border-border/40">
-              <Button onClick={() => setCurrentStep(2)} className="w-full h-12 rounded-2xl font-semibold text-base">
+          {/* Navigation buttons */}
+          <div className="mt-8 pt-4 border-t border-border/40">
+            {currentStep < TOTAL_STEPS ? (
+              <Button
+                onClick={goNext}
+                disabled={currentStep === 2 && !selectedMode}
+                className="w-full h-12 rounded-2xl font-semibold text-base"
+              >
                 Continue
               </Button>
-            </div>
-          )}
+            ) : (
+              <Button
+                onClick={handleComplete}
+                disabled={saving}
+                className="w-full h-12 rounded-2xl font-semibold text-base gap-2"
+              >
+                {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />}
+                Get Started
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
