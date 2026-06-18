@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, subDays, addDays, differenceInDays } from "date-fns";
-import { ChevronLeft, ChevronRight, Save, Check, Trash2, Mic, ChevronDown, ChevronUp, Settings, Calendar as CalendarIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, Save, Check, Trash2, Mic, ChevronDown, ChevronUp, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -25,6 +25,7 @@ import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import QuickLogButtons from "@/components/log/QuickLogButtons";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
 import CycleBanners from "@/components/dashboard/CycleBanners";
+import ModeBanner from "@/components/dashboard/ModeBanner";
 import { MRSScale } from "@/components/log/AdditionalScales";
 import EDDDisplay from "@/components/pregnancy/EDDDisplay";
 import { SYMPTOM_CATEGORIES, ALL_SYMPTOMS, getCycleDay, calculateDayTotal } from "@/lib/symptoms";
@@ -413,37 +414,12 @@ export default function DailyLog() {
               </Button>
               </div>
 
-      {/* Mode Banner */}
-      <div className={`rounded-2xl border-2 p-3.5 flex items-center justify-between gap-3 ${
-        isPregnancy ? "border-pink-200 bg-pink-50 dark:border-pink-900 dark:bg-pink-950/30" :
-        isPostpartum ? "border-purple-200 bg-purple-50 dark:border-purple-900 dark:bg-purple-950/30" :
-        isMenopause ? "border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950/30" :
-        "border-primary/20 bg-primary/5"
-      }`}>
-        <div>
-          <p className="text-sm font-bold text-foreground">
-            {isPostpartum && `🍼 Postpartum${latestCycle?.start_date ? ` · Day ${Math.max(1, Math.floor((new Date(selectedDate) - new Date(latestCycle.start_date)) / 86400000) + 1)}` : " Mode"}`}
-            {isPregnancy && `🤰 Pregnancy${pregnancyWeek ? ` · Week ${pregnancyWeek}` : " Mode"}`}
-            {isMenopause && cycleType === "perimenopause" && "🔦 Perimenopause Mode"}
-            {isMenopause && cycleType === "menopause" && "🔥 Menopause Mode"}
-            {isMenstrual && "🌙 Menstrual / PMDD Tracking"}
-          </p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">
-            {isPregnancy && trimester && `${trimester.charAt(0).toUpperCase() + trimester.slice(1)} trimester${latestCycle?.estimated_due_date ? ` · Due ${format(new Date(latestCycle.estimated_due_date), "MMM d, yyyy")}` : ""}`}
-            {isPostpartum && "Track recovery, mood, and postpartum wellbeing"}
-            {isMenopause && latestCycle?.hrt_type && `HRT: ${latestCycle.hrt_type}`}
-            {isMenstrual && cycleDay && `Cycle day ${cycleDay}${phaseInfo ? ` · ${phaseInfo.label} phase` : ""}`}
-            {!isPerinatal && !isMenopause && !cycleDay && "Log your symptoms below"}
-          </p>
-        </div>
-        <button
-          onClick={() => setShowModeSwitcher(true)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-background border border-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-all shrink-0"
-        >
-          <Settings className="w-3.5 h-3.5" />
-          Switch Mode
-        </button>
-      </div>
+      {/* Mode Banner — Hero (same as Dashboard) */}
+      <ModeBanner
+        latestCycle={latestCycle}
+        cycleDay={cycleDay}
+        onSwitchMode={() => setShowModeSwitcher(true)}
+      />
 
       {showModeSwitcher && (
        <QuickModeSwitcher
