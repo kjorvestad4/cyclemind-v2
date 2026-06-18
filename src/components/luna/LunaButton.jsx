@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Moon, Crown, Bell } from 'lucide-react';
-import { getUserTier, TIERS } from '@/lib/freemium';
+import { canAccessLuna } from '@/lib/freemium';
 import LunaChat from './LunaChat';
 import LunaAlertsPopup from './LunaAlertsPopup';
 import LunaNotificationBadge from './LunaNotificationBadge';
@@ -8,13 +8,12 @@ import LunaNotificationBadge from './LunaNotificationBadge';
 export default function LunaButton({ user, cycleMode, cycleDay, cyclePhase, eddInfo }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
-  // Wait for user to load before deciding — avoids flash of grayed-out button
-  const isPremium = user ? getUserTier(user) === TIERS.PREMIUM : null;
+  // Wait for user to load — null means still loading, avoids flash of grayed-out button
+  const hasLunaAccess = user ? canAccessLuna(user) : null;
 
-  // Still loading — render nothing to avoid flash
-  if (isPremium === null) return null;
+  if (hasLunaAccess === null) return null;
 
-  if (isPremium) {
+  if (hasLunaAccess) {
     return (
       <>
         <button

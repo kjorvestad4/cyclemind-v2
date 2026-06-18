@@ -22,7 +22,7 @@ import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBan
 import CycleBanners from "@/components/dashboard/CycleBanners";
 import CycleSettingsModal from "@/components/dashboard/CycleSettingsModal";
 import NewCycleModal from "@/components/dashboard/NewCycleModal";
-import PeriodEndReminder from "@/components/dashboard/PeriodEndReminder";
+
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -230,7 +230,7 @@ export default function Dashboard() {
 
 
 
-        {/* Cycle-aware smart banners */}
+        {/* Cycle-aware smart banners — includes period-end reminder */}
         <CycleBanners
           user={user}
           cycles={cycles}
@@ -238,6 +238,8 @@ export default function Dashboard() {
           cycleType={cycleType}
           cycleDay={cycleDay}
           showPmddNudge={isMenstrual && cycles.length < 2 && entries.length > 0}
+          periodEndCycle={showPeriodEndReminder && activeCycles.length > 0 ? activeCycles[0] : null}
+          onDismissPeriodEnd={() => setDismissedPeriodEndReminder(activeCycles[0]?.id)}
         />
 
         {/* Mode Banner */}
@@ -247,14 +249,6 @@ export default function Dashboard() {
           onSwitchMode={() => setShowModeSwitcher(true)}
           onCycleSettings={() => setShowCycleSettings(true)}
         />
-
-        {/* Period End Reminder */}
-        {showPeriodEndReminder && activeCycles.length > 0 && (
-          <PeriodEndReminder
-            cycle={activeCycles[0]}
-            onDismiss={() => setDismissedPeriodEndReminder(activeCycles[0].id)}
-          />
-        )}
 
         {showCycleSettings && (
           <CycleSettingsModal

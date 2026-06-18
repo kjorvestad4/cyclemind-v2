@@ -5,7 +5,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { differenceInDays, addDays, format } from "date-fns";
-import { Bell, AlertCircle, Sparkles, ChevronRight } from "lucide-react";
+import { Bell, AlertCircle, Sparkles, ChevronRight, Clock, Droplet } from "lucide-react";
 import CycleSettingsModal from "@/components/dashboard/CycleSettingsModal";
 
 const parseLocalDate = (str) => { const [y, m, d] = str.split("-").map(Number); return new Date(y, m - 1, d); };
@@ -89,7 +89,7 @@ function AlertRow({ icon: Icon, iconColor, accentColor, title, body, action }) {
   );
 }
 
-export default function CycleBanners({ user, cycles, entries, cycleType, cycleDay, showPmddNudge }) {
+export default function CycleBanners({ user, cycles, entries, cycleType, cycleDay, showPmddNudge, periodEndCycle, onDismissPeriodEnd }) {
   const navigate = useNavigate();
   const [showCycleSettings, setShowCycleSettings] = useState(false);
   const isMenstrual = cycleType === "menstrual";
@@ -106,7 +106,21 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
   const missedPeriod = (isMenstrual || isPeri) ? checkMissedPeriod(cycles) : null;
   const longPeriod = (isMenstrual || isPeri) ? checkLongPeriod(entries, user, latestCycle) : null;
 
-  const hasAny = lutealActive || ovulationPrediction || missedPeriod || longPeriod || showPmddNudge;
+  // Period-end reminder derived values
+  const periodEndInfo = periodEndCycle ? (() => {
+    const startDate = new Date(periodEndCycle.start_date);
+    const daysSinceStart = Math.floor((todayLocal() - startDate) / (1000 * 60 * 60 * 24));
+    const daysOverdue = Math.floor((todayLocal() - addDays(startDate, 5)) / (1000 * 60 * 60 * 24));
+    return { daysSinceStart, daysOverdue };
+  })() : null;
+
+  const handlePeriodEndSnooze = (days) => {
+    localStorage.setItem("dismissed-period-end-reminder", periodEndCycle.id);
+    localStorage.setItem(`period-end-snooze-${periodEndCycle.id}`, addDays(new Date(), days).toISOString());
+    onDismissPeriodEnd?.();
+  };
+
+  const hasAny = lutealActive || ovulationPrediction || missedPeriod || longPeriod || showPmddNudge || periodEndInfo;
   if (!hasAny) return null;
 
   return (
@@ -175,6 +189,44 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
             body={`Your average period length is ${longPeriod.periodLength} days. If this is your new normal, update your period length.`}
             action={{ label: "Update period length", color: "text-rose-600 dark:text-rose-400", onClick: () => setShowCycleSettings(true) }}
           />
+        )}
+
+        {periodEndInfo && (
+          <div className="flex items-start gap-3 pl-3 border-l-2 border-amber-400 dark:border-amber-500 py-0.5">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-500 dark:text-amber-400" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground leading-snug">Cycle Reminder Check-In</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                Day {periodEndInfo.daysSinceStart} of your cycle — {periodEndInfo.daysOverdue > 0 ? `${periodEndInfo.daysOverdue} days past your 5-day average` : "period may be ending"}. Has your period started yet?
+              </p>
+              <div className="flex items-center gap-2 flex-wrap mt-1.5">
+                <button
+                  onClick={() => navigate("/log")}
+                  className="flex items-center gap-1 text-[12px] font-semibold text-primary hover:underline"
+                >
+                  <Droplet className="w-3.5 h-3.5" />
+                  Log Period
+                  <ChevronRight className="w-3 h-3" />
+                </button>
+                <span className="text-muted-foreground/40 text-xs">·</span>
+                <button
+                  onClick={() => handlePeriodEndSnooze(1)}
+                  className="flex items-center gap-1 text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  Tomorrow
+                </button>
+                <span className="text-muted-foreground/40 text-xs">·</span>
+                <button
+                  onClick={() => handlePeriodEndSnooze(7)}
+                  className="flex items-center gap-1 text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  In 1 week
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </>
