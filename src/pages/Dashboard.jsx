@@ -321,6 +321,14 @@ export default function Dashboard() {
           )}
         </button>
 
+        {/* Mode Banner — Hero */}
+        <ModeBanner
+          latestCycle={latestCycle}
+          cycleDay={cycleDay}
+          onSwitchMode={() => setShowModeSwitcher(true)}
+          onCycleSettings={() => setShowCycleSettings(true)}
+        />
+
         {/* Today's Severity Card */}
         <TodaySeverityCard entries={entries} cycleType={cycleType} isFreeUser={isFreeUser} />
 
@@ -335,14 +343,6 @@ export default function Dashboard() {
             Update Log · {filledCount} symptoms rated
           </Button>
         )}
-
-        {/* Mode Banner — Hero */}
-        <ModeBanner
-          latestCycle={latestCycle}
-          cycleDay={cycleDay}
-          onSwitchMode={() => setShowModeSwitcher(true)}
-          onCycleSettings={() => setShowCycleSettings(true)}
-        />
 
         {/* Mode-specific content */}
         <ModeContent
