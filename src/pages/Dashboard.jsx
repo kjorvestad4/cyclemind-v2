@@ -323,7 +323,7 @@ export default function Dashboard() {
         />
 
         {/* Cycle History Widget */}
-        <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
+        <div className="relative bg-card rounded-2xl border border-border/50 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Cycle History</p>
             <Button
@@ -373,9 +373,10 @@ export default function Dashboard() {
             <div className="text-center py-3 space-y-2">
               <p className="text-xs text-muted-foreground">No cycles logged yet</p>
               <Button
+              type="button"
               size="sm"
               className="h-8 text-xs gap-1 rounded-xl w-full"
-              onClick={() => setLogNewCycle(true)}
+              onClick={(e) => { e.stopPropagation(); setLogNewCycle(true); }}
             >
               <Plus className="w-3.5 h-3.5" /> Add Your First Cycle
             </Button>
