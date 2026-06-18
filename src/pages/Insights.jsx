@@ -15,6 +15,7 @@ import PremiumBanner from "@/components/common/PremiumBanner";
 import PdfReportButton from "@/components/insights/PdfReportButton";
 import ShareWithDoctor from "@/components/insights/ShareWithDoctor";
 import LoggedDataSummary from "@/components/insights/LoggedDataSummary";
+import AdminActionsPanel from "@/components/insights/AdminActionsPanel";
 
 const CHART_TOOLTIP_STYLE = {
   contentStyle: {
@@ -360,6 +361,11 @@ export default function Insights() {
             </CardContent>
           </Card>
         )
+      )}
+
+      {/* Admin Actions Panel */}
+      {user?.role === "admin" && (
+        <AdminActionsPanel entries={entries} />
       )}
 
       <Disclaimer />
