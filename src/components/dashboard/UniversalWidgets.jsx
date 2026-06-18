@@ -31,6 +31,18 @@ export function StreakWidget({ entries }) {
   );
 }
 
+// Export streak calculation so it can be reused
+export function calculateStreak(entries) {
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 400; i++) {
+    const d = format(subDays(today, i), "yyyy-MM-dd");
+    if (entries.find((e) => e.date === d)) streak++;
+    else break;
+  }
+  return streak;
+}
+
 // Last 7 days severity bar chart
 export function RecentInsightsWidget({ entries }) {
   const days = Array.from({ length: 7 }, (_, i) => {

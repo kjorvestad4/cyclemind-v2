@@ -17,6 +17,7 @@ import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
 import TodaySeverityCard from "@/components/dashboard/TodaySeverityCard";
 import { StreakWidget, RecentInsightsWidget, NextMilestoneWidget, QuickLinksRow } from "@/components/dashboard/UniversalWidgets";
+import StreakBadges from "@/components/dashboard/StreakBadges";
 import OnboardingNudge from "@/components/dashboard/OnboardingNudge";
 import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBanner";
 import CycleBanners from "@/components/dashboard/CycleBanners";
@@ -363,7 +364,10 @@ export default function Dashboard() {
         )}
 
         {/* Universal widgets */}
-        <StreakWidget entries={entries} />
+        <div id="streak-section">
+          <StreakWidget entries={entries} />
+        </div>
+        <StreakBadges entries={entries} />
         <RecentInsightsWidget entries={entries} />
         <NextMilestoneWidget cycleType={cycleType} latestCycle={latestCycle} cycleLength={cycleLength} />
         <QuickLinksRow />

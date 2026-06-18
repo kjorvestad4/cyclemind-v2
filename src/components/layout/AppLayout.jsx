@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, PenLine, BarChart3, BookOpen, User, LogOut, ChevronLeft } from "lucide-react";
+import { LayoutDashboard, PenLine, BarChart3, BookOpen, User, LogOut, ChevronLeft, Flame } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
 import { getCycleDay } from "@/lib/symptoms";
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
 import LunaButton from "@/components/luna/LunaButton";
 import { useAuth } from "@/lib/AuthContext";
 import GuidedTour from "@/components/common/GuidedTour";
@@ -31,6 +31,7 @@ export default function AppLayout() {
   const mainRef = useScrollPosition(location.pathname);
   const { user } = useAuth();
   const [cycleData, setCycleData] = useState({ mode: 'menstrual', day: null, edd: null, phase: null });
+  const [streak, setStreak] = useState(0);
 
   const isTopLevel = Object.keys(PAGE_TITLES).includes(location.pathname);
   const pageTitle = PAGE_TITLES[location.pathname] || "CycleMind";
@@ -65,6 +66,20 @@ export default function AppLayout() {
     loadCycleData();
   }, [user]);
 
+  useEffect(() => {
+    if (!user) return;
+    base44.entities.DailyEntry.filter({ created_by: user.email }, "-date", 400).then((entries) => {
+      let s = 0;
+      const today = new Date();
+      for (let i = 0; i < 400; i++) {
+        const d = format(subDays(today, i), "yyyy-MM-dd");
+        if (entries.find((e) => e.date === d)) s++;
+        else break;
+      }
+      setStreak(s);
+    }).catch(() => {});
+  }, [user]);
+
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
@@ -88,6 +103,21 @@ export default function AppLayout() {
                 <p className="text-[10px] text-muted-foreground max-w-[100px] text-right leading-tight hidden sm:block">
                   Not medical advice. Always consult your doctor.
                 </p>
+                {streak > 0 && (
+                  <button
+                    onClick={() => {
+                      navigate("/dashboard");
+                      setTimeout(() => {
+                        document.getElementById("streak-section")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                      }, 150);
+                    }}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 hover:bg-amber-200 dark:hover:bg-amber-900/60 transition-colors"
+                    aria-label={`${streak} day streak`}
+                  >
+                    <Flame className="w-3.5 h-3.5 text-amber-500" />
+                    <span className="text-xs font-bold text-amber-700 dark:text-amber-400">{streak}</span>
+                  </button>
+                )}
                 <button
                   onClick={() => base44.auth.logout("/welcome")}
                   className="flex flex-col items-center gap-0.5 hover:bg-muted rounded-xl px-2 py-1 transition-colors"
