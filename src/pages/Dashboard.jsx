@@ -242,14 +242,6 @@ export default function Dashboard() {
           onDismissPeriodEnd={() => setDismissedPeriodEndReminder(activeCycles[0]?.id)}
         />
 
-        {/* Mode Banner */}
-        <ModeBanner
-          latestCycle={latestCycle}
-          cycleDay={cycleDay}
-          onSwitchMode={() => setShowModeSwitcher(true)}
-          onCycleSettings={() => setShowCycleSettings(true)}
-        />
-
         {showCycleSettings && (
           <CycleSettingsModal
             latestCycle={latestCycle}
@@ -343,6 +335,14 @@ export default function Dashboard() {
             Update Log · {filledCount} symptoms rated
           </Button>
         )}
+
+        {/* Mode Banner — Hero */}
+        <ModeBanner
+          latestCycle={latestCycle}
+          cycleDay={cycleDay}
+          onSwitchMode={() => setShowModeSwitcher(true)}
+          onCycleSettings={() => setShowCycleSettings(true)}
+        />
 
         {/* Mode-specific content */}
         <ModeContent
