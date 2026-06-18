@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { PenLine, Check, Calendar as CalendarIcon, RefreshCw, Plus, CalendarDays } from "lucide-react";
+import { PenLine, Check, Calendar as CalendarIcon, RefreshCw, Plus, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,6 @@ import ProfileCompletionBanner from "@/components/dashboard/ProfileCompletionBan
 import CycleBanners from "@/components/dashboard/CycleBanners";
 import CycleSettingsModal from "@/components/dashboard/CycleSettingsModal";
 import NewCycleModal from "@/components/dashboard/NewCycleModal";
-import CycleDetailModal from "@/components/dashboard/CycleDetailModal";
 import PeriodEndReminder from "@/components/dashboard/PeriodEndReminder";
 
 function getGreeting() {
@@ -30,6 +29,64 @@ function getGreeting() {
   if (hour < 12) return "Good morning";
   if (hour < 17) return "Good afternoon";
   return "Good evening";
+}
+
+const SUBCOPIES_BY_PHASE = {
+  menstrual: [
+    "Every log tells your story. 💜",
+    "Your body, your data.",
+    "Tracking today helps Luna understand you better.",
+    "Small steps, big insights.",
+  ],
+  follicular: [
+    "Energy rising — a great time to log. ✨",
+    "Your body is rebuilding. Keep tracking.",
+    "Follicular phase: you've got this.",
+    "New cycle, new data. Let's go.",
+  ],
+  ovulatory: [
+    "Peak week — don't forget to log. 🌟",
+    "Ovulation window: every detail counts.",
+    "Your most energetic phase. Log it!",
+    "Track your fertile window with confidence.",
+  ],
+  luteal: [
+    "Luteal phase ahead — let's track it. 🌙",
+    "Be gentle with yourself. Log how you feel.",
+    "Your luteal data builds your PMDD picture.",
+    "Luna is watching for patterns. Keep logging.",
+  ],
+  pregnancy: [
+    "Every week is a milestone. 🤰",
+    "You and your baby, tracked with care.",
+    "Log today — your journey matters.",
+    "Your pregnancy story, one day at a time.",
+  ],
+  postpartum: [
+    "Recovery takes time. You're doing great. 🍼",
+    "Log how you feel — every entry helps.",
+    "Your postpartum journey, tracked with love.",
+    "One day at a time. We're here with you.",
+  ],
+  perimenopause: [
+    "Tracking your transition with care. 🌊",
+    "Your data helps Luna spot patterns.",
+    "Every symptom logged is insight gained.",
+    "You're not alone in this. Keep tracking.",
+  ],
+  menopause: [
+    "Your health, your terms. 🔥",
+    "Log today's experience — it matters.",
+    "Every entry adds to your health story.",
+    "Tracking menopause, one day at a time.",
+  ],
+};
+
+function getRotatingSubcopy(cycleType, cyclePhase) {
+  const phase = cyclePhase || cycleType || "menstrual";
+  const options = SUBCOPIES_BY_PHASE[phase] || SUBCOPIES_BY_PHASE.menstrual;
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  return options[dayOfYear % options.length];
 }
 
 export default function Dashboard() {
@@ -40,20 +97,11 @@ export default function Dashboard() {
   const [showCycleSettings, setShowCycleSettings] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [logNewCycle, setLogNewCycle] = useState(false);
-  const [selectedCycle, setSelectedCycle] = useState(null);
   const [dismissedPregnancyStatus, setDismissedPregnancyStatus] = useState(() => {
-    try {
-      return localStorage.getItem("dismissed-pregnancy-status") === "true";
-    } catch {
-      return false;
-    }
+    try { return localStorage.getItem("dismissed-pregnancy-status") === "true"; } catch { return false; }
   });
   const [dismissedPeriodEndReminder, setDismissedPeriodEndReminder] = useState(() => {
-    try {
-      return localStorage.getItem("dismissed-period-end-reminder") || "";
-    } catch {
-      return "";
-    }
+    try { return localStorage.getItem("dismissed-period-end-reminder") || ""; } catch { return ""; }
   });
 
   const handlePullRefresh = async () => {
@@ -61,42 +109,33 @@ export default function Dashboard() {
     await queryClient.refetchQueries({ queryKey: ["entries"] });
   };
 
-
-
   const { containerRef, isPulling, pullProgress } = usePullToRefresh(handlePullRefresh);
 
   useEffect(() => {
     base44.auth.me().then((u) => {
       setUser(u);
-      // Enforce menstrual mode for free users with restricted cycle type
       if (u && getUserTier(u) === TIERS.FREE) {
         base44.entities.Cycle.list("-start_date", 1).then((cycles) => {
           if (cycles.length > 0) {
             const latest = cycles[0];
             if (latest.cycle_type && latest.cycle_type !== "menstrual") {
               base44.entities.Cycle.update(latest.id, { cycle_type: "menstrual" }).then(() => {
-                  queryClient.invalidateQueries({ queryKey: ["cycles"] });
-                  toast.info("Switched to Menstrual mode — upgrade to Premium to unlock all lifecycle modes.");
-                });
+                queryClient.invalidateQueries({ queryKey: ["cycles"] });
+                toast.info("Switched to Menstrual mode — upgrade to Premium to unlock all lifecycle modes.");
+              });
             }
           }
         });
       }
     }).catch(() => {});
-    // Re-fetch after a short delay to pick up any AuthContext sync (e.g. onboarding data)
     const t = setTimeout(() => base44.auth.me().then(setUser).catch(() => {}), 2000);
-    
-    // Listen for custom event from Profile page to open new cycle modal
     const handleOpenModal = () => setLogNewCycle(true);
     window.addEventListener("open-new-cycle-modal", handleOpenModal);
-    
     return () => {
       clearTimeout(t);
       window.removeEventListener("open-new-cycle-modal", handleOpenModal);
     };
   }, [queryClient]);
-
-
 
   const { data: cycles = [] } = useQuery({
     queryKey: ["cycles"],
@@ -131,18 +170,16 @@ export default function Dashboard() {
   const cycleLength = latestCycle?.cycle_length || user?.cycle_length || 28;
 
   const filledCount = todayEntry ? ALL_SYMPTOMS.filter((s) => (todayEntry[s.key] || 0) > 0).length : 0;
-  
+
   const userTier = getUserTier(user);
   const isFreeUser = userTier === TIERS.FREE;
   const isModeRestricted = isFreeUser && cycleType !== 'menstrual';
 
-  // Find active menstrual cycles for period end reminder
   const activeCycles = cycles.filter(c => !c.end_date && c.cycle_type === 'menstrual');
   const showPeriodEndReminder = activeCycles.length > 0 && dismissedPeriodEndReminder !== activeCycles[0]?.id;
 
   return (
     <div className="space-y-5 relative">
-      {/* Pull-to-refresh indicator */}
       {isPulling && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all">
           <div className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full shadow-lg">
@@ -151,7 +188,7 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-      
+
       <div className="space-y-5 pb-24">
         <CalendarPopup
           isOpen={showCalendar}
@@ -160,32 +197,31 @@ export default function Dashboard() {
           cycles={cycles}
           cycleType={cycleType}
         />
-        {/* Greeting with Calendar */}
+
+        {/* Greeting */}
         <div className="flex items-start justify-between gap-3 pt-1">
-        <div className="flex-1">
-          <h2 className="font-serif text-2xl font-semibold text-foreground">
-            {getGreeting()}{(user?.display_name || user?.full_name) ? `, ${(user.display_name || user.full_name).split(" ")[0]}` : ""}
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">You've got this — tracking helps. 💜</p>
-        </div>
-        <Button
-          id="tour-calendar"
-          variant="default"
-          size="icon"
-          className="h-11 w-11 rounded-xl shrink-0 mt-1 shadow-md"
-          onClick={() => setShowCalendar(true)}
-        >
-          <CalendarIcon className="w-5 h-5" />
-        </Button>
+          <div className="flex-1">
+            <h2 className="font-serif text-2xl font-semibold text-foreground">
+              {getGreeting()}{(user?.display_name || user?.full_name) ? `, ${(user.display_name || user.full_name).split(" ")[0]}` : ""}
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">{getRotatingSubcopy(cycleType, latestCycle?.phase)}</p>
+          </div>
+          <Button
+            id="tour-calendar"
+            variant="default"
+            size="icon"
+            className="h-11 w-11 rounded-xl shrink-0 mt-1 shadow-md"
+            onClick={() => setShowCalendar(true)}
+          >
+            <CalendarIcon className="w-5 h-5" />
+          </Button>
         </div>
 
         {/* Profile Completion Banner */}
         <ProfileCompletionBanner user={user} latestCycle={latestCycle} />
 
         {/* Premium Banner for Free Users */}
-        {user && getUserTier(user) === TIERS.FREE && (
-          <PremiumBanner />
-        )}
+        {user && getUserTier(user) === TIERS.FREE && <PremiumBanner />}
 
         {/* Upgrade Banner for Restricted Mode */}
         {isModeRestricted && (
@@ -250,56 +286,64 @@ export default function Dashboard() {
           />
         )}
 
-        {/* Daily Health Log CTA */}
+        {/* Daily Health Log CTA — Hero */}
         <button
           onClick={() => navigate("/log")}
-          className="w-full rounded-2xl border-2 border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors p-4 text-left"
+          className="w-full rounded-3xl bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all p-5 text-left relative overflow-hidden"
         >
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-                <PenLine className="w-5 h-5 text-primary" />
+          <div className="absolute -top-6 -right-6 w-28 h-28 rounded-full bg-white/10 pointer-events-none" />
+          <div className="absolute -bottom-8 -right-2 w-20 h-20 rounded-full bg-white/5 pointer-events-none" />
+
+          <div className="flex items-center justify-between gap-3 relative">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0 shadow-sm">
+                {todayEntry ? <Check className="w-6 h-6 text-white" /> : <PenLine className="w-6 h-6 text-white" />}
               </div>
               <div>
-                <p className="text-sm font-bold text-foreground">Log Today's Health</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-base font-bold text-white">
+                  {todayEntry ? "Update Today's Log" : "Log Today's Health"}
+                </p>
+                <p className="text-sm text-white/75 mt-0.5">
                   {todayEntry
-                    ? `Entry saved · ${filledCount} symptom${filledCount !== 1 ? "s" : ""} rated — tap to update`
-                    : `Record symptoms${isMenstrual && cycleDay ? `, cycle day ${cycleDay}` : ""}, flow, ovulation & more`}
+                    ? `${filledCount} symptom${filledCount !== 1 ? "s" : ""} rated — tap to update`
+                    : `Record symptoms${isMenstrual && cycleDay ? `, cycle day ${cycleDay}` : ""}, flow & more`}
                 </p>
               </div>
             </div>
-            <span className="text-primary font-bold text-lg shrink-0">›</span>
+            <ChevronRight className="w-5 h-5 text-white/70 shrink-0" />
           </div>
-          {isMenstrual && cycleDay && (
-            <div className="mt-2.5 flex gap-2 flex-wrap">
-              <span className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">Cycle Day {cycleDay}</span>
-              {cycleType === "pregnancy" && <span className="text-[11px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 font-semibold">🤰 Pregnancy</span>}
-            </div>
-          )}
+
+          <div className="mt-3.5 flex gap-2 flex-wrap relative">
+            {isMenstrual && cycleDay && (
+              <span className="text-[11px] px-2.5 py-1 rounded-full bg-white/20 text-white font-semibold">Day {cycleDay}</span>
+            )}
+            {cycleType === "pregnancy" && (
+              <span className="text-[11px] px-2.5 py-1 rounded-full bg-white/20 text-white font-semibold">🤰 Pregnancy</span>
+            )}
+            {cycleType === "postpartum" && (
+              <span className="text-[11px] px-2.5 py-1 rounded-full bg-white/20 text-white font-semibold">🍼 Postpartum</span>
+            )}
+            {todayEntry
+              ? <span className="text-[11px] px-2.5 py-1 rounded-full bg-white/20 text-white font-semibold">✓ Logged today</span>
+              : <span className="text-[11px] px-2.5 py-1 rounded-full bg-white/20 text-white font-semibold">Not logged yet</span>
+            }
+          </div>
+
           {cycleType === "pregnancy" && latestCycle && !dismissedPregnancyStatus && (
-            <div className="mt-2.5 flex gap-2 flex-wrap">
-              <span className="text-[11px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300 font-semibold">🤰 Pregnancy tracking</span>
-              <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold">Pregnancy status logged</span>
-              <button
-                onClick={() => {
-                  setDismissedPregnancyStatus(true);
-                  localStorage.setItem("dismissed-pregnancy-status", "true");
-                }}
-                className="text-[10px] text-muted-foreground hover:text-foreground underline"
-              >
-                Dismiss
-              </button>
-            </div>
-          )}
-          {cycleType === "postpartum" && (
-            <div className="mt-2.5">
-              <span className="text-[11px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 font-semibold">🍼 Postpartum recovery</span>
-            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setDismissedPregnancyStatus(true);
+                localStorage.setItem("dismissed-pregnancy-status", "true");
+              }}
+              className="mt-2 text-[10px] text-white/50 hover:text-white/80 underline"
+            >
+              Dismiss pregnancy status
+            </button>
           )}
         </button>
 
-        {/* Today's Severity Card — primary CTA, clickable to /log */}
+        {/* Today's Severity Card */}
         <TodaySeverityCard entries={entries} cycleType={cycleType} isFreeUser={isFreeUser} />
 
         {/* Secondary log button */}
@@ -322,77 +366,6 @@ export default function Dashboard() {
           cycleDay={cycleDay}
         />
 
-        {/* Cycle History Widget */}
-        <div className="relative bg-card rounded-2xl border border-border/50 p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Cycle History</p>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-7 text-xs gap-1 rounded-xl"
-              onClick={() => setLogNewCycle(true)}
-            >
-              <Plus className="w-3.5 h-3.5" /> Log Cycle
-            </Button>
-          </div>
-          {cycles.length > 0 ? (
-            <div className="space-y-2">
-              {(() => {
-                // Show only actual logged cycles, up to 3 previous cycles
-                const loggedCycles = [...cycles]
-                  .filter((cycle) => cycle.start_date)
-                  .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
-                  .slice(0, 3); // Maximum 3 cycles total
-                
-                return loggedCycles.map((cycle, i) => {
-                  const labels = ['Current cycle', 'Last cycle', 'Previous cycle'];
-                  const label = labels[i] || 'Earlier cycle';
-                  return (
-                    <button
-                      key={cycle.id}
-                      onClick={() => setSelectedCycle({ cycle, label })}
-                      className="w-full flex items-center justify-between text-sm py-1.5 hover:bg-muted/50 rounded-lg px-2 -mx-2 transition-colors"
-                    >
-                      <div className="flex flex-col items-start">
-                        <span className="text-muted-foreground text-xs">{label}</span>
-                        <span className="text-xs text-muted-foreground/70">
-                          {cycle.start_date ? cycle.start_date : ''}
-                          {cycle.cycle_type && cycle.cycle_type !== 'menstrual' ? ` · ${cycle.cycle_type}` : ''}
-                        </span>
-                      </div>
-                      <span className="font-semibold text-foreground flex items-center gap-1">
-                        {cycle.cycle_length ? `${cycle.cycle_length} days` : '–'}
-                        <span className="text-muted-foreground text-xs">›</span>
-                      </span>
-                    </button>
-                  );
-                });
-              })()}
-            </div>
-          ) : (
-            <div className="text-center py-3 space-y-2">
-              <p className="text-xs text-muted-foreground">No cycles logged yet</p>
-              <Button
-              type="button"
-              size="sm"
-              className="h-8 text-xs gap-1 rounded-xl w-full"
-              onClick={(e) => { e.stopPropagation(); setLogNewCycle(true); }}
-            >
-              <Plus className="w-3.5 h-3.5" /> Add Your First Cycle
-            </Button>
-            </div>
-          )}
-        </div>
-
-        {/* Cycle Detail Modal */}
-        {selectedCycle && (
-          <CycleDetailModal
-            cycle={selectedCycle.cycle}
-            label={selectedCycle.label}
-            onClose={() => setSelectedCycle(null)}
-          />
-        )}
-
         {/* New Cycle Entry Modal */}
         {logNewCycle && (
           <NewCycleModal
@@ -410,9 +383,9 @@ export default function Dashboard() {
         <QuickLinksRow />
 
         <p className="text-[10px] text-muted-foreground text-center">
-          CycleMind is not a substitute for professional medical advice.
+          ⚕️ CycleMind is not a substitute for professional medical advice.
         </p>
-        </div>
-        </div>
-        );
-        }
+      </div>
+    </div>
+  );
+}
