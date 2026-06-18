@@ -81,7 +81,7 @@ export default function AppLayout() {
   }, [user]);
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
+    <div className="bg-background flex flex-col overflow-hidden" style={{ height: '100dvh', maxHeight: '100dvh' }}>
       {/* Header */}
       <header
         className="shrink-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50"

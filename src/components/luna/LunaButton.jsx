@@ -19,11 +19,15 @@ export default function LunaButton({ user, cycleMode, cycleDay, cyclePhase, eddI
         <button
           id="tour-luna-button"
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-[96px] right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-teal-600 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 flex items-center justify-center"
+          className="fixed bottom-[96px] right-6 z-40 flex flex-col items-center gap-0.5"
           title="Chat with Luna"
+          style={{ zIndex: 40 }}
         >
-          <Moon className="w-6 h-6" />
-          <LunaNotificationBadge onClick={() => setShowAlerts(true)} />
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-teal-600 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 flex items-center justify-center relative">
+            <Moon className="w-6 h-6" />
+            <LunaNotificationBadge onClick={() => setShowAlerts(true)} />
+          </div>
+          <span className="text-[10px] font-medium text-teal-700 dark:text-teal-400">Luna</span>
         </button>
 
         {isOpen && (
