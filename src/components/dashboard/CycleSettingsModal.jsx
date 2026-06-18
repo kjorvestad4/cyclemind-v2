@@ -23,17 +23,25 @@ export default function CycleSettingsModal({ latestCycle, user, onClose }) {
         menstruation_length: periodLength || 5,
         ovulation_day: ovulationDay || 14,
       });
-      // Also update the latest cycle record if it exists
+      // Update existing cycle, or create one if none exists yet
       if (latestCycle?.id) {
         await base44.entities.Cycle.update(latestCycle.id, {
           cycle_length: cycleLength || 28,
+        });
+      } else {
+        const { format } = await import("date-fns");
+        await base44.entities.Cycle.create({
+          cycle_type: "menstrual",
+          cycle_length: cycleLength || 28,
+          start_date: format(new Date(), "yyyy-MM-dd"),
         });
       }
       await queryClient.invalidateQueries({ queryKey: ["cycles"] });
       toast.success("Cycle settings saved!");
       onClose();
     } catch (err) {
-      toast.error("Failed to save settings");
+      console.error("CycleSettingsModal save error:", err);
+      toast.error("Failed to save settings. Please try again.");
     } finally {
       setSaving(false);
     }
