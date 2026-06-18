@@ -511,6 +511,18 @@ export default function DailyLog() {
         entries={entries}
         cycleType={cycleType}
         cycleDay={cycleDay}
+        showPmddNudge={!isPerinatal && !isMenopause && cycles.length < 2 && entries.length > 0}
+        periodEndCycle={(() => {
+          const activeCycles = cycles.filter(c => !c.end_date && c.cycle_type === 'menstrual');
+          const dismissedId = (() => { try { return localStorage.getItem("dismissed-period-end-reminder") || ""; } catch { return ""; } })();
+          return activeCycles.length > 0 && dismissedId !== activeCycles[0]?.id ? activeCycles[0] : null;
+        })()}
+        onDismissPeriodEnd={() => {
+          const activeCycles = cycles.filter(c => !c.end_date && c.cycle_type === 'menstrual');
+          if (activeCycles[0]) {
+            try { localStorage.setItem("dismissed-period-end-reminder", activeCycles[0].id); } catch {}
+          }
+        }}
       />
 
       {/* Quick Log Buttons */}
