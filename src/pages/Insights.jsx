@@ -7,7 +7,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, CartesianGrid, Legend, ReferenceLine,
 } from "recharts";
-import { AlertTriangle, CheckCircle, Info, TrendingUp, Activity, Brain, Heart } from "lucide-react";
+import { AlertTriangle, CheckCircle, Info, TrendingUp, Activity, Brain, Heart, Filter, X } from "lucide-react";
 import { ALL_SYMPTOMS, SYMPTOM_CATEGORIES, calculateDayTotal } from "@/lib/symptoms";
 import { getUserTier, TIERS } from "@/lib/freemium";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,6 +31,9 @@ export default function Insights() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [selectedCycles, setSelectedCycles] = useState(3);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const hasDateFilter = dateFrom || dateTo;
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -53,9 +56,27 @@ export default function Insights() {
   });
 
   const cycles = useMemo(() => {
-    const sorted = [...allCycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
-    return sorted.slice(0, selectedCycles);
-  }, [allCycles, selectedCycles]);
+    let sorted = [...allCycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
+    if (hasDateFilter) {
+      sorted = sorted.filter((c) => {
+        if (dateFrom && c.start_date < dateFrom) return false;
+        if (dateTo && c.start_date > dateTo) return false;
+        return true;
+      });
+    } else {
+      sorted = sorted.slice(0, selectedCycles);
+    }
+    return sorted;
+  }, [allCycles, selectedCycles, dateFrom, dateTo, hasDateFilter]);
+
+  const filteredEntries = useMemo(() => {
+    if (!hasDateFilter) return entries;
+    return entries.filter((e) => {
+      if (dateFrom && e.date < dateFrom) return false;
+      if (dateTo && e.date > dateTo) return false;
+      return true;
+    });
+  }, [entries, dateFrom, dateTo, hasDateFilter]);
 
   const latestCycle = useMemo(() => {
     if (!allCycles.length) return null;
@@ -64,12 +85,12 @@ export default function Insights() {
 
   const isPerinatal = latestCycle?.cycle_type === "pregnancy" || latestCycle?.cycle_type === "postpartum";
 
-  const analysis = useMemo(() => computeAnalysis(cycles, entries), [cycles, entries]);
-  const moodTrend = useMemo(() => computeMoodTrend(entries, cycles), [entries, cycles]);
-  const bleedingTimeline = useMemo(() => computeBleedingTimeline(entries, cycles), [entries, cycles]);
-  const heatmapData = useMemo(() => computeHeatmap(entries, cycles), [entries, cycles]);
+  const analysis = useMemo(() => computeAnalysis(cycles, filteredEntries), [cycles, filteredEntries]);
+  const moodTrend = useMemo(() => computeMoodTrend(filteredEntries, cycles), [filteredEntries, cycles]);
+  const bleedingTimeline = useMemo(() => computeBleedingTimeline(filteredEntries, cycles), [filteredEntries, cycles]);
+  const heatmapData = useMemo(() => computeHeatmap(filteredEntries, cycles), [filteredEntries, cycles]);
 
-  const hasData = cycles.length >= 1 && entries.length > 0;
+  const hasData = cycles.length >= 1 && filteredEntries.length > 0;
 
   return (
     <div className="space-y-6 pb-10">
@@ -105,7 +126,39 @@ export default function Insights() {
           )}
         </div>
 
+        {/* Date Range Filter */}
         {hasData && (
+          <div className="flex flex-wrap items-center gap-2 p-3 bg-muted/40 rounded-2xl border border-border/50">
+            <Filter className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <span className="text-xs text-muted-foreground font-medium">Date range:</span>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="h-7 px-2 text-xs rounded-lg border border-input bg-background text-foreground"
+            />
+            <span className="text-xs text-muted-foreground">→</span>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="h-7 px-2 text-xs rounded-lg border border-input bg-background text-foreground"
+            />
+            {hasDateFilter && (
+              <button
+                onClick={() => { setDateFrom(""); setDateTo(""); }}
+                className="flex items-center gap-1 text-xs text-destructive hover:text-destructive/80 font-medium ml-1"
+              >
+                <X className="w-3 h-3" /> Clear
+              </button>
+            )}
+            {hasDateFilter && (
+              <span className="text-[10px] text-muted-foreground ml-auto">{cycles.length} cycle{cycles.length !== 1 ? "s" : ""} · {filteredEntries.length} entries</span>
+            )}
+          </div>
+        )}
+
+      {hasData && (
           user && getUserTier(user) === TIERS.FREE ? (
             <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-2xl p-4">
               <p className="text-sm font-semibold text-foreground">Want a clinical report?</p>
@@ -336,7 +389,7 @@ export default function Insights() {
       )}
 
       {/* LOGGED DATA SUMMARY — Vitals, Intimacy, Flow, Meds, Ovulation, CM, Custom Symptoms, Mode-Specific Trends */}
-      {hasData && <LoggedDataSummary entries={entries} cycles={cycles} cycleType={latestCycle?.cycle_type || "menstrual"} />}
+      {hasData && <LoggedDataSummary entries={filteredEntries} cycles={cycles} cycleType={latestCycle?.cycle_type || "menstrual"} />}
 
       {/* SHARE WITH DOCTOR */}
       {hasData && (
@@ -357,7 +410,7 @@ export default function Insights() {
         ) : (
           <Card className="border-primary/20 bg-primary/3">
             <CardContent className="pt-5 pb-5">
-              <ShareWithDoctor cycles={cycles} entries={entries} analysis={analysis} />
+              <ShareWithDoctor cycles={cycles} entries={filteredEntries} analysis={analysis} />
             </CardContent>
           </Card>
         )
@@ -365,7 +418,7 @@ export default function Insights() {
 
       {/* Admin Actions Panel */}
       {user?.role === "admin" && (
-        <AdminActionsPanel entries={entries} />
+        <AdminActionsPanel entries={filteredEntries} />
       )}
 
       <Disclaimer />
