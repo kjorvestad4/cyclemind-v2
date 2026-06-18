@@ -150,7 +150,7 @@ export default function Dashboard() {
     queryKey: ["entries"],
     queryFn: async () => {
       const user = await base44.auth.me();
-      return base44.entities.DailyEntry.filter({ created_by: user.email }, "-date", 100);
+      return base44.entities.DailyEntry.filter({ created_by: user.email }, "-date", 400);
     },
   });
 

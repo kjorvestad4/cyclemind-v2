@@ -7,7 +7,7 @@ import { calculateDayTotal, ALL_SYMPTOMS } from "@/lib/symptoms";
 export function StreakWidget({ entries }) {
   let streak = 0;
   const today = new Date();
-  for (let i = 0; i < 90; i++) {
+  for (let i = 0; i < 400; i++) {
     const d = format(subDays(today, i), "yyyy-MM-dd");
     if (entries.find((e) => e.date === d)) streak++;
     else break;

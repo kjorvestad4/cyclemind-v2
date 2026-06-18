@@ -34,8 +34,10 @@ export default function StreakBadges({ entries }) {
   const streak = calculateStreak(entries);
   const totalDays = calculateTotalDaysLogged(entries);
 
-  const earned = BADGES.filter(b => streak >= b.streak || totalDays >= b.streak);
-  const next = BADGES.find(b => streak < b.streak && totalDays < b.streak);
+  const earnedIds = new Set(BADGES.filter(b => streak >= b.streak || totalDays >= b.streak).map(b => b.id));
+  const earned = BADGES.filter(b => earnedIds.has(b.id));
+  const locked = BADGES.filter(b => !earnedIds.has(b.id));
+  const next = locked[0] || null;
 
   return (
     <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
@@ -64,7 +66,7 @@ export default function StreakBadges({ entries }) {
           ))}
 
           {/* Locked badges — greyed out */}
-          {BADGES.filter(b => !earned.includes(b)).map(badge => (
+          {locked.map(badge => (
             <div
               key={badge.id}
               className="flex flex-col items-center gap-1 p-2.5 rounded-xl border w-[80px] text-center opacity-30 grayscale"
