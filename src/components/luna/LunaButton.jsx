@@ -8,7 +8,11 @@ import LunaNotificationBadge from './LunaNotificationBadge';
 export default function LunaButton({ user, cycleMode, cycleDay, cyclePhase, eddInfo }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
-  const isPremium = user ? getUserTier(user) === TIERS.PREMIUM : false;
+  // Wait for user to load before deciding — avoids flash of grayed-out button
+  const isPremium = user ? getUserTier(user) === TIERS.PREMIUM : null;
+
+  // Still loading — render nothing to avoid flash
+  if (isPremium === null) return null;
 
   if (isPremium) {
     return (

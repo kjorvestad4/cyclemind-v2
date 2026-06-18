@@ -228,16 +228,7 @@ export default function Dashboard() {
           <UpgradeBanner feature={`${cycleType.charAt(0).toUpperCase() + cycleType.slice(1)} Tracking`} />
         )}
 
-        {/* PMDD 2-cycle educational nudge */}
-        {isMenstrual && cycles.length < 2 && entries.length > 0 && (
-          <div className="bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-2xl p-4 flex gap-3 items-start">
-            <span className="text-lg shrink-0">📋</span>
-            <div>
-              <p className="text-sm font-semibold text-teal-800 dark:text-teal-200">Keep logging — PMDD analysis needs 2 cycles</p>
-              <p className="text-xs text-teal-600 dark:text-teal-400 mt-0.5">DSM-5 requires prospective daily tracking across 2 full cycles for a PMDD pattern. You're building your first — great start!</p>
-            </div>
-          </div>
-        )}
+
 
         {/* Cycle-aware smart banners */}
         <CycleBanners
@@ -246,6 +237,7 @@ export default function Dashboard() {
           entries={entries}
           cycleType={cycleType}
           cycleDay={cycleDay}
+          showPmddNudge={isMenstrual && cycles.length < 2 && entries.length > 0}
         />
 
         {/* Mode Banner */}

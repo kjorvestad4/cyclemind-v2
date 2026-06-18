@@ -89,7 +89,7 @@ function AlertRow({ icon: Icon, iconColor, accentColor, title, body, action }) {
   );
 }
 
-export default function CycleBanners({ user, cycles, entries, cycleType, cycleDay }) {
+export default function CycleBanners({ user, cycles, entries, cycleType, cycleDay, showPmddNudge }) {
   const navigate = useNavigate();
   const [showCycleSettings, setShowCycleSettings] = useState(false);
   const isMenstrual = cycleType === "menstrual";
@@ -106,7 +106,7 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
   const missedPeriod = (isMenstrual || isPeri) ? checkMissedPeriod(cycles) : null;
   const longPeriod = (isMenstrual || isPeri) ? checkLongPeriod(entries, user, latestCycle) : null;
 
-  const hasAny = lutealActive || ovulationPrediction || missedPeriod || longPeriod;
+  const hasAny = lutealActive || ovulationPrediction || missedPeriod || longPeriod || showPmddNudge;
   if (!hasAny) return null;
 
   return (
@@ -122,6 +122,16 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
       {/* Single unified card */}
       <div className="bg-card border border-border/50 rounded-2xl px-4 py-3.5 space-y-3.5">
         <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Cycle Insights</p>
+
+        {showPmddNudge && (
+          <AlertRow
+            icon={Bell}
+            iconColor="text-primary"
+            accentColor="border-primary"
+            title="Keep logging — PMDD analysis needs 2 cycles"
+            body="DSM-5 requires prospective daily tracking across 2 full cycles for a PMDD pattern. You're building your first — great start!"
+          />
+        )}
 
         {lutealActive && (
           <AlertRow
