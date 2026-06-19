@@ -9,8 +9,8 @@ export function StreakWidget({ entries }) {
   const today = new Date();
   for (let i = 0; i < 400; i++) {
     const d = format(subDays(today, i), "yyyy-MM-dd");
-    if (entries.find((e) => e.date === d)) streak++;
-    else break;
+    if (entries.find((e) => e.date === d)) streak++;else
+    break;
   }
 
   return (
@@ -27,8 +27,8 @@ export function StreakWidget({ entries }) {
           {streak === 0 ? "Start your streak by logging today!" : streak < 3 ? "Great start — keep going!" : streak < 7 ? "Building momentum 💪" : "Amazing consistency! 🔥"}
         </p>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 // Export streak calculation so it can be reused
@@ -37,8 +37,8 @@ export function calculateStreak(entries) {
   const today = new Date();
   for (let i = 0; i < 400; i++) {
     const d = format(subDays(today, i), "yyyy-MM-dd");
-    if (entries.find((e) => e.date === d)) streak++;
-    else break;
+    if (entries.find((e) => e.date === d)) streak++;else
+    break;
   }
   return streak;
 }
@@ -49,13 +49,13 @@ export function RecentInsightsWidget({ entries }) {
     const d = format(subDays(new Date(), 6 - i), "yyyy-MM-dd");
     const entry = entries.find((e) => e.date === d);
     const total = entry ? calculateDayTotal(entry) : null;
-    return { date: d, total, label: format(new Date(d.split("-").map(Number).reduce((acc, v, i) => { if (i === 0) acc.setFullYear(v); else if (i === 1) acc.setMonth(v - 1); else acc.setDate(v); return acc; }, new Date())), "EEE") };
+    return { date: d, total, label: format(new Date(d.split("-").map(Number).reduce((acc, v, i) => {if (i === 0) acc.setFullYear(v);else if (i === 1) acc.setMonth(v - 1);else acc.setDate(v);return acc;}, new Date())), "EEE") };
   });
 
   const max = Math.max(...days.map((d) => d.total || 0), 1);
 
   return (
-    <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
+    <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3 hidden">
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Last 7 Days</p>
         <Link to="/insights" className="text-xs text-primary font-semibold hover:underline flex items-center gap-1">
@@ -64,27 +64,27 @@ export function RecentInsightsWidget({ entries }) {
       </div>
       <div className="flex items-end gap-1.5 h-16">
         {days.map((d) => {
-          const pct = d.total !== null ? Math.max(8, (d.total / max) * 100) : 0;
+          const pct = d.total !== null ? Math.max(8, d.total / max * 100) : 0;
           const isToday = d.date === format(new Date(), "yyyy-MM-dd");
           return (
             <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
               <div className="w-full rounded-sm relative" style={{ height: "48px" }}>
-                {d.total !== null ? (
-                  <div
-                    className={`absolute bottom-0 w-full rounded-sm transition-all ${isToday ? "bg-primary" : "bg-primary/40"}`}
-                    style={{ height: `${pct}%` }}
-                  />
-                ) : (
-                  <div className="absolute bottom-0 w-full h-1 rounded-sm bg-muted" />
-                )}
+                {d.total !== null ?
+                <div
+                  className={`absolute bottom-0 w-full rounded-sm transition-all ${isToday ? "bg-primary" : "bg-primary/40"}`}
+                  style={{ height: `${pct}%` }} /> :
+
+
+                <div className="absolute bottom-0 w-full h-1 rounded-sm bg-muted" />
+                }
               </div>
               <span className={`text-[9px] font-medium ${isToday ? "text-primary" : "text-muted-foreground"}`}>{d.label}</span>
-            </div>
-          );
+            </div>);
+
         })}
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 // Next milestone card
@@ -97,10 +97,10 @@ export function NextMilestoneWidget({ cycleType, latestCycle, cycleLength = 28 }
   let emoji = "📅";
 
   if (cycleType === "pregnancy") {
-    const pregnancyWeek = latestCycle?.pregnancy_week
-      || (latestCycle?.last_menstrual_period
-        ? Math.floor(differenceInDays(new Date(), new Date(latestCycle.last_menstrual_period)) / 7)
-        : null);
+    const pregnancyWeek = latestCycle?.pregnancy_week || (
+    latestCycle?.last_menstrual_period ?
+    Math.floor(differenceInDays(new Date(), new Date(latestCycle.last_menstrual_period)) / 7) :
+    null);
     if (latestCycle?.estimated_due_date) {
       daysAway = differenceInDays(new Date(latestCycle.estimated_due_date), new Date());
       label = "Estimated Due Date";
@@ -140,36 +140,36 @@ export function NextMilestoneWidget({ cycleType, latestCycle, cycleLength = 28 }
   if (!label) return null;
 
   return (
-    <div className="bg-card rounded-2xl border border-border/50 p-4 flex items-center gap-4">
+    <div className="bg-card rounded-2xl border border-border/50 p-4 flex items-center gap-4 hidden">
       <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center shrink-0 text-2xl">
         {emoji}
       </div>
       <div className="min-w-0">
         <p className="text-xs text-muted-foreground font-medium">{label}</p>
         <p className="text-sm font-bold text-foreground mt-0.5">{sublabel}</p>
-        {daysAway !== null && daysAway >= 0 && (
-          <p className="text-[11px] text-primary mt-0.5 font-medium">
+        {daysAway !== null && daysAway >= 0 &&
+        <p className="text-[11px] text-primary mt-0.5 font-medium">
             {daysAway === 0 ? "Today!" : daysAway === 1 ? "Tomorrow" : `In ${daysAway} days`}
           </p>
-        )}
+        }
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 export function QuickLinksRow() {
   return (
     <div className="grid grid-cols-2 gap-3">
-      <Link to="/insights" className="bg-card rounded-2xl border border-border/50 p-4 hover:bg-muted/30 transition-colors">
+      <Link to="/insights" className="bg-card rounded-2xl border border-border/50 p-4 hover:bg-muted/30 transition-colors hidden">
         <TrendingUp className="w-5 h-5 text-primary mb-2" />
         <p className="text-sm font-semibold">Insights</p>
         <p className="text-[10px] text-muted-foreground mt-0.5">Patterns & clinical analysis</p>
       </Link>
-      <Link to="/resources" className="bg-card rounded-2xl border border-border/50 p-4 hover:bg-muted/30 transition-colors">
+      <Link to="/resources" className="bg-card rounded-2xl border border-border/50 p-4 hover:bg-muted/30 transition-colors hidden">
         <Heart className="w-5 h-5 text-accent-foreground mb-2" />
         <p className="text-sm font-semibold">Resources</p>
         <p className="text-[10px] text-muted-foreground mt-0.5">Evidence-based support</p>
       </Link>
-    </div>
-  );
+    </div>);
+
 }
