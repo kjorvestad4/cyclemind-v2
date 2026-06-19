@@ -30,7 +30,7 @@ const SITUATIONS = [
   {
     id: "perimenopause_menopause",
     emoji: "🔦",
-    title: "Perimenopause / Menopause",
+    title: "Perimenopause / Postmenopause",
     subtitle: "Tracking the transition",
   },
   {

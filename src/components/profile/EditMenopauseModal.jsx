@@ -24,7 +24,7 @@ export default function EditMenopauseModal({ cycle, cycleType, onClose, onSucces
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cycles"] });
-      const modeLabel = cycleType === "perimenopause" ? "Perimenopause" : "Menopause";
+      const modeLabel = cycleType === "perimenopause" ? "Perimenopause" : "Postmenopause";
       toast.success(`${modeLabel} details updated 🔥`);
       onSuccess?.();
       onClose();
@@ -34,7 +34,7 @@ export default function EditMenopauseModal({ cycle, cycleType, onClose, onSucces
     },
   });
 
-  const modeLabel = cycleType === "perimenopause" ? "Perimenopause" : "Menopause";
+  const modeLabel = cycleType === "perimenopause" ? "Perimenopause" : "Postmenopause";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>

@@ -6,7 +6,7 @@ const MODES = [
   { id: "pregnancy", emoji: "🤰", label: "Pregnancy", description: "Support your full pregnancy journey", highlight: true },
   { id: "postpartum", emoji: "🍼", label: "Postpartum", description: "Track recovery, bonding & mental health" },
   { id: "perimenopause", emoji: "🌊", label: "Perimenopause", description: "Navigate hormonal transitions" },
-  { id: "menopause", emoji: "🔥", label: "Menopause", description: "Manage symptoms & HRT tracking" },
+  { id: "menopause", emoji: "🔥", label: "Postmenopause", description: "Manage symptoms & HRT tracking" },
 ];
 
 export default function Step1ModeSelection({ selectedMode, onSelect, onSkip }) {
