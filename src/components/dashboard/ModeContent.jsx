@@ -1,7 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { differenceInDays, format, subDays } from "date-fns";
-import { TrendingUp, Baby, Flame, Waves, AlertCircle, CheckCircle2 } from "lucide-react";
-import { ALL_SYMPTOMS, calculateDayTotal } from "@/lib/symptoms";
+import { Baby, Flame, Waves, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ALL_SYMPTOMS } from "@/lib/symptoms";
 import EDDDisplay from "@/components/pregnancy/EDDDisplay";
 
 const PP_KEYS = ["pp_lochiaBleeding","pp_perinealPain","pp_fatigue","pp_sleepWithBaby","pp_bondingDifficulties","pp_moodChanges","pp_anxietyAboutBaby"];
@@ -25,15 +25,20 @@ function ScoreBar({ value, max = 6, label }) {
   );
 }
 
-// Menstrual / PMDD content
 function MenstrualContent({ entries, cycleDay, latestCycle }) {
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const todayEntry = entries.find((e) => e.date === todayStr);
-  const phase = !cycleDay ? null : cycleDay <= 5 ? "menstrual" : cycleDay <= 13 ? "follicular" : cycleDay === 14 ? "ovulatory" : "luteal";
+  const phase = !cycleDay ? null
+    : cycleDay <= 5 ? "menstrual"
+    : cycleDay <= 13 ? "follicular"
+    : cycleDay <= 16 ? "ovulatory"
+    : "luteal";
 
-  const phases = ["menstrual","follicular","ovulatory","luteal"];
-  const phaseColors = { menstrual: "bg-rose-400", follicular: "bg-emerald-400", ovulatory: "bg-purple-400", luteal: "bg-blue-400" };
-  const phaseW = { menstrual: "w-[18%]", follicular: "w-[32%]", ovulatory: "w-[7%]", luteal: "w-[43%]" };
+  const phases = ["menstrual", "follicular", "ovulatory", "luteal"];
+  const phaseColorActive = { menstrual: "#f43f5e", follicular: "#10b981", ovulatory: "#8b5cf6", luteal: "#3b82f6" };
+  const phaseColorDim    = { menstrual: "#fda4af", follicular: "#6ee7b7", ovulatory: "#c4b5fd", luteal: "#93c5fd" };
+  const phaseWidthPct    = { menstrual: "18%", follicular: "32%", ovulatory: "7%", luteal: "43%" };
+  const phaseLabel       = { menstrual: "Menstrual", follicular: "Follicular", ovulatory: "Ovulatory", luteal: "Luteal" };
 
   const topSymptoms = todayEntry
     ? ALL_SYMPTOMS.filter((s) => (todayEntry[s.key] || 0) >= 3)
@@ -43,15 +48,28 @@ function MenstrualContent({ entries, cycleDay, latestCycle }) {
 
   return (
     <div className="space-y-3">
-      {/* Cycle phase bar with actual length */}
       {cycleDay && (
         <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Cycle Phase</p>
-          <div className="flex gap-1 h-3 rounded-full overflow-hidden">
+          <div style={{ display: "flex", gap: "3px", height: "12px", borderRadius: "99px", overflow: "hidden" }}>
             {phases.map((p) => (
-              <div key={p} className={`${phaseW[p]} ${phaseColors[p]} ${phase === p ? "opacity-100 ring-2 ring-foreground/20" : "opacity-40"} rounded-sm transition-all`} />
+              <div
+                key={p}
+                style={{
+                  width: phaseWidthPct[p],
+                  background: phase === p ? phaseColorActive[p] : phaseColorDim[p],
+                  borderRadius: "4px",
+                  transition: "background 0.3s ease",
+                  boxShadow: phase === p ? `0 0 0 2px ${phaseColorActive[p]}44` : "none",
+                }}
+              />
             ))}
           </div>
+          {phase && (
+            <p style={{ fontSize: "11px", fontWeight: 600, color: phaseColorActive[phase], margin: "4px 0 0" }}>
+              ● {phaseLabel[phase]} — Day {cycleDay}
+            </p>
+          )}
           <div className="flex justify-between text-[10px] text-muted-foreground px-0.5">
             <span>Day 1</span><span>Day 14</span><span>Day {latestCycle?.cycle_length || 28}</span>
           </div>
@@ -64,7 +82,6 @@ function MenstrualContent({ entries, cycleDay, latestCycle }) {
         </div>
       )}
 
-      {/* Today's top symptoms */}
       {topSymptoms.length > 0 && (
         <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Today's Elevated Symptoms</p>
@@ -85,7 +102,6 @@ function MenstrualContent({ entries, cycleDay, latestCycle }) {
   );
 }
 
-// Pregnancy content
 function PregnancyContent({ latestCycle, entries }) {
   const navigate = useNavigate();
   const edd = latestCycle?.estimated_due_date;
@@ -109,13 +125,12 @@ function PregnancyContent({ latestCycle, entries }) {
 
   return (
     <div className="space-y-3">
-      {/* Past EDD warning */}
       {eddPassed && (
         <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-2xl p-4 flex gap-3 items-start">
           <AlertCircle className="w-5 h-5 text-purple-500 shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-sm font-semibold text-purple-800 dark:text-purple-200">Your due date has passed</p>
-            <p className="text-xs text-purple-600 dark:text-purple-400 mt-0.5">Welcome to the other side! If you've had your baby, switch to Postpartum mode to continue tracking your recovery.</p>
+            <p className="text-xs text-purple-600 dark:text-purple-400 mt-0.5">If you've had your baby, switch to Postpartum mode to continue tracking your recovery.</p>
             <button onClick={() => navigate('/profile')} className="mt-2 text-xs font-semibold text-purple-700 dark:text-purple-300 underline">Switch to Postpartum mode →</button>
           </div>
         </div>
@@ -149,8 +164,6 @@ function PregnancyContent({ latestCycle, entries }) {
           )}
         </div>
       )}
-
-      {/* Fetal movement */}
       {pregnancyWeek >= 18 && (
         <div className={`rounded-2xl border p-4 flex items-center gap-3 ${fetalFelt ? "border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/30" : "border-border/50 bg-card"}`}>
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${fetalFelt ? "bg-emerald-100 dark:bg-emerald-900" : "bg-muted"}`}>
@@ -167,19 +180,12 @@ function PregnancyContent({ latestCycle, entries }) {
   );
 }
 
-// Postpartum content
 function PostpartumContent({ latestCycle, entries }) {
   const postpartumDay = latestCycle?.start_date
     ? Math.max(1, differenceInDays(new Date(), new Date(latestCycle.start_date)) + 1)
     : null;
 
-  // Last 7 days EPDS trend
-  const last7 = Array.from({ length: 7 }, (_, i) =>
-    format(subDays(new Date(), 6 - i), "yyyy-MM-dd")
-  );
-  const recent = last7.map((d) => entries.find((e) => e.date === d));
   const latestEpds = [...entries].filter((e) => e.epds_score > 0).sort((a, b) => b.date.localeCompare(a.date))[0];
-
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const todayEntry = entries.find((e) => e.date === todayStr);
   const topSymptoms = PP_KEYS.filter((k) => (todayEntry?.[k] || 0) >= 3).slice(0, 4);
@@ -201,8 +207,6 @@ function PostpartumContent({ latestCycle, entries }) {
           </p>
         </div>
       )}
-
-      {/* EPDS reminder / score */}
       <div className={`rounded-2xl border p-4 space-y-2 ${latestEpds?.epds_score >= 10 ? "border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30" : "border-border/50 bg-card"}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -225,7 +229,6 @@ function PostpartumContent({ latestCycle, entries }) {
             : "Complete the EPDS in today's log to track postnatal mood."}
         </p>
       </div>
-
       {topSymptoms.length > 0 && todayEntry && (
         <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Today's Elevated Symptoms</p>
@@ -240,19 +243,13 @@ function PostpartumContent({ latestCycle, entries }) {
   );
 }
 
-// Menopause/Peri content
 function MenopauseContent({ latestCycle, entries }) {
   const todayStr = format(new Date(), "yyyy-MM-dd");
-
-  // Hot flashes this week
-  const last7 = Array.from({ length: 7 }, (_, i) =>
-    format(subDays(new Date(), 6 - i), "yyyy-MM-dd")
-  );
+  const last7 = Array.from({ length: 7 }, (_, i) => format(subDays(new Date(), 6 - i), "yyyy-MM-dd"));
   const weekEntries = last7.map((d) => entries.find((e) => e.date === d)).filter(Boolean);
   const avgHotFlash = weekEntries.length
     ? (weekEntries.reduce((s, e) => s + (e.m_hot_flashes || 0), 0) / weekEntries.length).toFixed(1)
     : null;
-
   const todayEntry = entries.find((e) => e.date === todayStr);
   const topSymptoms = MENO_KEYS.filter((k) => (todayEntry?.[k] || 0) >= 3).slice(0, 4);
 
@@ -280,7 +277,6 @@ function MenopauseContent({ latestCycle, entries }) {
           </div>
         )}
       </div>
-
       {topSymptoms.length > 0 && todayEntry && (
         <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Today's Elevated Symptoms</p>
