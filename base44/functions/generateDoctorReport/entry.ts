@@ -151,7 +151,19 @@ Deno.serve(async (req) => {
       }
     }
     yPosition += 3;
-    
+
+    // Contraception transition note
+    if (user.current_situation === 'stopped_contraception' && user.include_transition_note) {
+      doc.setFontSize(9);
+      doc.setTextColor(80, 80, 80);
+      const transitionText = 'Contraception transition noted • Symptom tracking active during amenorrhea • Ready to re-baseline once first natural period logged';
+      const splitTransition = doc.splitTextToSize(transitionText, 165);
+      doc.text(splitTransition, 25, yPosition);
+      yPosition += (splitTransition.length * 4) + 3;
+      doc.setFontSize(10);
+      doc.setTextColor(0);
+    }
+
     if (latestCycle) {
       doc.text(`Current Cycle Type: ${latestCycle.cycle_type || 'Menstrual'}`, 25, yPosition);
       yPosition += 5;

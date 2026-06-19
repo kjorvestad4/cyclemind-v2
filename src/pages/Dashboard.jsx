@@ -253,6 +253,7 @@ export default function Dashboard() {
           entries={entries}
           cycleType={cycleType}
           cycleDay={cycleDay}
+          transitionMode={user?.current_situation === "stopped_contraception"}
           showPmddNudge={isMenstrual && cycles.length < 2 && entries.length > 0}
           periodEndCycle={showPeriodEndReminder && activeCycles.length > 0 ? activeCycles[0] : null}
           onDismissPeriodEnd={() => setDismissedPeriodEndReminder(activeCycles[0]?.id)}

@@ -81,6 +81,30 @@
       ],
       "description": "How regular the user's cycles are"
     },
+    "current_situation": {
+      "type": "string",
+      "enum": [
+        "none",
+        "on_hormonal_bc",
+        "stopped_contraception",
+        "natural_ttc",
+        "pregnancy_postpartum",
+        "perimenopause_menopause",
+        "other"
+      ],
+      "default": "none",
+      "description": "User's current cycle tracking situation \u2014 drives UI mode and suppresses period-due predictions when in transition"
+    },
+    "exclude_suppressed_cycles": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to exclude suppressed/transition cycles from statistical averages (Premium+ only)"
+    },
+    "include_transition_note": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to include a contraception transition note in the clinical PDF report (Premium+ only)"
+    },
     "track_ovulation_opk": {
       "type": "boolean",
       "default": false,

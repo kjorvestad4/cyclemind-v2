@@ -33,6 +33,7 @@ export default function AdvancedTab({
   cycles,
   excludedIds,
   onToggleExclude,
+  currentSituation,
 }) {
   const [useOvulationDay, setUseOvulationDay] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -197,6 +198,36 @@ export default function AdvancedTab({
         </div>
         <VisualEditor profile={profile} setProfile={setProfile} />
       </div>
+
+      {/* Contraception transition settings */}
+      {currentSituation === "stopped_contraception" && (
+        <div className="pt-2 border-t border-border/40 space-y-3">
+          <div className="flex items-center gap-1.5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Contraception Transition</p>
+            <InfoTooltip text="When you've recently stopped hormonal contraception, your cycles may take weeks or months to return. These settings help Luna handle the transition period." label="Contraception transition info" />
+          </div>
+          <div className="flex items-center justify-between py-2 border-b border-border/20">
+            <div>
+              <p className="text-sm font-medium">Exclude suppressed cycles from averages</p>
+              <p className="text-[10px] text-muted-foreground">Hides transition cycles from statistical calculations</p>
+            </div>
+            <Toggle
+              checked={!!profile.excludeSuppressedCycles}
+              onChange={(val) => update("excludeSuppressedCycles", val)}
+            />
+          </div>
+          <div className="flex items-center justify-between py-2">
+            <div>
+              <p className="text-sm font-medium">Include transition note in clinical PDF</p>
+              <p className="text-[10px] text-muted-foreground">Adds a summary note for your healthcare provider</p>
+            </div>
+            <Toggle
+              checked={!!profile.includeTransitionNote}
+              onChange={(val) => update("includeTransitionNote", val)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Per-cycle overrides */}
       <div className="pt-2 border-t border-border/40 space-y-2">

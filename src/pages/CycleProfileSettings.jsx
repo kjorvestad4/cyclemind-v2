@@ -13,6 +13,7 @@ import CycleTimelinePreview from "@/components/cycleprofile/CycleTimelinePreview
 import BasicTab from "@/components/cycleprofile/BasicTab";
 import AdvancedTab from "@/components/cycleprofile/AdvancedTab";
 import CycleHistoryTable from "@/components/cycleprofile/CycleHistoryTable";
+import MyCurrentSituation from "@/components/cycleprofile/MyCurrentSituation";
 
 const DEFAULT_PROFILE = {
   cycleLength: 28,
@@ -26,6 +27,9 @@ const DEFAULT_PROFILE = {
   track_ovulation_mucus: false,
   track_ovulation_pain: false,
   add_mark_ovulation_button: false,
+  currentSituation: "none",
+  excludeSuppressedCycles: false,
+  includeTransitionNote: false,
 };
 
 export default function CycleProfileSettings() {
@@ -65,6 +69,9 @@ export default function CycleProfileSettings() {
         track_ovulation_mucus: !!u?.track_ovulation_mucus,
         track_ovulation_pain: !!u?.track_ovulation_pain,
         add_mark_ovulation_button: !!u?.add_mark_ovulation_button,
+        currentSituation: u?.current_situation || "none",
+        excludeSuppressedCycles: !!u?.exclude_suppressed_cycles,
+        includeTransitionNote: !!u?.include_transition_note,
       };
       setProfile(loaded);
       setOriginalProfile(loaded);
@@ -124,6 +131,9 @@ export default function CycleProfileSettings() {
         track_ovulation_mucus: profile.track_ovulation_mucus,
         track_ovulation_pain: profile.track_ovulation_pain,
         add_mark_ovulation_button: profile.add_mark_ovulation_button,
+        current_situation: profile.currentSituation,
+        exclude_suppressed_cycles: profile.excludeSuppressedCycles,
+        include_transition_note: profile.includeTransitionNote,
       });
 
       // Update latest cycle record with new cycle_length
@@ -238,6 +248,12 @@ export default function CycleProfileSettings() {
           </div>
         </div>
 
+        {/* My Current Situation */}
+        <MyCurrentSituation
+          value={profile.currentSituation}
+          onChange={(val) => setProfile(prev => ({ ...prev, currentSituation: val }))}
+        />
+
         {/* Layout: tabs + content on left, preview on right */}
         <div className="grid lg:grid-cols-[1fr_340px] gap-5">
           {/* Left column: tabs + content */}
@@ -279,6 +295,7 @@ export default function CycleProfileSettings() {
                   cycles={cycles}
                   excludedIds={excludedIds}
                   onToggleExclude={handleToggleExclude}
+                  currentSituation={profile.currentSituation}
                 />
               )}
             </div>
@@ -303,7 +320,7 @@ export default function CycleProfileSettings() {
 
           {/* Right column: live preview */}
           <div className="lg:sticky lg:top-4 lg:self-start space-y-4">
-            <CycleTimelinePreview profile={profile} currentDay={currentDay} />
+            <CycleTimelinePreview profile={profile} currentDay={currentDay} transitionMode={profile.currentSituation === "stopped_contraception"} />
 
             {/* Quick stats */}
             <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-2">

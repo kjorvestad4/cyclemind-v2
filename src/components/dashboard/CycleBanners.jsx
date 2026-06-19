@@ -89,7 +89,7 @@ function AlertRow({ icon: Icon, iconColor, accentColor, title, body, action }) {
   );
 }
 
-export default function CycleBanners({ user, cycles, entries, cycleType, cycleDay, showPmddNudge, periodEndCycle, onDismissPeriodEnd }) {
+export default function CycleBanners({ user, cycles, entries, cycleType, cycleDay, showPmddNudge, periodEndCycle, onDismissPeriodEnd, transitionMode }) {
   const navigate = useNavigate();
   const [showCycleSettings, setShowCycleSettings] = useState(false);
   const isMenstrual = cycleType === "menstrual";
@@ -102,12 +102,12 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
 
   const cycleLength = latestCycle?.cycle_length || user?.cycle_length || 28;
   const lutealActive = (isMenstrual || isPeri) && user?.luteal_med_reminder && isInLutealPhase(cycleDay, cycleLength);
-  const ovulationPrediction = (isMenstrual || isPeri || !cycleType) ? predictOvulation(cycles, entries) : null;
-  const missedPeriod = (isMenstrual || isPeri) ? checkMissedPeriod(cycles) : null;
+  const ovulationPrediction = !transitionMode && (isMenstrual || isPeri || !cycleType) ? predictOvulation(cycles, entries) : null;
+  const missedPeriod = !transitionMode && (isMenstrual || isPeri) ? checkMissedPeriod(cycles) : null;
   const longPeriod = (isMenstrual || isPeri) ? checkLongPeriod(entries, user, latestCycle) : null;
 
   // Period-end reminder derived values
-  const periodEndInfo = periodEndCycle ? (() => {
+  const periodEndInfo = !transitionMode && periodEndCycle ? (() => {
     const startDate = new Date(periodEndCycle.start_date);
     const daysSinceStart = Math.floor((todayLocal() - startDate) / (1000 * 60 * 60 * 24));
     const daysOverdue = Math.floor((todayLocal() - addDays(startDate, 5)) / (1000 * 60 * 60 * 24));

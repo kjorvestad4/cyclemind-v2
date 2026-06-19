@@ -23,6 +23,7 @@ import PostpartumSymptoms, { PP_SYMPTOM_KEYS } from "@/components/log/Postpartum
 import VitalsTracking from "@/components/log/VitalsTracking";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import QuickLogButtons from "@/components/log/QuickLogButtons";
+import TransitionQuickButtons from "@/components/log/TransitionQuickButtons";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
 import CycleBanners from "@/components/dashboard/CycleBanners";
 import ModeBanner from "@/components/dashboard/ModeBanner";
@@ -422,11 +423,31 @@ export default function DailyLog() {
       />
 
       {showModeSwitcher && (
-       <QuickModeSwitcher
-         currentCycleType={cycleType}
-         latestCycle={latestCycle}
-         onClose={() => setShowModeSwitcher(false)}
-       />
+        <QuickModeSwitcher
+          currentCycleType={cycleType}
+          latestCycle={latestCycle}
+          onClose={() => setShowModeSwitcher(false)}
+        />
+      )}
+
+      {/* Contraception transition banner + quick buttons */}
+      {user?.current_situation === "stopped_contraception" && (
+        <>
+          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-start gap-3">
+            <span className="text-xl shrink-0">🔄</span>
+            <div>
+              <p className="text-sm font-semibold text-foreground">Tracking your cycle return</p>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                It's common for periods to take weeks or months to return after stopping BC/IUD. Keep logging symptoms — they still help your doctor!
+              </p>
+            </div>
+          </div>
+          <TransitionQuickButtons
+            selectedDate={selectedDate}
+            existingEntry={existingEntry}
+            cycleType={cycleType}
+          />
+        </>
       )}
 
       {/* PREGNANCY STATUS — hidden if user dismissed it (and not in pregnancy mode) */}
@@ -511,6 +532,7 @@ export default function DailyLog() {
         entries={entries}
         cycleType={cycleType}
         cycleDay={cycleDay}
+        transitionMode={user?.current_situation === "stopped_contraception"}
         showPmddNudge={!isPerinatal && !isMenopause && cycles.length < 2 && entries.length > 0}
         periodEndCycle={(() => {
           const activeCycles = cycles.filter(c => !c.end_date && c.cycle_type === 'menstrual');

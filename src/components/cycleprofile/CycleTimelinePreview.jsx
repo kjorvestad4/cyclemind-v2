@@ -5,7 +5,7 @@ import InfoTooltip from "@/components/cycleprofile/InfoTooltip";
  * Live preview pane: horizontal timeline bar + circular cycle wheel.
  * Updates in real-time as the user changes values.
  */
-export default function CycleTimelinePreview({ profile, currentDay }) {
+export default function CycleTimelinePreview({ profile, currentDay, transitionMode }) {
   const phases = calculatePhases(profile);
   const {
     cycleLength, periodLength, ovulationDay,
@@ -38,8 +38,16 @@ export default function CycleTimelinePreview({ profile, currentDay }) {
         <InfoTooltip text="This preview updates as you change values. The timeline shows your cycle phases and PMDD symptom window." />
       </div>
 
+      {/* Transition mode notice */}
+      {transitionMode && (
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-primary/5 border border-primary/20">
+          <span className="text-sm">🔄</span>
+          <p className="text-[11px] text-foreground font-medium">Return Window — periods may take weeks or months to resume</p>
+        </div>
+      )}
+
       {/* Horizontal timeline bar */}
-      <div className="space-y-2">
+      <div className={`space-y-2 ${transitionMode ? "opacity-40" : ""}`}>
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-muted-foreground font-medium">Day 1</span>
           <div className="flex-1 relative h-10 rounded-xl overflow-hidden shadow-sm">
@@ -109,7 +117,7 @@ export default function CycleTimelinePreview({ profile, currentDay }) {
       </div>
 
       {/* Cycle wheel */}
-      <div className="flex items-center justify-center pt-1">
+      <div className={`flex items-center justify-center pt-1 ${transitionMode ? "opacity-40" : ""}`}>
         <div className="relative" style={{ width: 130, height: 130 }}>
           {/* Main wheel */}
           <div
@@ -150,7 +158,11 @@ export default function CycleTimelinePreview({ profile, currentDay }) {
         </div>
       </div>
 
-      {currentDay && (
+      {transitionMode ? (
+        <p className="text-center text-[11px] text-muted-foreground italic">
+          <strong className="text-foreground">Waiting for cycle to return</strong> — keep logging symptoms
+        </p>
+      ) : currentDay && (
         <p className="text-center text-[11px] text-muted-foreground">
           You're on <strong className="text-foreground">Day {currentDay}</strong> — {(() => {
             if (currentDay <= periodLength) return "Menstrual phase";
