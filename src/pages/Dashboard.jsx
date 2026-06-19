@@ -13,6 +13,7 @@ import UpgradeBanner from "@/components/common/UpgradeBanner";
 import PremiumBanner from "@/components/common/PremiumBanner";
 import ModeBanner from "@/components/dashboard/ModeBanner";
 import ModeContent from "@/components/dashboard/ModeContent";
+import CyclePhaseBar from "@/components/dashboard/CyclePhaseBar";
 import CycleProfileSummary from "@/components/cycleprofile/CycleProfileSummary";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
@@ -338,7 +339,15 @@ export default function Dashboard() {
           )}
         </button>
 
-        {/* Cycle Profile summary */}
+        {/* Mode Banner — Hero */}
+        <ModeBanner
+          latestCycle={latestCycle}
+          cycleDay={cycleDay}
+          onSwitchMode={() => setShowModeSwitcher(true)}
+          onCycleSettings={() => setShowCycleSettings(true)}
+        />
+
+        {/* Cycle Profile summary — right below cycle phase */}
         <CycleProfileSummary
           user={user}
           latestCycle={latestCycle}
@@ -347,13 +356,10 @@ export default function Dashboard() {
           compact
         />
 
-        {/* Cycle Phase — just below Cycle Profile */}
-        <ModeBanner
-          latestCycle={latestCycle}
-          cycleDay={cycleDay}
-          onSwitchMode={() => setShowModeSwitcher(true)}
-          onCycleSettings={() => setShowCycleSettings(true)}
-        />
+        {/* Cycle Phase bar — right below Cycle Profile */}
+        {isMenstrual && cycleDay && (
+          <CyclePhaseBar cycleDay={cycleDay} latestCycle={latestCycle} />
+        )}
 
         {/* Today's Severity Card */}
         <TodaySeverityCard entries={entries} cycleType={cycleType} isFreeUser={isFreeUser} />
