@@ -47,7 +47,7 @@ const MODES = [
   },
   {
     id: "menopause",
-    emoji: "☀️",
+    emoji: "🌞",
     label: "Menopause",
     description: "Post-menopausal symptom tracking, HRT monitoring and sleep/mood logs.",
     color: "border-orange-200 bg-orange-50/50 dark:border-orange-900 dark:bg-orange-950/20",

@@ -45,7 +45,7 @@ const MODE_CONFIGS = {
     gradient: "from-amber-600 to-yellow-400",
   },
   menopause: {
-    emoji: "☀️",
+    emoji: "🌞",
     label: "Postmenopause",
     gradient: "from-orange-600 to-amber-400",
   },

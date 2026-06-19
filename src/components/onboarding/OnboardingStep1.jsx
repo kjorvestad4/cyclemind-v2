@@ -6,7 +6,7 @@ const MODES = [
 { id: "pregnancy", emoji: "🤰", label: "Pregnancy", description: "Monitor your pregnancy journey" },
 { id: "postpartum", emoji: "🍼", label: "Postpartum", description: "Support your recovery" },
 { id: "perimenopause", emoji: "🌡️", label: "Perimenopause", description: "Navigate the transition" },
-{ id: "menopause", emoji: "☀️", label: "Menopause", description: "Manage your menopause" }];
+{ id: "menopause", emoji: "🌞", label: "Menopause", description: "Manage your menopause" }];
 
 
 export default function OnboardingStep1({ selectedMode, onSelect, onNext, onSkip, onSignIn }) {
