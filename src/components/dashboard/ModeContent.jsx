@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { differenceInDays, format, subDays } from "date-fns";
-import { Baby, Flame, Waves, AlertCircle, CheckCircle2, ChevronRight } from "lucide-react";
+import { Baby, Sun, Waves, AlertCircle, CheckCircle2, ChevronRight } from "lucide-react";
 import { ALL_SYMPTOMS } from "@/lib/symptoms";
 import EDDDisplay from "@/components/pregnancy/EDDDisplay";
 
@@ -272,7 +272,7 @@ function MenopauseContent({ latestCycle, entries }) {
     <div className="space-y-3">
       <div className="bg-card rounded-2xl border border-orange-200 dark:border-orange-900 p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <Flame className="w-4 h-4 text-orange-500" />
+          <Sun className="w-4 h-4 text-orange-500" />
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">This Week</p>
         </div>
         <div className="grid grid-cols-2 gap-3">

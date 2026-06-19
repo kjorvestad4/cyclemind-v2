@@ -38,7 +38,7 @@ const MODES = [
   },
   {
     id: "perimenopause",
-    emoji: "🌊",
+    emoji: "🌡️",
     label: "Perimenopause",
     description: "Irregular cycles, hormone fluctuations, hot flashes and mood changes.",
     color: "border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20",
@@ -47,7 +47,7 @@ const MODES = [
   },
   {
     id: "menopause",
-    emoji: "🔥",
+    emoji: "☀️",
     label: "Menopause",
     description: "Post-menopausal symptom tracking, HRT monitoring and sleep/mood logs.",
     color: "border-orange-200 bg-orange-50/50 dark:border-orange-900 dark:bg-orange-950/20",
