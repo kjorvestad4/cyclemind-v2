@@ -345,6 +345,15 @@ export default function Dashboard() {
           onCycleSettings={() => setShowCycleSettings(true)}
         />
 
+        {/* Cycle Profile summary — right below cycle phase */}
+        <CycleProfileSummary
+          user={user}
+          latestCycle={latestCycle}
+          cycleType={cycleType}
+          cycles={cycles}
+          compact
+        />
+
         {/* Today's Severity Card */}
         <TodaySeverityCard entries={entries} cycleType={cycleType} isFreeUser={isFreeUser} />
 
@@ -366,15 +375,6 @@ export default function Dashboard() {
           latestCycle={latestCycle}
           entries={entries}
           cycleDay={cycleDay}
-        />
-
-        {/* Cycle Profile summary — under cycle phase section */}
-        <CycleProfileSummary
-          user={user}
-          latestCycle={latestCycle}
-          cycleType={cycleType}
-          cycles={cycles}
-          compact
         />
 
         {/* New Cycle Entry Modal */}
