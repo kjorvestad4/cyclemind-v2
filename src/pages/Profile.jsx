@@ -21,12 +21,11 @@ import {
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import ShareWithDoctor from "@/components/insights/ShareWithDoctor";
 import PdfReportButton from "@/components/insights/PdfReportButton";
-import EDDDisplay from "@/components/pregnancy/EDDDisplay";
+import CycleProfileSummary from "@/components/cycleprofile/CycleProfileSummary";
 import EditPregnancyModal from "@/components/profile/EditPregnancyModal";
 import EditMenstrualModal from "@/components/profile/EditMenstrualModal";
 import EditMenopauseModal from "@/components/profile/EditMenopauseModal";
 import EditPostpartumModal from "@/components/profile/EditPostpartumModal";
-import { getCycleDay } from "@/lib/symptoms";
 import { getUserTier, TIERS } from "@/lib/freemium";
 import { Crown } from "lucide-react";
 
@@ -101,198 +100,6 @@ function Toggle({ checked, onChange }) {
   );
 }
 
-// ── CurrentCycleDetails Component ─────────────────────────────────────────
-
-function CurrentCycleDetails({ latestCycle, cycleType, entries, cycles, cycleLength, setCycleLength, ovulationDay, setOvulationDay, menstruationLength, setMenstruationLength, saveSettingsMutation, onEditClick }) {
-  const [expanded, setExpanded] = useState(true);
-
-  if (!latestCycle) {
-    return (
-      <Section title="Current Cycle Details" icon={CalendarDays}>
-        <p className="text-sm text-muted-foreground text-center py-4">No cycle recorded yet. Log a cycle from the Dashboard.</p>
-      </Section>
-    );
-  }
-
-  const isMenstrual = !["pregnancy", "postpartum", "menopause", "perimenopause"].includes(cycleType);
-  const cycleDay = isMenstrual ? getCycleDay(format(new Date(), "yyyy-MM-dd"), cycles) : null;
-
-  // Render mode-specific content
-  const renderContent = () => {
-    if (cycleType === "menstrual") {
-      const cycleDayNum = cycleDay || 1;
-      const cycLen = latestCycle.cycle_length || cycleLength || 28;
-      const phase = cycleDayNum <= 5 ? "Menstrual" : cycleDayNum <= 12 ? "Follicular" : cycleDayNum <= 16 ? "Ovulatory" : "Luteal";
-      
-      // Calculate variability from cycle history
-      const cycleLengths = cycles.filter(c => c.cycle_length).map(c => c.cycle_length);
-      const avgLength = cycleLengths.length > 0 ? Math.round(cycleLengths.reduce((a, b) => a + b, 0) / cycleLengths.length) : cycLen;
-      const variance = cycleLengths.length > 1 ? Math.max(...cycleLengths) - Math.min(...cycleLengths) : 0;
-
-      return (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-muted/40 rounded-xl p-3">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Cycle Day</p>
-              <p className="text-2xl font-bold text-foreground mt-1">{cycleDayNum}</p>
-            </div>
-            <div className="bg-muted/40 rounded-xl p-3">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Phase</p>
-              <p className="text-sm font-semibold text-foreground mt-1">{phase}</p>
-            </div>
-            <div className="bg-muted/40 rounded-xl p-3">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Cycle Length</p>
-              <p className="text-lg font-bold text-foreground mt-1">{cycLen}d</p>
-            </div>
-            <div className="bg-muted/40 rounded-xl p-3">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Menstruation Length</p>
-              <p className="text-lg font-semibold text-foreground mt-1">{menstruationLength || 5}d</p>
-            </div>
-          </div>
-          <div className="pt-2 border-t border-border/40 space-y-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase">Edit Cycle Settings</p>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="space-y-1.5">
-                 <Label className="text-xs">Cycle Length</Label>
-                 <Input type="number" min={20} max={60} value={cycleLength}
-                   onChange={(e) => { const v = e.target.value === "" ? "" : parseInt(e.target.value); setCycleLength(v); if (v) setOvulationDay(Math.max(1, v - 14)); }} />
-               </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs">Ovulation Day</Label>
-                <Input type="number" min={1} max={cycleLength - 1} value={ovulationDay}
-                  onChange={(e) => setOvulationDay(parseInt(e.target.value) || 14)} />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs">Period Length</Label>
-                <Input type="number" min={1} max={14} value={menstruationLength}
-                  onChange={(e) => setMenstruationLength(e.target.value === "" ? "" : parseInt(e.target.value))} />
-              </div>
-            </div>
-            <Button variant="outline" size="sm" className="w-full gap-2 mb-2" onClick={() => saveSettingsMutation.mutate()} disabled={saveSettingsMutation.isPending}>
-              Save Settings
-            </Button>
-            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => onEditClick("menstrual")}>
-              <Edit className="w-4 h-4" /> Edit Full Cycle Details
-            </Button>
-          </div>
-        </div>
-      );
-    }
-
-    if (cycleType === "perimenopause" || cycleType === "menopause") {
-      const monthsInMode = latestCycle.hrt_start_date 
-        ? Math.floor(differenceInDays(new Date(), new Date(latestCycle.hrt_start_date)) / 30)
-        : Math.floor(differenceInDays(new Date(), new Date(latestCycle.start_date)) / 30);
-      const yearsInMode = Math.floor(monthsInMode / 12);
-
-      return (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-muted/40 rounded-xl p-3">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">In {cycleType === "perimenopause" ? "Perimenopause" : "Menopause"}</p>
-              <p className="text-lg font-bold text-foreground mt-1">
-                {yearsInMode > 0 ? `${yearsInMode}y ${monthsInMode % 12}m` : `${monthsInMode}m`}
-              </p>
-            </div>
-            <div className="bg-muted/40 rounded-xl p-3">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">HRT Type</p>
-              <p className="text-sm font-semibold text-foreground mt-1">{latestCycle.hrt_type || "Not set"}</p>
-            </div>
-            {latestCycle.last_menstrual_period && (
-              <div className="bg-muted/40 rounded-xl p-3">
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Last Menstrual Period</p>
-                <p className="text-sm font-semibold text-foreground mt-1">{format(new Date(latestCycle.last_menstrual_period), "MMM d, yyyy")}</p>
-              </div>
-            )}
-            <div className="bg-muted/40 rounded-xl p-3">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Mode Started</p>
-              <p className="text-sm font-semibold text-foreground mt-1">{format(new Date(latestCycle.start_date), "MMM d, yyyy")}</p>
-            </div>
-          </div>
-          <div className="pt-2 border-t border-border/40">
-            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => onEditClick("menopause")}>
-              <Edit className="w-4 h-4" /> Edit HRT / Cycle Details
-            </Button>
-          </div>
-        </div>
-      );
-    }
-
-    if (cycleType === "pregnancy") {
-       const pregnancyWeek = latestCycle.pregnancy_week
-         || (latestCycle.last_menstrual_period
-           ? Math.floor(differenceInDays(new Date(), new Date(latestCycle.last_menstrual_period)) / 7)
-           : null);
-       const trimester = pregnancyWeek 
-         ? (pregnancyWeek <= 13 ? "First" : pregnancyWeek <= 26 ? "Second" : "Third")
-         : null;
-
-       return (
-         <div className="space-y-4">
-           <EDDDisplay
-             lmp={latestCycle?.last_menstrual_period}
-             ovulationDate={latestCycle?.ovulation_date}
-             estimatedDueDate={latestCycle?.estimated_due_date}
-             pregnancyWeek={pregnancyWeek}
-           />
-           <div className="pt-2 border-t border-border/40">
-             <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => onEditClick("pregnancy")}>
-               <Edit className="w-4 h-4" /> Edit Pregnancy Details
-             </Button>
-           </div>
-         </div>
-       );
-     }
-
-    if (cycleType === "postpartum") {
-      const ppDay = latestCycle.start_date
-        ? Math.max(1, differenceInDays(new Date(), new Date(latestCycle.start_date)) + 1)
-        : null;
-
-      return (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-xl p-3">
-              <p className="text-[10px] text-purple-600 dark:text-purple-400 uppercase tracking-wider font-semibold">Postpartum Day</p>
-              <p className="text-2xl font-bold text-purple-700 dark:text-purple-300 mt-1">{ppDay || "—"}</p>
-            </div>
-            <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-xl p-3">
-              <p className="text-[10px] text-purple-600 dark:text-purple-400 uppercase tracking-wider font-semibold">Delivery Date</p>
-              <p className="text-sm font-semibold text-purple-700 dark:text-purple-300 mt-1">{format(new Date(latestCycle.start_date), "MMM d, yyyy")}</p>
-            </div>
-          </div>
-          <div className="pt-2 border-t border-border/40">
-            <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => onEditClick("postpartum")}>
-              <Edit className="w-4 h-4" /> Edit Postpartum Details
-            </Button>
-          </div>
-        </div>
-      );
-    }
-  };
-
-  return (
-    <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-muted/30 transition-colors"
-      >
-        <div className="flex items-center gap-2">
-          <CalendarDays className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">Current Cycle Details</h3>
-        </div>
-        {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
-      </button>
-
-      {expanded && (
-        <div className="px-4 pb-4 pt-2 border-t border-border/40">
-          {renderContent()}
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function Profile() {
@@ -302,9 +109,6 @@ export default function Profile() {
   const [showModeSwitcher, setShowModeSwitcher] = useState(false);
   const [showSharePanel, setShowSharePanel] = useState(false);
   const [editMode, setEditMode] = useState(null); // 'pregnancy', 'menstrual', 'menopause', 'postpartum'
-  const [cycleLength, setCycleLength] = useState(28);
-  const [ovulationDay, setOvulationDay] = useState(14);
-  const [menstruationLength, setMenstruationLength] = useState(5);
   const [notifDaily, setNotifDaily] = useState(true);
   const [notifMode, setNotifMode] = useState(true);
   const [lunaNotifications, setLunaNotifications] = useState(true);
@@ -319,9 +123,6 @@ export default function Profile() {
   useEffect(() => {
     base44.auth.me().then((u) => {
       setUser(u);
-      if (u?.cycle_length) setCycleLength(u.cycle_length);
-      if (u?.ovulation_day) setOvulationDay(u.ovulation_day);
-      if (u?.menstruation_length) setMenstruationLength(u.menstruation_length);
       if (u?.date_of_birth) setDateOfBirth(u.date_of_birth);
       setFullName(u?.display_name || u?.full_name || "");
       if (u?.luteal_med_reminder !== undefined) setLutealMedReminder(!!u.luteal_med_reminder);
@@ -400,11 +201,6 @@ export default function Profile() {
       await base44.auth.logout("/");
     },
     onError: () => toast.error("Failed to delete account. Please contact support."),
-  });
-
-  const saveSettingsMutation = useMutation({
-    mutationFn: () => base44.auth.updateMe({ cycle_length: cycleLength, ovulation_day: ovulationDay, menstruation_length: menstruationLength }),
-    onSuccess: () => toast.success("Settings saved!"),
   });
 
   const savePrefToggle = async (key, value) => {
@@ -495,20 +291,13 @@ export default function Profile() {
         />
       )}
 
-      {/* ── Current Cycle Details (Mode-Aware) ── */}
-      <CurrentCycleDetails
+      {/* ── Cycle Profile Summary (replaces old Current Cycle Details) ── */}
+      <CycleProfileSummary
+        user={user}
         latestCycle={latestCycle}
         cycleType={cycleType}
-        entries={entries}
         cycles={cycles}
-        cycleLength={cycleLength}
-        setCycleLength={setCycleLength}
-        ovulationDay={ovulationDay}
-        setOvulationDay={setOvulationDay}
-        menstruationLength={menstruationLength}
-        setMenstruationLength={setMenstruationLength}
-        saveSettingsMutation={saveSettingsMutation}
-        onEditClick={(mode) => setEditMode(mode)}
+        onEditCycleRecord={(mode) => setEditMode(mode)}
       />
 
       {/* ── Personal Information ── */}

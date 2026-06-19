@@ -13,6 +13,7 @@ import UpgradeBanner from "@/components/common/UpgradeBanner";
 import PremiumBanner from "@/components/common/PremiumBanner";
 import ModeBanner from "@/components/dashboard/ModeBanner";
 import ModeContent from "@/components/dashboard/ModeContent";
+import CycleProfileSummary from "@/components/cycleprofile/CycleProfileSummary";
 import QuickModeSwitcher from "@/components/log/QuickModeSwitcher";
 import CalendarPopup from "@/components/dashboard/CalendarPopup";
 import TodaySeverityCard from "@/components/dashboard/TodaySeverityCard";
@@ -365,6 +366,15 @@ export default function Dashboard() {
           latestCycle={latestCycle}
           entries={entries}
           cycleDay={cycleDay}
+        />
+
+        {/* Cycle Profile summary — under cycle phase section */}
+        <CycleProfileSummary
+          user={user}
+          latestCycle={latestCycle}
+          cycleType={cycleType}
+          cycles={cycles}
+          compact
         />
 
         {/* New Cycle Entry Modal */}
