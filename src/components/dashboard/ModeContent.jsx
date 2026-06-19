@@ -163,7 +163,7 @@ function PregnancyContent({ latestCycle, entries }) {
             </p>
           )}
           <button
-            onClick={() => navigate('/milestones')}
+            onClick={() => navigate('/milestones#current')}
             className="w-full mt-3 flex items-center justify-between px-3 py-2.5 rounded-xl bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 hover:bg-pink-100 dark:hover:bg-pink-950/50 transition-colors text-left"
           >
             <span className="text-xs font-semibold text-pink-700 dark:text-pink-300">View Pregnancy & Postpartum Milestones</span>
@@ -214,7 +214,7 @@ function PostpartumContent({ latestCycle, entries }) {
             {postpartumDay <= 14 ? "Early recovery — rest and accept all support offered." : postpartumDay <= 42 ? "6-week check approaching — note any concerns to discuss." : "Beyond 6 weeks — EPDS screening is still recommended."}
           </p>
           <button
-            onClick={() => navigate('/milestones')}
+            onClick={() => navigate('/milestones#current')}
             className="w-full mt-3 flex items-center justify-between px-3 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-950/50 transition-colors text-left"
           >
             <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">View Pregnancy & Postpartum Milestones</span>

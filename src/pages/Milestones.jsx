@@ -150,6 +150,18 @@ export default function Milestones() {
     ? MILESTONES.find((m) => m.id === currentMilestoneId)
     : null;
 
+  // Auto-scroll to current milestone when arriving via #current hash
+  useEffect(() => {
+    if (currentMilestoneId && window.location.hash === "#current") {
+      const el = document.getElementById(`milestone-${currentMilestoneId}`);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 300);
+      }
+    }
+  }, [currentMilestoneId]);
+
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
@@ -210,17 +222,18 @@ export default function Milestones() {
             <h2 className="font-serif text-base font-semibold text-foreground">Pregnancy Journey</h2>
           </div>
           {pregnancyMilestones.map((m) => (
-            <MilestoneCard
-              key={m.id}
-              milestone={m}
-              record={getRecord(m.id)}
-              isCurrent={currentMilestoneId === m.id}
-              isPremiumUser={isPremiumUser}
-              onToggleExperienced={handleToggleExperienced}
-              onSaveNote={handleSaveNote}
-              onLogFeelings={handleLogFeelings}
-              onAskLuna={handleAskLuna}
-            />
+            <div key={m.id} id={`milestone-${m.id}`} className="scroll-mt-20">
+              <MilestoneCard
+                milestone={m}
+                record={getRecord(m.id)}
+                isCurrent={currentMilestoneId === m.id}
+                isPremiumUser={isPremiumUser}
+                onToggleExperienced={handleToggleExperienced}
+                onSaveNote={handleSaveNote}
+                onLogFeelings={handleLogFeelings}
+                onAskLuna={handleAskLuna}
+              />
+            </div>
           ))}
         </div>
 
@@ -231,17 +244,18 @@ export default function Milestones() {
             <h2 className="font-serif text-base font-semibold text-foreground">Postpartum Journey</h2>
           </div>
           {postpartumMilestones.map((m) => (
-            <MilestoneCard
-              key={m.id}
-              milestone={m}
-              record={getRecord(m.id)}
-              isCurrent={currentMilestoneId === m.id}
-              isPremiumUser={isPremiumUser}
-              onToggleExperienced={handleToggleExperienced}
-              onSaveNote={handleSaveNote}
-              onLogFeelings={handleLogFeelings}
-              onAskLuna={handleAskLuna}
-            />
+            <div key={m.id} id={`milestone-${m.id}`} className="scroll-mt-20">
+              <MilestoneCard
+                milestone={m}
+                record={getRecord(m.id)}
+                isCurrent={currentMilestoneId === m.id}
+                isPremiumUser={isPremiumUser}
+                onToggleExperienced={handleToggleExperienced}
+                onSaveNote={handleSaveNote}
+                onLogFeelings={handleLogFeelings}
+                onAskLuna={handleAskLuna}
+              />
+            </div>
           ))}
         </div>
 
