@@ -198,6 +198,9 @@ export default function Dashboard() {
           entries={entries}
           cycles={cycles}
           cycleType={cycleType}
+          cycleLength={cycleLength}
+          ovulationDay={user?.ovulation_day || Math.max(1, (latestCycle?.cycle_length || cycleLength) - 14)}
+          menstruationLength={user?.menstruation_length || 5}
         />
 
         {/* Greeting */}
