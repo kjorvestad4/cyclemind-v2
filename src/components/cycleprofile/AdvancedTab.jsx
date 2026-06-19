@@ -79,16 +79,18 @@ export default function AdvancedTab({
           <Label className="text-sm font-medium">Avg Luteal Phase Length</Label>
           <InfoTooltip text={EDUCATIONAL_TOOLTIPS.lutealPhase} label="Luteal phase info" />
         </div>
-        <div className="flex items-center gap-3">
-          <Input
-            type="number"
-            min={10}
-            max={18}
-            value={profile.lutealLength}
-            onChange={(e) => handleLutealChange(parseInt(e.target.value) || 14)}
-            className={`w-20 h-10 text-center text-lg font-bold ${lutealWarning ? "border-amber-400" : ""}`}
-          />
-          <span className="text-sm text-muted-foreground">days</span>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min={10}
+              max={18}
+              value={profile.lutealLength}
+              onChange={(e) => handleLutealChange(parseInt(e.target.value) || 14)}
+              className={`w-20 h-10 text-center text-lg font-bold ${lutealWarning ? "border-amber-400" : ""}`}
+            />
+            <span className="text-sm text-muted-foreground">days</span>
+          </div>
           <input
             type="range"
             min={10}
@@ -127,7 +129,7 @@ export default function AdvancedTab({
       {useOvulationDay && (
         <div className="space-y-2 p-3 rounded-xl border border-primary/20 bg-primary/5">
           <Label className="text-sm font-medium">Ovulation Day</Label>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
             <Input
               type="number"
               min={profile.periodLength + 2}
@@ -144,7 +146,7 @@ export default function AdvancedTab({
       {/* Quick Presets */}
       <div className="space-y-2 pt-2 border-t border-border/40">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Quick Presets</p>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
           {QUICK_PRESETS.map(preset => (
             <button
               key={preset.id}
@@ -249,14 +251,14 @@ export default function AdvancedTab({
       </div>
 
       {/* Action buttons */}
-      <div className="flex gap-2 pt-2 border-t border-border/40">
+      <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-border/40">
         <Button
           variant="outline"
           className="flex-1 h-10 rounded-xl gap-2"
           onClick={onReset}
         >
           <RotateCcw className="w-4 h-4" />
-          Reset to learned averages
+          <span className="truncate">Reset to learned averages</span>
         </Button>
         <Button
           variant="secondary"
@@ -264,7 +266,7 @@ export default function AdvancedTab({
           onClick={onPreviewReport}
         >
           <FileText className="w-4 h-4" />
-          Preview in Clinical Report
+          <span className="truncate">Preview in Clinical Report</span>
         </Button>
       </div>
     </div>
