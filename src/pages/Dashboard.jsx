@@ -202,6 +202,8 @@ export default function Dashboard() {
           cycleLength={cycleLength}
           ovulationDay={user?.ovulation_day || Math.max(1, (latestCycle?.cycle_length || cycleLength) - 14)}
           menstruationLength={user?.menstruation_length || 5}
+          lutealLength={user?.luteal_phase_length || 14}
+          pmddWindowDays={user?.pmdd_window_days || 10}
         />
 
         {/* Greeting */}

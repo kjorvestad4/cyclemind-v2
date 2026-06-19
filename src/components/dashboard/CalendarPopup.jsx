@@ -3,11 +3,12 @@ import { format, getDaysInMonth, startOfMonth, getDay } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X, Droplet, Heart, Sparkles, Baby, AlertCircle, Info } from "lucide-react";
 import { calculateDayTotal } from "@/lib/symptoms";
+import { calculatePhases } from "@/lib/cycleProfileConfig";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleType, cycleLength = 28, ovulationDay = 14, menstruationLength = 5 }) {
+export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleType, cycleLength = 28, ovulationDay = 14, menstruationLength = 5, lutealLength = 14, pmddWindowDays = 10 }) {
   const [viewMonth, setViewMonth] = useState(new Date());
   const [selectedDateInfo, setSelectedDateInfo] = useState(null);
   const queryClient = useQueryClient();
@@ -125,13 +126,21 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
     return "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300";
   };
 
+  // Use calculatePhases from cycleProfileConfig for consistent boundaries
+  const phases = calculatePhases({
+    cycleLength: cycleLength || 28,
+    periodLength: menstruationLength || 5,
+    lutealLength: lutealLength || 14,
+    pmddWindowDays: pmddWindowDays || 10,
+  });
+
   // Get phase info for menstrual cycle — projects 6+ cycles into the future
   const getPhaseColor = (dateStr) => {
     if (!["menstrual", "perimenopause"].includes(cycleType)) return null;
     const latestCycle = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
     if (!latestCycle) return null;
 
-    const useCycleLength = cycleLength || latestCycle.cycle_length || 28;
+    const useCycleLength = phases.cycleLength || latestCycle.cycle_length || 28;
     const lmpStr = latestCycle.last_menstrual_period || latestCycle.start_date;
     const lmp = new Date(lmpStr);
     const dateObj = new Date(dateStr);
@@ -147,9 +156,12 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
     // Day within the current projected cycle (1-based)
     const dayInCycle = (totalDays % useCycleLength) + 1;
 
-    if (dayInCycle <= menstruationLength) return "🌙"; // Menstrual
-    if (dayInCycle <= (ovulationDay - 3)) return "🌱"; // Follicular
-    if (dayInCycle <= (ovulationDay + 3)) return "🌸"; // Fertility Window
+    // Use phase boundaries from calculatePhases for consistency with Cycle Profile page
+    if (dayInCycle <= phases.periodLength) return "🌙"; // Menstrual
+    if (dayInCycle <= (phases.ovulationDay - 3)) return "🌱"; // Follicular
+    if (dayInCycle <= (phases.ovulationDay + 3)) return "🌸"; // Fertility Window
+    // PMDD window: last pmddWindowDays of the cycle
+    if (dayInCycle >= phases.pmddWindowStart) return "⚠️"; // PMDD window
     return "🍂"; // Luteal
   };
 
@@ -615,6 +627,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
                 <span>🌱 Follicular</span>
                 <span>🌸 Fertility Window</span>
                 <span>🍂 Luteal</span>
+                <span>⚠️ PMDD Window ({pmddWindowDays}d)</span>
               </div>
             </div>
           )}
