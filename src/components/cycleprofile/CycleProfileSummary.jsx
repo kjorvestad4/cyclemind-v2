@@ -28,6 +28,9 @@ export default function CycleProfileSummary({
 }) {
   const navigate = useNavigate();
 
+  // Hide in Pregnancy and Menopause modes
+  if (cycleType === "pregnancy" || cycleType === "menopause") return null;
+
   // Profile fields (same defaults as CycleProfileSettings DEFAULT_PROFILE)
   const cycleLength = user?.cycle_length || 28;
   const periodLength = user?.menstruation_length || 5;
