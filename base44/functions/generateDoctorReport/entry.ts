@@ -75,6 +75,8 @@ Deno.serve(async (req) => {
     doc.text(`Report Generated: ${format(new Date(), 'MMM d, yyyy')}`, 20, 33);
     doc.text(`Reporting Period: Last 90 days (${format(ninetyDaysAgo, 'MMM d')} - ${format(new Date(), 'MMM d')})`, 20, 38);
 
+    const latestCycle = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
+
     // Add fertility/menopause context if applicable
     if (latestCycle) {
       doc.setFontSize(9);
@@ -105,8 +107,51 @@ Deno.serve(async (req) => {
     yPosition += 5;
     doc.text(`Days Tracked: ${totalDaysLogged}`, 25, yPosition);
     yPosition += 5;
+
+    // User-set luteal phase & PMDD window from profile settings
+    if (user.luteal_phase_length) {
+      doc.text(`User-set Avg Luteal Phase: ${user.luteal_phase_length} days`, 25, yPosition);
+      yPosition += 5;
+    }
+
+    // Calculate PMDD symptom intensity in luteal vs follicular
+    if (latestCycle && latestCycle.cycle_length && user.luteal_phase_length) {
+      const ovulationDay = (latestCycle.cycle_length || 28) - (user.luteal_phase_length || 14);
+      const pmddWindowDays = user.pmdd_window_days || 10;
+      const pmddWindowStart = (latestCycle.cycle_length || 28) - pmddWindowDays + 1;
+
+      let lutealSum = 0, lutealCount = 0;
+      let follicularSum = 0, follicularCount = 0;
+
+      recentEntries.forEach(e => {
+        if (!e.cycle_day) return;
+        const symptomKeys = Object.keys(e).filter(k =>
+          k.startsWith('s_') || k.startsWith('m_') || k.startsWith('pp_')
+        );
+        const dayTotal = symptomKeys.reduce((s, k) => s + (e[k] || 0), 0);
+        if (dayTotal === 0) return;
+
+        if (e.cycle_day >= pmddWindowStart) {
+          lutealSum += dayTotal;
+          lutealCount++;
+        } else if (e.cycle_day <= ovulationDay - 1) {
+          follicularSum += dayTotal;
+          follicularCount++;
+        }
+      });
+
+      if (lutealCount > 0 && follicularCount > 0) {
+        const lutealAvg = lutealSum / lutealCount;
+        const follicularAvg = follicularSum / follicularCount;
+        const ratio = follicularAvg > 0 ? (lutealAvg / follicularAvg).toFixed(1) : null;
+        if (ratio) {
+          doc.text(`PMDD symptom intensity in luteal window: ${ratio}x higher (based on your logs)`, 25, yPosition);
+          yPosition += 5;
+        }
+      }
+    }
+    yPosition += 3;
     
-    const latestCycle = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
     if (latestCycle) {
       doc.text(`Current Cycle Type: ${latestCycle.cycle_type || 'Menstrual'}`, 25, yPosition);
       yPosition += 5;

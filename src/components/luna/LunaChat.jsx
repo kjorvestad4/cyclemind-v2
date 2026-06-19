@@ -183,6 +183,11 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
       handleGenerateReport();
       return;
     }
+    if (lc === 'customize my cycle' || lc === 'edit cycle settings' || lc === 'cycle profile settings') {
+      onClose();
+      navigate('/cycle-profile?action=customize_cycle');
+      return;
+    }
     handleSend(action, true);
   };
 

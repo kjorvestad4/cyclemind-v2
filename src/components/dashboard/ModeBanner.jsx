@@ -1,4 +1,5 @@
 import { Settings, SlidersHorizontal, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
 const parseLocal = (str) => {
@@ -51,6 +52,7 @@ const MODE_CONFIGS = {
 };
 
 export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode, onCycleSettings }) {
+  const navigate = useNavigate();
   const cycleType = latestCycle?.cycle_type || "menstrual";
   const isPregnancy = cycleType === "pregnancy";
   const isPostpartum = cycleType === "postpartum";
@@ -121,9 +123,9 @@ export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode, onCycl
             <Settings className="w-3.5 h-3.5" />
             Switch
           </button>
-          {isMenstrual && onCycleSettings && (
+          {isMenstrual && (
             <button
-              onClick={onCycleSettings}
+              onClick={() => navigate("/cycle-profile")}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-xs font-semibold text-white transition-all"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />

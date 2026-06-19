@@ -54,6 +54,62 @@
       "type": "string",
       "description": "User's preferred display name entered during onboarding or profile edit"
     },
+    "cycle_length": {
+      "type": "number",
+      "description": "User's average cycle length in days"
+    },
+    "menstruation_length": {
+      "type": "number",
+      "description": "User's average period length in days"
+    },
+    "ovulation_day": {
+      "type": "number",
+      "description": "Day of cycle when ovulation typically occurs"
+    },
+    "luteal_phase_length": {
+      "type": "number",
+      "description": "User's average luteal phase length in days (critical for PMDD tracking)"
+    },
+    "cycle_regularity": {
+      "type": "string",
+      "enum": [
+        "regular",
+        "somewhat_variable",
+        "irregular",
+        "perimenopause",
+        "on_bc"
+      ],
+      "description": "How regular the user's cycles are"
+    },
+    "track_ovulation_opk": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to track ovulation via OPK (ovulation predictor kits)"
+    },
+    "track_ovulation_bbt": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to track ovulation via basal body temperature"
+    },
+    "track_ovulation_mucus": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to track ovulation via cervical mucus"
+    },
+    "track_ovulation_pain": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to track ovulation via mid-cycle pain (mittelschmerz)"
+    },
+    "add_mark_ovulation_button": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to show a 'Mark Ovulation' button in the daily log"
+    },
+    "pmdd_window_days": {
+      "type": "number",
+      "description": "Number of days before next period considered the PMDD symptom window (default 10)"
+    },
     "luteal_med_reminder": {
       "type": "boolean",
       "default": false,

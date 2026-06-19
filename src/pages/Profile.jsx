@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
   User, Settings, LogOut, Shield, Trash2, FileDown, Link2,
-  ChevronRight, Moon, Sun, Bell, Heart, Bookmark, CalendarDays, X, ChevronDown, ChevronUp, Edit, HelpCircle, Plus
+  ChevronRight, Moon, Sun, Bell, Heart, Bookmark, CalendarDays, X, ChevronDown, ChevronUp, Edit, HelpCircle, Plus, SlidersHorizontal
 } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -551,6 +551,12 @@ export default function Profile() {
       {/* ── Quick Actions ── */}
       <Section title="Quick Actions" icon={Settings}>
         <div className="divide-y divide-border/30">
+          <ActionRow
+            icon={SlidersHorizontal}
+            label="Cycle Profile Settings"
+            sublabel="Edit cycle length, luteal phase, PMDD window & visual editor"
+            onClick={() => navigate("/cycle-profile")}
+          />
           <ActionRow
             icon={HelpCircle}
             label="IT Support / Something's Not Working"
