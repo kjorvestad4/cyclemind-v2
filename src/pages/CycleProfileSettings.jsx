@@ -272,7 +272,7 @@ export default function CycleProfileSettings() {
                 onClick={() => setActiveTab("advanced")}
                 className={`flex-1 h-10 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${activeTab === "advanced" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
               >
-                Advanced PMDD Power
+                Advanced
                 {!isPremium && <Sparkles className="w-3 h-3 text-amber-500" />}
               </button>
             </div>
