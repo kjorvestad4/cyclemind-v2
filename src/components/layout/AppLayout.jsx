@@ -10,19 +10,19 @@ import { useAuth } from "@/lib/AuthContext";
 import GuidedTour from "@/components/common/GuidedTour";
 
 const NAV_ITEMS = [
-  { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard", tourId: "tour-dashboard" },
-  { path: "/log", icon: PenLine, label: "Log", tourId: "tour-log" },
-  { path: "/insights", icon: BarChart3, label: "Insights", tourId: "tour-insights" },
-  { path: "/resources", icon: BookOpen, label: "Resources", tourId: "tour-resources" },
-  { path: "/profile", icon: User, label: "Profile", tourId: "tour-profile" },
-];
+{ path: "/dashboard", icon: LayoutDashboard, label: "Dashboard", tourId: "tour-dashboard" },
+{ path: "/log", icon: PenLine, label: "Log", tourId: "tour-log" },
+{ path: "/insights", icon: BarChart3, label: "Insights", tourId: "tour-insights" },
+{ path: "/resources", icon: BookOpen, label: "Resources", tourId: "tour-resources" },
+{ path: "/profile", icon: User, label: "Profile", tourId: "tour-profile" }];
+
 
 const PAGE_TITLES = {
   "/dashboard": "Dashboard",
   "/log": "Daily Log",
   "/insights": "Insights",
   "/resources": "Resources",
-  "/profile": "Profile",
+  "/profile": "Profile"
 };
 
 export default function AppLayout() {
@@ -47,10 +47,10 @@ export default function AppLayout() {
           // Derive phase from cycle day (approximate for menstrual cycles)
           let phase = latestCycle.phase || null;
           if (!phase && cycleDay) {
-            if (cycleDay <= 5) phase = 'menstrual';
-            else if (cycleDay <= 13) phase = 'follicular';
-            else if (cycleDay <= 16) phase = 'ovulatory';
-            else phase = 'luteal';
+            if (cycleDay <= 5) phase = 'menstrual';else
+            if (cycleDay <= 13) phase = 'follicular';else
+            if (cycleDay <= 16) phase = 'ovulatory';else
+            phase = 'luteal';
           }
           setCycleData({
             mode: latestCycle.cycle_type || 'menstrual',
@@ -73,8 +73,8 @@ export default function AppLayout() {
       const today = new Date();
       for (let i = 0; i < 400; i++) {
         const d = format(subDays(today, i), "yyyy-MM-dd");
-        if (entries.find((e) => e.date === d)) s++;
-        else break;
+        if (entries.find((e) => e.date === d)) s++;else
+        break;
       }
       setStreak(s);
     }).catch(() => {});
@@ -85,18 +85,18 @@ export default function AppLayout() {
       {/* Header */}
       <header
         className="shrink-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50"
-        style={{ paddingTop: "env(safe-area-inset-top)" }}
-      >
+        style={{ paddingTop: "env(safe-area-inset-top)" }}>
+        
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
           {isTopLevel ? (
-            /* Brand logo on top-level pages */
-            <>
+          /* Brand logo on top-level pages */
+          <>
               <Link to="/dashboard" className="flex items-center gap-2 py-1 px-1 -mx-1 rounded-lg min-w-0">
                 <img
-                  src="https://media.base44.com/images/public/69fb50354d2f1f828f13182f/1f6e3c73e_generated_image.png"
-                  alt="CycleMind"
-                  className="w-8 h-8 rounded-xl object-cover shrink-0"
-                />
+                src="https://media.base44.com/images/public/69fb50354d2f1f828f13182f/1f6e3c73e_generated_image.png"
+                alt="CycleMind"
+                className="w-8 h-8 rounded-xl object-cover shrink-0" />
+              
                 <h1 className="font-serif text-lg font-semibold text-foreground">CycleMind</h1>
               </Link>
               <div className="flex items-center gap-2 shrink-0">
@@ -104,30 +104,30 @@ export default function AppLayout() {
                   Not medical advice. Always consult your doctor.
                 </p>
                 <button
-                  onClick={() => base44.auth.logout("/welcome")}
-                  className="flex flex-col items-center gap-0.5 hover:bg-muted rounded-xl px-2 py-1 transition-colors"
-                  aria-label="Sign out"
-                >
+                onClick={() => base44.auth.logout("/welcome")}
+                className="flex flex-col items-center gap-0.5 hover:bg-muted rounded-xl px-2 py-1 transition-colors"
+                aria-label="Sign out">
+                
                   <LogOut className="w-4 h-4 text-muted-foreground" />
                   <span className="text-[10px] text-muted-foreground font-medium">Sign out</span>
                 </button>
               </div>
-            </>
-          ) : (
-            /* Back button + page title on child paths */
-            <>
+            </>) : (
+
+          /* Back button + page title on child paths */
+          <>
               <button
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-1 px-2 py-1.5 -ml-1 rounded-xl hover:bg-muted transition-colors text-foreground"
-                aria-label="Go back"
-              >
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-1 px-2 py-1.5 -ml-1 rounded-xl hover:bg-muted transition-colors text-foreground hidden"
+              aria-label="Go back">
+              
                 <ChevronLeft className="w-5 h-5" />
                 <span className="text-sm font-medium">Back</span>
               </button>
               <h1 className="font-serif text-base font-semibold text-foreground absolute left-1/2 -translate-x-1/2">{pageTitle}</h1>
               <div className="w-16" /> {/* spacer to balance the back button */}
-            </>
-          )}
+            </>)
+          }
         </div>
       </header>
 
@@ -135,8 +135,8 @@ export default function AppLayout() {
       <main
         ref={mainRef}
         className="flex-1 min-h-0 overflow-y-auto"
-        style={{ overscrollBehavior: "none" }}
-      >
+        style={{ overscrollBehavior: "none" }}>
+        
         <div className="max-w-2xl mx-auto w-full px-4 py-6 pb-6">
           <Outlet />
         </div>
@@ -149,8 +149,8 @@ export default function AppLayout() {
       {/* Bottom Navigation */}
       <nav
         className="shrink-0 z-40 bg-background/95 backdrop-blur-lg border-t border-border/50 shadow-lg"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-      >
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+        
         <div className="max-w-lg mx-auto flex justify-around py-2 px-2">
           {NAV_ITEMS.map(({ path, icon: Icon, label, tourId }) => {
             const isActive = location.pathname === path;
@@ -167,18 +167,18 @@ export default function AppLayout() {
                   }
                 }}
                 className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all ${
-                  isActive
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
+                isActive ?
+                "text-primary bg-primary/10" :
+                "text-muted-foreground hover:text-foreground"}`
+                }>
+                
                 <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 1.5} />
                 <span className="text-[10px] font-medium">{label}</span>
-              </button>
-            );
+              </button>);
+
           })}
         </div>
       </nav>
-    </div>
-  );
+    </div>);
+
 }
