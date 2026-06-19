@@ -21,6 +21,7 @@ Deno.serve(async (req) => {
     const cycles = await base44.entities.Cycle.filter({ user_id: user.id });
     const entries = await base44.entities.DailyEntry.filter({});
     const predictions = await base44.entities.Prediction.filter({ user_id: user.id });
+    const userMilestones = await base44.entities.UserMilestone.filter({});
 
     // Filter entries for date range
     const recentEntries = entries.filter(e => {
@@ -606,6 +607,44 @@ Deno.serve(async (req) => {
     });
 
     yPosition = tableY + 7 + (entriesWithSymptoms.length * 6) + 10;
+
+    // Milestones & Maternal Mental Health Journey
+    const milestoneNotes = userMilestones
+      .filter(m => m.include_in_report && m.user_note)
+      .sort((a, b) => (a.phase === 'pregnancy' ? 0 : 1) - (b.phase === 'pregnancy' ? 0 : 1));
+
+    if (milestoneNotes.length > 0) {
+      if (yPosition > 230) { doc.addPage(); yPosition = 20; }
+
+      doc.setFontSize(14);
+      doc.setTextColor(colors.text);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Milestones & Maternal Mental Health Journey', 15, yPosition);
+      yPosition += 8;
+
+      milestoneNotes.forEach((m) => {
+        if (yPosition > 250) { doc.addPage(); yPosition = 20; }
+
+        const noteLines = doc.splitTextToSize(m.user_note, 172);
+        const noteHeight = 10 + noteLines.length * 4;
+
+        doc.setFillColor(m.phase === 'pregnancy' ? '#FDF2F8' : '#FAF5FF');
+        doc.roundedRect(15, yPosition, 180, noteHeight, 3, 3, 'F');
+
+        doc.setFontSize(8);
+        doc.setTextColor(colors.secondary);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${m.phase === 'pregnancy' ? 'Pregnancy' : 'Postpartum'} Milestone${m.experienced ? ' (Experienced)' : ''}`, 18, yPosition + 5);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(colors.text);
+        doc.text(noteLines, 18, yPosition + 11);
+
+        yPosition += noteHeight + 4;
+      });
+
+      yPosition += 6;
+    }
 
     // DSM-5 PMDD alignment
     if (pmddPrediction && pmddPrediction.top_trigger_symptoms?.length > 0) {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Moon, Crown, Bell } from 'lucide-react';
 import { canAccessLuna } from '@/lib/freemium';
 import LunaChat from './LunaChat';
@@ -10,6 +10,15 @@ export default function LunaButton({ user, cycleMode, cycleDay, cyclePhase, eddI
   const [showAlerts, setShowAlerts] = useState(false);
   // Wait for user to load — null means still loading, avoids flash of grayed-out button
   const hasLunaAccess = user ? canAccessLuna(user) : null;
+
+  // Listen for external "open-luna-chat" events (e.g. from Milestones page)
+  useEffect(() => {
+    const handler = (e) => {
+      if (hasLunaAccess) setIsOpen(true);
+    };
+    window.addEventListener('open-luna-chat', handler);
+    return () => window.removeEventListener('open-luna-chat', handler);
+  }, [hasLunaAccess]);
 
   if (hasLunaAccess === null) return null;
 

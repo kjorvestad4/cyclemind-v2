@@ -22,6 +22,7 @@ import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import Terms from '@/pages/Terms';
 import SubmissionsReview from '@/pages/SubmissionsReview';
 import CycleProfileSettings from '@/pages/CycleProfileSettings';
+import Milestones from '@/pages/Milestones';
 
 const pageVariants = {
   initial: { opacity: 0, x: 24 },
@@ -57,6 +58,7 @@ const AnimatedOutlet = () => {
           <Route path="/resources" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Resources /></motion.div>} />
           <Route path="/profile" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Profile /></motion.div>} />
           <Route path="/cycle-profile" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><CycleProfileSettings /></motion.div>} />
+          <Route path="/milestones" element={<motion.div variants={pageVariants} initial="initial" animate="animate" exit="exit"><Milestones /></motion.div>} />
         </Route>
 
         <Route path="/" element={<Landing />} />

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { differenceInDays, format, subDays } from "date-fns";
-import { Baby, Flame, Waves, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Baby, Flame, Waves, AlertCircle, CheckCircle2, ChevronRight } from "lucide-react";
 import { ALL_SYMPTOMS } from "@/lib/symptoms";
 import EDDDisplay from "@/components/pregnancy/EDDDisplay";
 
@@ -162,6 +162,13 @@ function PregnancyContent({ latestCycle, entries }) {
               Next milestone: <strong>{nextMilestone.label}</strong> in {nextMilestone.week - pregnancyWeek} weeks
             </p>
           )}
+          <button
+            onClick={() => navigate('/milestones')}
+            className="w-full mt-3 flex items-center justify-between px-3 py-2.5 rounded-xl bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 hover:bg-pink-100 dark:hover:bg-pink-950/50 transition-colors text-left"
+          >
+            <span className="text-xs font-semibold text-pink-700 dark:text-pink-300">View Pregnancy & Postpartum Milestones</span>
+            <ChevronRight className="w-4 h-4 text-pink-500 shrink-0" />
+          </button>
         </div>
       )}
       {pregnancyWeek >= 18 && (
@@ -181,6 +188,7 @@ function PregnancyContent({ latestCycle, entries }) {
 }
 
 function PostpartumContent({ latestCycle, entries }) {
+  const navigate = useNavigate();
   const postpartumDay = latestCycle?.start_date
     ? Math.max(1, differenceInDays(new Date(), new Date(latestCycle.start_date)) + 1)
     : null;
@@ -205,6 +213,13 @@ function PostpartumContent({ latestCycle, entries }) {
           <p className="text-[11px] text-muted-foreground">
             {postpartumDay <= 14 ? "Early recovery — rest and accept all support offered." : postpartumDay <= 42 ? "6-week check approaching — note any concerns to discuss." : "Beyond 6 weeks — EPDS screening is still recommended."}
           </p>
+          <button
+            onClick={() => navigate('/milestones')}
+            className="w-full mt-3 flex items-center justify-between px-3 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-950/50 transition-colors text-left"
+          >
+            <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">View Pregnancy & Postpartum Milestones</span>
+            <ChevronRight className="w-4 h-4 text-purple-500 shrink-0" />
+          </button>
         </div>
       )}
       <div className={`rounded-2xl border p-4 space-y-2 ${latestEpds?.epds_score >= 10 ? "border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30" : "border-border/50 bg-card"}`}>

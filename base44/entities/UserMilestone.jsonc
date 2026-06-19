@@ -1,0 +1,54 @@
+{
+  "name": "UserMilestone",
+  "type": "object",
+  "description": "Tracks user's pregnancy & postpartum milestone progress \u2014 experienced flags, doctor notes, and clinical report inclusion.",
+  "properties": {
+    "milestone_id": {
+      "type": "string",
+      "description": "ID of the milestone (e.g. 'p1', 'pp3') \u2014 matches lib/milestones.js"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "pregnancy",
+        "postpartum"
+      ],
+      "description": "Which phase this milestone belongs to"
+    },
+    "experienced": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has marked this milestone as experienced"
+    },
+    "experienced_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the user marked this milestone as experienced"
+    },
+    "user_note": {
+      "type": "string",
+      "description": "User's personal note for their doctor / clinical report"
+    },
+    "include_in_report": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to include this milestone's note in the clinical PDF"
+    }
+  },
+  "required": [
+    "milestone_id",
+    "phase"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}
