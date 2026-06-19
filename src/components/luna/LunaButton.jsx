@@ -7,6 +7,7 @@ import LunaNotificationBadge from './LunaNotificationBadge';
 
 export default function LunaButton({ user, cycleMode, cycleDay, cyclePhase, eddInfo }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [pendingMessage, setPendingMessage] = useState(null);
   const [showAlerts, setShowAlerts] = useState(false);
   // Wait for user to load — null means still loading, avoids flash of grayed-out button
   const hasLunaAccess = user ? canAccessLuna(user) : null;
@@ -14,7 +15,10 @@ export default function LunaButton({ user, cycleMode, cycleDay, cyclePhase, eddI
   // Listen for external "open-luna-chat" events (e.g. from Milestones page)
   useEffect(() => {
     const handler = (e) => {
-      if (hasLunaAccess) setIsOpen(true);
+      if (hasLunaAccess) {
+        setPendingMessage(e.detail?.message || null);
+        setIsOpen(true);
+      }
     };
     window.addEventListener('open-luna-chat', handler);
     return () => window.removeEventListener('open-luna-chat', handler);
@@ -45,6 +49,8 @@ export default function LunaButton({ user, cycleMode, cycleDay, cyclePhase, eddI
             cycleDay={cycleDay}
             cyclePhase={cyclePhase}
             eddInfo={eddInfo}
+            pendingMessage={pendingMessage}
+            onPendingMessageConsumed={() => setPendingMessage(null)}
             onClose={() => setIsOpen(false)}
           />
         )}

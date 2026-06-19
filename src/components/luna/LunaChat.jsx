@@ -57,7 +57,7 @@ function saveSession(messages, savedIndexes) {
   } catch {}
 }
 
-export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fertilityMode, menopauseStage, onClose }) {
+export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fertilityMode, menopauseStage, onClose, pendingMessage, onPendingMessageConsumed }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
@@ -74,6 +74,7 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
   const messagesEndRef = useRef(null);
   const initializedRef = useRef(false);
   const recognitionRef = useRef(null);
+  const pendingConsumedRef = useRef(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -116,6 +117,15 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
       flags: { escalate: false, crisis: false }
     }]);
   }, []);
+
+  // Auto-send a pending message passed from an external trigger (e.g. Milestones "Ask Luna")
+  useEffect(() => {
+    if (pendingMessage && !pendingConsumedRef.current && messages.length > 0) {
+      pendingConsumedRef.current = true;
+      onPendingMessageConsumed?.();
+      handleSend(pendingMessage, false);
+    }
+  }, [pendingMessage, messages, handleSend, onPendingMessageConsumed]);
 
   const handleSend = useCallback(async (userMessage = input.trim(), isQuickReply = false) => {
     if (!userMessage || loading) return;

@@ -137,7 +137,6 @@ export default function Milestones() {
         },
       })
     );
-    navigate("/dashboard");
   };
 
   const experiencedCount = userMilestones.filter((m) => m.experienced).length;
