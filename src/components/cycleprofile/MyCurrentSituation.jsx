@@ -87,11 +87,7 @@ export default function MyCurrentSituation({ value, onChange }) {
                   </svg>
                 </span>
               )}
-              {isHighlight && !isSelected && (
-                <span className="absolute top-2.5 right-2.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
-                  ★
-                </span>
-              )}
+
             </button>
           );
         })}
