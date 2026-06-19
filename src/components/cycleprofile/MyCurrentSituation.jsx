@@ -14,7 +14,6 @@ const SITUATIONS = [
     emoji: "🔄",
     title: "Recently stopped contraception",
     subtitle: "Tracking return of my cycle",
-    highlight: true,
   },
   {
     id: "natural_ttc",
@@ -57,7 +56,6 @@ export default function MyCurrentSituation({ value, onChange }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         {SITUATIONS.map(sit => {
           const isSelected = selected === sit.id;
-          const isHighlight = sit.highlight;
 
           return (
             <button
@@ -65,12 +63,8 @@ export default function MyCurrentSituation({ value, onChange }) {
               onClick={() => onChange(sit.id)}
               className={`relative flex items-start gap-3 p-3.5 rounded-xl border-2 text-left transition-all active:scale-[0.98] ${
                 isSelected
-                  ? isHighlight
-                    ? "border-primary bg-primary/5 shadow-sm"
-                    : "border-primary bg-primary/5 shadow-sm"
-                  : isHighlight
-                    ? "border-primary/30 bg-primary/[0.02] hover:border-primary/50 hover:bg-primary/5"
-                    : "border-border/50 bg-card hover:border-primary/30 hover:bg-muted/30"
+                  ? "border-primary bg-primary/5 shadow-sm"
+                  : "border-border/50 bg-card hover:border-primary/30 hover:bg-muted/30"
               }`}
             >
               <span className="text-2xl shrink-0 leading-none mt-0.5">{sit.emoji}</span>
