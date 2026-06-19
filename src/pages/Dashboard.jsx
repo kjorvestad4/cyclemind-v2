@@ -355,9 +355,6 @@ export default function Dashboard() {
           compact
         />
 
-        {/* Today's Severity Card */}
-        <TodaySeverityCard entries={entries} cycleType={cycleType} isFreeUser={isFreeUser} />
-
         {/* Secondary log button */}
         {todayEntry && (
           <Button
@@ -377,6 +374,9 @@ export default function Dashboard() {
           entries={entries}
           cycleDay={cycleDay}
         />
+
+        {/* Today's Severity Card */}
+        <TodaySeverityCard entries={entries} cycleType={cycleType} isFreeUser={isFreeUser} />
 
         {/* New Cycle Entry Modal */}
         {logNewCycle && (
