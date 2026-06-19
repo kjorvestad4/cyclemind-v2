@@ -54,36 +54,36 @@ export function RecentInsightsWidget({ entries }) {
 
   const max = Math.max(...days.map((d) => d.total || 0), 1);
 
-  return (
-    <div className="bg-card rounded-2xl border border-border/50 p-4 space-y-3 hidden">
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Last 7 Days</p>
-        <Link to="/insights" className="text-xs text-primary font-semibold hover:underline flex items-center gap-1">
-          Full insights <TrendingUp className="w-3 h-3" />
-        </Link>
-      </div>
-      <div className="flex items-end gap-1.5 h-16">
-        {days.map((d) => {
-          const pct = d.total !== null ? Math.max(8, d.total / max * 100) : 0;
-          const isToday = d.date === format(new Date(), "yyyy-MM-dd");
-          return (
-            <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
-              <div className="w-full rounded-sm relative" style={{ height: "48px" }}>
-                {d.total !== null ?
-                <div
-                  className={`absolute bottom-0 w-full rounded-sm transition-all ${isToday ? "bg-primary" : "bg-primary/40"}`}
-                  style={{ height: `${pct}%` }} /> :
+  return null;
 
 
-                <div className="absolute bottom-0 w-full h-1 rounded-sm bg-muted" />
-                }
-              </div>
-              <span className={`text-[9px] font-medium ${isToday ? "text-primary" : "text-muted-foreground"}`}>{d.label}</span>
-            </div>);
 
-        })}
-      </div>
-    </div>);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
@@ -139,37 +139,37 @@ export function NextMilestoneWidget({ cycleType, latestCycle, cycleLength = 28 }
 
   if (!label) return null;
 
-  return (
-    <div className="bg-card rounded-2xl border border-border/50 p-4 flex items-center gap-4 hidden">
-      <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center shrink-0 text-2xl">
-        {emoji}
-      </div>
-      <div className="min-w-0">
-        <p className="text-xs text-muted-foreground font-medium">{label}</p>
-        <p className="text-sm font-bold text-foreground mt-0.5">{sublabel}</p>
-        {daysAway !== null && daysAway >= 0 &&
-        <p className="text-[11px] text-primary mt-0.5 font-medium">
-            {daysAway === 0 ? "Today!" : daysAway === 1 ? "Tomorrow" : `In ${daysAway} days`}
-          </p>
-        }
-      </div>
-    </div>);
+  return null;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
 export function QuickLinksRow() {
   return (
     <div className="grid grid-cols-2 gap-3">
-      <Link to="/insights" className="bg-card rounded-2xl border border-border/50 p-4 hover:bg-muted/30 transition-colors hidden">
-        <TrendingUp className="w-5 h-5 text-primary mb-2" />
-        <p className="text-sm font-semibold">Insights</p>
-        <p className="text-[10px] text-muted-foreground mt-0.5">Patterns & clinical analysis</p>
-      </Link>
-      <Link to="/resources" className="bg-card rounded-2xl border border-border/50 p-4 hover:bg-muted/30 transition-colors hidden">
-        <Heart className="w-5 h-5 text-accent-foreground mb-2" />
-        <p className="text-sm font-semibold">Resources</p>
-        <p className="text-[10px] text-muted-foreground mt-0.5">Evidence-based support</p>
-      </Link>
+      
+
+
+
+      
+      
+
+
+
+      
     </div>);
 
 }
