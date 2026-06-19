@@ -108,10 +108,32 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
 
   // Period-end reminder derived values
   const periodEndInfo = !transitionMode && periodEndCycle ? (() => {
-    const startDate = new Date(periodEndCycle.start_date);
-    const daysSinceStart = Math.floor((todayLocal() - startDate) / (1000 * 60 * 60 * 24));
-    const daysOverdue = Math.floor((todayLocal() - addDays(startDate, 5)) / (1000 * 60 * 60 * 24));
-    return { daysSinceStart, daysOverdue };
+    const menstruationLength = user?.menstruation_length || 5;
+    const startDate = parseLocalDate(periodEndCycle.start_date);
+    const today = todayLocal();
+    const daysSinceStart = differenceInDays(today, startDate);
+
+    // Count bleeding days for this cycle (up to today)
+    const bleedingDays = (entries || []).filter(e => {
+      if (!e.date) return false;
+      const entryDate = parseLocalDate(e.date);
+      if (entryDate < startDate || entryDate > today) return false;
+      return (e.bleeding_intensity && e.bleeding_intensity > 0) || (e.menstrual_flow && e.menstrual_flow !== "");
+    });
+    const bleedingDayCount = bleedingDays.length;
+
+    // If user has logged any bleeding, don't show "late" reminder
+    if (bleedingDayCount > 0) {
+      // After expected end, if bleeding days differ from average, suggest updating
+      if (daysSinceStart >= menstruationLength && bleedingDayCount !== menstruationLength) {
+        return { daysSinceStart, bleedingDayCount, menstruationLength, type: "update_length" };
+      }
+      return null;
+    }
+
+    // No bleeding logged — show original check-in
+    const daysOverdue = differenceInDays(today, addDays(startDate, menstruationLength));
+    return { daysSinceStart, daysOverdue, menstruationLength, type: "check_in" };
   })() : null;
 
   const handlePeriodEndSnooze = (days) => {
@@ -191,13 +213,13 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
           />
         )}
 
-        {periodEndInfo && (
+        {periodEndInfo && periodEndInfo.type === "check_in" && (
           <div className="flex items-start gap-3 pl-3 border-l-2 border-amber-400 dark:border-amber-500 py-0.5">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-500 dark:text-amber-400" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-foreground leading-snug">Cycle Reminder Check-In</p>
               <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                Day {periodEndInfo.daysSinceStart} of your cycle — {periodEndInfo.daysOverdue > 0 ? `${periodEndInfo.daysOverdue} days past your 5-day average` : "period may be ending"}. Has your period started yet?
+                Day {periodEndInfo.daysSinceStart} of your cycle — {periodEndInfo.daysOverdue > 0 ? `${periodEndInfo.daysOverdue} days past your ${periodEndInfo.menstruationLength}-day average` : "period may be ending"}. Has your period started yet?
               </p>
               <div className="flex items-center gap-2 flex-wrap mt-1.5">
                 <button
@@ -206,6 +228,43 @@ export default function CycleBanners({ user, cycles, entries, cycleType, cycleDa
                 >
                   <Droplet className="w-3.5 h-3.5" />
                   Log Period
+                  <ChevronRight className="w-3 h-3" />
+                </button>
+                <span className="text-muted-foreground/40 text-xs">·</span>
+                <button
+                  onClick={() => handlePeriodEndSnooze(1)}
+                  className="flex items-center gap-1 text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  Tomorrow
+                </button>
+                <span className="text-muted-foreground/40 text-xs">·</span>
+                <button
+                  onClick={() => handlePeriodEndSnooze(7)}
+                  className="flex items-center gap-1 text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  In 1 week
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {periodEndInfo && periodEndInfo.type === "update_length" && (
+          <div className="flex items-start gap-3 pl-3 border-l-2 border-violet-400 dark:border-violet-500 py-0.5">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-violet-500 dark:text-violet-400" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground leading-snug">Menstruation Length Check-In</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                You logged {periodEndInfo.bleedingDayCount} bleeding day{periodEndInfo.bleedingDayCount !== 1 ? "s" : ""} this cycle — your average is {periodEndInfo.menstruationLength} days. Would you like to update your menstruation length?
+              </p>
+              <div className="flex items-center gap-2 flex-wrap mt-1.5">
+                <button
+                  onClick={() => setShowCycleSettings(true)}
+                  className="flex items-center gap-1 text-[12px] font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+                >
+                  Update period length
                   <ChevronRight className="w-3 h-3" />
                 </button>
                 <span className="text-muted-foreground/40 text-xs">·</span>
