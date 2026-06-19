@@ -116,14 +116,14 @@ export default function AppLayout() {
 
           /* Back button + page title on child paths */
           <>
-              <button
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-1 px-2 py-1.5 -ml-1 rounded-xl hover:bg-muted transition-colors text-foreground hidden"
-              aria-label="Go back">
               
-                <ChevronLeft className="w-5 h-5" />
-                <span className="text-sm font-medium">Back</span>
-              </button>
+
+
+
+
+
+
+            
               <h1 className="font-serif text-base font-semibold text-foreground absolute left-1/2 -translate-x-1/2">{pageTitle}</h1>
               <div className="w-16" /> {/* spacer to balance the back button */}
             </>)
