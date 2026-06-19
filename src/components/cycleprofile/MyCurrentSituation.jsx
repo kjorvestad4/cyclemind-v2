@@ -24,8 +24,8 @@ const SITUATIONS = [
   {
     id: "pregnancy_postpartum",
     emoji: "🤰",
-    title: "Postpartum",
-    subtitle: "Tracking pregnancy recovery",
+    title: "Pregnancy / Postpartum",
+    subtitle: "Tracking pregnancy or recovery",
   },
   {
     id: "perimenopause_menopause",

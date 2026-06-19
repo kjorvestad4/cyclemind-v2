@@ -340,26 +340,22 @@ export default function Dashboard() {
           )}
         </button>
 
-        {/* Mode Banner — Hero (hidden in Pregnancy/Menopause; ModeContent covers those) */}
-        {cycleType !== "pregnancy" && cycleType !== "menopause" && (
-          <ModeBanner
-            latestCycle={latestCycle}
-            cycleDay={cycleDay}
-            onSwitchMode={() => setShowModeSwitcher(true)}
-            onCycleSettings={() => setShowCycleSettings(true)}
-          />
-        )}
+        {/* Mode Banner — Hero */}
+        <ModeBanner
+          latestCycle={latestCycle}
+          cycleDay={cycleDay}
+          onSwitchMode={() => setShowModeSwitcher(true)}
+          onCycleSettings={() => setShowCycleSettings(true)}
+        />
 
-        {/* Cycle Profile summary — hidden in Pregnancy/Menopause (menstrual-only data) */}
-        {cycleType !== "pregnancy" && cycleType !== "menopause" && (
-          <CycleProfileSummary
-            user={user}
-            latestCycle={latestCycle}
-            cycleType={cycleType}
-            cycles={cycles}
-            compact
-          />
-        )}
+        {/* Cycle Profile summary — right below cycle phase */}
+        <CycleProfileSummary
+          user={user}
+          latestCycle={latestCycle}
+          cycleType={cycleType}
+          cycles={cycles}
+          compact
+        />
 
         {/* Secondary log button */}
         {todayEntry && (
