@@ -248,14 +248,16 @@ export default function CycleProfileSettings() {
           </div>
         </div>
 
-        {/* My Current Situation */}
-        <MyCurrentSituation
-          value={profile.currentSituation}
-          onChange={(val) => setProfile(prev => ({ ...prev, currentSituation: val }))}
-        />
-
         {/* Layout: tabs + content on left, preview on right */}
         <div className="grid lg:grid-cols-[1fr_340px] gap-5">
+          {/* My Current Situation — spans full width */}
+          <div className="lg:col-span-2">
+            <MyCurrentSituation
+              value={profile.currentSituation}
+              onChange={(val) => setProfile(prev => ({ ...prev, currentSituation: val }))}
+            />
+          </div>
+
           {/* Left column: tabs + content */}
           <div className="space-y-4">
             {/* Tab bar */}
