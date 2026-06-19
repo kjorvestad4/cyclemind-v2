@@ -338,21 +338,21 @@ export default function Dashboard() {
           )}
         </button>
 
-        {/* Mode Banner — Hero */}
-        <ModeBanner
-          latestCycle={latestCycle}
-          cycleDay={cycleDay}
-          onSwitchMode={() => setShowModeSwitcher(true)}
-          onCycleSettings={() => setShowCycleSettings(true)}
-        />
-
-        {/* Cycle Profile summary — right below cycle phase */}
+        {/* Cycle Profile summary */}
         <CycleProfileSummary
           user={user}
           latestCycle={latestCycle}
           cycleType={cycleType}
           cycles={cycles}
           compact
+        />
+
+        {/* Cycle Phase — just below Cycle Profile */}
+        <ModeBanner
+          latestCycle={latestCycle}
+          cycleDay={cycleDay}
+          onSwitchMode={() => setShowModeSwitcher(true)}
+          onCycleSettings={() => setShowCycleSettings(true)}
         />
 
         {/* Today's Severity Card */}
