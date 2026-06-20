@@ -22,6 +22,7 @@ import ProgressCelebration from "@/components/insights/ProgressCelebration";
 import InsightCard from "@/components/insights/InsightCard";
 import DRSPPhaseComparison from "@/components/insights/DRSPPhaseComparison";
 import SymptomAccordions from "@/components/insights/SymptomAccordions";
+import TrendsTab from "@/components/insights/TrendsTab";
 
 const CHART_TOOLTIP_STYLE = {
   contentStyle: {
@@ -341,84 +342,14 @@ export default function Insights() {
             <SymptomAccordions entries={filteredEntries} cycles={cycles} cycleType={latestCycle?.cycle_type || "menstrual"} />
           </TabsContent>
 
-          {/* TRENDS TAB - Line charts */}
+          {/* TRENDS TAB - Enhanced accordion organization */}
           <TabsContent value="trends" className="space-y-4">
-            {/* MOOD / PHYSICAL TREND */}
-            {moodTrend.length > 2 && (
-              <Card className="border-border/50">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-semibold">Mood vs Physical Symptoms — Daily Trend</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <LineChart data={moodTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
-                      <YAxis tick={{ fontSize: 10 }} />
-                      <Tooltip {...CHART_TOOLTIP_STYLE} />
-                      <Legend wrapperStyle={{ fontSize: 11 }} />
-                      <Line type="monotone" dataKey="mood" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={false} name="Mood" />
-                      <Line type="monotone" dataKey="physical" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={false} name="Physical" />
-                      <Line type="monotone" dataKey="total" stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} dot={false} name="Total" strokeDasharray="4 2" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Screening Trend */}
-            {analysis.screeningTrend.length > 0 && (
-              <Card className="border-border/50">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-semibold">
-                    {isPerinatal ? "EPDS & GAD-7 Over Time" : "PHQ-9 & GAD-7 Over Time"}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={180}>
-                    <LineChart data={analysis.screeningTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
-                      <YAxis tick={{ fontSize: 10 }} />
-                      <Tooltip {...CHART_TOOLTIP_STYLE} />
-                      <Legend wrapperStyle={{ fontSize: 11 }} />
-                      <ReferenceLine y={10} stroke="hsl(var(--destructive))" strokeDasharray="3 2" label={{ value: "≥10", position: "right", fontSize: 9 }} />
-                      {isPerinatal ? (
-                        <Line type="monotone" dataKey="epds" stroke="hsl(var(--chart-3))" strokeWidth={2} dot={true} name="EPDS" connectNulls={false} />
-                      ) : (
-                        <Line type="monotone" dataKey="phq9" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={true} name="PHQ-9" connectNulls={false} />
-                      )}
-                      <Line type="monotone" dataKey="gad7" stroke="hsl(var(--chart-5))" strokeWidth={2} dot={true} name="GAD-7" connectNulls={false} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                  <p className="text-[10px] text-muted-foreground mt-2 text-center">
-                    {isPerinatal
-                      ? "EPDS ≥10 suggests possible depression — discuss with your midwife or OB. Complete EPDS on the Log page."
-                      : "Dashed red = moderate threshold (≥10). Complete PHQ-9/GAD-7 on the Log page to populate."}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* BLEEDING TIMELINE */}
-            {bleedingTimeline.length > 0 && (
-              <Card className="border-border/50">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-semibold">Bleeding Intensity Timeline</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={140}>
-                    <BarChart data={bleedingTimeline} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                      <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
-                      <YAxis tick={{ fontSize: 9 }} domain={[0, 4]} tickFormatter={(v) => ["", "Spot", "Light", "Med", "Heavy"][v] || ""} width={36} />
-                      <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [["None", "Spotting", "Light", "Medium", "Heavy"][v] || v, "Flow"]} />
-                      <Bar dataKey="intensity" fill="hsl(var(--chart-3))" radius={[3, 3, 0, 0]} name="Bleeding" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            )}
+            <TrendsTab
+              moodTrend={moodTrend}
+              screeningTrend={analysis.screeningTrend}
+              bleedingTimeline={bleedingTimeline}
+              isPerinatal={isPerinatal}
+            />
           </TabsContent>
 
           {/* HISTORY TAB - Full data summary (desktop only) */}
