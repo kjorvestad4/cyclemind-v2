@@ -19,6 +19,7 @@ import AdminActionsPanel from "@/components/insights/AdminActionsPanel";
 import DateRangePresets from "@/components/insights/DateRangePresets";
 import ProgressCelebration from "@/components/insights/ProgressCelebration";
 import InsightCard from "@/components/insights/InsightCard";
+import DRSPPhaseComparison from "@/components/insights/DRSPPhaseComparison";
 
 const CHART_TOOLTIP_STYLE = {
   contentStyle: {
@@ -272,43 +273,26 @@ export default function Insights() {
       {/* DIAGNOSTIC FLAGS */}
       {cycles.length >= 2 && <DiagnosticFlags analysis={analysis} />}
 
-      {/* TOP SYMPTOMS BAR */}
+      {/* ENHANCED DRSP PHASE COMPARISON */}
+      {analysis.phaseComparison && analysis.phaseComparison.length > 0 && (
+        <DRSPPhaseComparison phaseComparison={analysis.phaseComparison} />
+      )}
+
+      {/* TOP SYMPTOMS BAR - Compact view */}
       {analysis.topSymptoms && analysis.topSymptoms.length > 0 && (
         <Card className="border-border/50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold">Most Severe Symptoms (Luteal Phase Avg)</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={analysis.topSymptoms.slice(0, 10)} layout="vertical" margin={{ left: 4, right: 28, top: 4, bottom: 4 }}>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={analysis.topSymptoms.slice(0, 8)} layout="vertical" margin={{ left: 4, right: 20, top: 4, bottom: 4 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
                 <XAxis type="number" domain={[0, 6]} tick={{ fontSize: 10 }} tickCount={7} />
-                <YAxis type="category" dataKey="short" tick={{ fontSize: 9 }} width={104} />
+                <YAxis type="category" dataKey="short" tick={{ fontSize: 9 }} width={100} />
                 <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [v.toFixed(1), "Avg"]} />
                 <ReferenceLine x={3} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 2" />
                 <Bar dataKey="avg" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]} name="Luteal avg" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* PHASE COMPARISON */}
-      {analysis.phaseComparison && analysis.phaseComparison.length > 0 && (
-        <Card className="border-border/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Luteal vs Follicular — Top Symptoms</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={analysis.phaseComparison} layout="vertical" margin={{ left: 4, right: 24, top: 4, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis type="number" domain={[0, 6]} tick={{ fontSize: 10 }} />
-                <YAxis type="category" dataKey="name" tick={{ fontSize: 9 }} width={104} />
-                <Tooltip {...CHART_TOOLTIP_STYLE} />
-                <Bar dataKey="luteal" fill="hsl(var(--chart-1))" name="Luteal" radius={[0, 4, 4, 0]} />
-                <Bar dataKey="follicular" fill="hsl(var(--chart-2))" name="Follicular" radius={[0, 4, 4, 0]} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
