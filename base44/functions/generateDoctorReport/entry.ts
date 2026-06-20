@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 import { jsPDF } from 'npm:jspdf@4.0.0';
-import { format, parseISO, subDays } from 'npm:date-fns@3.6.0';
+import { format, parseISO, subDays, differenceInDays } from 'npm:date-fns@3.6.0';
 
 Deno.serve(async (req) => {
   try {
@@ -30,6 +30,7 @@ Deno.serve(async (req) => {
     const avgGAD7 = gad7Scores.length ? (gad7Scores.reduce((a, b) => a + b, 0) / gad7Scores.length).toFixed(1) : null;
     const avgEPDS = epdsScores.length ? (epdsScores.reduce((a, b) => a + b, 0) / epdsScores.length).toFixed(1) : null;
 
+    // Symptom counts
     const symptomCounts = {};
     recentEntries.forEach(e => {
       Object.entries(e).forEach(([key, value]) => {
@@ -38,235 +39,424 @@ Deno.serve(async (req) => {
         }
       });
     });
-    const topSymptoms = Object.entries(symptomCounts).sort((a, b) => b[1] - a[1]).slice(0, 10)
-      .map(([symptom, count]) => ({ 
-        name: symptom.replace(/^(s_|m_|p_|pp_)/, '').replace(/_/g, ' '), 
-        daysReported: count 
+    const topSymptoms = Object.entries(symptomCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([key, count]) => ({
+        key,
+        name: key.replace(/^(s_|m_|p_|pp_)/, '').replace(/_/g, ' '),
+        daysReported: count
       }));
+
+    // Calculate mood trend data (for line chart)
+    const MOOD_KEYS = ["s_depressed", "s_anxious", "s_mood_swings", "s_angry", "s_hopeless", "s_sensitive", "s_overwhelmed", "s_out_of_control"];
+    const PHYSICAL_KEYS = ["s_breast_tender", "s_bloating", "s_headache", "s_pain", "s_insomnia", "s_hypersomnia", "s_appetite"];
+    const moodTrendData = [...recentEntries]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(-30)
+      .map(e => ({
+        date: format(parseISO(e.date), 'M/d'),
+        mood: parseFloat((MOOD_KEYS.reduce((s, k) => s + (e[k] || 0), 0) / MOOD_KEYS.length).toFixed(1)),
+        physical: parseFloat((PHYSICAL_KEYS.reduce((s, k) => s + (e[k] || 0), 0) / PHYSICAL_KEYS.length).toFixed(1)),
+        total: parseFloat((calculateDayTotal(e) / 22).toFixed(1))
+      }));
+
+    // Calculate weekly severity trend
+    const weeklyData = {};
+    recentEntries.forEach(e => {
+      const d = parseISO(e.date);
+      const weekStart = subDays(d, d.getDay());
+      const weekKey = format(weekStart, 'MMM d');
+      if (!weeklyData[weekKey]) weeklyData[weekKey] = { sum: 0, count: 0 };
+      const symptomKeys = Object.keys(e).filter(k => k.startsWith('s_') || k.startsWith('m_') || k.startsWith('p_') || k.startsWith('pp_'));
+      weeklyData[weekKey].sum += symptomKeys.reduce((s, k) => s + (e[k] || 0), 0) / symptomKeys.length;
+      weeklyData[weekKey].count++;
+    });
+    const weeklyTrend = Object.entries(weeklyData)
+      .map(([week, data]) => ({ week, avg: parseFloat((data.sum / data.count).toFixed(1)) }))
+      .sort((a, b) => new Date(a.week) - new Date(b.week))
+      .slice(-8);
 
     const doc = new jsPDF();
     const margin = 15;
     const contentWidth = 180;
 
-    // ====== BEAUTIFUL HEADER ======
-    // Gradient background
-    const gradient = doc.linearGradient(0, 0, 210, 50, 230, 247, 241, 255, 255, 255);
-    doc.setFillColor(230, 247, 241);
-    doc.rect(0, 0, 210, 50, 'F');
+    // ====== PROFESSIONAL HEADER ======
+    // Teal gradient header
+    doc.setFillColor(20, 100, 80);
+    doc.rect(0, 0, 210, 45, 'F');
     
-    // Top accent bar
-    doc.setFillColor(10, 90, 60);
-    doc.rect(0, 0, 210, 5, 'F');
+    // Lavender accent bar
+    doc.setFillColor(180, 160, 200);
+    doc.rect(0, 42, 210, 3, 'F');
+    
+    // Logo circle
+    doc.setFillColor(255, 255, 255);
+    doc.circle(25, 22, 12, 'F');
+    doc.setFontSize(18);
+    doc.setTextColor(20, 100, 80);
+    doc.setFont("helvetica", "bold");
+    doc.text('C', 21, 27);
     
     // Title
-    doc.setFontSize(26);
-    doc.setTextColor(10, 90, 60);
+    doc.setFontSize(24);
+    doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.text('CycleMind', 20, 25);
-    doc.setFontSize(18);
+    doc.text('CycleMind', 45, 20);
+    doc.setFontSize(14);
     doc.setFont("helvetica", "normal");
-    doc.text('Clinical Summary', 75, 25);
+    doc.text('Clinical Summary Report', 45, 28);
     
     // Metadata
     doc.setFontSize(9);
-    doc.setTextColor(70);
-    doc.text(`Patient: ${user.full_name || 'Anonymous'}`, 20, 35);
-    doc.text(`Generated: ${format(new Date(), 'MMM d, yyyy')}`, 20, 40);
-    doc.text(`Period: ${format(startDate, 'MMM d')} – ${format(endDate, 'MMM d, yyyy')}`, 20, 45);
-    doc.text(`Cycles: ${cycles.length} | Days tracked: ${recentEntries.length}`, 20, 50);
+    doc.setTextColor(240, 240, 240);
+    doc.text(`Patient: ${user.full_name || 'Anonymous'}`, 45, 36);
+    doc.text(`Generated: ${format(new Date(), 'MMMM d, yyyy')}`, 45, 41);
+    doc.text(`Report Period: ${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`, margin, 50);
+    doc.text(`Cycles Analyzed: ${cycles.length} | Days Tracked: ${recentEntries.length}`, margin, 55);
 
-    let y = 58;
+    let y = 63;
 
-    // ====== SECTION 1: MOOD SCREENING ======
-    doc.setFillColor(245, 252, 250);
-    doc.roundedRect(margin, y, contentWidth, 12, 2, 2, 'F');
-    doc.setFillColor(10, 90, 60);
-    doc.rect(margin, y, 4, 12, 'F');
-    doc.setFontSize(13);
-    doc.setTextColor(10, 90, 60);
+    // ====== SECTION 1: KEY METRICS ======
+    doc.setFillColor(245, 250, 248);
+    doc.roundedRect(margin, y, contentWidth, 22, 2, 2, 'F');
+    
+    // Teal header bar
+    doc.setFillColor(20, 100, 80);
+    doc.roundedRect(margin, y, contentWidth, 5, 2, 2, 'F');
+    
+    doc.setFontSize(12);
+    doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.text('🧠 Mood Screening Scores', margin + 10, y + 8);
-    y += 14;
+    doc.text('Key Metrics', margin + 5, y + 3.5);
+    
+    y += 8;
+    doc.setFontSize(9);
+    doc.setTextColor(50);
+    doc.setFont("helvetica", "normal");
+    
+    // Metrics grid
+    const metrics = [
+      { label: 'Avg Cycle Length', value: avgCycleLength ? `${avgCycleLength} days` : 'N/A' },
+      { label: 'Total Cycles', value: `${cycles.length}` },
+      { label: 'Days Tracked', value: `${recentEntries.length}` },
+      { label: 'Report Period', value: `${differenceInDays(endDate, startDate)} days` }
+    ];
+    
+    metrics.forEach((m, i) => {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+      const x = margin + 5 + col * 88;
+      const yPos = y + row * 7;
+      
+      doc.setTextColor(120);
+      doc.setFont("helvetica", "normal");
+      doc.text(m.label, x, yPos);
+      
+      doc.setTextColor(20, 100, 80);
+      doc.setFont("helvetica", "bold");
+      doc.text(m.value, x + 40, yPos);
+    });
+    
+    y += 20;
 
-    if (avgPHQ9 || avgGAD7 || avgEPDS) {
+    // ====== SECTION 2: MOOD SCREENING ======
+    if (includeScreening && (avgPHQ9 || avgGAD7 || avgEPDS)) {
+      doc.setFillColor(245, 250, 248);
+      doc.roundedRect(margin, y, contentWidth, 20, 2, 2, 'F');
+      
+      doc.setFillColor(20, 100, 80);
+      doc.roundedRect(margin, y, contentWidth, 5, 2, 2, 'F');
+      
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.text('Mood Screening Scores', margin + 5, y + 3.5);
+      y += 8;
+      
       const scores = [];
       if (avgPHQ9) scores.push({ name: 'PHQ-9 (Depression)', value: avgPHQ9, ...getSeverityColor(parseFloat(avgPHQ9)) });
       if (avgGAD7) scores.push({ name: 'GAD-7 (Anxiety)', value: avgGAD7, ...getSeverityColor(parseFloat(avgGAD7)) });
       if (avgEPDS) scores.push({ name: 'EPDS (Postpartum)', value: avgEPDS, ...getSeverityColor(parseFloat(avgEPDS)) });
-
+      
       scores.forEach((score, i) => {
+        const col = i % 2;
+        const x = margin + 5 + col * 90;
+        const yPos = y + (Math.floor(i / 2)) * 8;
+        
+        doc.setFontSize(9);
+        doc.setTextColor(80);
+        doc.setFont("helvetica", "normal");
+        doc.text(score.name, x, yPos);
+        
+        doc.setFontSize(11);
         doc.setTextColor(...score.color);
         doc.setFont("helvetica", "bold");
-        doc.text(`${score.name}: ${score.value}`, margin + 5 + (i % 2) * 90, y);
-        doc.setFont("helvetica", "normal");
-        doc.text(score.label, margin + 45 + (i % 2) * 90, y);
-        if (i % 2 === 1) y += 8;
+        doc.text(`${score.value}  ${score.label}`, x, yPos + 5);
       });
-      if (scores.length % 2 === 1) y += 4;
-    } else {
-      doc.setTextColor(120);
-      doc.setFont("helvetica", "italic");
-      doc.text('No screening scores logged', margin + 5, y);
-      y += 8;
+      
+      y += (Math.ceil(scores.length / 2)) * 16 + 5;
     }
-    y += 6;
 
-    // ====== SECTION 2: TOP SYMPTOMS (COLORFUL BAR CHART) ======
+    // ====== SECTION 3: TOP SYMPTOMS (HORIZONTAL BAR CHART) ======
     if (topSymptoms.length > 0) {
-      doc.setFillColor(245, 252, 250);
+      doc.setFillColor(245, 250, 248);
       doc.roundedRect(margin, y, contentWidth, 12, 2, 2, 'F');
-      doc.setFillColor(10, 90, 60);
-      doc.rect(margin, y, 4, 12, 'F');
-      doc.setFontSize(13);
-      doc.setTextColor(10, 90, 60);
+      
+      doc.setFillColor(20, 100, 80);
+      doc.roundedRect(margin, y, contentWidth, 5, 2, 2, 'F');
+      
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.text('📊 Top Symptoms Breakdown', margin + 10, y + 8);
-      y += 15;
-
-      const maxDays = Math.max(...topSymptoms.slice(0, 8).map(s => s.daysReported));
-      const barHeight = 7;
-      const barGap = 5;
-      const chartStartX = 85;
-      const maxBarWidth = 95;
-
-      topSymptoms.slice(0, 8).forEach((symptom, idx) => {
+      doc.text('Top Symptoms Breakdown', margin + 5, y + 3.5);
+      y += 10;
+      
+      const maxDays = Math.max(...topSymptoms.slice(0, 6).map(s => s.daysReported));
+      const barHeight = 6;
+      const barGap = 7;
+      const chartStartX = 95;
+      const maxBarWidth = 85;
+      
+      topSymptoms.slice(0, 6).forEach((symptom, idx) => {
         const barWidth = (symptom.daysReported / maxDays) * maxBarWidth;
-        const color = getBarColor(idx);
+        const color = idx % 2 === 0 ? [20, 100, 80] : [180, 160, 200]; // Teal or Lavender
         
-        // Symptom name (clean formatting)
+        // Symptom name (word wrap for long names)
         doc.setFontSize(8);
         doc.setTextColor(50);
         doc.setFont("helvetica", "normal");
-        const shortName = symptom.name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-        doc.text(shortName.substring(0, 16), margin + 5, y + 5);
+        const words = symptom.name.split(' ');
+        let line = '';
+        let lineY = y + 4;
+        
+        words.forEach((word, wi) => {
+          if ((line + word).length > 18) {
+            doc.text(line, margin + 3, lineY);
+            line = word + ' ';
+            lineY += 4;
+          } else {
+            line += word + ' ';
+          }
+        });
+        if (line.trim()) doc.text(line.trim(), margin + 3, lineY);
         
         // Colored bar
         doc.setFillColor(...color);
-        doc.roundedRect(chartStartX, y, barWidth, barHeight, 1, 1, 'F');
+        doc.roundedRect(chartStartX, y + 1, barWidth, barHeight, 1, 1, 'F');
         
         // Days count
         doc.setFontSize(8);
         doc.setTextColor(80);
-        doc.text(`${symptom.daysReported}d`, chartStartX + barWidth + 3, y + 5);
+        doc.setFont("helvetica", "bold");
+        doc.text(`${symptom.daysReported}d`, chartStartX + barWidth + 3, y + 5.5);
         
         y += barHeight + barGap;
       });
-      y += 4;
+      y += 3;
     }
 
-    // ====== SECTION 3: PROGRESS CHART ======
-    if (includeChart && recentEntries.length > 10) {
-      doc.setFillColor(245, 252, 250);
+    // ====== SECTION 4: MOOD & PHYSICAL TREND (LINE CHART) ======
+    if (includeChart && moodTrendData.length > 5) {
+      doc.setFillColor(245, 250, 248);
       doc.roundedRect(margin, y, contentWidth, 12, 2, 2, 'F');
-      doc.setFillColor(10, 90, 60);
-      doc.rect(margin, y, 4, 12, 'F');
-      doc.setFontSize(13);
-      doc.setTextColor(10, 90, 60);
+      
+      doc.setFillColor(20, 100, 80);
+      doc.roundedRect(margin, y, contentWidth, 5, 2, 2, 'F');
+      
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.text('📈 Symptom Progress Over Time', margin + 10, y + 8);
-      y += 15;
-
-      // Calculate weekly averages
-      const weeklyData = {};
-      recentEntries.forEach(e => {
-        const d = parseISO(e.date);
-        const weekStart = subDays(d, d.getDay());
-        const weekKey = format(weekStart, 'MMM d');
-        if (!weeklyData[weekKey]) weeklyData[weekKey] = { sum: 0, count: 0 };
-        const symptomKeys = Object.keys(e).filter(k => k.startsWith('s_') || k.startsWith('m_') || k.startsWith('p_') || k.startsWith('pp_'));
-        weeklyData[weekKey].sum += symptomKeys.reduce((s, k) => s + (e[k] || 0), 0) / symptomKeys.length;
-        weeklyData[weekKey].count++;
-      });
-
-      const chartData = Object.entries(weeklyData)
-        .map(([week, data]) => ({ week, avg: parseFloat((data.sum / data.count).toFixed(1)) }))
-        .sort((a, b) => new Date(a.week) - new Date(b.week))
-        .slice(-8);
-
-      if (chartData.length > 0) {
-        const maxVal = Math.max(...chartData.map(d => d.avg), 1);
-        const barWidth = 16;
-        const gap = 4;
-        const chartHeight = 55;
-        const startX = margin + 5;
-        const baseY = y + chartHeight + 10;
-
-        chartData.forEach((d, i) => {
-          const barHeight = (d.avg / maxVal) * chartHeight;
-          const x = startX + i * (barWidth + gap);
-          
-          doc.setFillColor(20, 180, 140);
-          doc.roundedRect(x, baseY - barHeight, barWidth, barHeight, 1, 1, 'F');
-          
-          doc.setFontSize(7);
-          doc.setTextColor(80);
-          doc.text(d.avg.toString(), x + barWidth / 2, baseY - barHeight - 2, { align: 'center' });
-          
-          doc.setFontSize(6);
-          doc.text(d.week.slice(0, 5), x + barWidth / 2, baseY + 3, { align: 'center' });
-        });
-
-        // Severity reference line
-        const modY = baseY - (3 / 6) * chartHeight;
-        doc.setDrawColor(200);
-        doc.setLineDash([2, 2]);
-        doc.line(startX, modY, startX + chartData.length * (barWidth + gap), modY);
+      doc.text('Mood & Physical Symptoms Trend', margin + 5, y + 3.5);
+      y += 10;
+      
+      const chartHeight = 50;
+      const chartWidth = contentWidth - 10;
+      const startX = margin + 5;
+      const baseY = y + chartHeight + 10;
+      
+      const maxMood = Math.max(...moodTrendData.map(d => d.mood), 1);
+      const maxPhysical = Math.max(...moodTrendData.map(d => d.physical), 1);
+      
+      // Draw grid lines
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineDash([2, 2]);
+      for (let i = 0; i <= 3; i++) {
+        const gridY = baseY - (i / 3) * chartHeight;
+        doc.line(startX, gridY, startX + chartWidth, gridY);
         doc.setFontSize(6);
         doc.setTextColor(150);
-        doc.text('Moderate', startX + chartData.length * (barWidth + gap) + 2, modY);
-
-        y += chartHeight + 25;
+        doc.text((i * 2).toString(), startX - 8, gridY + 1);
       }
+      
+      // Draw mood line (teal)
+      doc.setDrawColor(20, 100, 80);
+      doc.setLineWidth(1.5);
+      doc.setLineDash([]);
+      moodTrendData.forEach((d, i) => {
+        const x = startX + (i / (moodTrendData.length - 1)) * chartWidth;
+        const yPoint = baseY - (d.mood / 6) * chartHeight;
+        if (i === 0) doc.line(x, yPoint, x, yPoint);
+        else {
+          const prevX = startX + ((i - 1) / (moodTrendData.length - 1)) * chartWidth;
+          const prevY = baseY - (moodTrendData[i - 1].mood / 6) * chartHeight;
+          doc.line(prevX, prevY, x, yPoint);
+        }
+      });
+      
+      // Draw physical line (lavender)
+      doc.setDrawColor(180, 160, 200);
+      doc.setLineWidth(1.5);
+      moodTrendData.forEach((d, i) => {
+        const x = startX + (i / (moodTrendData.length - 1)) * chartWidth;
+        const yPoint = baseY - (d.physical / 6) * chartHeight;
+        if (i === 0) doc.line(x, yPoint, x, yPoint);
+        else {
+          const prevX = startX + ((i - 1) / (moodTrendData.length - 1)) * chartWidth;
+          const prevY = baseY - (moodTrendData[i - 1].physical / 6) * chartHeight;
+          doc.line(prevX, prevY, x, yPoint);
+        }
+      });
+      
+      // X-axis labels (every 5th date)
+      doc.setFontSize(6);
+      doc.setTextColor(100);
+      moodTrendData.forEach((d, i) => {
+        if (i % 5 === 0 || i === moodTrendData.length - 1) {
+          const x = startX + (i / (moodTrendData.length - 1)) * chartWidth;
+          doc.text(d.date, x - 5, baseY + 4);
+        }
+      });
+      
+      // Legend
+      doc.setDrawColor(20, 100, 80);
+      doc.setLineWidth(1.5);
+      doc.line(startX + chartWidth - 50, baseY + 8, startX + chartWidth - 40, baseY + 8);
+      doc.setFontSize(7);
+      doc.setTextColor(20, 100, 80);
+      doc.text('Mood', startX + chartWidth - 38, baseY + 10);
+      
+      doc.setDrawColor(180, 160, 200);
+      doc.line(startX + chartWidth - 20, baseY + 8, startX + chartWidth - 10, baseY + 8);
+      doc.setTextColor(180, 160, 200);
+      doc.text('Physical', startX + chartWidth - 8, baseY + 10);
+      
+      y += chartHeight + 20;
     }
 
-    // ====== SECTION 4: APPOINTMENT PREP ======
-    if (includeAppointmentPrep) {
-      doc.setFillColor(245, 252, 250);
+    // ====== SECTION 5: WEEKLY SEVERITY TREND (BAR CHART) ======
+    if (includeChart && weeklyTrend.length > 2) {
+      doc.setFillColor(245, 250, 248);
       doc.roundedRect(margin, y, contentWidth, 12, 2, 2, 'F');
-      doc.setFillColor(10, 90, 60);
-      doc.rect(margin, y, 4, 12, 'F');
-      doc.setFontSize(13);
-      doc.setTextColor(10, 90, 60);
+      
+      doc.setFillColor(20, 100, 80);
+      doc.roundedRect(margin, y, contentWidth, 5, 2, 2, 'F');
+      
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.text('📋 Appointment Preparation', margin + 10, y + 8);
-      y += 15;
+      doc.text('Weekly Symptom Severity', margin + 5, y + 3.5);
+      y += 10;
+      
+      const chartHeight = 45;
+      const barWidth = 18;
+      const gap = 6;
+      const startX = margin + 10;
+      const baseY = y + chartHeight + 10;
+      const maxVal = Math.max(...weeklyTrend.map(d => d.avg), 1);
+      
+      weeklyTrend.forEach((d, i) => {
+        const barHeight = (d.avg / maxVal) * chartHeight;
+        const x = startX + i * (barWidth + gap);
+        
+        // Gradient-like bar (teal to light teal)
+        doc.setFillColor(20, 100, 80);
+        doc.roundedRect(x, baseY - barHeight, barWidth, barHeight, 1, 1, 'F');
+        
+        // Value on top
+        doc.setFontSize(7);
+        doc.setTextColor(80);
+        doc.setFont("helvetica", "bold");
+        doc.text(d.avg.toString(), x + barWidth / 2, baseY - barHeight - 2, { align: 'center' });
+        
+        // Week label
+        doc.setFontSize(6);
+        doc.setTextColor(100);
+        doc.setFont("helvetica", "normal");
+        doc.text(d.week.slice(0, 6), x + barWidth / 2, baseY + 4, { align: 'center' });
+      });
+      
+      // Severity reference line at 3 (moderate)
+      const modY = baseY - (3 / 6) * chartHeight;
+      doc.setDrawColor(200, 150, 150);
+      doc.setLineDash([3, 3]);
+      doc.setLineWidth(1);
+      doc.line(startX, modY, startX + weeklyTrend.length * (barWidth + gap) - gap, modY);
+      doc.setFontSize(6);
+      doc.setTextColor(180, 100, 100);
+      doc.text('Moderate', startX + weeklyTrend.length * (barWidth + gap) - gap + 2, modY);
+      
+      y += chartHeight + 22;
+    }
 
+    // ====== SECTION 6: APPOINTMENT PREP ======
+    if (includeAppointmentPrep) {
+      doc.setFillColor(245, 250, 248);
+      doc.roundedRect(margin, y, contentWidth, 12, 2, 2, 'F');
+      
+      doc.setFillColor(20, 100, 80);
+      doc.roundedRect(margin, y, contentWidth, 5, 2, 2, 'F');
+      
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.text('Appointment Preparation', margin + 5, y + 3.5);
+      y += 10;
+      
       doc.setFontSize(9);
       doc.setTextColor(50);
+      doc.setFont("helvetica", "normal");
       
       if (topSymptoms.length > 0) {
         doc.setFont("helvetica", "bold");
-        doc.text('Top symptoms:', margin + 5, y);
+        doc.setTextColor(20, 100, 80);
+        doc.text('Top symptoms to discuss:', margin + 5, y);
         y += 5;
         doc.setFont("helvetica", "normal");
         doc.setTextColor(80);
-        doc.text(topSymptoms.slice(0, 3).map(s => `• ${formatSymptomName(s.name)}`).join('  '), margin + 5, y);
+        const symptomList = topSymptoms.slice(0, 3).map(s => {
+          const words = s.name.split(' ');
+          return words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }).join('  •  ');
+        doc.text('• ' + symptomList, margin + 5, y);
         y += 8;
       }
       
       if (avgPHQ9 || avgGAD7) {
         doc.setFont("helvetica", "bold");
-        doc.text('Mood scores:', margin + 5, y);
+        doc.setTextColor(20, 100, 80);
+        doc.text('Mood screening averages:', margin + 5, y);
         y += 5;
         doc.setFont("helvetica", "normal");
         doc.setTextColor(80);
         const scores = [];
         if (avgPHQ9) scores.push(`PHQ-9: ${avgPHQ9}`);
         if (avgGAD7) scores.push(`GAD-7: ${avgGAD7}`);
-        doc.text(scores.join('  '), margin + 5, y);
+        doc.text(scores.join('  |  '), margin + 5, y);
         y += 8;
       }
       
       doc.setFont("helvetica", "bold");
-      doc.text('Questions to ask:', margin + 5, y);
+      doc.setTextColor(20, 100, 80);
+      doc.text('Questions for your provider:', margin + 5, y);
       y += 5;
       doc.setFont("helvetica", "normal");
       doc.setTextColor(80);
-      doc.text('1. Are my symptoms consistent with PMDD?', margin + 5, y);
+      doc.text('1. Are my symptoms consistent with PMDD or another condition?', margin + 5, y);
       y += 4;
       doc.text('2. What treatment options do you recommend?', margin + 5, y);
       y += 4;
-      doc.text('3. Should I adjust tracking or medication?', margin + 5, y);
+      doc.text('3. Should I adjust my tracking or medication timing?', margin + 5, y);
       y += 6;
     }
 
@@ -274,18 +464,29 @@ Deno.serve(async (req) => {
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
-      doc.setFillColor(230, 247, 241);
+      
+      // Footer background
+      doc.setFillColor(240, 245, 243);
       doc.rect(0, 280, 210, 27, 'F');
-      doc.setFillColor(10, 90, 60);
+      
+      // Teal accent bar
+      doc.setFillColor(20, 100, 80);
       doc.rect(0, 280, 210, 3, 'F');
+      
+      // Footer text
       doc.setFontSize(8);
-      doc.setTextColor(10, 90, 60);
+      doc.setTextColor(20, 100, 80);
       doc.setFont("helvetica", "bold");
       doc.text('DRSP-Based Clinical Assessment Tool', 20, 288);
+      
       doc.setFontSize(7);
-      doc.setTextColor(80);
-      doc.text('Based on the Daily Record of Severity of Problems (2006). For informational purposes only.', 20, 294);
       doc.setTextColor(100);
+      doc.setFont("helvetica", "normal");
+      doc.text('Based on the Daily Record of Severity of Problems (Endicott, Nee & Harrison, 2006).', 20, 293);
+      doc.text('For informational purposes only. Not a diagnostic tool. Always consult a qualified healthcare provider.', 20, 297);
+      
+      doc.setFontSize(8);
+      doc.setTextColor(120);
       doc.text(`Page ${i} of ${pageCount}`, 150, 302);
     }
 
@@ -293,26 +494,25 @@ Deno.serve(async (req) => {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="CycleMind_Report_${format(new Date(), 'yyyy-MM-dd')}.pdf"`
+        'Content-Disposition': `attachment; filename="CycleMind_Clinical_Report_${format(new Date(), 'yyyy-MM-dd')}.pdf"`
       }
     });
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+    console.error('PDF generation error:', error);
+    return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
   }
 });
 
+function calculateDayTotal(entry) {
+  const symptomKeys = Object.keys(entry).filter(k => 
+    k.startsWith('s_') || k.startsWith('m_') || k.startsWith('p_') || k.startsWith('pp_')
+  );
+  return symptomKeys.reduce((sum, k) => sum + (entry[k] || 0), 0);
+}
+
 function getSeverityColor(score) {
-  if (score >= 15) return { color: [220, 80, 80], label: '(Mod-Severe)' };
-  if (score >= 10) return { color: [240, 180, 80], label: '(Moderate)' };
+  if (score >= 15) return { color: [200, 80, 80], label: '(Mod-Severe)' };
+  if (score >= 10) return { color: [220, 180, 80], label: '(Moderate)' };
   if (score >= 5) return { color: [20, 180, 140], label: '(Mild)' };
-  return { color: [100, 100, 100], label: '(Minimal)' };
-}
-
-function getBarColor(index) {
-  const colors = [[10, 90, 60], [41, 128, 185], [39, 174, 96], [241, 196, 15], [230, 126, 34], [155, 89, 182], [231, 76, 60], [52, 152, 219]];
-  return colors[index % colors.length];
-}
-
-function formatSymptomName(name) {
-  return name.replace(/^(s_|m_|p_|pp_)/, '').replace(/_/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  return { color: [120, 120, 120], label: '(Minimal)' };
 }
