@@ -7,7 +7,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, CartesianGrid, Legend, ReferenceLine,
 } from "recharts";
-import { AlertTriangle, CheckCircle, Info, TrendingUp, Activity, Brain, Heart, Filter, X } from "lucide-react";
+import { AlertTriangle, CheckCircle, Info, TrendingUp, Activity, Brain, Heart, Filter, X, ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { ALL_SYMPTOMS, SYMPTOM_CATEGORIES, calculateDayTotal } from "@/lib/symptoms";
 import { getUserTier, TIERS } from "@/lib/freemium";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +16,9 @@ import PdfReportButton from "@/components/insights/PdfReportButton";
 import ShareWithDoctor from "@/components/insights/ShareWithDoctor";
 import LoggedDataSummary from "@/components/insights/LoggedDataSummary";
 import AdminActionsPanel from "@/components/insights/AdminActionsPanel";
+import DateRangePresets from "@/components/insights/DateRangePresets";
+import ProgressCelebration from "@/components/insights/ProgressCelebration";
+import InsightCard from "@/components/insights/InsightCard";
 
 const CHART_TOOLTIP_STYLE = {
   contentStyle: {
@@ -34,6 +37,16 @@ export default function Insights() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const hasDateFilter = dateFrom || dateTo;
+
+  const handlePresetChange = (from, to) => {
+    setDateFrom(from);
+    setDateTo(to);
+  };
+
+  const handleClearDates = () => {
+    setDateFrom("");
+    setDateTo("");
+  };
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -189,12 +202,22 @@ export default function Insights() {
       )}
 
       {!hasData && (
-        <div className="bg-card rounded-2xl border border-border/50 p-10 text-center space-y-3">
-          <Info className="w-10 h-10 text-primary mx-auto" />
-          <p className="font-semibold text-lg">No Data Yet</p>
-          <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-            Start logging daily symptoms to unlock insights and clinical-grade reports.
-          </p>
+        <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl border border-primary/20 p-10 text-center space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+            <Info className="w-8 h-8 text-primary" />
+          </div>
+          <div>
+            <p className="font-serif text-xl font-bold text-foreground">Start Your Tracking Journey</p>
+            <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
+              Log your first symptoms to unlock personalized insights, pattern detection, and clinical reports you can share with your healthcare provider.
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/log')}
+            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+          >
+            Log Today's Symptoms →
+          </button>
         </div>
       )}
 
@@ -236,27 +259,12 @@ export default function Insights() {
         </div>
       )}
 
-      {/* PATTERN INSIGHTS */}
+      {/* PATTERN INSIGHTS with Action Suggestions */}
       {cycles.length >= 2 && analysis.insights.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-1">Pattern Insights</p>
           {analysis.insights.map((ins, i) => (
-            <div
-              key={i}
-              className={`rounded-2xl border p-4 flex gap-3 items-start ${
-                ins.type === "alert"
-                  ? "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/40"
-                  : ins.type === "warning"
-                  ? "border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950/40"
-                  : "border-border/50 bg-card"
-              }`}
-            >
-              <span className="text-lg shrink-0">{ins.emoji}</span>
-              <div>
-                <p className="text-sm font-semibold text-foreground">{ins.title}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{ins.detail}</p>
-              </div>
-            </div>
+            <InsightCard key={i} insight={ins} />
           ))}
         </div>
       )}
