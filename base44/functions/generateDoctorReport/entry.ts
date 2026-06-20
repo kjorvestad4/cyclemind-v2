@@ -81,38 +81,55 @@ Deno.serve(async (req) => {
     const margin = 15;
     const contentWidth = 180;
 
-    // ====== PROFESSIONAL HEADER ======
-    // Teal gradient header
-    doc.setFillColor(20, 100, 80);
-    doc.rect(0, 0, 210, 45, 'F');
+    // ====== ENHANCED HERO HEADER ======
+    // Rich teal gradient background
+    doc.setFillColor(10, 80, 60);
+    doc.rect(0, 0, 210, 50, 'F');
+    
+    // Lighter teal accent stripe
+    doc.setFillColor(20, 110, 90);
+    doc.rect(0, 48, 210, 2, 'F');
     
     // Lavender accent bar
     doc.setFillColor(180, 160, 200);
-    doc.rect(0, 42, 210, 3, 'F');
+    doc.rect(0, 46, 210, 2, 'F');
     
-    // Logo circle
+    // Logo: CycleMind wordmark with circle
     doc.setFillColor(255, 255, 255);
-    doc.circle(25, 22, 12, 'F');
-    doc.setFontSize(18);
-    doc.setTextColor(20, 100, 80);
-    doc.setFont("helvetica", "bold");
-    doc.text('C', 21, 27);
+    doc.circle(20, 24, 10, 'F');
     
-    // Title
-    doc.setFontSize(24);
+    // Inner circle for visual depth
+    doc.setFillColor(20, 110, 90);
+    doc.circle(20, 24, 7, 'F');
+    
+    // "C" in the logo
+    doc.setFontSize(16);
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.text('CycleMind', 45, 20);
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "normal");
-    doc.text('Clinical Summary Report', 45, 28);
+    doc.text('C', 17, 28);
     
-    // Metadata
-    doc.setFontSize(9);
-    doc.setTextColor(240, 240, 240);
-    doc.text(`Patient: ${user.full_name || 'Anonymous'}`, 45, 36);
-    doc.text(`Generated: ${format(new Date(), 'MMMM d, yyyy')}`, 45, 41);
-    doc.text(`Report Period: ${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`, margin, 50);
+    // Title & tagline
+    doc.setFontSize(26);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.text('CycleMind', 35, 19);
+    
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(200, 240, 230);
+    doc.text('Clinical Summary Report', 35, 27);
+    
+    // Patient info - prominent
+    doc.setFontSize(10);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Patient: ${user.full_name || 'Anonymous'}`, 35, 35);
+    doc.text(`Generated: ${format(new Date(), 'MMMM d, yyyy')}`, 35, 41);
+    
+    // Report period and stats
+    doc.setFontSize(8);
+    doc.setTextColor(200, 240, 230);
+    doc.text(`Report Period: ${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`, margin, 51);
     doc.text(`Cycles Analyzed: ${cycles.length} | Days Tracked: ${recentEntries.length}`, margin, 55);
 
     let y = 63;
@@ -198,10 +215,10 @@ Deno.serve(async (req) => {
       y += (Math.ceil(scores.length / 2)) * 16 + 5;
     }
 
-    // ====== SECTION 3: TOP SYMPTOMS (HORIZONTAL BAR CHART) ======
+    // ====== SECTION 3: TOP SYMPTOMS (PIE CHART) ======
     if (topSymptoms.length > 0) {
       doc.setFillColor(245, 250, 248);
-      doc.roundedRect(margin, y, contentWidth, 12, 2, 2, 'F');
+      doc.roundedRect(margin, y, contentWidth, 65, 2, 2, 'F');
       
       doc.setFillColor(20, 100, 80);
       doc.roundedRect(margin, y, contentWidth, 5, 2, 2, 'F');
@@ -209,51 +226,86 @@ Deno.serve(async (req) => {
       doc.setFontSize(12);
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.text('Top Symptoms Breakdown', margin + 5, y + 3.5);
+      doc.text('Top Symptoms Distribution', margin + 5, y + 3.5);
       y += 10;
       
-      const maxDays = Math.max(...topSymptoms.slice(0, 6).map(s => s.daysReported));
-      const barHeight = 6;
-      const barGap = 7;
-      const chartStartX = 95;
-      const maxBarWidth = 85;
+      // Draw pie chart manually
+      const pieData = topSymptoms.slice(0, 5);
+      const totalDays = pieData.reduce((sum, s) => sum + s.daysReported, 0);
+      const pieX = margin + 30;
+      const pieY = y + 20;
+      const pieRadius = 22;
       
-      topSymptoms.slice(0, 6).forEach((symptom, idx) => {
-        const barWidth = (symptom.daysReported / maxDays) * maxBarWidth;
-        const color = idx % 2 === 0 ? [20, 100, 80] : [180, 160, 200]; // Teal or Lavender
+      const colors = [
+        [20, 100, 80],      // Teal
+        [180, 160, 200],    // Lavender
+        [120, 180, 160],    // Light teal
+        [200, 180, 220],    // Light lavender
+        [60, 140, 110]      // Dark teal
+      ];
+      
+      let currentAngle = 0;
+      pieData.forEach((symptom, idx) => {
+        const sliceAngle = (symptom.daysReported / totalDays) * 360;
+        const startAngle = currentAngle;
+        const endAngle = currentAngle + sliceAngle;
         
-        // Symptom name (word wrap for long names)
-        doc.setFontSize(8);
-        doc.setTextColor(50);
-        doc.setFont("helvetica", "normal");
-        const words = symptom.name.split(' ');
-        let line = '';
-        let lineY = y + 4;
+        // Draw pie slice
+        doc.setFillColor(...colors[idx % colors.length]);
+        doc.setDrawColor(...colors[idx % colors.length]);
         
-        words.forEach((word, wi) => {
-          if ((line + word).length > 18) {
-            doc.text(line, margin + 3, lineY);
-            line = word + ' ';
-            lineY += 4;
-          } else {
-            line += word + ' ';
-          }
-        });
-        if (line.trim()) doc.text(line.trim(), margin + 3, lineY);
+        // Simple pie slice (approximated with lines)
+        doc.setLineWidth(0.5);
+        doc.line(pieX, pieY, pieX + pieRadius * Math.cos((startAngle * Math.PI) / 180), pieY + pieRadius * Math.sin((startAngle * Math.PI) / 180));
         
-        // Colored bar
-        doc.setFillColor(...color);
-        doc.roundedRect(chartStartX, y + 1, barWidth, barHeight, 1, 1, 'F');
+        const midAngle = startAngle + sliceAngle / 2;
+        doc.setFillColor(...colors[idx % colors.length]);
         
-        // Days count
-        doc.setFontSize(8);
-        doc.setTextColor(80);
+        // Fill with circles to create pie effect
+        const steps = Math.max(2, Math.round(sliceAngle / 10));
+        for (let s = 0; s < steps; s++) {
+          const a1 = startAngle + (s / steps) * sliceAngle;
+          const a2 = startAngle + ((s + 1) / steps) * sliceAngle;
+          const x1 = pieX + pieRadius * Math.cos((a1 * Math.PI) / 180);
+          const y1 = pieY + pieRadius * Math.sin((a1 * Math.PI) / 180);
+          const x2 = pieX + pieRadius * Math.cos((a2 * Math.PI) / 180);
+          const y2 = pieY + pieRadius * Math.sin((a2 * Math.PI) / 180);
+          doc.line(x1, y1, x2, y2);
+        }
+        
+        // Label with percentage
+        const labelAngle = startAngle + sliceAngle / 2;
+        const labelDist = pieRadius + 8;
+        const labelX = pieX + labelDist * Math.cos((labelAngle * Math.PI) / 180);
+        const labelY = pieY + labelDist * Math.sin((labelAngle * Math.PI) / 180);
+        
+        doc.setFontSize(7);
+        doc.setTextColor(...colors[idx % colors.length]);
         doc.setFont("helvetica", "bold");
-        doc.text(`${symptom.daysReported}d`, chartStartX + barWidth + 3, y + 5.5);
+        const percent = Math.round((symptom.daysReported / totalDays) * 100);
+        const shortName = symptom.name.length > 12 ? symptom.name.substring(0, 12) : symptom.name;
+        doc.text(`${shortName}`, labelX - 8, labelY - 2, { maxWidth: 16, align: 'center' });
+        doc.setTextColor(100);
+        doc.text(`(${percent}%)`, labelX - 8, labelY + 3, { maxWidth: 16, align: 'center' });
         
-        y += barHeight + barGap;
+        currentAngle = endAngle;
       });
-      y += 3;
+      
+      // Legend
+      doc.setFontSize(7);
+      const legendX = pieX + 40;
+      const legendStartY = y + 8;
+      pieData.forEach((symptom, idx) => {
+        const percent = Math.round((symptom.daysReported / totalDays) * 100);
+        doc.setFillColor(...colors[idx % colors.length]);
+        doc.rect(legendX, legendStartY + idx * 5, 2, 2, 'F');
+        doc.setTextColor(80);
+        doc.setFont("helvetica", "normal");
+        const displayName = symptom.name.replace(/^(s_|m_|p_|pp_)/, '').replace(/_/g, ' ');
+        doc.text(`${displayName} (${percent}%)`, legendX + 4, legendStartY + idx * 5 + 1.5);
+      });
+      
+      y += 60;
     }
 
     // ====== SECTION 4: MOOD & PHYSICAL TREND (LINE CHART) ======
