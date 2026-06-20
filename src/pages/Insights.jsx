@@ -21,6 +21,7 @@ import DateRangePresets from "@/components/insights/DateRangePresets";
 import ProgressCelebration from "@/components/insights/ProgressCelebration";
 import InsightCard from "@/components/insights/InsightCard";
 import DRSPPhaseComparison from "@/components/insights/DRSPPhaseComparison";
+import SymptomAccordions from "@/components/insights/SymptomAccordions";
 
 const CHART_TOOLTIP_STYLE = {
   contentStyle: {
@@ -335,22 +336,9 @@ export default function Insights() {
             )}
           </TabsContent>
 
-          {/* SYMPTOMS TAB - Heatmap & details */}
+          {/* SYMPTOMS TAB - Accordion organization */}
           <TabsContent value="symptoms" className="space-y-4">
-            {/* HEATMAP */}
-            {heatmapData.length > 0 && (
-              <Card className="border-border/50">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-semibold">Symptom Heatmap by Cycle Day</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <SymptomHeatmap data={heatmapData} />
-                </CardContent>
-              </Card>
-            )}
-
-            {/* LOGGED DATA SUMMARY */}
-            <LoggedDataSummary entries={filteredEntries} cycles={cycles} cycleType={latestCycle?.cycle_type || "menstrual"} />
+            <SymptomAccordions entries={filteredEntries} cycles={cycles} cycleType={latestCycle?.cycle_type || "menstrual"} />
           </TabsContent>
 
           {/* TRENDS TAB - Line charts */}
