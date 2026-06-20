@@ -64,16 +64,19 @@ Deno.serve(async (req) => {
     // Generate PDF
     const doc = new jsPDF();
     
-    // Header
-    doc.setFontSize(18);
-    doc.setTextColor(20, 83, 45); // Teal
-    doc.text('CycleMind Clinical Summary', 20, 20);
+    // Header with gradient-style hero element
+    doc.setFillColor(230, 247, 241); // Light teal background
+    doc.rect(0, 0, 210, 35, 'F');
+    
+    doc.setFontSize(20);
+    doc.setTextColor(10, 90, 60); // Darker teal for text
+    doc.text('CycleMind Clinical Summary', 20, 22);
     
     doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text(`Patient: ${user.full_name || 'Anonymous'}`, 20, 28);
-    doc.text(`Report Generated: ${format(new Date(), 'MMM d, yyyy')}`, 20, 33);
-    doc.text(`Reporting Period: Last 90 days (${format(ninetyDaysAgo, 'MMM d')} - ${format(new Date(), 'MMM d')})`, 20, 38);
+    doc.setTextColor(80);
+    doc.text(`Patient: ${user.full_name || 'Anonymous'}`, 20, 30);
+    doc.text(`Report Generated: ${format(new Date(), 'MMM d, yyyy')}`, 20, 35);
+    doc.text(`Reporting Period: Last 90 days (${format(ninetyDaysAgo, 'MMM d')} - ${format(new Date(), 'MMM d')})`, 20, 40);
 
     const latestCycle = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
 
@@ -88,19 +91,22 @@ Deno.serve(async (req) => {
     }
 
     // Disclaimer
-    doc.setFontSize(8);
-    doc.setTextColor(150);
-    doc.text('This report contains sensitive health information. For healthcare provider use only.', 20, latestCycle ? 48 : 45);
+    doc.setFontSize(7);
+    doc.setTextColor(120);
+    doc.text('CONFIDENTIAL: This report contains sensitive health information. For healthcare provider use only.', 20, latestCycle ? 53 : 48);
 
     let yPosition = 55;
 
-    // Cycle Summary
-    doc.setFontSize(14);
-    doc.setTextColor(0);
-    doc.text('Cycle Summary', 20, yPosition);
-    yPosition += 8;
+    // Cycle Summary with accent bar
+    doc.setFillColor(230, 247, 241);
+    doc.rect(20, yPosition - 5, 170, 6, 'F');
+    doc.setFontSize(13);
+    doc.setTextColor(10, 90, 60);
+    doc.text('Cycle Summary', 23, yPosition);
+    yPosition += 9;
     
     doc.setFontSize(10);
+    doc.setTextColor(50);
     doc.text(`Total Cycles Logged: ${cycles.length}`, 25, yPosition);
     yPosition += 5;
     doc.text(`Average Cycle Length: ${avgCycleLength || 'N/A'} days`, 25, yPosition);
@@ -190,12 +196,16 @@ Deno.serve(async (req) => {
     }
     yPosition += 8;
 
-    // Mood Screening Scores
-    doc.setFontSize(14);
-    doc.text('Mood Screening Scores (90-Day Average)', 20, yPosition);
-    yPosition += 8;
+    // Mood Screening Scores with accent bar
+    doc.setFillColor(230, 247, 241);
+    doc.rect(20, yPosition - 5, 170, 6, 'F');
+    doc.setFontSize(13);
+    doc.setTextColor(10, 90, 60);
+    doc.text('Mood Screening Scores (90-Day Average)', 23, yPosition);
+    yPosition += 9;
     
     doc.setFontSize(10);
+    doc.setTextColor(50);
     if (avgPHQ9) {
       doc.text(`PHQ-9 (Depression): ${avgPHQ9} ${getSeverityLabel(parseFloat(avgPHQ9))}`, 25, yPosition);
       yPosition += 5;
@@ -210,19 +220,27 @@ Deno.serve(async (req) => {
     }
     yPosition += 8;
 
-    // Top Symptoms
-    doc.setFontSize(14);
-    doc.text('Most Frequent Symptoms', 20, yPosition);
-    yPosition += 8;
+    // Top Symptoms with accent bar
+    doc.setFillColor(230, 247, 241);
+    doc.rect(20, yPosition - 5, 170, 6, 'F');
+    doc.setFontSize(13);
+    doc.setTextColor(10, 90, 60);
+    doc.text('Most Frequent Symptoms', 23, yPosition);
+    yPosition += 9;
     
     doc.setFontSize(10);
-    topSymptoms.forEach(symptom => {
+    doc.setTextColor(50);
+    topSymptoms.forEach((symptom, idx) => {
       if (yPosition > 250) {
         doc.addPage();
         yPosition = 20;
       }
-      doc.text(`${symptom.name.replace(/_/g, ' ')}: ${symptom.daysReported} days`, 25, yPosition);
-      yPosition += 5;
+      // Add severity bar visualization
+      const barWidth = (symptom.daysReported / 90) * 120;
+      doc.setFillColor(20, 180, 140);
+      doc.rect(25, yPosition - 2, barWidth, 3, 'F');
+      doc.text(`${idx + 1}. ${symptom.name.replace(/_/g, ' ')}: ${symptom.daysReported} days`, 25, yPosition);
+      yPosition += 6;
     });
     yPosition += 8;
 
@@ -280,14 +298,17 @@ Deno.serve(async (req) => {
       yPosition += 5;
     }
 
-    // Footer
+    // Footer with accent bar
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(150);
-      doc.text(`Page ${i} of ${pageCount}`, 180, 290);
-      doc.text('CycleMind - Clinical Grade Hormonal Mental Health Tracking', 20, 290);
+      doc.setFillColor(230, 247, 241);
+      doc.rect(0, 285, 210, 10, 'F');
+      doc.setFontSize(7);
+      doc.setTextColor(10, 90, 60);
+      doc.text('CycleMind - Clinical Grade Hormonal Mental Health Tracking', 20, 291);
+      doc.setTextColor(100);
+      doc.text(`Page ${i} of ${pageCount}`, 180, 291);
     }
 
     // Convert to blob

@@ -101,62 +101,66 @@ export default function Insights() {
 
       {/* Header */}
       <div className="space-y-3">
-        <div className="flex items-start justify-between flex-wrap gap-3">
-          <div>
-            <h2 className="font-serif text-2xl font-semibold">Insights</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">Based on your tracked data — for clinical discussion only</p>
+        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-accent/10 rounded-3xl border border-primary/20 p-5 space-y-3">
+          <div className="flex items-start justify-between flex-wrap gap-3">
+            <div>
+              <h2 className="font-serif text-2xl font-bold text-foreground">Your Insights</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">Pattern analysis from your tracked data</p>
+            </div>
+            {hasData && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-muted-foreground font-medium">Last:</span>
+                {[1, 2, 3, 6].map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setSelectedCycles(n)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                      selectedCycles === n
+                        ? "bg-primary text-primary-foreground border-primary shadow-md"
+                        : "bg-card/50 border-border/50 text-muted-foreground hover:bg-muted/60"
+                    }`}
+                  >
+                    {n} cycle{n > 1 ? "s" : ""}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
+
+          {/* Date Range Filter - Compact */}
           {hasData && (
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-muted-foreground">Show last:</span>
-              {[1, 2, 3, 6].map((n) => (
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-primary/10">
+              <Filter className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span className="text-xs text-muted-foreground font-medium">Custom range:</span>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="h-7 px-2 text-xs rounded-lg border border-input bg-background text-foreground"
+              />
+              <span className="text-xs text-muted-foreground">→</span>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="h-7 px-2 text-xs rounded-lg border border-input bg-background text-foreground"
+              />
+              {hasDateFilter && (
                 <button
-                  key={n}
-                  onClick={() => setSelectedCycles(n)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all ${
-                    selectedCycles === n
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card border-border text-muted-foreground hover:bg-muted"
-                  }`}
+                  onClick={() => { setDateFrom(""); setDateTo(""); }}
+                  className="flex items-center gap-1 text-xs text-destructive hover:text-destructive/80 font-medium"
                 >
-                  {n} cycle{n > 1 ? "s" : ""}
+                  <X className="w-3 h-3" /> Clear
                 </button>
-              ))}
+              )}
+              {hasDateFilter && (
+                <span className="text-[10px] text-muted-foreground ml-auto bg-primary/10 px-2 py-0.5 rounded-full font-medium">
+                  {cycles.length} cycle{cycles.length !== 1 ? "s" : ""} · {filteredEntries.length} entries
+                </span>
+              )}
             </div>
           )}
         </div>
-
-        {/* Date Range Filter */}
-        {hasData && (
-          <div className="flex flex-wrap items-center gap-2 p-3 bg-muted/40 rounded-2xl border border-border/50">
-            <Filter className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-            <span className="text-xs text-muted-foreground font-medium">Date range:</span>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              className="h-7 px-2 text-xs rounded-lg border border-input bg-background text-foreground"
-            />
-            <span className="text-xs text-muted-foreground">→</span>
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              className="h-7 px-2 text-xs rounded-lg border border-input bg-background text-foreground"
-            />
-            {hasDateFilter && (
-              <button
-                onClick={() => { setDateFrom(""); setDateTo(""); }}
-                className="flex items-center gap-1 text-xs text-destructive hover:text-destructive/80 font-medium ml-1"
-              >
-                <X className="w-3 h-3" /> Clear
-              </button>
-            )}
-            {hasDateFilter && (
-              <span className="text-[10px] text-muted-foreground ml-auto">{cycles.length} cycle{cycles.length !== 1 ? "s" : ""} · {filteredEntries.length} entries</span>
-            )}
-          </div>
-        )}
 
       {hasData && (
           user && getUserTier(user) === TIERS.FREE ? (
@@ -194,36 +198,40 @@ export default function Insights() {
         </div>
       )}
 
-      {/* KEY METRICS */}
+      {/* KEY METRICS - Enhanced with gradient backgrounds */}
       {hasData && (
         <div className="grid grid-cols-2 gap-3">
           <MetricCard
-            icon={<Brain className="w-4 h-4 text-primary" />}
+            icon={<Brain className="w-4 h-4" />}
             label="Avg Luteal Severity"
             value={analysis.avgLutealSeverity !== null ? analysis.avgLutealSeverity.toFixed(1) : "—"}
             sub={analysis.avgLutealSeverity !== null ? severityLabel(analysis.avgLutealSeverity) : "Not enough data"}
             highlight={analysis.avgLutealSeverity >= 4}
+            gradient="from-primary/10 to-primary/5"
           />
           <MetricCard
-            icon={<Activity className="w-4 h-4 text-chart-2" />}
+            icon={<Activity className="w-4 h-4" />}
             label="Avg Cycle Length"
             value={analysis.avgCycleLength ? `${analysis.avgCycleLength}d` : "—"}
             sub={analysis.cycleLengthVariance ? `±${analysis.cycleLengthVariance}d variance` : "Recording…"}
             highlight={false}
+            gradient="from-chart-2/10 to-chart-2/5"
           />
           <MetricCard
-            icon={<Heart className="w-4 h-4 text-chart-3" />}
+            icon={<Heart className="w-4 h-4" />}
             label="Avg PHQ-9 (Luteal)"
             value={analysis.avgPHQ9Luteal !== null ? analysis.avgPHQ9Luteal.toFixed(0) : "—"}
             sub={analysis.avgPHQ9Luteal !== null ? phq9Label(analysis.avgPHQ9Luteal) : "Complete PHQ-9 to track"}
             highlight={analysis.avgPHQ9Luteal >= 10}
+            gradient="from-chart-3/10 to-chart-3/5"
           />
           <MetricCard
-            icon={<TrendingUp className="w-4 h-4 text-chart-5" />}
+            icon={<TrendingUp className="w-4 h-4" />}
             label="Avg GAD-7 (Luteal)"
             value={analysis.avgGAD7Luteal !== null ? analysis.avgGAD7Luteal.toFixed(0) : "—"}
             sub={analysis.avgGAD7Luteal !== null ? gad7Label(analysis.avgGAD7Luteal) : "Complete GAD-7 to track"}
             highlight={analysis.avgGAD7Luteal >= 10}
+            gradient="from-chart-5/10 to-chart-5/5"
           />
         </div>
       )}
@@ -426,12 +434,21 @@ export default function Insights() {
   );
 }
 
-function MetricCard({ icon, label, value, sub, highlight }) {
+function MetricCard({ icon, label, value, sub, highlight, gradient }) {
   return (
-    <div className={`bg-card rounded-2xl border p-4 space-y-1 ${highlight ? "border-orange-200 dark:border-orange-900" : "border-border/50"}`}>
-      <div className="flex items-center gap-1.5">{icon}<span className="text-[11px] text-muted-foreground font-medium">{label}</span></div>
-      <p className="text-2xl font-bold text-foreground">{value}</p>
-      <p className="text-[10px] text-muted-foreground">{sub}</p>
+    <div className={`relative overflow-hidden rounded-2xl border p-4 space-y-1.5 transition-all hover:shadow-md ${
+      highlight 
+        ? "border-orange-200 dark:border-orange-900 bg-gradient-to-br from-orange-50/80 to-orange-100/40 dark:from-orange-950/40 dark:to-orange-900/20" 
+        : `border-border/50 bg-gradient-to-br ${gradient || "from-card/80 to-card/40"}`
+    }`}>
+      <div className="flex items-center gap-1.5">
+        <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${highlight ? "bg-orange-100 dark:bg-orange-900" : "bg-primary/10"}`}>
+          {icon}
+        </div>
+        <span className="text-[11px] text-muted-foreground font-medium leading-tight">{label}</span>
+      </div>
+      <p className="text-2xl font-bold text-foreground tracking-tight">{value}</p>
+      <p className="text-[10px] text-muted-foreground leading-tight">{sub}</p>
     </div>
   );
 }
