@@ -1,10 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { ALL_SYMPTOMS } from "@/lib/symptoms";
-import { TrendingUp, TrendingDown, Minus, Download, Activity, Brain, Heart, Droplet } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Activity, Brain, Droplet } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ReferenceArea, ReferenceLine, BarChart, Bar } from "recharts";
-import { format, differenceInDays } from "date-fns";
+import { format } from "date-fns";
 
 const CHART_TOOLTIP_STYLE = {
   contentStyle: {
@@ -16,13 +14,7 @@ const CHART_TOOLTIP_STYLE = {
   },
 };
 
-const MOOD_KEYS = ["s_depressed", "s_anxious", "s_mood_swings", "s_angry", "s_hopeless", "s_sensitive", "s_overwhelmed", "s_out_of_control"];
-const PHYSICAL_KEYS = ["s_breast_tender", "s_bloating", "s_headache", "s_pain", "s_insomnia", "s_hypersomnia", "s_appetite"];
-
-export default function TrendsTab({ entries, cycles, isPerinatal, analysis }) {
-  const moodTrend = computeMoodTrend(entries, cycles);
-  const screeningTrend = analysis.screeningTrend || [];
-  const bleedingTimeline = computeBleedingTimeline(entries, cycles);
+export default function TrendsTab({ moodTrend, screeningTrend, bleedingTimeline, isPerinatal, cycles }) {
 
   // Calculate trend indicators
   const trendIndicators = calculateTrendIndicators(moodTrend);
@@ -216,18 +208,7 @@ export default function TrendsTab({ entries, cycles, isPerinatal, analysis }) {
         </AccordionItem>
       </Accordion>
 
-      {/* Export Button */}
-      <div className="flex justify-center pt-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => exportTrendsToImage()}
-          className="gap-2 text-xs"
-        >
-          <Download className="w-3.5 h-3.5" />
-          Export Trends as Image
-        </Button>
-      </div>
+
     </div>
   );
 }
@@ -261,30 +242,7 @@ function TrendIndicator({ trend }) {
   );
 }
 
-function computeMoodTrend(entries, cycles) {
-  if (!cycles.length) return [];
-  const firstStart = new Date(Math.min(...cycles.map((c) => new Date(c.start_date).getTime())));
 
-  return [...entries]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .filter((e) => new Date(e.date) >= firstStart)
-    .slice(-60)
-    .map((e) => ({
-      date: format(new Date(e.date), "M/d"),
-      mood: parseFloat((MOOD_KEYS.reduce((s, k) => s + (e[k] || 0), 0) / MOOD_KEYS.length).toFixed(1)),
-      physical: parseFloat((PHYSICAL_KEYS.reduce((s, k) => s + (e[k] || 0), 0) / PHYSICAL_KEYS.length).toFixed(1)),
-      total: parseFloat((calculateDayTotal(e) / ALL_SYMPTOMS.length).toFixed(1)),
-    }));
-}
-
-function computeBleedingTimeline(entries, cycles) {
-  if (!cycles.length) return [];
-  const firstStart = new Date(Math.min(...cycles.map((c) => new Date(c.start_date).getTime())));
-  return [...entries]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .filter((e) => new Date(e.date) >= firstStart && e.bleeding_intensity != null && e.bleeding_intensity > 0)
-    .map((e) => ({ date: format(new Date(e.date), "M/d"), intensity: e.bleeding_intensity }));
-}
 
 function calculateTrendIndicators(data) {
   if (data.length < 10) return {};
@@ -308,14 +266,4 @@ function calculateTrendIndicators(data) {
   const screeningTrend = null;
 
   return { moodTrend: trend, screeningTrend };
-}
-
-function calculateDayTotal(entry) {
-  if (!entry) return 0;
-  return ALL_SYMPTOMS.reduce((sum, s) => sum + (entry[s.key] || 0), 0);
-}
-
-function exportTrendsToImage() {
-  // Simple implementation - in production would use html2canvas
-  alert("Export feature: This would capture the trend charts as a PNG image for sharing with your doctor.");
 }

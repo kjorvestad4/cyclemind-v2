@@ -346,9 +346,10 @@ export default function Insights() {
           <TabsContent value="trends" className="space-y-4">
             <TrendsTab
               moodTrend={moodTrend}
-              screeningTrend={analysis.screeningTrend}
+              screeningTrend={analysis.screeningTrend || []}
               bleedingTimeline={bleedingTimeline}
               isPerinatal={isPerinatal}
+              cycles={cycles}
             />
           </TabsContent>
 
