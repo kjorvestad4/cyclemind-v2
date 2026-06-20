@@ -215,14 +215,19 @@ export default function PdfReportButton({ cycles, entries, analysis }) {
                             paddingAngle={2}
                             dataKey="count"
                             nameKey="name"
-                            label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                            label={({ name, percent }) => {
+                              const displayName = name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                              const shortName = displayName.length > 12 ? displayName.substring(0, 12) + '…' : displayName;
+                              return `${shortName} (${(percent * 100).toFixed(0)}%)`;
+                            }}
                             labelLine={false}
+                            minAngle={15}
                           >
                             {symptomDistribution.slice(0, 5).map((entry, index) => (
                               <Cell key={`cell-${index}`} fill={['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'][index % 5]} />
                             ))}
                           </Pie>
-                          <Tooltip {...CHART_TOOLTIP_STYLE} />
+                          <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(value, name) => [`${value} days`, name.replace(/_/g, ' ')]} />
                         </PieChart>
                       </ResponsiveContainer>
                       <div className="space-y-2">
