@@ -288,30 +288,50 @@ export default function Insights() {
 
           {/* PATTERNS TAB - Phase comparison */}
           <TabsContent value="patterns" className="space-y-4">
-            {/* ENHANCED DRSP PHASE COMPARISON */}
-            {analysis.phaseComparison && analysis.phaseComparison.length > 0 && (
-              <DRSPPhaseComparison phaseComparison={analysis.phaseComparison} />
-            )}
-
-            {/* TOP SYMPTOMS BAR */}
-            {analysis.topSymptoms && analysis.topSymptoms.length > 0 && (
+            {cycles.length < 2 ? (
               <Card className="border-border/50">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-semibold">Most Severe Symptoms (Luteal Phase Avg)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={280}>
-                    <BarChart data={analysis.topSymptoms.slice(0, 10)} layout="vertical" margin={{ left: 4, right: 28, top: 4, bottom: 4 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                      <XAxis type="number" domain={[0, 6]} tick={{ fontSize: 10 }} tickCount={7} />
-                      <YAxis type="category" dataKey="short" tick={{ fontSize: 9 }} width={104} />
-                      <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [v.toFixed(1), "Avg"]} />
-                      <ReferenceLine x={3} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 2" />
-                      <Bar dataKey="avg" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]} name="Luteal avg" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                <CardContent className="pt-6">
+                  <div className="text-center space-y-2">
+                    <Info className="w-8 h-8 text-muted-foreground mx-auto" />
+                    <p className="text-sm font-semibold text-foreground">Need 2+ cycles for phase analysis</p>
+                    <p className="text-xs text-muted-foreground">Keep logging to see luteal vs follicular phase comparisons</p>
+                  </div>
                 </CardContent>
               </Card>
+            ) : (
+              <>
+                {/* ENHANCED DRSP PHASE COMPARISON */}
+                {analysis.phaseComparison && analysis.phaseComparison.length > 0 ? (
+                  <DRSPPhaseComparison phaseComparison={analysis.phaseComparison} />
+                ) : (
+                  <Card className="border-border/50">
+                    <CardContent className="pt-6">
+                      <p className="text-sm text-muted-foreground text-center">No phase comparison data available yet. Keep logging!</p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* TOP SYMPTOMS BAR */}
+                {analysis.topSymptoms && analysis.topSymptoms.length > 0 && (
+                  <Card className="border-border/50">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-semibold">Most Severe Symptoms (Luteal Phase Avg)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={280}>
+                        <BarChart data={analysis.topSymptoms.slice(0, 10)} layout="vertical" margin={{ left: 4, right: 28, top: 4, bottom: 4 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                          <XAxis type="number" domain={[0, 6]} tick={{ fontSize: 10 }} tickCount={7} />
+                          <YAxis type="category" dataKey="short" tick={{ fontSize: 9 }} width={104} />
+                          <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [v.toFixed(1), "Avg"]} />
+                          <ReferenceLine x={3} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 2" />
+                          <Bar dataKey="avg" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]} name="Luteal avg" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
             )}
           </TabsContent>
 
