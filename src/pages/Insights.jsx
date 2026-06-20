@@ -11,6 +11,7 @@ import { AlertTriangle, CheckCircle, Info, TrendingUp, Activity, Brain, Heart, F
 import { ALL_SYMPTOMS, SYMPTOM_CATEGORIES, calculateDayTotal } from "@/lib/symptoms";
 import { getUserTier, TIERS } from "@/lib/freemium";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PremiumBanner from "@/components/common/PremiumBanner";
 import PdfReportButton from "@/components/insights/PdfReportButton";
 import ShareWithDoctor from "@/components/insights/ShareWithDoctor";
@@ -37,6 +38,7 @@ export default function Insights() {
   const [selectedCycles, setSelectedCycles] = useState(3);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [activeTab, setActiveTab] = useState("overview");
   const hasDateFilter = dateFrom || dateTo;
 
   const handlePresetChange = (from, to) => {
@@ -222,174 +224,201 @@ export default function Insights() {
         </div>
       )}
 
-      {/* KEY METRICS - Enhanced with gradient backgrounds */}
+      {/* TABBED INTERFACE TO REDUCE SCROLLING */}
       {hasData && (
-        <div className="grid grid-cols-2 gap-3">
-          <MetricCard
-            icon={<Brain className="w-4 h-4" />}
-            label="Avg Luteal Severity"
-            value={analysis.avgLutealSeverity !== null ? analysis.avgLutealSeverity.toFixed(1) : "—"}
-            sub={analysis.avgLutealSeverity !== null ? severityLabel(analysis.avgLutealSeverity) : "Not enough data"}
-            highlight={analysis.avgLutealSeverity >= 4}
-            gradient="from-primary/10 to-primary/5"
-          />
-          <MetricCard
-            icon={<Activity className="w-4 h-4" />}
-            label="Avg Cycle Length"
-            value={analysis.avgCycleLength ? `${analysis.avgCycleLength}d` : "—"}
-            sub={analysis.cycleLengthVariance ? `±${analysis.cycleLengthVariance}d variance` : "Recording…"}
-            highlight={false}
-            gradient="from-chart-2/10 to-chart-2/5"
-          />
-          <MetricCard
-            icon={<Heart className="w-4 h-4" />}
-            label="Avg PHQ-9 (Luteal)"
-            value={analysis.avgPHQ9Luteal !== null ? analysis.avgPHQ9Luteal.toFixed(0) : "—"}
-            sub={analysis.avgPHQ9Luteal !== null ? phq9Label(analysis.avgPHQ9Luteal) : "Complete PHQ-9 to track"}
-            highlight={analysis.avgPHQ9Luteal >= 10}
-            gradient="from-chart-3/10 to-chart-3/5"
-          />
-          <MetricCard
-            icon={<TrendingUp className="w-4 h-4" />}
-            label="Avg GAD-7 (Luteal)"
-            value={analysis.avgGAD7Luteal !== null ? analysis.avgGAD7Luteal.toFixed(0) : "—"}
-            sub={analysis.avgGAD7Luteal !== null ? gad7Label(analysis.avgGAD7Luteal) : "Complete GAD-7 to track"}
-            highlight={analysis.avgGAD7Luteal >= 10}
-            gradient="from-chart-5/10 to-chart-5/5"
-          />
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-5">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="patterns">Patterns</TabsTrigger>
+            <TabsTrigger value="symptoms">Symptoms</TabsTrigger>
+            <TabsTrigger value="trends">Trends</TabsTrigger>
+            <TabsTrigger value="history" className="hidden lg:flex">History</TabsTrigger>
+          </TabsList>
+
+          {/* OVERVIEW TAB - Key metrics & insights */}
+          <TabsContent value="overview" className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <MetricCard
+                icon={<Brain className="w-4 h-4" />}
+                label="Avg Luteal Severity"
+                value={analysis.avgLutealSeverity !== null ? analysis.avgLutealSeverity.toFixed(1) : "—"}
+                sub={analysis.avgLutealSeverity !== null ? severityLabel(analysis.avgLutealSeverity) : "Not enough data"}
+                highlight={analysis.avgLutealSeverity >= 4}
+                gradient="from-primary/10 to-primary/5"
+              />
+              <MetricCard
+                icon={<Activity className="w-4 h-4" />}
+                label="Avg Cycle Length"
+                value={analysis.avgCycleLength ? `${analysis.avgCycleLength}d` : "—"}
+                sub={analysis.cycleLengthVariance ? `±${analysis.cycleLengthVariance}d variance` : "Recording…"}
+                highlight={false}
+                gradient="from-chart-2/10 to-chart-2/5"
+              />
+              <MetricCard
+                icon={<Heart className="w-4 h-4" />}
+                label="Avg PHQ-9 (Luteal)"
+                value={analysis.avgPHQ9Luteal !== null ? analysis.avgPHQ9Luteal.toFixed(0) : "—"}
+                sub={analysis.avgPHQ9Luteal !== null ? phq9Label(analysis.avgPHQ9Luteal) : "Complete PHQ-9 to track"}
+                highlight={analysis.avgPHQ9Luteal >= 10}
+                gradient="from-chart-3/10 to-chart-3/5"
+              />
+              <MetricCard
+                icon={<TrendingUp className="w-4 h-4" />}
+                label="Avg GAD-7 (Luteal)"
+                value={analysis.avgGAD7Luteal !== null ? analysis.avgGAD7Luteal.toFixed(0) : "—"}
+                sub={analysis.avgGAD7Luteal !== null ? gad7Label(analysis.avgGAD7Luteal) : "Complete GAD-7 to track"}
+                highlight={analysis.avgGAD7Luteal >= 10}
+                gradient="from-chart-5/10 to-chart-5/5"
+              />
+            </div>
+
+            {/* PATTERN INSIGHTS */}
+            {cycles.length >= 2 && analysis.insights.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-1">Pattern Insights</p>
+                {analysis.insights.map((ins, i) => (
+                  <InsightCard key={i} insight={ins} />
+                ))}
+              </div>
+            )}
+
+            {/* DIAGNOSTIC FLAGS */}
+            {cycles.length >= 2 && <DiagnosticFlags analysis={analysis} />}
+          </TabsContent>
+
+          {/* PATTERNS TAB - Phase comparison */}
+          <TabsContent value="patterns" className="space-y-4">
+            {/* ENHANCED DRSP PHASE COMPARISON */}
+            {analysis.phaseComparison && analysis.phaseComparison.length > 0 && (
+              <DRSPPhaseComparison phaseComparison={analysis.phaseComparison} />
+            )}
+
+            {/* TOP SYMPTOMS BAR */}
+            {analysis.topSymptoms && analysis.topSymptoms.length > 0 && (
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold">Most Severe Symptoms (Luteal Phase Avg)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <BarChart data={analysis.topSymptoms.slice(0, 10)} layout="vertical" margin={{ left: 4, right: 28, top: 4, bottom: 4 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                      <XAxis type="number" domain={[0, 6]} tick={{ fontSize: 10 }} tickCount={7} />
+                      <YAxis type="category" dataKey="short" tick={{ fontSize: 9 }} width={104} />
+                      <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [v.toFixed(1), "Avg"]} />
+                      <ReferenceLine x={3} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 2" />
+                      <Bar dataKey="avg" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]} name="Luteal avg" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* SYMPTOMS TAB - Heatmap & details */}
+          <TabsContent value="symptoms" className="space-y-4">
+            {/* HEATMAP */}
+            {heatmapData.length > 0 && (
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold">Symptom Heatmap by Cycle Day</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <SymptomHeatmap data={heatmapData} />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* LOGGED DATA SUMMARY */}
+            <LoggedDataSummary entries={filteredEntries} cycles={cycles} cycleType={latestCycle?.cycle_type || "menstrual"} />
+          </TabsContent>
+
+          {/* TRENDS TAB - Line charts */}
+          <TabsContent value="trends" className="space-y-4">
+            {/* MOOD / PHYSICAL TREND */}
+            {moodTrend.length > 2 && (
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold">Mood vs Physical Symptoms — Daily Trend</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={moodTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                      <YAxis tick={{ fontSize: 10 }} />
+                      <Tooltip {...CHART_TOOLTIP_STYLE} />
+                      <Legend wrapperStyle={{ fontSize: 11 }} />
+                      <Line type="monotone" dataKey="mood" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={false} name="Mood" />
+                      <Line type="monotone" dataKey="physical" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={false} name="Physical" />
+                      <Line type="monotone" dataKey="total" stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} dot={false} name="Total" strokeDasharray="4 2" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Screening Trend */}
+            {analysis.screeningTrend.length > 0 && (
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold">
+                    {isPerinatal ? "EPDS & GAD-7 Over Time" : "PHQ-9 & GAD-7 Over Time"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <LineChart data={analysis.screeningTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                      <YAxis tick={{ fontSize: 10 }} />
+                      <Tooltip {...CHART_TOOLTIP_STYLE} />
+                      <Legend wrapperStyle={{ fontSize: 11 }} />
+                      <ReferenceLine y={10} stroke="hsl(var(--destructive))" strokeDasharray="3 2" label={{ value: "≥10", position: "right", fontSize: 9 }} />
+                      {isPerinatal ? (
+                        <Line type="monotone" dataKey="epds" stroke="hsl(var(--chart-3))" strokeWidth={2} dot={true} name="EPDS" connectNulls={false} />
+                      ) : (
+                        <Line type="monotone" dataKey="phq9" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={true} name="PHQ-9" connectNulls={false} />
+                      )}
+                      <Line type="monotone" dataKey="gad7" stroke="hsl(var(--chart-5))" strokeWidth={2} dot={true} name="GAD-7" connectNulls={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <p className="text-[10px] text-muted-foreground mt-2 text-center">
+                    {isPerinatal
+                      ? "EPDS ≥10 suggests possible depression — discuss with your midwife or OB. Complete EPDS on the Log page."
+                      : "Dashed red = moderate threshold (≥10). Complete PHQ-9/GAD-7 on the Log page to populate."}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* BLEEDING TIMELINE */}
+            {bleedingTimeline.length > 0 && (
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold">Bleeding Intensity Timeline</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={140}>
+                    <BarChart data={bleedingTimeline} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                      <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
+                      <YAxis tick={{ fontSize: 9 }} domain={[0, 4]} tickFormatter={(v) => ["", "Spot", "Light", "Med", "Heavy"][v] || ""} width={36} />
+                      <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [["None", "Spotting", "Light", "Medium", "Heavy"][v] || v, "Flow"]} />
+                      <Bar dataKey="intensity" fill="hsl(var(--chart-3))" radius={[3, 3, 0, 0]} name="Bleeding" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* HISTORY TAB - Full data summary (desktop only) */}
+          <TabsContent value="history" className="space-y-4 hidden lg:block">
+            <LoggedDataSummary entries={filteredEntries} cycles={cycles} cycleType={latestCycle?.cycle_type || "menstrual"} />
+          </TabsContent>
+        </Tabs>
       )}
-
-      {/* PATTERN INSIGHTS with Action Suggestions */}
-      {cycles.length >= 2 && analysis.insights.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-1">Pattern Insights</p>
-          {analysis.insights.map((ins, i) => (
-            <InsightCard key={i} insight={ins} />
-          ))}
-        </div>
-      )}
-
-      {/* DIAGNOSTIC FLAGS */}
-      {cycles.length >= 2 && <DiagnosticFlags analysis={analysis} />}
-
-      {/* ENHANCED DRSP PHASE COMPARISON */}
-      {analysis.phaseComparison && analysis.phaseComparison.length > 0 && (
-        <DRSPPhaseComparison phaseComparison={analysis.phaseComparison} />
-      )}
-
-      {/* TOP SYMPTOMS BAR - Compact view */}
-      {analysis.topSymptoms && analysis.topSymptoms.length > 0 && (
-        <Card className="border-border/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Most Severe Symptoms (Luteal Phase Avg)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={analysis.topSymptoms.slice(0, 8)} layout="vertical" margin={{ left: 4, right: 20, top: 4, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                <XAxis type="number" domain={[0, 6]} tick={{ fontSize: 10 }} tickCount={7} />
-                <YAxis type="category" dataKey="short" tick={{ fontSize: 9 }} width={100} />
-                <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [v.toFixed(1), "Avg"]} />
-                <ReferenceLine x={3} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 2" />
-                <Bar dataKey="avg" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]} name="Luteal avg" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* MOOD / PHYSICAL TREND */}
-      {moodTrend.length > 2 && (
-        <Card className="border-border/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Mood vs Physical Symptoms — Daily Trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={moodTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
-                <YAxis tick={{ fontSize: 10 }} />
-                <Tooltip {...CHART_TOOLTIP_STYLE} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Line type="monotone" dataKey="mood" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={false} name="Mood" />
-                <Line type="monotone" dataKey="physical" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={false} name="Physical" />
-                <Line type="monotone" dataKey="total" stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} dot={false} name="Total" strokeDasharray="4 2" />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Screening Trend — EPDS for perinatal, PHQ-9+GAD-7 otherwise */}
-      {analysis.screeningTrend.length > 0 && (
-        <Card className="border-border/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">
-              {isPerinatal ? "EPDS & GAD-7 Over Time" : "PHQ-9 & GAD-7 Over Time"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={analysis.screeningTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
-                <YAxis tick={{ fontSize: 10 }} />
-                <Tooltip {...CHART_TOOLTIP_STYLE} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <ReferenceLine y={10} stroke="hsl(var(--destructive))" strokeDasharray="3 2" label={{ value: "≥10", position: "right", fontSize: 9 }} />
-                {isPerinatal ? (
-                  <Line type="monotone" dataKey="epds" stroke="hsl(var(--chart-3))" strokeWidth={2} dot={true} name="EPDS" connectNulls={false} />
-                ) : (
-                  <Line type="monotone" dataKey="phq9" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={true} name="PHQ-9" connectNulls={false} />
-                )}
-                <Line type="monotone" dataKey="gad7" stroke="hsl(var(--chart-5))" strokeWidth={2} dot={true} name="GAD-7" connectNulls={false} />
-              </LineChart>
-            </ResponsiveContainer>
-            <p className="text-[10px] text-muted-foreground mt-2 text-center">
-              {isPerinatal
-                ? "EPDS ≥10 suggests possible depression — discuss with your midwife or OB. Complete EPDS on the Log page."
-                : "Dashed red = moderate threshold (≥10). Complete PHQ-9/GAD-7 on the Log page to populate."}
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* BLEEDING TIMELINE */}
-      {bleedingTimeline.length > 0 && (
-        <Card className="border-border/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Bleeding Intensity Timeline</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={140}>
-              <BarChart data={bleedingTimeline} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
-                <YAxis tick={{ fontSize: 9 }} domain={[0, 4]} tickFormatter={(v) => ["", "Spot", "Light", "Med", "Heavy"][v] || ""} width={36} />
-                <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(v) => [["None", "Spotting", "Light", "Medium", "Heavy"][v] || v, "Flow"]} />
-                <Bar dataKey="intensity" fill="hsl(var(--chart-3))" radius={[3, 3, 0, 0]} name="Bleeding" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* HEATMAP */}
-      {heatmapData.length > 0 && (
-        <Card className="border-border/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Symptom Heatmap by Cycle Day</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <SymptomHeatmap data={heatmapData} />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* LOGGED DATA SUMMARY — Vitals, Intimacy, Flow, Meds, Ovulation, CM, Custom Symptoms, Mode-Specific Trends */}
-      {hasData && <LoggedDataSummary entries={filteredEntries} cycles={cycles} cycleType={latestCycle?.cycle_type || "menstrual"} />}
 
       {/* SHARE WITH DOCTOR */}
       {hasData && (
