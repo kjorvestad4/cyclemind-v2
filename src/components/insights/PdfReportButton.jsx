@@ -49,6 +49,16 @@ export default function PdfReportButton({ cycles, entries, analysis }) {
       const startDate = getStartDate();
       const endDate = getEndDate();
       
+      console.log('Generating PDF with params:', {
+        includeJournal: opts.include_journal,
+        includeMedications: opts.include_medications,
+        includeScreening: opts.include_screening,
+        includeChart: opts.include_chart,
+        includeAppointmentPrep: opts.include_appointment_prep,
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+      });
+      
       const response = await base44.functions.invoke("generateDoctorReport", {
         includeJournal: opts.include_journal,
         includeMedications: opts.include_medications,
@@ -59,21 +69,22 @@ export default function PdfReportButton({ cycles, entries, analysis }) {
         end_date: endDate.toISOString(),
       });
 
+      // response.data is already the ArrayBuffer from the backend
       const blob = new Blob([response.data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `CycleMind_Clinical_Summary_${format(new Date(), "yyyy-MM-dd")}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = downloadUrl;
+      downloadLink.download = `CycleMind_Clinical_Report_${format(new Date(), "yyyy-MM-dd")}.pdf`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      window.URL.revokeObjectURL(downloadUrl);
 
-      toast.success("Clinical report downloaded!");
+      toast.success("✓ Clinical report downloaded!");
       setPreviewOpen(false);
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to generate report. Please try again.");
+      console.error('PDF generation error:', err);
+      toast.error(`Failed to download: ${err.message || 'Please try again'}`);
     } finally {
       setLoading(false);
     }
