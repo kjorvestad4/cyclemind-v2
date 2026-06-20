@@ -173,7 +173,7 @@ export default function MilestoneCard({
             <FileText className="w-3.5 h-3.5" />
             {record?.user_note ? "Edit note" : "Add note for doctor"}
           </Button>
-          <Button size="sm" variant="ghost" onClick={handleAskLuna} className="gap-1.5">
+          <Button size="sm" variant="ghost" onClick={() => window.dispatchEvent(new CustomEvent("open-luna-chat", { detail: { message: `Tell me more about the "${milestone.title}" milestone (${milestone.timing})` } }))} className="gap-1.5">
             <Sparkles className="w-3.5 h-3.5" /> Ask Luna
           </Button>
           <Button

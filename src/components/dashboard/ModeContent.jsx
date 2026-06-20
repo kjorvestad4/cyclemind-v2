@@ -258,7 +258,7 @@ function PostpartumContent({ latestCycle, entries }) {
   );
 }
 
-function MenopauseContent({ latestCycle, entries }) {
+function MenopauseContent({ latestCycle, entries, cycleType }) {
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const last7 = Array.from({ length: 7 }, (_, i) => format(subDays(new Date(), 6 - i), "yyyy-MM-dd"));
   const weekEntries = last7.map((d) => entries.find((e) => e.date === d)).filter(Boolean);
@@ -267,13 +267,14 @@ function MenopauseContent({ latestCycle, entries }) {
     : null;
   const todayEntry = entries.find((e) => e.date === todayStr);
   const topSymptoms = MENO_KEYS.filter((k) => (todayEntry?.[k] || 0) >= 3).slice(0, 4);
+  const isPerimenopause = cycleType === "perimenopause";
 
   return (
     <div className="space-y-3">
       <div className="bg-card rounded-2xl border border-orange-200 dark:border-orange-900 p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <Sun className="w-4 h-4 text-orange-500" />
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">This Week</p>
+          {isPerimenopause ? <Sun className="w-4 h-4 text-amber-500" /> : <Sun className="w-4 h-4 text-orange-500" />}
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{isPerimenopause ? "Perimenopause Transition" : "This Week"}</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-muted/50 rounded-xl p-3 text-center">
@@ -309,6 +310,6 @@ function MenopauseContent({ latestCycle, entries }) {
 export default function ModeContent({ cycleType, latestCycle, entries, cycleDay }) {
   if (cycleType === "pregnancy") return <PregnancyContent latestCycle={latestCycle} entries={entries} />;
   if (cycleType === "postpartum") return <PostpartumContent latestCycle={latestCycle} entries={entries} />;
-  if (cycleType === "menopause" || cycleType === "perimenopause") return <MenopauseContent latestCycle={latestCycle} entries={entries} />;
+  if (cycleType === "postmenopause" || cycleType === "perimenopause") return <MenopauseContent latestCycle={latestCycle} entries={entries} cycleType={cycleType} />;
   return <MenstrualContent entries={entries} cycleDay={cycleDay} latestCycle={latestCycle} />;
 }

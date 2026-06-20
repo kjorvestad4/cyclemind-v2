@@ -34,6 +34,12 @@ const SITUATIONS = [
     subtitle: "Tracking the transition",
   },
   {
+    id: "postmenopause",
+    emoji: "☀️",
+    title: "Postmenopause",
+    subtitle: "After menopause transition",
+  },
+  {
     id: "other",
     emoji: "📝",
     title: "Other",

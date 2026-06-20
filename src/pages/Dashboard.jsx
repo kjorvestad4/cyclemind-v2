@@ -71,16 +71,16 @@ const SUBCOPIES_BY_PHASE = {
     "One day at a time. We're here with you.",
   ],
   perimenopause: [
-    "Tracking your transition with care. 🌊",
+    "Tracking your transition with care. 🌡️",
     "Your data helps Luna spot patterns.",
     "Every symptom logged is insight gained.",
     "You're not alone in this. Keep tracking.",
   ],
-  menopause: [
-    "Your health, your terms. 🔥",
+  postmenopause: [
+    "Your health, your terms. ☀️",
     "Log today's experience — it matters.",
     "Every entry adds to your health story.",
-    "Tracking menopause, one day at a time.",
+    "Tracking postmenopause, one day at a time.",
   ],
 };
 
@@ -162,12 +162,12 @@ export default function Dashboard() {
     : null;
 
   const cycleType = latestCycle?.cycle_type
-    || (latestCycle?.is_pregnancy_mode ? "pregnancy" : latestCycle?.is_menopause_mode ? "menopause" : "menstrual");
+    || (latestCycle?.is_pregnancy_mode ? "pregnancy" : latestCycle?.is_menopause_mode ? "postmenopause" : "menstrual");
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const todayEntry = entries.find((e) => e.date === todayStr);
 
-  const isMenstrual = !["pregnancy", "postpartum", "menopause", "perimenopause"].includes(cycleType);
+  const isMenstrual = !["pregnancy", "postpartum", "perimenopause", "postmenopause"].includes(cycleType);
   const cycleDay = isMenstrual ? getCycleDay(todayStr, cycles) : null;
   const cycleLength = latestCycle?.cycle_length || user?.cycle_length || 28;
 
@@ -348,14 +348,16 @@ export default function Dashboard() {
           onCycleSettings={() => setShowCycleSettings(true)}
         />
 
-        {/* Cycle Profile summary — right below cycle phase */}
-        <CycleProfileSummary
-          user={user}
-          latestCycle={latestCycle}
-          cycleType={cycleType}
-          cycles={cycles}
-          compact
-        />
+        {/* Cycle Profile summary — hidden during Pregnancy and Postmenopause */}
+        {cycleType !== "pregnancy" && cycleType !== "postmenopause" && (
+          <CycleProfileSummary
+            user={user}
+            latestCycle={latestCycle}
+            cycleType={cycleType}
+            cycles={cycles}
+            compact
+          />
+        )}
 
         {/* Secondary log button */}
         {todayEntry && (

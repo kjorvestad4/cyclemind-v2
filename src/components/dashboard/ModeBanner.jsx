@@ -44,8 +44,13 @@ const MODE_CONFIGS = {
     label: "Perimenopause",
     gradient: "from-amber-600 to-yellow-400",
   },
+  postmenopause: {
+    emoji: "☀️",
+    label: "Postmenopause",
+    gradient: "from-orange-600 to-amber-400",
+  },
   menopause: {
-    emoji: "🌞",
+    emoji: "☀️",
     label: "Postmenopause",
     gradient: "from-orange-600 to-amber-400",
   },
@@ -56,7 +61,8 @@ export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode, onCycl
   const cycleType = latestCycle?.cycle_type || "menstrual";
   const isPregnancy = cycleType === "pregnancy";
   const isPostpartum = cycleType === "postpartum";
-  const isMenopause = cycleType === "menopause" || cycleType === "perimenopause";
+  const isPostmenopause = cycleType === "postmenopause";
+  const isMenopause = cycleType === "perimenopause" || cycleType === "postmenopause";
   const isMenstrual = !isPregnancy && !isPostpartum && !isMenopause;
 
   const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -76,7 +82,7 @@ export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode, onCycl
     ? (pregnancyWeek ? `Week ${pregnancyWeek}` : "Tracking active")
     : isPostpartum
     ? (postpartumDay ? `Day ${postpartumDay}` : "Tracking active")
-    : (isMenopause && latestCycle?.hrt_type)
+    : (isPostmenopause && latestCycle?.hrt_type)
     ? `HRT: ${latestCycle.hrt_type}`
     : cycleDay
     ? `Day ${cycleDay}${phase ? ` · ${PHASE_LABELS[phase]}` : ""}`
@@ -90,7 +96,7 @@ export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode, onCycl
     ? "Energy typically improves in the follicular phase"
     : null;
 
-  const cfg = MODE_CONFIGS[cycleType] || MODE_CONFIGS.menstrual;
+  const cfg = MODE_CONFIGS[cycleType === "menopause" ? "postmenopause" : cycleType] || MODE_CONFIGS.menstrual;
 
   return (
     <div className={`w-full rounded-3xl bg-gradient-to-br ${cfg.gradient} text-white shadow-lg p-5 relative overflow-hidden`}>
