@@ -217,7 +217,7 @@ export default function PdfReportButton({ cycles, entries, analysis }) {
                             nameKey="name"
                             label={({ name, percent }) => {
                               const displayName = name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                              const shortName = displayName.length > 12 ? displayName.substring(0, 12) + '…' : displayName;
+                              const shortName = displayName.length > 15 ? displayName.substring(0, 15) + '…' : displayName;
                               return `${shortName} (${(percent * 100).toFixed(0)}%)`;
                             }}
                             labelLine={false}
@@ -235,9 +235,9 @@ export default function PdfReportButton({ cycles, entries, analysis }) {
                           <div key={symptom.name} className="flex items-center justify-between text-xs">
                             <div className="flex items-center gap-2">
                               <div className="w-3 h-3 rounded-sm" style={{ background: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'][idx % 5] }} />
-                              <span className="text-foreground capitalize">{symptom.name.replace(/_/g, ' ')}</span>
+                              <span className="text-foreground">{symptom.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
                             </div>
-                            <span className="font-semibold text-muted-foreground">{symptom.count} days</span>
+                            <span className="font-semibold text-muted-foreground">{symptom.count}d</span>
                           </div>
                         ))}
                       </div>

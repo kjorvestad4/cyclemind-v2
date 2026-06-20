@@ -13,26 +13,22 @@ Deno.serve(async (req) => {
 
     const { includeJournal, includeMedications, includeScreening, includeChart, includeAppointmentPrep, start_date, end_date } = await req.json();
 
-    // Use provided date range or default to last 90 days
     const startDate = start_date ? parseISO(start_date) : subDays(new Date(), 90);
     const endDate = end_date ? parseISO(end_date) : new Date();
 
     const cycles = await base44.entities.Cycle.filter({ user_id: user.id });
     const entries = await base44.entities.DailyEntry.filter({});
     
-    // Filter entries for date range
     const recentEntries = entries.filter(e => {
       const entryDate = parseISO(e.date);
       return entryDate >= startDate && entryDate <= endDate;
     });
 
-    // Calculate summary statistics
     const totalDaysLogged = recentEntries.length;
     const avgCycleLength = cycles.length > 0 
       ? Math.round(cycles.reduce((sum, c) => sum + (c.cycle_length || 28), 0) / cycles.length)
       : null;
 
-    // Mood scores
     const phq9Scores = recentEntries.filter(e => e.phq9_score).map(e => e.phq9_score);
     const gad7Scores = recentEntries.filter(e => e.gad7_score).map(e => e.gad7_score);
     const epdsScores = recentEntries.filter(e => e.epds_score).map(e => e.epds_score);
@@ -41,7 +37,6 @@ Deno.serve(async (req) => {
     const avgGAD7 = gad7Scores.length ? (gad7Scores.reduce((a, b) => a + b, 0) / gad7Scores.length).toFixed(1) : null;
     const avgEPDS = epdsScores.length ? (epdsScores.reduce((a, b) => a + b, 0) / epdsScores.length).toFixed(1) : null;
 
-    // Top symptoms
     const symptomCounts = {};
     recentEntries.forEach(e => {
       Object.entries(e).forEach(([key, value]) => {
@@ -61,139 +56,85 @@ Deno.serve(async (req) => {
         daysReported: count
       }));
 
-    // Generate PDF with professional teal branding and charts
     const doc = new jsPDF();
     
-    // ====== HEADER WITH GRADIENT ======
-    // Light teal background
+    // ====== PROFESSIONAL HEADER ======
     doc.setFillColor(230, 247, 241);
-    doc.rect(0, 0, 210, 40, 'F');
+    doc.rect(0, 0, 210, 45, 'F');
     
-    // Top accent bar (dark teal)
     doc.setFillColor(10, 90, 60);
-    doc.rect(0, 0, 210, 4, 'F');
+    doc.rect(0, 0, 210, 5, 'F');
     
-    // Title
-    doc.setFontSize(22);
+    doc.setFontSize(24);
     doc.setTextColor(10, 90, 60);
     doc.setFont("helvetica", "bold");
-    doc.text('CycleMind Clinical Summary', 20, 24);
+    doc.text('CycleMind Clinical Summary', 20, 28);
     
-    // Metadata
     doc.setFontSize(10);
     doc.setTextColor(60);
     doc.setFont("helvetica", "normal");
-    doc.text(`Patient: ${user.full_name || 'Anonymous'}`, 20, 32);
-    doc.text(`Report Generated: ${format(new Date(), 'MMM d, yyyy')}`, 20, 37);
-    doc.text(`Reporting Period: ${format(startDate, 'MMM d, yyyy')} – ${format(endDate, 'MMM d, yyyy')}`, 20, 42);
+    doc.text(`Patient: ${user.full_name || 'Anonymous'}`, 20, 36);
+    doc.text(`Report Generated: ${format(new Date(), 'MMM d, yyyy')}`, 20, 41);
+    doc.text(`Reporting Period: ${format(startDate, 'MMM d, yyyy')} – ${format(endDate, 'MMM d, yyyy')}`, 20, 46);
 
     const latestCycle = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
 
-    // Mode indicator
     if (latestCycle) {
       doc.setFontSize(9);
       doc.setTextColor(10, 90, 60);
       doc.setFont("helvetica", "bold");
       if (latestCycle.cycle_type === 'pregnancy' || latestCycle.is_pregnancy_mode) {
-        doc.text(`🤰 Pregnancy Mode | EDD: ${latestCycle.estimated_due_date || 'N/A'} | Week: ${latestCycle.pregnancy_week || 'N/A'}`, 20, 47);
+        doc.text(`Pregnancy Mode | EDD: ${latestCycle.estimated_due_date || 'N/A'} | Week: ${latestCycle.pregnancy_week || 'N/A'}`, 20, 52);
       } else if (latestCycle.cycle_type === 'menopause' || latestCycle.is_menopause_mode) {
-        doc.text(`🌸 Menopause Tracking | HRT: ${latestCycle.hrt_type || 'None'}`, 20, 47);
+        doc.text(`Menopause Tracking | HRT: ${latestCycle.hrt_type || 'None'}`, 20, 52);
       }
     }
 
-    // Disclaimer
     doc.setFontSize(7);
     doc.setTextColor(120);
     doc.setFont("helvetica", "italic");
-    doc.text('CONFIDENTIAL: This report contains sensitive health information. For healthcare provider use only.', 20, latestCycle ? 55 : 50);
+    doc.text('CONFIDENTIAL: This report contains sensitive health information. For healthcare provider use only.', 20, latestCycle ? 60 : 55);
 
-    let yPosition = latestCycle ? 60 : 55;
+    let yPosition = latestCycle ? 65 : 60;
 
     // ====== SECTION 1: CYCLE SUMMARY ======
     drawSectionHeader(doc, 'Cycle Summary', yPosition);
-    yPosition += 10;
+    yPosition += 12;
     
     doc.setFontSize(10);
     doc.setTextColor(50);
-    doc.setFont("helvetica", "normal");
     drawStatRow(doc, 'Total Cycles Logged', cycles.length.toString(), 25, yPosition);
-    yPosition += 5;
+    yPosition += 6;
     drawStatRow(doc, 'Average Cycle Length', `${avgCycleLength || 'N/A'} days`, 25, yPosition);
-    yPosition += 5;
+    yPosition += 6;
     drawStatRow(doc, 'Days Tracked', totalDaysLogged.toString(), 25, yPosition);
-    yPosition += 5;
+    yPosition += 6;
 
     if (user.luteal_phase_length) {
       drawStatRow(doc, 'User-set Luteal Phase', `${user.luteal_phase_length} days`, 25, yPosition);
-      yPosition += 5;
-    }
-
-    // PMDD intensity ratio
-    if (latestCycle && latestCycle.cycle_length && user.luteal_phase_length) {
-      const pmddWindowStart = (latestCycle.cycle_length || 28) - (user.pmdd_window_days || 10) + 1;
-      const ovulationDay = (latestCycle.cycle_length || 28) - (user.luteal_phase_length || 14);
-
-      let lutealSum = 0, lutealCount = 0;
-      let follicularSum = 0, follicularCount = 0;
-
-      recentEntries.forEach(e => {
-        if (!e.cycle_day) return;
-        const symptomKeys = Object.keys(e).filter(k => k.startsWith('s_') || k.startsWith('m_') || k.startsWith('pp_'));
-        const dayTotal = symptomKeys.reduce((s, k) => s + (e[k] || 0), 0);
-        if (dayTotal === 0) return;
-
-        if (e.cycle_day >= pmddWindowStart) {
-          lutealSum += dayTotal;
-          lutealCount++;
-        } else if (e.cycle_day <= ovulationDay - 1) {
-          follicularSum += dayTotal;
-          follicularCount++;
-        }
-      });
-
-      if (lutealCount > 0 && follicularCount > 0) {
-        const ratio = (lutealSum / lutealCount) / (follicularSum / follicularCount);
-        if (ratio) {
-          doc.setTextColor(220, 80, 80);
-          doc.setFont("helvetica", "bold");
-          doc.text(`⚠️ Luteal symptoms ${ratio.toFixed(1)}x higher than follicular (PMDD pattern)`, 25, yPosition);
-          yPosition += 5;
-          doc.setTextColor(50);
-          doc.setFont("helvetica", "normal");
-        }
-      }
-    }
-
-    if (user.current_situation === 'stopped_contraception' && user.include_transition_note) {
-      doc.setFontSize(9);
-      doc.setTextColor(80, 80, 80);
-      const text = 'Contraception transition noted • Symptom tracking active during amenorrhea';
-      doc.text(text, 25, yPosition);
-      yPosition += 5;
-      doc.setFontSize(10);
-      doc.setTextColor(50);
+      yPosition += 6;
     }
 
     if (latestCycle) {
       drawStatRow(doc, 'Cycle Type', latestCycle.cycle_type || 'Menstrual', 25, yPosition);
-      yPosition += 5;
+      yPosition += 6;
       if (latestCycle.cycle_type === 'pregnancy' || latestCycle.is_pregnancy_mode) {
         drawStatRow(doc, 'Pregnancy Week', `${latestCycle.pregnancy_week || 'N/A'} | ${latestCycle.trimester || 'N/A'}`, 25, yPosition);
-        yPosition += 5;
+        yPosition += 6;
       }
     }
     yPosition += 5;
 
     // ====== SECTION 2: MOOD SCREENING ======
     drawSectionHeader(doc, 'Mood Screening Scores (90-Day Average)', yPosition);
-    yPosition += 10;
+    yPosition += 12;
     
     if (avgPHQ9) {
       const severity = getSeverityColor(parseFloat(avgPHQ9));
       doc.setTextColor(...severity.color);
       doc.setFont("helvetica", "bold");
       drawStatRow(doc, 'PHQ-9 (Depression)', `${avgPHQ9} ${severity.label}`, 25, yPosition);
-      yPosition += 5;
+      yPosition += 6;
       doc.setTextColor(50);
       doc.setFont("helvetica", "normal");
     }
@@ -202,7 +143,7 @@ Deno.serve(async (req) => {
       doc.setTextColor(...severity.color);
       doc.setFont("helvetica", "bold");
       drawStatRow(doc, 'GAD-7 (Anxiety)', `${avgGAD7} ${severity.label}`, 25, yPosition);
-      yPosition += 5;
+      yPosition += 6;
       doc.setTextColor(50);
       doc.setFont("helvetica", "normal");
     }
@@ -211,57 +152,64 @@ Deno.serve(async (req) => {
       doc.setTextColor(...severity.color);
       doc.setFont("helvetica", "bold");
       drawStatRow(doc, 'EPDS (Postpartum)', `${avgEPDS} ${severity.label}`, 25, yPosition);
-      yPosition += 5;
+      yPosition += 6;
     }
     yPosition += 5;
 
-    // ====== SECTION 3: SYMPTOM DISTRIBUTION (PIE CHART) ======
+    // ====== SECTION 3: SYMPTOM DISTRIBUTION (COLORFUL BAR CHART) ======
     if (topSymptoms.length > 0) {
       drawSectionHeader(doc, 'Top Symptoms Breakdown', yPosition);
-      yPosition += 10;
+      yPosition += 12;
+      
+      doc.setFontSize(9);
+      doc.setTextColor(80);
+      doc.setFont("helvetica", "normal");
+      doc.text('Symptoms with moderate+ severity (3+) by frequency:', 25, yPosition);
+      yPosition += 8;
 
-      // Draw pie chart
-      const pieColors = [
-        [10, 90, 60],    // Dark teal
-        [41, 128, 185],  // Blue
-        [39, 174, 96],   // Green
-        [241, 196, 15],  // Yellow
-        [230, 126, 34],  // Orange
-      ];
-
-      const total = topSymptoms.slice(0, 5).reduce((sum, s) => sum + s.daysReported, 0);
-      let startAngle = 0;
-      const centerX = 105;
-      const centerY = yPosition + 35;
-      const radius = 30;
-
-      topSymptoms.slice(0, 5).forEach((symptom, idx) => {
-        const sliceAngle = (symptom.daysReported / total) * 2 * Math.PI;
-        drawPieSlice(doc, centerX, centerY, radius, startAngle, startAngle + sliceAngle, pieColors[idx % pieColors.length]);
-        startAngle += sliceAngle;
-      });
-
-      // Legend
-      const legendX = 145;
-      let legendY = yPosition + 10;
-      topSymptoms.slice(0, 5).forEach((symptom, idx) => {
-        doc.setFillColor(...pieColors[idx % pieColors.length]);
-        doc.rect(legendX, legendY, 4, 4, 'F');
-        doc.setFontSize(8);
+      // Colorful horizontal bar chart
+      const maxDays = Math.max(...topSymptoms.slice(0, 8).map(s => s.daysReported));
+      const barHeight = 6;
+      const barGap = 5;
+      const chartStartX = 90;
+      const maxBarWidth = 100;
+      
+      topSymptoms.slice(0, 8).forEach((symptom, idx) => {
+        if (yPosition > 250) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        
+        const barWidth = (symptom.daysReported / maxDays) * maxBarWidth;
+        const color = getBarColor(idx);
+        
+        // Symptom name (formatted nicely)
+        doc.setFontSize(9);
         doc.setTextColor(50);
-        doc.text(`${symptom.name}: ${symptom.daysReported}d`, legendX + 6, legendY + 3);
-        legendY += 6;
+        doc.setFont("helvetica", "normal");
+        const shortName = formatSymptomName(symptom.name);
+        doc.text(shortName, 25, yPosition + 2);
+        
+        // Colored bar
+        doc.setFillColor(...color);
+        doc.rect(chartStartX, yPosition, barWidth, barHeight, 'F');
+        
+        // Days count
+        doc.setFontSize(9);
+        doc.setTextColor(80);
+        doc.text(`${symptom.daysReported} days`, chartStartX + barWidth + 3, yPosition + 4);
+        
+        yPosition += barHeight + barGap;
       });
-
-      yPosition += 75;
+      
+      yPosition += 5;
     }
 
     // ====== SECTION 4: PROGRESS CHART ======
     if (includeChart && recentEntries.length > 0) {
       drawSectionHeader(doc, 'Symptom Progress Over Time', yPosition);
-      yPosition += 10;
+      yPosition += 12;
       
-      // Calculate weekly averages
       const weeklyData = {};
       recentEntries.forEach(e => {
         const d = parseISO(e.date);
@@ -282,66 +230,55 @@ Deno.serve(async (req) => {
         .sort((a, b) => new Date(a.week) - new Date(b.week))
         .slice(-8);
       
-      // Draw bar chart
-      const maxVal = Math.max(...chartData.map(d => d.avg), 1);
-      const barWidth = 16;
-      const gap = 5;
-      const chartHeight = 60;
-      const startX = 25;
-      const baseY = yPosition + chartHeight + 10;
-      
-      chartData.forEach((d, i) => {
-        const barHeight = (d.avg / maxVal) * chartHeight;
-        const x = startX + i * (barWidth + gap);
+      if (chartData.length > 0) {
+        const maxVal = Math.max(...chartData.map(d => d.avg), 1);
+        const barWidth = 14;
+        const gap = 4;
+        const chartHeight = 50;
+        const startX = 25;
+        const baseY = yPosition + chartHeight + 10;
         
-        // Gradient bar
-        const gradient = doc.linearGradient(x, baseY - barHeight, x, baseY, 0, 20, 180, 140);
-        doc.setFillColor(20, 180, 140);
-        doc.rect(x, baseY - barHeight, barWidth, barHeight, 'F');
+        chartData.forEach((d, i) => {
+          const barHeight = (d.avg / maxVal) * chartHeight;
+          const x = startX + i * (barWidth + gap);
+          
+          doc.setFillColor(20, 180, 140);
+          doc.rect(x, baseY - barHeight, barWidth, barHeight, 'F');
+          
+          doc.setFontSize(7);
+          doc.setTextColor(80);
+          doc.text(d.avg.toString(), x + barWidth / 2, baseY - barHeight - 1, { align: 'center' });
+          
+          doc.setFontSize(6);
+          doc.text(d.week.slice(0, 5), x + barWidth / 2, baseY + 3, { align: 'center' });
+        });
         
-        // Value label
-        doc.setFontSize(8);
-        doc.setTextColor(80);
-        doc.text(d.avg.toString(), x + barWidth / 2, baseY - barHeight - 2, { align: 'center' });
-        
-        // Week label
-        doc.setFontSize(7);
-        doc.text(d.week.slice(0, 5), x + barWidth / 2, baseY + 4, { align: 'center' });
-      });
-      
-      // Severity reference lines
-      doc.setDrawColor(200, 200, 200);
-      doc.setLineDash([2, 2]);
-      doc.line(25, baseY - (3/6) * chartHeight, startX + chartData.length * (barWidth + gap), baseY - (3/6) * chartHeight);
-      doc.setFontSize(7);
-      doc.setTextColor(150);
-      doc.text('Moderate', startX + chartData.length * (barWidth + gap) + 2, baseY - (3/6) * chartHeight);
-      
-      yPosition += chartHeight + 25;
+        yPosition += chartHeight + 20;
+      }
     }
 
     // ====== SECTION 5: APPOINTMENT PREP ======
     if (includeAppointmentPrep) {
       drawSectionHeader(doc, 'Appointment Preparation', yPosition);
-      yPosition += 10;
+      yPosition += 12;
       
       doc.setFontSize(9);
       doc.setTextColor(50);
       
       if (topSymptoms.length > 0) {
         doc.setFont("helvetica", "bold");
-        doc.text('📋 Top symptoms to discuss:', 25, yPosition);
+        doc.text('Top symptoms to discuss:', 25, yPosition);
         yPosition += 5;
         doc.setFont("helvetica", "normal");
         doc.setTextColor(80);
-        doc.text(topSymptoms.slice(0, 3).map(s => `• ${s.name}`).join(' | '), 25, yPosition);
+        doc.text(topSymptoms.slice(0, 3).map(s => `• ${formatSymptomName(s.name)}`).join(' | '), 25, yPosition);
         yPosition += 8;
         doc.setTextColor(50);
       }
       
       if (avgPHQ9 || avgGAD7) {
         doc.setFont("helvetica", "bold");
-        doc.text('🧠 Mood screening averages:', 25, yPosition);
+        doc.text('Mood screening averages:', 25, yPosition);
         yPosition += 5;
         doc.setFont("helvetica", "normal");
         doc.setTextColor(80);
@@ -354,7 +291,7 @@ Deno.serve(async (req) => {
       }
       
       doc.setFont("helvetica", "bold");
-      doc.text('❓ Questions for your provider:', 25, yPosition);
+      doc.text('Questions for your provider:', 25, yPosition);
       yPosition += 5;
       doc.setFont("helvetica", "normal");
       doc.setTextColor(80);
@@ -371,19 +308,16 @@ Deno.serve(async (req) => {
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       
-      // Footer background
       doc.setFillColor(230, 247, 241);
       doc.rect(0, 280, 210, 27, 'F');
       
-      // Top accent bar
       doc.setFillColor(10, 90, 60);
       doc.rect(0, 280, 210, 3, 'F');
       
-      // Branding
       doc.setFontSize(8);
       doc.setTextColor(10, 90, 60);
       doc.setFont("helvetica", "bold");
-      doc.text('⚕️ DRSP-Based Clinical Assessment Tool', 20, 288);
+      doc.text('DRSP-Based Clinical Assessment Tool', 20, 288);
       
       doc.setFontSize(7);
       doc.setTextColor(80);
@@ -411,15 +345,12 @@ Deno.serve(async (req) => {
 // ====== HELPER FUNCTIONS ======
 
 function drawSectionHeader(doc, title, y) {
-  // Light teal background
   doc.setFillColor(245, 252, 250);
-  doc.rect(20, y - 5, 170, 8, 'F');
+  doc.rect(20, y - 6, 170, 9, 'F');
   
-  // Left accent bar (dark teal)
   doc.setFillColor(10, 90, 60);
-  doc.rect(20, y - 5, 4, 8, 'F');
+  doc.rect(20, y - 6, 4, 9, 'F');
   
-  // Title text
   doc.setFontSize(14);
   doc.setTextColor(10, 90, 60);
   doc.setFont("helvetica", "bold");
@@ -432,28 +363,7 @@ function drawStatRow(doc, label, value, x, y) {
   doc.text(`${label}:`, x, y);
   doc.setTextColor(10, 90, 60);
   doc.setFont("helvetica", "bold");
-  doc.text(value, x + 60, y);
-}
-
-function drawPieSlice(doc, x, y, radius, startAngle, endAngle, color) {
-  doc.setFillColor(...color);
-  doc.setLineWidth(0);
-  
-  // Draw slice using multiple triangles
-  const steps = 20;
-  const angleStep = (endAngle - startAngle) / steps;
-  
-  for (let i = 0; i < steps; i++) {
-    const a1 = startAngle + i * angleStep;
-    const a2 = startAngle + (i + 1) * angleStep;
-    
-    const x1 = x + radius * Math.cos(a1);
-    const y1 = y + radius * Math.sin(a1);
-    const x2 = x + radius * Math.cos(a2);
-    const y2 = y + radius * Math.sin(a2);
-    
-    doc.triangle(x, y, x1, y1, x2, y2, 'F');
-  }
+  doc.text(value, x + 55, y);
 }
 
 function getSeverityColor(score) {
@@ -468,4 +378,27 @@ function getSeverityLabel(score) {
   if (score >= 10) return '(Moderate)';
   if (score >= 5) return '(Mild)';
   return '(Minimal)';
+}
+
+function getBarColor(index) {
+  const colors = [
+    [10, 90, 60],     // Dark teal
+    [41, 128, 185],   // Blue
+    [39, 174, 96],    // Green
+    [241, 196, 15],   // Yellow
+    [230, 126, 34],   // Orange
+    [155, 89, 182],   // Purple
+    [231, 76, 60],    // Red
+    [52, 152, 219],   // Light blue
+  ];
+  return colors[index % colors.length];
+}
+
+function formatSymptomName(name) {
+  // Convert "hot_flashes" to "Hot Flashes" with proper capitalization
+  return name
+    .replace(/_/g, ' ')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
