@@ -39,7 +39,10 @@ Deno.serve(async (req) => {
       });
     });
     const topSymptoms = Object.entries(symptomCounts).sort((a, b) => b[1] - a[1]).slice(0, 10)
-      .map(([symptom, count]) => ({ name: symptom.replace(/[smp]_/, '').replace(/_/g, ' '), daysReported: count }));
+      .map(([symptom, count]) => ({ 
+        name: symptom.replace(/^(s_|m_|p_|pp_)/, '').replace(/_/g, ' '), 
+        daysReported: count 
+      }));
 
     const doc = new jsPDF();
     const margin = 15;
@@ -130,21 +133,21 @@ Deno.serve(async (req) => {
         const barWidth = (symptom.daysReported / maxDays) * maxBarWidth;
         const color = getBarColor(idx);
         
-        // Symptom name
-        doc.setFontSize(9);
+        // Symptom name (clean formatting)
+        doc.setFontSize(8);
         doc.setTextColor(50);
         doc.setFont("helvetica", "normal");
-        const shortName = formatSymptomName(symptom.name).substring(0, 18);
-        doc.text(shortName, margin + 5, y + 5);
+        const shortName = symptom.name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        doc.text(shortName.substring(0, 16), margin + 5, y + 5);
         
-        // Colored bar with rounded effect
+        // Colored bar
         doc.setFillColor(...color);
         doc.roundedRect(chartStartX, y, barWidth, barHeight, 1, 1, 'F');
         
         // Days count
-        doc.setFontSize(9);
+        doc.setFontSize(8);
         doc.setTextColor(80);
-        doc.text(`${symptom.daysReported} days`, chartStartX + barWidth + 3, y + 5);
+        doc.text(`${symptom.daysReported}d`, chartStartX + barWidth + 3, y + 5);
         
         y += barHeight + barGap;
       });
@@ -311,5 +314,5 @@ function getBarColor(index) {
 }
 
 function formatSymptomName(name) {
-  return name.replace(/_/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  return name.replace(/^(s_|m_|p_|pp_)/, '').replace(/_/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }

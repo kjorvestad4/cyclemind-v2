@@ -50,7 +50,11 @@ export default function PdfReportButton({ cycles, entries, analysis }) {
       const endDate = getEndDate();
       
       const response = await base44.functions.invoke("generateDoctorReport", {
-        ...opts,
+        includeJournal: opts.include_journal,
+        includeMedications: opts.include_medications,
+        includeScreening: opts.include_screening,
+        includeChart: opts.include_chart,
+        includeAppointmentPrep: opts.include_appointment_prep,
         start_date: startDate.toISOString(),
         end_date: endDate.toISOString(),
       });
@@ -216,8 +220,8 @@ export default function PdfReportButton({ cycles, entries, analysis }) {
                             dataKey="count"
                             nameKey="name"
                             label={({ name, percent }) => {
-                              const displayName = name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                              const shortName = displayName.length > 15 ? displayName.substring(0, 15) + '…' : displayName;
+                              const displayName = name.replace(/^(s_|m_|p_|pp_)/, '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                              const shortName = displayName.length > 14 ? displayName.substring(0, 14) + '…' : displayName;
                               return `${shortName} (${(percent * 100).toFixed(0)}%)`;
                             }}
                             labelLine={false}
@@ -235,7 +239,7 @@ export default function PdfReportButton({ cycles, entries, analysis }) {
                           <div key={symptom.name} className="flex items-center justify-between text-xs">
                             <div className="flex items-center gap-2">
                               <div className="w-3 h-3 rounded-sm" style={{ background: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'][idx % 5] }} />
-                              <span className="text-foreground">{symptom.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                              <span className="text-foreground">{symptom.name.replace(/^(s_|m_|p_|pp_)/, '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
                             </div>
                             <span className="font-semibold text-muted-foreground">{symptom.count}d</span>
                           </div>
