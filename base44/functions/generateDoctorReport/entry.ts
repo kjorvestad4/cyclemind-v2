@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 import { jsPDF } from 'npm:jspdf@4.0.0';
-import { differenceInDays, format, parseISO } from 'npm:date-fns@3.6.0';
+import { differenceInDays, format, parseISO, subDays } from 'npm:date-fns@3.6.0';
 
 Deno.serve(async (req) => {
   try {
@@ -11,19 +11,19 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { includeJournal, includeMedications, includeScreening } = await req.json();
+    const { includeJournal, includeMedications, includeScreening, includeChart, includeAppointmentPrep, start_date, end_date } = await req.json();
 
-    // Fetch data for last 90 days
-    const ninetyDaysAgo = new Date();
-    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+    // Use provided date range or default to last 90 days
+    const startDate = start_date ? parseISO(start_date) : subDays(new Date(), 90);
+    const endDate = end_date ? parseISO(end_date) : new Date();
 
     const cycles = await base44.entities.Cycle.filter({ user_id: user.id });
     const entries = await base44.entities.DailyEntry.filter({});
     
-    // Filter entries for last 90 days
+    // Filter entries for date range
     const recentEntries = entries.filter(e => {
       const entryDate = parseISO(e.date);
-      return entryDate >= ninetyDaysAgo;
+      return entryDate >= startDate && entryDate <= endDate;
     });
 
     // Calculate summary statistics
@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
     doc.setFont("helvetica", "normal");
     doc.text(`Patient: ${user.full_name || 'Anonymous'}`, 20, 30);
     doc.text(`Report Generated: ${format(new Date(), 'MMM d, yyyy')}`, 20, 35);
-    doc.text(`Reporting Period: Last 90 days (${format(ninetyDaysAgo, 'MMM d, yyyy')})`, 20, 40);
+    doc.text(`Reporting Period: ${format(startDate, 'MMM d, yyyy')} – ${format(endDate, 'MMM d, yyyy')}`, 20, 40);
 
     const latestCycle = [...cycles].sort((a, b) => new Date(b.start_date) - new Date(a.start_date))[0];
 
@@ -245,13 +245,14 @@ Deno.serve(async (req) => {
     
     doc.setFontSize(10);
     doc.setTextColor(50);
+    const daysInRange = differenceInDays(endDate, startDate);
     topSymptoms.forEach((symptom, idx) => {
       if (yPosition > 250) {
         doc.addPage();
         yPosition = 20;
       }
       // Enhanced severity bar with color coding
-      const barWidth = Math.min((symptom.daysReported / 90) * 120, 140);
+      const barWidth = Math.min((symptom.daysReported / daysInRange) * 120, 140);
       const barColor = symptom.daysReported >= 30 ? [220, 80, 80] : symptom.daysReported >= 15 ? [240, 180, 80] : [20, 180, 140];
       doc.setFillColor(...barColor);
       doc.rect(25, yPosition - 2, barWidth, 4, 'F');
@@ -259,6 +260,133 @@ Deno.serve(async (req) => {
       yPosition += 7;
     });
     yPosition += 8;
+
+    // Progress Chart (if included)
+    if (includeChart && recentEntries.length > 0) {
+      doc.setFillColor(245, 252, 250);
+      doc.rect(20, yPosition - 5, 170, 7, 'F');
+      doc.setFillColor(10, 90, 60);
+      doc.rect(20, yPosition - 5, 3, 7, 'F');
+      doc.setFontSize(13);
+      doc.setTextColor(10, 90, 60);
+      doc.setFont("helvetica", "bold");
+      doc.text('Symptom Progress Over Time', 27, yPosition);
+      yPosition += 10;
+      
+      // Calculate weekly averages
+      const weeklyData = {};
+      recentEntries.forEach(e => {
+        const d = parseISO(e.date);
+        const dayOfWeek = d.getDay();
+        const weekStart = subDays(d, dayOfWeek);
+        const weekKey = format(weekStart, 'MMM d');
+        
+        if (!weeklyData[weekKey]) weeklyData[weekKey] = { sum: 0, count: 0 };
+        
+        const symptomKeys = Object.keys(e).filter(k => 
+          k.startsWith('s_') || k.startsWith('m_') || k.startsWith('p_') || k.startsWith('pp_')
+        );
+        const avg = symptomKeys.reduce((s, k) => s + (e[k] || 0), 0) / symptomKeys.length;
+        
+        weeklyData[weekKey].sum += avg;
+        weeklyData[weekKey].count++;
+      });
+      
+      const chartData = Object.entries(weeklyData)
+        .map(([week, data]) => ({
+          week,
+          avg: parseFloat((data.sum / data.count).toFixed(1))
+        }))
+        .sort((a, b) => new Date(a.week) - new Date(b.week))
+        .slice(-8);
+      
+      // Simple bar chart visualization
+      const maxVal = Math.max(...chartData.map(d => d.avg), 1);
+      const barWidth = 18;
+      const gap = 4;
+      const chartHeight = 80;
+      const startX = 25;
+      const baseY = yPosition + chartHeight;
+      
+      chartData.forEach((d, i) => {
+        const barHeight = (d.avg / maxVal) * chartHeight;
+        const x = startX + i * (barWidth + gap);
+        
+        // Bar
+        doc.setFillColor(20, 180, 140);
+        doc.rect(x, baseY - barHeight, barWidth, barHeight, 'F');
+        
+        // Value
+        doc.setFontSize(8);
+        doc.setTextColor(80);
+        doc.text(d.avg.toString(), x + barWidth / 2, baseY - barHeight - 2, { align: 'center' });
+        
+        // Week label
+        doc.setFontSize(7);
+        doc.text(d.week.slice(0, 5), x + barWidth / 2, baseY + 4, { align: 'center' });
+      });
+      
+      yPosition += chartHeight + 15;
+    }
+
+    // Appointment Prep Checklist (if included)
+    if (includeAppointmentPrep) {
+      doc.setFillColor(245, 252, 250);
+      doc.rect(20, yPosition - 5, 170, 7, 'F');
+      doc.setFillColor(10, 90, 60);
+      doc.rect(20, yPosition - 5, 3, 7, 'F');
+      doc.setFontSize(13);
+      doc.setTextColor(10, 90, 60);
+      doc.setFont("helvetica", "bold");
+      doc.text('Appointment Preparation', 27, yPosition);
+      yPosition += 10;
+      
+      doc.setFontSize(9);
+      doc.setTextColor(50);
+      
+      // Top symptoms
+      if (topSymptoms.length > 0) {
+        doc.text('📋 Top symptoms to discuss:', 25, yPosition);
+        yPosition += 4;
+        doc.setFontSize(8);
+        doc.setTextColor(80);
+        doc.text(topSymptoms.slice(0, 3).map(s => `• ${s.name.replace(/_/g, ' ')}`).join(' | '), 25, yPosition);
+        yPosition += 6;
+        doc.setFontSize(9);
+        doc.setTextColor(50);
+      }
+      
+      // Mood scores
+      if (avgPHQ9 || avgGAD7) {
+        doc.text('🧠 Mood screening averages:', 25, yPosition);
+        yPosition += 4;
+        doc.setFontSize(8);
+        doc.setTextColor(80);
+        const scores = [];
+        if (avgPHQ9) scores.push(`PHQ-9: ${avgPHQ9}`);
+        if (avgGAD7) scores.push(`GAD-7: ${avgGAD7}`);
+        doc.text(scores.join(' | '), 25, yPosition);
+        yPosition += 6;
+        doc.setFontSize(9);
+        doc.setTextColor(50);
+      }
+      
+      // Questions to ask
+      doc.text('❓ Questions for your provider:', 25, yPosition);
+      yPosition += 4;
+      doc.setFontSize(8);
+      doc.setTextColor(80);
+      const questions = [
+        'Are my symptoms consistent with PMDD?',
+        'What treatment options do you recommend?',
+        'Should I adjust tracking or medication timing?'
+      ];
+      questions.forEach((q, i) => {
+        doc.text(`${i + 1}. ${q}`, 25, yPosition);
+        yPosition += 4;
+      });
+      yPosition += 3;
+    }
 
     // Journal Entries (if included)
     if (includeJournal) {

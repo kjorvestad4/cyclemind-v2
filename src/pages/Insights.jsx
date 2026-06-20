@@ -190,7 +190,7 @@ export default function Insights() {
               </button>
             </div>
           ) : (
-            <PdfReportButton cycles={cycles} entries={entries} analysis={analysis} user={user} />
+            <PdfReportButton cycles={cycles} entries={filteredEntries} analysis={analysis} />
           )
         )}
       </div>
