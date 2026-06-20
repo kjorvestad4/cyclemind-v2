@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { TrendingUp, TrendingDown, Minus, Activity, Brain, Droplet } from "lucide-react";
-import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ReferenceArea, ReferenceLine, BarChart, Bar } from "recharts";
+import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ReferenceArea, ReferenceLine, BarChart, Bar, AreaChart, Area } from "recharts";
 import { format } from "date-fns";
 
 const CHART_TOOLTIP_STYLE = {
@@ -42,7 +42,17 @@ export default function TrendsTab({ moodTrend, screeningTrend, bleedingTimeline,
             {moodTrend.length > 2 ? (
               <div className="relative">
                 <ResponsiveContainer width="100%" height={240}>
-                  <LineChart data={moodTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                  <AreaChart data={moodTrend} margin={{ left: 0, right: 10, top: 5, bottom: 5 }}>
+                    <defs>
+                      <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1}/>
+                      </linearGradient>
+                      <linearGradient id="colorPhysical" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0.1}/>
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="date" tick={{ fontSize: 8 }} interval="preserveStartEnd" />
                     <YAxis tick={{ fontSize: 10 }} domain={[0, 6]} />
@@ -73,10 +83,9 @@ export default function TrendsTab({ moodTrend, screeningTrend, bleedingTimeline,
                     <ReferenceLine y={3} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 2" label={{ value: "Moderate", fontSize: 9 }} />
                     <ReferenceLine y={5} stroke="hsl(var(--destructive))" strokeDasharray="3 2" label={{ value: "Severe", fontSize: 9 }} />
                     
-                    <Line type="monotone" dataKey="mood" stroke="hsl(var(--chart-1))" strokeWidth={2.5} dot={false} name="Mood (avg)" />
-                    <Line type="monotone" dataKey="physical" stroke="hsl(var(--chart-2))" strokeWidth={2.5} dot={false} name="Physical (avg)" />
-                    <Line type="monotone" dataKey="total" stroke="hsl(var(--muted-foreground))" strokeWidth={1.5} dot={false} name="Total" strokeDasharray="4 2" />
-                  </LineChart>
+                    <Area type="monotone" dataKey="mood" stroke="hsl(var(--chart-1))" strokeWidth={2.5} fillOpacity={1} fill="url(#colorMood)" name="Mood (avg)" />
+                    <Area type="monotone" dataKey="physical" stroke="hsl(var(--chart-2))" strokeWidth={2.5} fillOpacity={1} fill="url(#colorPhysical)" name="Physical (avg)" />
+                  </AreaChart>
                 </ResponsiveContainer>
                 
                 {/* Phase legend */}

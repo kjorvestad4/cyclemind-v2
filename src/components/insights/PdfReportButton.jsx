@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { FileDown, Loader2, Settings, Calendar, TrendingUp, ClipboardList, X } from "lucide-react";
+import { FileDown, Loader2, Settings, Calendar, TrendingUp, ClipboardList, X, Activity } from "lucide-react";
 import { format, subDays } from "date-fns";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area, Legend } from "recharts";
 
 const CHART_TOOLTIP_STYLE = {
   contentStyle: {
@@ -77,6 +77,12 @@ export default function PdfReportButton({ cycles, entries, analysis }) {
 
   // Calculate progress data
   const progressData = calculateProgressData(entries, dateRange);
+  
+  // Calculate symptom distribution for pie chart
+  const symptomDistribution = calculateSymptomDistribution(entries, dateRange);
+  
+  // Calculate phase comparison data
+  const phaseComparison = calculatePhaseComparison(entries, cycles);
 
   return (
     <div className="space-y-3">
@@ -88,11 +94,15 @@ export default function PdfReportButton({ cycles, entries, analysis }) {
               Download Clinical Report (PDF)
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
+            <DialogHeader className="sticky top-0 bg-background z-10 pb-2 border-b">
               <div className="flex items-center justify-between">
                 <DialogTitle className="font-serif text-xl">Clinical Report Preview</DialogTitle>
-                <button onClick={() => setPreviewOpen(false)} className="text-muted-foreground hover:text-foreground">
+                <button 
+                  onClick={() => setPreviewOpen(false)} 
+                  className="text-muted-foreground hover:text-foreground transition-colors p-1 hover:bg-muted rounded-lg"
+                  type="button"
+                >
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -158,22 +168,100 @@ export default function PdfReportButton({ cycles, entries, analysis }) {
               {/* Progress Chart Preview */}
               {progressData.length > 0 && opts.include_chart && (
                 <Card>
-                  <CardContent className="pt-4 space-y-3">
+                  <CardContent className="pt-4 space-y-4">
                     <div className="flex items-center gap-2">
                       <TrendingUp className="w-4 h-4 text-chart-1" />
                       <p className="text-sm font-semibold">Symptom Progress (Last {dateRange} Days)</p>
                     </div>
                     <ResponsiveContainer width="100%" height={200}>
-                      <LineChart data={progressData}>
+                      <AreaChart data={progressData}>
+                        <defs>
+                          <linearGradient id="colorSeverity" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1}/>
+                          </linearGradient>
+                        </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis dataKey="date" tick={{ fontSize: 9 }} interval="preserveStartEnd" />
                         <YAxis tick={{ fontSize: 9 }} domain={[0, 6]} />
                         <Tooltip {...CHART_TOOLTIP_STYLE} />
-                        <Line type="monotone" dataKey="severity" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={false} name="Avg Severity" />
-                      </LineChart>
+                        <Area type="monotone" dataKey="severity" stroke="hsl(var(--chart-1))" strokeWidth={2} fillOpacity={1} fill="url(#colorSeverity)" name="Avg Severity" />
+                      </AreaChart>
                     </ResponsiveContainer>
                     <p className="text-xs text-muted-foreground text-center">
                       {progressData.length > 10 ? "✓ Showing improvement trend" : "Need more data points for trend analysis"}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Symptom Distribution Pie Chart */}
+              {symptomDistribution.length > 0 && (
+                <Card>
+                  <CardContent className="pt-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <ClipboardList className="w-4 h-4 text-chart-3" />
+                      <p className="text-sm font-semibold">Top Symptoms Breakdown</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <ResponsiveContainer width="100%" height={200}>
+                        <PieChart>
+                          <Pie
+                            data={symptomDistribution.slice(0, 5)}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={50}
+                            outerRadius={80}
+                            paddingAngle={2}
+                            dataKey="count"
+                            nameKey="name"
+                            label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                            labelLine={false}
+                          >
+                            {symptomDistribution.slice(0, 5).map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'][index % 5]} />
+                            ))}
+                          </Pie>
+                          <Tooltip {...CHART_TOOLTIP_STYLE} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="space-y-2">
+                        {symptomDistribution.slice(0, 5).map((symptom, idx) => (
+                          <div key={symptom.name} className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-sm" style={{ background: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'][idx % 5] }} />
+                              <span className="text-foreground capitalize">{symptom.name.replace(/_/g, ' ')}</span>
+                            </div>
+                            <span className="font-semibold text-muted-foreground">{symptom.count} days</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Phase Comparison Bar Chart */}
+              {phaseComparison.length > 0 && (
+                <Card>
+                  <CardContent className="pt-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-accent" />
+                      <p className="text-sm font-semibold">Luteal vs Follicular Phase Comparison</p>
+                    </div>
+                    <ResponsiveContainer width="100%" height={180}>
+                      <BarChart data={phaseComparison} layout="vertical">
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={true} vertical={false} />
+                        <XAxis type="number" tick={{ fontSize: 9 }} domain={[0, 6]} />
+                        <YAxis dataKey="phase" type="category" tick={{ fontSize: 9 }} width={70} />
+                        <Tooltip {...CHART_TOOLTIP_STYLE} />
+                        <Legend wrapperStyle={{ fontSize: 10 }} />
+                        <Bar dataKey="luteal" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]} name="Luteal Avg" />
+                        <Bar dataKey="follicular" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} name="Follicular Avg" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                    <p className="text-xs text-muted-foreground text-center">
+                      Higher luteal scores may indicate PMDD pattern
                     </p>
                   </CardContent>
                 </Card>
@@ -262,6 +350,74 @@ function calculateProgressData(entries, days) {
     .map(d => ({ ...d, severity: parseFloat((d.severity / d.count).toFixed(1)) }))
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .slice(-8);
+}
+
+function calculateSymptomDistribution(entries, days) {
+  const cutoff = subDays(new Date(), days);
+  const recentEntries = entries.filter(e => new Date(e.date) >= cutoff);
+  
+  const symptomCounts = {};
+  recentEntries.forEach(entry => {
+    const symptomKeys = Object.keys(entry).filter(k => 
+      k.startsWith('s_') || k.startsWith('m_') || k.startsWith('p_') || k.startsWith('pp_')
+    );
+    
+    symptomKeys.forEach(key => {
+      if (entry[key] && entry[key] >= 3) { // Only count moderate+ severity
+        symptomCounts[key] = (symptomCounts[key] || 0) + 1;
+      }
+    });
+  });
+  
+  return Object.entries(symptomCounts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+}
+
+function calculatePhaseComparison(entries, cycles) {
+  if (cycles.length < 2) return [];
+  
+  const recentCycles = cycles.slice(0, 2);
+  const comparison = [];
+  
+  recentCycles.forEach((cycle, idx) => {
+    const cycleStart = new Date(cycle.start_date);
+    const cycleLen = cycle.cycle_length || 28;
+    const lutealStart = cycleLen - 13;
+    
+    // Get entries for this cycle
+    const cycleEntries = entries.filter(e => {
+      const entryDate = new Date(e.date);
+      return entryDate >= cycleStart && entryDate < new Date(cycleStart.getTime() + cycleLen * 24 * 60 * 60 * 1000);
+    });
+    
+    // Calculate follicular average (first ~14 days)
+    const follicularEntries = cycleEntries.filter((_, i) => i < lutealStart);
+    const follicularAvg = follicularEntries.length > 0
+      ? follicularEntries.reduce((sum, e) => {
+          const symptomKeys = Object.keys(e).filter(k => k.startsWith('s_') || k.startsWith('m_'));
+          return sum + symptomKeys.reduce((s, k) => s + (e[k] || 0), 0) / symptomKeys.length;
+        }, 0) / follicularEntries.length
+      : 0;
+    
+    // Calculate luteal average (last ~13 days)
+    const lutealEntries = cycleEntries.filter((_, i) => i >= lutealStart);
+    const lutealAvg = lutealEntries.length > 0
+      ? lutealEntries.reduce((sum, e) => {
+          const symptomKeys = Object.keys(e).filter(k => k.startsWith('s_') || k.startsWith('m_'));
+          return sum + symptomKeys.reduce((s, k) => s + (e[k] || 0), 0) / symptomKeys.length;
+        }, 0) / lutealEntries.length
+      : 0;
+    
+    comparison.push({
+      phase: `Cycle ${idx + 1}`,
+      luteal: parseFloat(lutealAvg.toFixed(1)),
+      follicular: parseFloat(follicularAvg.toFixed(1))
+    });
+  });
+  
+  return comparison;
 }
 
 function generateAppointmentPrep(entries, analysis) {
