@@ -40,7 +40,7 @@ export default function EditPostpartumModal({ cycle, onClose, onSuccess }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
       <div
-        className="relative w-full max-w-[28rem] bg-background rounded-2xl border border-border shadow-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto"
+        className="relative w-full max-w-lg bg-background rounded-2xl border border-border shadow-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -52,13 +52,11 @@ export default function EditPostpartumModal({ cycle, onClose, onSuccess }) {
 
         <div className="space-y-4">
           {/* Delivery Date */}
-          <LMPPicker
-            label="Birth / Delivery Date"
-            value={deliveryDate}
-            onChange={setDeliveryDate}
-            showClear={false}
-          />
-          <p className="text-[11px] text-muted-foreground -mt-2">Date of birth or delivery</p>
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Birth / Delivery Date</Label>
+            <Input type="date" value={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} />
+            <p className="text-[11px] text-muted-foreground">Date of birth or delivery</p>
+          </div>
 
           {/* Postpartum Day Display */}
           {ppDay && (

@@ -191,8 +191,12 @@ export default function QuickModeSwitcher({ currentCycleType, latestCycle, onClo
                      )}
                      {mode.fields.includes("birth_date") && (
                       <div className="space-y-0.5">
-                        <Label className="text-xs font-medium">Birth / Delivery Date</Label>
-                        <Input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="h-8 text-sm bg-background" />
+                        <LMPPicker
+                          label="Birth / Delivery Date"
+                          value={birthDate}
+                          onChange={setBirthDate}
+                          showClear={true}
+                        />
                       </div>
                     )}
                     {mode.fields.includes("hrt_type") && (
