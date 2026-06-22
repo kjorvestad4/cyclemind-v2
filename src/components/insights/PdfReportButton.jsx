@@ -219,23 +219,17 @@ export default function PdfReportButton({ cycles = [], entries = [], analysis = 
                       <p className="text-sm font-semibold">Top Symptoms Breakdown</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <ResponsiveContainer width="100%" height={200}>
+                      <ResponsiveContainer width="100%" height={220}>
                         <PieChart>
                           <Pie
                             data={symptomDistribution.slice(0, 5)}
                             cx="50%"
                             cy="50%"
-                            innerRadius={50}
-                            outerRadius={80}
+                            innerRadius={55}
+                            outerRadius={85}
                             paddingAngle={2}
                             dataKey="count"
                             nameKey="name"
-                            label={({ name, percent }) => {
-                              const displayName = name.replace(/^(s_|m_|p_|pp_)/, '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                              const shortName = displayName.length > 14 ? displayName.substring(0, 14) + '…' : displayName;
-                              return `${shortName} (${(percent * 100).toFixed(0)}%)`;
-                            }}
-                            labelLine={false}
                             minAngle={15}
                           >
                             {symptomDistribution.slice(0, 5).map((entry, index) => (
@@ -245,16 +239,20 @@ export default function PdfReportButton({ cycles = [], entries = [], analysis = 
                           <Tooltip {...CHART_TOOLTIP_STYLE} formatter={(value, name) => [`${value} days`, name.replace(/_/g, ' ')]} />
                         </PieChart>
                       </ResponsiveContainer>
-                      <div className="space-y-2">
-                        {symptomDistribution.slice(0, 5).map((symptom, idx) => (
-                          <div key={symptom.name} className="flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 rounded-sm" style={{ background: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'][idx % 5] }} />
-                              <span className="text-foreground">{symptom.name.replace(/^(s_|m_|p_|pp_)/, '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                      <div className="space-y-2.5">
+                        {symptomDistribution.slice(0, 5).map((symptom, idx) => {
+                          const total = symptomDistribution.slice(0, 5).reduce((sum, s) => sum + s.count, 0);
+                          const percent = Math.round((symptom.count / total) * 100);
+                          return (
+                            <div key={symptom.name} className="flex items-center justify-between text-xs gap-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className="w-3 h-3 rounded-sm shrink-0" style={{ background: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'][idx % 5] }} />
+                                <span className="text-foreground truncate">{symptom.name.replace(/^(s_|m_|p_|pp_)/, '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                              </div>
+                              <span className="font-semibold text-muted-foreground whitespace-nowrap">{symptom.count}d ({percent}%)</span>
                             </div>
-                            <span className="font-semibold text-muted-foreground">{symptom.count}d</span>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   </CardContent>
