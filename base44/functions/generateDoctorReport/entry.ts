@@ -62,6 +62,18 @@ function hRule(doc, margin, y, width) {
 
 // ─── Main handler ────────────────────────────────────────────────────────────
 
+// Fetch image URL and convert to base64 data URI for jsPDF
+async function fetchImageAsBase64(url) {
+  const res = await fetch(url);
+  const buf = await res.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+  const b64 = btoa(binary);
+  const mime = res.headers.get('content-type') || 'image/png';
+  return `data:${mime};base64,${b64}`;
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -171,6 +183,14 @@ Deno.serve(async (req) => {
       ? entries.filter(e => e.journal_entry && e.journal_entry.trim()).slice(-5)
       : [];
 
+    // ── Fetch logo ──
+    let logoDataUri = null;
+    try {
+      logoDataUri = await fetchImageAsBase64('https://media.base44.com/images/public/69fb50354d2f1f828f13182f/1f6e3c73e_generated_image.png');
+    } catch (e) {
+      console.warn('Logo fetch failed, falling back to text:', e.message);
+    }
+
     // ────────────────────────────────────────────────────────────────────────
     // BUILD PDF
     // ────────────────────────────────────────────────────────────────────────
@@ -201,26 +221,24 @@ Deno.serve(async (req) => {
     doc.setFillColor(20, 140, 100);
     doc.rect(0, 36, PW, 2, 'F');
 
-    // Logo circle
-    doc.setFillColor(255, 255, 255);
-    doc.circle(M + 8, 19, 8, 'F');
-    doc.setFillColor(15, 90, 70);
-    doc.circle(M + 8, 19, 5.5, 'F');
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
-    doc.text('C', M + 5.5, 22.5);
+    // Logo image or fallback circle
+    if (logoDataUri) {
+      doc.addImage(logoDataUri, 'PNG', M, 5, 18, 18);
+    } else {
+      doc.setFillColor(255, 255, 255);
+      doc.circle(M + 8, 14, 8, 'F');
+    }
 
     // App name
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 255, 255);
-    doc.text('CycleMind', M + 20, 16);
+    doc.text('CycleMind', M + 22, 16);
 
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(180, 230, 210);
-    doc.text('Clinical Summary Report  ·  DRSP-Based Assessment', M + 20, 23);
+    doc.text('Clinical Summary Report  |  DRSP-Based Assessment', M + 22, 23);
 
     // Patient + date (right-aligned)
     doc.setFontSize(9);
@@ -228,7 +246,7 @@ Deno.serve(async (req) => {
     doc.setTextColor(255, 255, 255);
     doc.text(`Patient: ${user.full_name || 'Anonymous'}`, PW - M, 14, { align: 'right' });
     doc.text(`Generated: ${format(new Date(), 'MMM d, yyyy')}`, PW - M, 21, { align: 'right' });
-    doc.text(`Period: ${format(startDate, 'MMM d')} – ${format(endDate, 'MMM d, yyyy')}`, PW - M, 28, { align: 'right' });
+    doc.text(`Period: ${format(startDate, 'MMM d')} to ${format(endDate, 'MMM d, yyyy')}`, PW - M, 28, { align: 'right' });
 
     y = 44;
 
@@ -372,7 +390,7 @@ Deno.serve(async (req) => {
       const secH = 9 + chartH + 16;
       ensureSpace(secH);
       cardBg(doc, M, y, CW, secH);
-      const yAfter = sectionHeader(doc, M, y, CW, 'Weekly Average Symptom Severity (Scale 1–6)');
+      const yAfter = sectionHeader(doc, M, y, CW, 'Weekly Average Symptom Severity (Scale 1-6)');
       let sy = yAfter + 6;
 
       const barW = Math.min(16, (CW - 16) / weeklyTrend.length - 2);
@@ -438,7 +456,7 @@ Deno.serve(async (req) => {
       const secH = 9 + chartH + 18;
       ensureSpace(secH);
       cardBg(doc, M, y, CW, secH);
-      const yAfter = sectionHeader(doc, M, y, CW, 'Daily Mood vs Physical Symptoms (last 28 days, scale 1–6)');
+      const yAfter = sectionHeader(doc, M, y, CW, 'Daily Mood vs Physical Symptoms (last 28 days, scale 1-6)');
       const sy = yAfter + 5;
       const baseY = sy + chartH;
       const cStartX = M + 10;
@@ -554,7 +572,7 @@ Deno.serve(async (req) => {
         doc.setFontSize(7.5);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(100);
-        doc.text(`Luteal – Follicular difference: ${diff.toFixed(2)} (threshold for PMDD pattern: >1.0)`, M + 4, sy + 2);
+        doc.text(`Luteal - Follicular difference: ${diff.toFixed(2)} (threshold for PMDD pattern: >1.0)`, M + 4, sy + 2);
       }
 
       y += secH + 5;
@@ -638,7 +656,7 @@ Deno.serve(async (req) => {
         sy += 5;
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(50);
-        doc.text(topSymptoms.slice(0, 4).map(s => s.name).join('  ·  '), M + 4, sy);
+        doc.text(topSymptoms.slice(0, 4).map(s => s.name).join('  |  '), M + 4, sy);
         sy += 8;
         hRule(doc, M + 4, sy - 3, CW - 8);
       }
@@ -671,7 +689,7 @@ Deno.serve(async (req) => {
       doc.setFontSize(6.5);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(100);
-      doc.text('Based on the Daily Record of Severity of Problems (Endicott, Nee & Harrison, 2006).  For informational purposes only — not a diagnostic tool.', M, PH - 8);
+      doc.text('Based on the Daily Record of Severity of Problems (Endicott, Nee & Harrison, 2006).  For informational purposes only - not a diagnostic tool.', M, PH - 8);
       doc.text('Always consult a qualified healthcare provider before making any medical decisions.', M, PH - 4);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(15, 90, 70);
