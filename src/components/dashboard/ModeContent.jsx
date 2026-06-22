@@ -25,19 +25,37 @@ function ScoreBar({ value, max = 6, label }) {
   );
 }
 
-function MenstrualContent({ entries, cycleDay, latestCycle }) {
+function MenstrualContent({ entries, cycleDay, latestCycle, user }) {
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const todayEntry = entries.find((e) => e.date === todayStr);
+
+  // Use user's cycle profile settings for phase boundaries
+  const cycleLength = user?.cycle_length || latestCycle?.cycle_length || 28;
+  const periodLength = user?.menstruation_length || 5;
+  const lutealLength = user?.luteal_phase_length || 14;
+  const ovulationDay = user?.ovulation_day || (cycleLength - lutealLength);
+
   const phase = !cycleDay ? null
-    : cycleDay <= 5 ? "menstrual"
-    : cycleDay <= 13 ? "follicular"
-    : cycleDay <= 16 ? "ovulatory"
+    : cycleDay <= periodLength ? "menstrual"
+    : cycleDay < ovulationDay ? "follicular"
+    : cycleDay === ovulationDay ? "ovulatory"
     : "luteal";
 
   const phases = ["menstrual", "follicular", "ovulatory", "luteal"];
   const phaseColorActive = { menstrual: "#f43f5e", follicular: "#10b981", ovulatory: "#8b5cf6", luteal: "#3b82f6" };
   const phaseColorDim    = { menstrual: "#fda4af", follicular: "#6ee7b7", ovulatory: "#c4b5fd", luteal: "#93c5fd" };
-  const phaseWidthPct    = { menstrual: "18%", follicular: "32%", ovulatory: "7%", luteal: "43%" };
+
+  // Dynamic phase widths based on user's cycle profile
+  const menstrualPct = (periodLength / cycleLength) * 100;
+  const follicularPct = (Math.max(0, ovulationDay - periodLength - 1) / cycleLength) * 100;
+  const ovulatoryPct = (1 / cycleLength) * 100;
+  const lutealPct = (Math.max(0, cycleLength - ovulationDay) / cycleLength) * 100;
+  const phaseWidthPct = {
+    menstrual: `${menstrualPct}%`,
+    follicular: `${follicularPct}%`,
+    ovulatory: `${ovulatoryPct}%`,
+    luteal: `${lutealPct}%`,
+  };
   const phaseLabel       = { menstrual: "Menstrual", follicular: "Follicular", ovulatory: "Ovulatory", luteal: "Luteal" };
 
   const topSymptoms = todayEntry
@@ -71,7 +89,7 @@ function MenstrualContent({ entries, cycleDay, latestCycle }) {
             </p>
           )}
           <div className="flex justify-between text-[10px] text-muted-foreground px-0.5">
-            <span>Day 1</span><span>Day 14</span><span>Day {latestCycle?.cycle_length || 28}</span>
+            <span>Day 1</span><span>Day {ovulationDay}</span><span>Day {cycleLength}</span>
           </div>
           {latestCycle?.cycle_length && (
             <div className="flex items-center justify-between text-xs pt-2 border-t border-border/30">
@@ -307,9 +325,9 @@ function MenopauseContent({ latestCycle, entries, cycleType }) {
   );
 }
 
-export default function ModeContent({ cycleType, latestCycle, entries, cycleDay }) {
+export default function ModeContent({ cycleType, latestCycle, entries, cycleDay, user }) {
   if (cycleType === "pregnancy") return <PregnancyContent latestCycle={latestCycle} entries={entries} />;
   if (cycleType === "postpartum") return <PostpartumContent latestCycle={latestCycle} entries={entries} />;
   if (cycleType === "postmenopause" || cycleType === "perimenopause") return <MenopauseContent latestCycle={latestCycle} entries={entries} cycleType={cycleType} />;
-  return <MenstrualContent entries={entries} cycleDay={cycleDay} latestCycle={latestCycle} />;
+  return <MenstrualContent entries={entries} cycleDay={cycleDay} latestCycle={latestCycle} user={user} />;
 }

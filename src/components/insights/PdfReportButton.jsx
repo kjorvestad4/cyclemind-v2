@@ -17,7 +17,7 @@ const CHART_TOOLTIP_STYLE = {
   },
 };
 
-export default function PdfReportButton({ cycles, entries, analysis }) {
+export default function PdfReportButton({ cycles = [], entries = [], analysis = {} }) {
   const [loading, setLoading] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);

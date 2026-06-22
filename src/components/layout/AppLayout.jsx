@@ -44,13 +44,17 @@ export default function AppLayout() {
         if (cycles.length > 0) {
           const latestCycle = cycles[0];
           const cycleDay = getCycleDay(format(new Date(), "yyyy-MM-dd"), cycles);
-          // Derive phase from cycle day (approximate for menstrual cycles)
+          // Derive phase from cycle day using user's cycle profile settings
           let phase = latestCycle.phase || null;
           if (!phase && cycleDay) {
-            if (cycleDay <= 5) phase = 'menstrual';else
-            if (cycleDay <= 13) phase = 'follicular';else
-            if (cycleDay <= 16) phase = 'ovulatory';else
-            phase = 'luteal';
+            const userPeriodLength = user?.menstruation_length || 5;
+            const userCycleLength = user?.cycle_length || latestCycle.cycle_length || 28;
+            const userLutealLength = user?.luteal_phase_length || 14;
+            const userOvulationDay = user?.ovulation_day || (userCycleLength - userLutealLength);
+            if (cycleDay <= userPeriodLength) phase = 'menstrual';
+            else if (cycleDay < userOvulationDay) phase = 'follicular';
+            else if (cycleDay === userOvulationDay) phase = 'ovulatory';
+            else phase = 'luteal';
           }
           setCycleData({
             mode: latestCycle.cycle_type || 'menstrual',

@@ -15,11 +15,11 @@ const PHASE_LABELS = {
   luteal: "Luteal Phase",
 };
 
-function getPhase(cycleDay) {
+function getPhase(cycleDay, periodLength, ovulationDay) {
   if (!cycleDay) return null;
-  if (cycleDay <= 5) return "menstrual";
-  if (cycleDay <= 13) return "follicular";
-  if (cycleDay === 14) return "ovulatory";
+  if (cycleDay <= periodLength) return "menstrual";
+  if (cycleDay < ovulationDay) return "follicular";
+  if (cycleDay === ovulationDay) return "ovulatory";
   return "luteal";
 }
 
@@ -56,7 +56,7 @@ const MODE_CONFIGS = {
   },
 };
 
-export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode, onCycleSettings }) {
+export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode, onCycleSettings, user }) {
   const navigate = useNavigate();
   const cycleType = latestCycle?.cycle_type || "menstrual";
   const isPregnancy = cycleType === "pregnancy";
@@ -64,6 +64,12 @@ export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode, onCycl
   const isPostmenopause = cycleType === "postmenopause";
   const isMenopause = cycleType === "perimenopause" || cycleType === "postmenopause";
   const isMenstrual = !isPregnancy && !isPostpartum && !isMenopause;
+
+  // User's cycle profile settings for phase calculation
+  const cycleLength = user?.cycle_length || latestCycle?.cycle_length || 28;
+  const periodLength = user?.menstruation_length || 5;
+  const lutealLength = user?.luteal_phase_length || 14;
+  const ovulationDay = user?.ovulation_day || (cycleLength - lutealLength);
 
   const today = new Date(); today.setHours(0, 0, 0, 0);
 
@@ -76,7 +82,7 @@ export default function ModeBanner({ latestCycle, cycleDay, onSwitchMode, onCycl
     ? Math.max(1, Math.round((today - parseLocal(latestCycle.start_date)) / (1000 * 60 * 60 * 24)) + 1)
     : null;
 
-  const phase = isMenstrual ? getPhase(cycleDay) : null;
+  const phase = isMenstrual ? getPhase(cycleDay, periodLength, ovulationDay) : null;
 
   const subLabel = isPregnancy
     ? (pregnancyWeek ? `Week ${pregnancyWeek}` : "Tracking active")

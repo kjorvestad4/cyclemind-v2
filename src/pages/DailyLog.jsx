@@ -176,8 +176,13 @@ export default function DailyLog() {
       : null);
   const trimester = cycleType === "postpartum" ? "postpartum" : getTrimester(pregnancyWeek);
 
+  const userCycleLength = user?.cycle_length || 28;
+  const userPeriodLength = user?.menstruation_length || 5;
+  const userLutealLength = user?.luteal_phase_length || 14;
+  const userOvulationDay = user?.ovulation_day || (userCycleLength - userLutealLength);
+
   const currentPhase = latestCycle?.phase || (cycleDay
-    ? (cycleDay <= 5 ? "menstrual" : cycleDay <= 13 ? "follicular" : cycleDay === 14 ? "ovulatory" : "luteal")
+    ? (cycleDay <= userPeriodLength ? "menstrual" : cycleDay < userOvulationDay ? "follicular" : cycleDay === userOvulationDay ? "ovulatory" : "luteal")
     : null);
   const phaseInfo = isMenstrual && currentPhase ? PHASE_LABELS[currentPhase] : null;
   const cycleBadge = isPostpartum ? null : CYCLE_TYPE_BADGES[cycleType];
@@ -577,6 +582,24 @@ export default function DailyLog() {
             ovulationDate={ovulationDate}
             cervicalMucus={cervicalMucus}
             onChange={handleOvulationChange}
+            trackOvulationOpk={user?.track_ovulation_opk}
+            trackOvulationMucus={user?.track_ovulation_mucus}
+            trackOvulationPain={user?.track_ovulation_pain}
+            addMarkOvulationButton={user?.add_mark_ovulation_button}
+            painScore={customSymptoms.find(s => s.name === "Ovulation Pain")?.severity || 0}
+            onPainChange={(val) => {
+              const filtered = customSymptoms.filter(s => s.name !== "Ovulation Pain");
+              if (val > 0) filtered.push({ name: "Ovulation Pain", severity: val });
+              setCustomSymptoms(filtered);
+              setHasUnsavedChanges(true);
+              scheduleAutoSave();
+            }}
+            onMarkOvulation={() => {
+              setOvulationDate(selectedDate);
+              setHasUnsavedChanges(true);
+              scheduleAutoSave();
+              toast.success("Marked today as ovulation day!");
+            }}
           />
           {canAccessScale(user, "drsp") ? (
             <>
@@ -773,6 +796,24 @@ export default function DailyLog() {
                     ovulationDate={ovulationDate}
                     cervicalMucus={cervicalMucus}
                     onChange={handleOvulationChange}
+                    trackOvulationOpk={user?.track_ovulation_opk}
+                    trackOvulationMucus={user?.track_ovulation_mucus}
+                    trackOvulationPain={user?.track_ovulation_pain}
+                    addMarkOvulationButton={user?.add_mark_ovulation_button}
+                    painScore={customSymptoms.find(s => s.name === "Ovulation Pain")?.severity || 0}
+                    onPainChange={(val) => {
+                      const filtered = customSymptoms.filter(s => s.name !== "Ovulation Pain");
+                      if (val > 0) filtered.push({ name: "Ovulation Pain", severity: val });
+                      setCustomSymptoms(filtered);
+                      setHasUnsavedChanges(true);
+                      scheduleAutoSave();
+                    }}
+                    onMarkOvulation={() => {
+                      setOvulationDate(selectedDate);
+                      setHasUnsavedChanges(true);
+                      scheduleAutoSave();
+                      toast.success("Marked today as ovulation day!");
+                    }}
                   />
                 </>
               )}

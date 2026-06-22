@@ -346,6 +346,7 @@ export default function Dashboard() {
           cycleDay={cycleDay}
           onSwitchMode={() => setShowModeSwitcher(true)}
           onCycleSettings={() => setShowCycleSettings(true)}
+          user={user}
         />
 
         {/* Cycle Profile summary — hidden during Pregnancy and Postmenopause */}
@@ -377,6 +378,7 @@ export default function Dashboard() {
           latestCycle={latestCycle}
           entries={entries}
           cycleDay={cycleDay}
+          user={user}
         />
 
         {/* Today's Severity Card */}

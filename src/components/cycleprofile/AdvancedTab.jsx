@@ -37,14 +37,36 @@ export default function AdvancedTab({
 }) {
   const [useOvulationDay, setUseOvulationDay] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [lutealInput, setLutealInput] = useState(null);
+  const [ovulationInput, setOvulationInput] = useState(null);
 
   const update = (key, val) => setProfile(prev => ({ ...prev, [key]: val }));
 
-  const handleLutealChange = (val) => {
-    const ll = Math.min(18, Math.max(10, val || 14));
-    update("lutealLength", ll);
-    // Sync: ovulationDay = cycleLength - lutealLength
-    update("ovulationDay", profile.cycleLength - ll);
+  const handleLutealChange = (raw) => {
+    setLutealInput(raw);
+    const num = parseInt(raw);
+    if (!isNaN(num) && num >= 10 && num <= 18) {
+      setProfile(prev => ({
+        ...prev,
+        lutealLength: num,
+        ovulationDay: prev.cycleLength - num,
+      }));
+    }
+  };
+
+  const handleLutealBlur = () => {
+    if (lutealInput !== null) {
+      const num = parseInt(lutealInput);
+      if (!isNaN(num)) {
+        const clamped = Math.min(18, Math.max(10, num));
+        setProfile(prev => ({
+          ...prev,
+          lutealLength: clamped,
+          ovulationDay: prev.cycleLength - clamped,
+        }));
+      }
+      setLutealInput(null);
+    }
   };
 
   const applyPreset = (preset) => {
@@ -58,10 +80,31 @@ export default function AdvancedTab({
     }));
   };
 
-  const handleOvulationDayChange = (val) => {
-    const od = Math.max(profile.periodLength + 2, Math.min(profile.cycleLength - 8, val || 14));
-    update("ovulationDay", od);
-    update("lutealLength", profile.cycleLength - od);
+  const handleOvulationDayChange = (raw) => {
+    setOvulationInput(raw);
+    const num = parseInt(raw);
+    if (!isNaN(num) && num >= profile.periodLength + 2 && num <= profile.cycleLength - 8) {
+      setProfile(prev => ({
+        ...prev,
+        ovulationDay: num,
+        lutealLength: prev.cycleLength - num,
+      }));
+    }
+  };
+
+  const handleOvulationBlur = () => {
+    if (ovulationInput !== null) {
+      const num = parseInt(ovulationInput);
+      if (!isNaN(num)) {
+        const clamped = Math.max(profile.periodLength + 2, Math.min(profile.cycleLength - 8, num));
+        setProfile(prev => ({
+          ...prev,
+          ovulationDay: clamped,
+          lutealLength: prev.cycleLength - clamped,
+        }));
+      }
+      setOvulationInput(null);
+    }
   };
 
   const lutealWarning = profile.lutealLength < 10 || profile.lutealLength > 18;
@@ -85,8 +128,9 @@ export default function AdvancedTab({
               type="number"
               min={10}
               max={18}
-              value={profile.lutealLength}
-              onChange={(e) => handleLutealChange(parseInt(e.target.value) || 14)}
+              value={lutealInput !== null ? lutealInput : profile.lutealLength}
+              onChange={(e) => handleLutealChange(e.target.value)}
+              onBlur={handleLutealBlur}
               className={`w-20 h-10 text-center text-lg font-bold ${lutealWarning ? "border-amber-400" : ""}`}
             />
             <span className="text-sm text-muted-foreground">days</span>
@@ -134,8 +178,9 @@ export default function AdvancedTab({
               type="number"
               min={profile.periodLength + 2}
               max={profile.cycleLength - 8}
-              value={profile.ovulationDay}
-              onChange={(e) => handleOvulationDayChange(parseInt(e.target.value) || 14)}
+              value={ovulationInput !== null ? ovulationInput : profile.ovulationDay}
+              onChange={(e) => handleOvulationDayChange(e.target.value)}
+              onBlur={handleOvulationBlur}
               className="w-20 h-10 text-center text-lg font-bold"
             />
             <span className="text-xs text-muted-foreground">→ Luteal: {profile.cycleLength - profile.ovulationDay} days</span>
