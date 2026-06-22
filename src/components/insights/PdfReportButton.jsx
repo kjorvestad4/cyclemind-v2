@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { FileDown, Loader2, Settings, Calendar, TrendingUp, ClipboardList, X, Activity } from "lucide-react";
@@ -32,6 +32,10 @@ export default function PdfReportButton({ cycles = [], entries = [], analysis = 
     include_chart: true,
     include_appointment_prep: true,
   });
+
+  const progressData = useMemo(() => calculateProgressData(entries, dateRange), [entries, dateRange]);
+  const symptomDistribution = useMemo(() => calculateSymptomDistribution(entries, dateRange), [entries, dateRange]);
+  const phaseComparison = useMemo(() => calculatePhaseComparison(entries, cycles), [entries, cycles]);
 
   const getStartDate = () => {
     if (useCustom && customStart) return new Date(customStart);
@@ -89,15 +93,6 @@ export default function PdfReportButton({ cycles = [], entries = [], analysis = 
       setLoading(false);
     }
   };
-
-  // Calculate progress data
-  const progressData = calculateProgressData(entries, dateRange);
-  
-  // Calculate symptom distribution for pie chart
-  const symptomDistribution = calculateSymptomDistribution(entries, dateRange);
-  
-  // Calculate phase comparison data
-  const phaseComparison = calculatePhaseComparison(entries, cycles);
 
   return (
     <div className="space-y-3">
@@ -358,6 +353,7 @@ function calculateProgressData(entries, days) {
     const symptomKeys = Object.keys(entry).filter(k => 
       k.startsWith('s_') || k.startsWith('m_') || k.startsWith('p_') || k.startsWith('pp_')
     );
+    if (!symptomKeys.length) return;
     const avgSeverity = symptomKeys.reduce((sum, k) => sum + (entry[k] || 0), 0) / symptomKeys.length;
     
     weeklyData[weekKey].severity += avgSeverity;
@@ -415,7 +411,7 @@ function calculatePhaseComparison(entries, cycles) {
     const follicularAvg = follicularEntries.length > 0
       ? follicularEntries.reduce((sum, e) => {
           const symptomKeys = Object.keys(e).filter(k => k.startsWith('s_') || k.startsWith('m_'));
-          return sum + symptomKeys.reduce((s, k) => s + (e[k] || 0), 0) / symptomKeys.length;
+          return sum + (symptomKeys.length ? symptomKeys.reduce((s, k) => s + (e[k] || 0), 0) / symptomKeys.length : 0);
         }, 0) / follicularEntries.length
       : 0;
     
@@ -424,7 +420,7 @@ function calculatePhaseComparison(entries, cycles) {
     const lutealAvg = lutealEntries.length > 0
       ? lutealEntries.reduce((sum, e) => {
           const symptomKeys = Object.keys(e).filter(k => k.startsWith('s_') || k.startsWith('m_'));
-          return sum + symptomKeys.reduce((s, k) => s + (e[k] || 0), 0) / symptomKeys.length;
+          return sum + (symptomKeys.length ? symptomKeys.reduce((s, k) => s + (e[k] || 0), 0) / symptomKeys.length : 0);
         }, 0) / lutealEntries.length
       : 0;
     
