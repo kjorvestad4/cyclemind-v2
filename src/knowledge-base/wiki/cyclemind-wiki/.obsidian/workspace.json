@@ -1,0 +1,208 @@
+{
+  "main": {
+    "id": "8760be831101579d",
+    "type": "split",
+    "children": [
+      {
+        "id": "b3f81105e417f436",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c56ad7d6bce1f597",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "78cdb6a281bc774a",
+    "type": "split",
+    "children": [
+      {
+        "id": "d4f630dc18708b8d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ff55b336844d65ad",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "a63c91361fe4af2c",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "4f184f03248f1b98",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "0783f34b9051b634",
+    "type": "split",
+    "children": [
+      {
+        "id": "d0a1dc770edb8df2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c7ce969a4c163439",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "fcda4c2184d5b068",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "b9945eb45583fa38",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "6a8539f9bae52219",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "c691882e0a643766",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "c56ad7d6bce1f597",
+  "lastOpenFiles": [
+    "SUMMIT-English-BA-Manual_Version-3-chunk-107.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-106.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-105.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-104.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-103.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-102.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-101.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-100.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-099.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-098.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-097.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-096.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-095.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-094.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-093.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-092.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-091.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-090.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-089.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-088.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-087.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-086.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-085.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-084.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-083.md",
+    "SUMMIT-English-BA-Manual_Version-3-chunk-082.md"
+  ]
+}
