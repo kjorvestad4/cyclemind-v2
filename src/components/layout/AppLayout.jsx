@@ -75,10 +75,12 @@ export default function AppLayout() {
     base44.entities.DailyEntry.filter({ created_by: user.email }, "-date", 400).then((entries) => {
       let s = 0;
       const today = new Date();
-      for (let i = 0; i < 400; i++) {
+      // Allow today to be unlogged without breaking the streak
+      const todayStr = format(today, "yyyy-MM-dd");
+      const startDay = entries.find((e) => e.date === todayStr) ? 0 : 1;
+      for (let i = startDay; i < 400; i++) {
         const d = format(subDays(today, i), "yyyy-MM-dd");
-        if (entries.find((e) => e.date === d)) s++;else
-        break;
+        if (entries.find((e) => e.date === d)) s++; else break;
       }
       setStreak(s);
     }).catch(() => {});

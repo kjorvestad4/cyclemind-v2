@@ -36,7 +36,10 @@ const METRIC_LABELS = { streak: "Logging streak", journal: "Journal entries", sy
 function calculateStreak(entries) {
   let streak = 0;
   const today = new Date();
-  for (let i = 0; i < 400; i++) {
+  // Allow today to be unlogged without breaking the streak
+  const todayStr = format(today, "yyyy-MM-dd");
+  const startDay = entries.find((e) => e.date === todayStr) ? 0 : 1;
+  for (let i = startDay; i < 400; i++) {
     const d = format(subDays(today, i), "yyyy-MM-dd");
     if (entries.find((e) => e.date === d)) streak++;
     else break;

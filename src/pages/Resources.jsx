@@ -42,7 +42,7 @@ const ALL_RESOURCES = [
     body: "A comprehensive patient FAQ from the American College of Obstetricians and Gynecologists covering normal cycle length, what irregular periods mean, and when to see a doctor.",
     links: [
       { label: "ACOG Menstrual Cycles FAQ", url: "https://www.acog.org/womens-health/faqs/abnormal-uterine-bleeding" },
-      { label: "ACOG Period Problems", url: "https://www.acog.org/womens-health/faqs/your-menstrual-cycle" },
+      { label: "ACOG: The Menstrual Cycle", url: "https://www.acog.org/womens-health/infographics/the-menstrual-cycle" },
     ],
   },
   {
@@ -69,7 +69,7 @@ const ALL_RESOURCES = [
     body: "The International Association for Premenstrual Disorders is the leading global resource for PMDD and PME. Includes symptom info, diagnosis guidance, support groups, and a community directory.",
     links: [
       { label: "IAPMD Official Site", url: "https://www.iapmd.org/" },
-      { label: "Support Groups", url: "https://www.iapmd.org/support-groups" },
+      { label: "Support Groups", url: "https://www.iapmd.org/support" },
     ],
   },
   {
@@ -117,7 +117,7 @@ const ALL_RESOURCES = [
     tagColor: "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300",
     body: "First-line treatment for PMDD is SSRIs (e.g. fluoxetine, sertraline). They can be taken continuously or luteal-phase only (days 14–28). Luteal-phase dosing has been shown effective with fewer side effects. Always discuss with your psychiatrist or GP — never adjust without guidance.",
     links: [
-      { label: "IAPMD Treatment Overview", url: "https://iapmd.org/treatments" },
+      { label: "IAPMD Treatments Guide", url: "https://www.iapmd.org/treatments-strong-evidence" },
     ],
   },
   {
@@ -152,7 +152,7 @@ const ALL_RESOURCES = [
     tagColor: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
     body: "The Edinburgh Postnatal Depression Scale (Cox et al., 1987) is validated for both prenatal and postnatal use. Score 0–8: Low concern. 9–11: Monitor closely. 12–14: Likely depression. ≥15: High concern — seek immediate clinical assessment. ACOG recommends screening at least once prenatally and at the 6-week postnatal visit.",
     links: [
-      { label: "ACOG Screening Guidelines", url: "https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2023/02/screening-and-diagnosis-of-mental-health-conditions-during-pregnancy-and-postpartum" },
+      { label: "ACOG Screening & Diagnosis Guideline", url: "https://www.acog.org/clinical/clinical-guidance/clinical-practice-guideline/articles/2023/06/screening-and-diagnosis-of-mental-health-conditions-during-pregnancy-and-postpartum" },
     ],
   },
   {
@@ -185,7 +185,7 @@ const ALL_RESOURCES = [
     tagColor: "bg-secondary text-secondary-foreground",
     body: "Identify your primary support person before birth. Join a local or online perinatal support group. Ask your midwife or OB about a specialist perinatal mental health referral. Complete the EPDS at your postnatal check and share your CycleMind data with your care team.",
     links: [
-      { label: "Find a PSI Provider", url: "https://www.postpartum.net/get-help/find-a-psi-provider-2/" },
+      { label: "Find a PSI Provider", url: "https://postpartum.net/get-help/provider-directory/" },
     ],
   },
 
@@ -200,7 +200,7 @@ const ALL_RESOURCES = [
     body: "PSI is the leading global resource for postpartum mood and anxiety disorders. Provides a helpline, provider directory, peer support groups, and resources for partners and families. PMADs affect 1 in 5 new mothers — they are medical conditions, not personal failures.",
     links: [
       { label: "PSI Official Site", url: "https://www.postpartum.net/" },
-      { label: "Find a PSI Provider", url: "https://www.postpartum.net/get-help/find-a-psi-provider-2/" },
+      { label: "Find a PSI Provider", url: "https://postpartum.net/get-help/provider-directory/" },
     ],
   },
   {
@@ -233,7 +233,7 @@ const ALL_RESOURCES = [
     tagColor: "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300",
     body: "Baby blues affect up to 80% of new mothers in the first 2 weeks and resolve without treatment. PPD is more intense, lasts longer, and requires support. PPD can occur any time in the first year. Postpartum anxiety, OCD, and psychosis are also real conditions — don't dismiss symptoms that concern you.",
     links: [
-      { label: "PSI Symptoms & Types", url: "https://www.postpartum.net/learn-more/postpartum-depression/" },
+      { label: "PSI: About Perinatal Mental Health", url: "https://postpartum.net/perinatal-mental-health/" },
     ],
   },
   {
@@ -256,7 +256,7 @@ const ALL_RESOURCES = [
     tagColor: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
     body: "The North American Menopause Society explains the perimenopause transition: what it is, when it starts (typically mid-40s), how long it lasts, and what symptoms to expect. Includes guidance on irregular periods, hot flashes, and mood changes.",
     links: [
-      { label: "NAMS: Understanding Perimenopause", url: "https://menopause.org/patient-education/menopause-faqs-understanding-the-transition" },
+      { label: "NAMS: Understanding Perimenopause", url: "https://menopause.org/patient-education" },
     ],
   },
   {
@@ -280,8 +280,8 @@ const ALL_RESOURCES = [
     tagColor: "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300",
     body: "Comprehensive patient education from the BMS covering perimenopause symptoms, HRT options, mental health during the menopause transition, and lifestyle interventions. Includes downloadable resources.",
     links: [
-      { label: "BMS Patient Hub", url: "https://thebms.org.uk/patients/" },
-      { label: "BMS: Menopause & Mental Health", url: "https://thebms.org.uk/publications/tools-for-clinicians/bms-menopause-and-mental-health/" },
+      { label: "Women's Health Concern (BMS Patient Hub)", url: "https://www.womens-health-concern.org/help-and-advice/menopause-wellness-hub/" },
+      { label: "BMS Tools for Clinicians", url: "https://thebms.org.uk/publications/tools-for-clinicians/" },
     ],
   },
 
@@ -319,7 +319,7 @@ const ALL_RESOURCES = [
     tagColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
     body: "Hormone Replacement Therapy (HRT) is the most effective treatment for vasomotor symptoms (hot flashes, night sweats). Modern transdermal HRT has an excellent safety profile for most women under 60 without contraindications. Discusses types: estrogen-only, combined, and bioidentical options.",
     links: [
-      { label: "NAMS HRT Decision Tool", url: "https://www.menopause.org/for-women/menopauseflashes/menopause-symptoms-and-treatments/hormone-therapy-is-it-right-for-you-" },
+      { label: "NAMS: Hormone Therapy Guide", url: "https://menopause.org/patient-education/menopause-topics/hormone-therapy" },
     ],
   },
   {
