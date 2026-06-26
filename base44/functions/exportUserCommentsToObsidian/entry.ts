@@ -62,12 +62,13 @@ async function saveToGitHub(token, path, content, commitMsg) {
   return resp.ok;
 }
 
-async function logToOpik(opikKey, comment, ts) {
+async function logToOpik(opikKey, workspace, comment, ts) {
+  const now = new Date().toISOString();
   const trace = {
     name: `user-comment-${comment.id.slice(0, 8)}`,
     project_name: 'CycleMind',
-    start_time: ts.toISOString(),
-    end_time: ts.toISOString(),
+    start_time: now,
+    end_time: now,
     input: {
       comment: (comment.comment || '').slice(0, 4000),
       symptoms: comment.symptoms || null,
@@ -90,11 +91,16 @@ async function logToOpik(opikKey, comment, ts) {
     headers: {
       'Authorization': opikKey,
       'Content-Type': 'application/json',
+      'Comet-Workspace': workspace,
     },
-    body: JSON.stringify({ traces: [trace] }),
+    body: JSON.stringify(trace),
   });
 
-  return resp.ok;
+  if (!resp.ok) {
+    const errText = await resp.text();
+    return { ok: false, error: `${resp.status} ${errText.substring(0, 200)}` };
+  }
+  return { ok: true };
 }
 
 // ── Main handler ──────────────────────────────────────────────────────────────
@@ -117,12 +123,30 @@ Deno.serve(async (req) => {
 
     const opikKey = Deno.env.get('OPIK_API_KEY');
 
+    // Resolve Comet/Opik workspace name (required by Opik REST API)
+    let opikWorkspace = null;
+    if (opikKey) {
+      try {
+        const wsResp = await fetch('https://www.comet.com/api/rest/v2/workspaces', {
+          headers: { 'Authorization': opikKey },
+        });
+        if (wsResp.ok) {
+          const wsData = await wsResp.json();
+          const names = wsData.workspaceNames || wsData.workspaces || wsData;
+          if (Array.isArray(names) && names.length > 0) {
+            opikWorkspace = typeof names[0] === 'string' ? names[0] : (names[0]?.workspaceName || names[0]?.name || null);
+          }
+        }
+      } catch (_) { /* workspace resolution failure is non-fatal */ }
+    }
+
     const comments = await base44.asServiceRole.entities.UserComment.list('-created_date', 200);
     if (!comments || comments.length === 0) {
       return Response.json({ success: true, exported: 0, opik_logged: 0, message: 'No user comments to export.' });
     }
 
     let githubOk = 0, githubErr = 0, opikOk = 0;
+    const opikErrors = [];
 
     for (const comment of comments) {
       const { content, ts } = buildMarkdown(comment);
@@ -133,11 +157,12 @@ Deno.serve(async (req) => {
       const saved = await saveToGitHub(token, path, content, `chore: export user comment ${comment.id.slice(0, 6)}`);
       saved ? githubOk++ : githubErr++;
 
-      if (opikKey) {
+      if (opikKey && opikWorkspace) {
         try {
-          const logged = await logToOpik(opikKey, comment, ts);
-          if (logged) opikOk++;
-        } catch (_) { /* Opik errors are non-fatal */ }
+          const result = await logToOpik(opikKey, opikWorkspace, comment, ts);
+          if (result.ok) opikOk++;
+          else opikErrors.push(`comment ${comment.id.slice(0,6)}: ${result.error || 'unknown'}`);
+        } catch (e) { opikErrors.push(`comment ${comment.id.slice(0,6)}: ${e.message}`); }
       }
     }
 
@@ -147,7 +172,8 @@ Deno.serve(async (req) => {
       errors: githubErr,
       opik_logged: opikOk,
       total: comments.length,
-      message: `Exported ${githubOk}/${comments.length} to Obsidian · ${opikKey ? `${opikOk}/${comments.length} logged to Opik` : 'Opik key not set'}.`,
+      opik_errors: opikErrors.slice(0, 3),
+      message: `Exported ${githubOk}/${comments.length} to Obsidian · ${opikKey && opikWorkspace ? `${opikOk}/${comments.length} logged to Opik` : 'Opik not configured'}.`,
     });
 
   } catch (error) {

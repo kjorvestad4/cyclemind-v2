@@ -68,11 +68,12 @@ async function saveToGitHub(token, path, content, commitMsg) {
 }
 
 async function logToOpik(opikKey, workspace, log, ts) {
+  const now = new Date().toISOString();
   const trace = {
     name: `psych-test-${log.id.slice(0, 8)}`,
-    projectName: 'CycleMind',
-    startTime: ts.toISOString(),
-    endTime: ts.toISOString(),
+    project_name: 'CycleMind',
+    start_time: now,
+    end_time: now,
     input: { conversation: (log.conversation || '').slice(0, 4000) },
     output: {
       tone: log.tone,
@@ -128,23 +129,19 @@ Deno.serve(async (req) => {
 
     // Resolve Comet/Opik workspace name (required by Opik REST API)
     let opikWorkspace = null;
-    let wsDebug = null;
     if (opikKey) {
       try {
         const wsResp = await fetch('https://www.comet.com/api/rest/v2/workspaces', {
           headers: { 'Authorization': opikKey },
         });
-        wsDebug = { status: wsResp.status, ok: wsResp.ok };
         if (wsResp.ok) {
-          const wsText = await wsResp.text();
-          wsDebug.body = wsText.substring(0, 500);
-          const wsData = JSON.parse(wsText);
+          const wsData = await wsResp.json();
           const names = wsData.workspaceNames || wsData.workspaces || wsData;
           if (Array.isArray(names) && names.length > 0) {
             opikWorkspace = typeof names[0] === 'string' ? names[0] : (names[0]?.workspaceName || names[0]?.name || null);
           }
         }
-      } catch (e) { wsDebug = { error: e.message }; }
+      } catch (_) { /* workspace resolution failure is non-fatal */ }
     }
 
     const logs = await base44.asServiceRole.entities.PsychTestLog.list('-created_date', 200);
@@ -182,10 +179,7 @@ Deno.serve(async (req) => {
       opik_logged: opikOk,
       total: logs.length,
       opik_errors: opikErrors.slice(0, 3),
-      opikKey_present: !!opikKey,
-      opik_workspace: opikWorkspace,
-      ws_debug: wsDebug,
-      message: `Exported ${githubOk}/${logs.length} to Obsidian · ${opikKey ? `${opikOk}/${logs.length} logged to Opik` : 'Opik key not set'}.`,
+      message: `Exported ${githubOk}/${logs.length} to Obsidian · ${opikKey && opikWorkspace ? `${opikOk}/${logs.length} logged to Opik` : 'Opik not configured'}.`,
     });
 
   } catch (error) {
