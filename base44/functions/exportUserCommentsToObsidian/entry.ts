@@ -65,6 +65,7 @@ async function saveToGitHub(token, path, content, commitMsg) {
 async function logToOpik(opikKey, comment, ts) {
   const trace = {
     name: `user-comment-${comment.id.slice(0, 8)}`,
+    project_name: 'CycleMind',
     start_time: ts.toISOString(),
     end_time: ts.toISOString(),
     input: {
@@ -90,7 +91,7 @@ async function logToOpik(opikKey, comment, ts) {
       'Authorization': opikKey,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(trace),
+    body: JSON.stringify({ traces: [trace] }),
   });
 
   return resp.ok;

@@ -67,12 +67,12 @@ async function saveToGitHub(token, path, content, commitMsg) {
   return resp.ok;
 }
 
-async function logToOpik(opikKey, log, ts) {
-  // Opik REST trace ingestion — logs each psych session as a trace for evaluation
+async function logToOpik(opikKey, workspace, log, ts) {
   const trace = {
     name: `psych-test-${log.id.slice(0, 8)}`,
-    start_time: ts.toISOString(),
-    end_time: ts.toISOString(),
+    projectName: 'CycleMind',
+    startTime: ts.toISOString(),
+    endTime: ts.toISOString(),
     input: { conversation: (log.conversation || '').slice(0, 4000) },
     output: {
       tone: log.tone,
@@ -94,11 +94,16 @@ async function logToOpik(opikKey, log, ts) {
     headers: {
       'Authorization': opikKey,
       'Content-Type': 'application/json',
+      'Comet-Workspace': workspace,
     },
     body: JSON.stringify(trace),
   });
 
-  return resp.ok;
+  if (!resp.ok) {
+    const errText = await resp.text();
+    return { ok: false, error: `${resp.status} ${errText.substring(0, 200)}` };
+  }
+  return { ok: true };
 }
 
 // ── Main handler ─────────────────────────────────────────────────────────────
@@ -121,12 +126,34 @@ Deno.serve(async (req) => {
 
     const opikKey = Deno.env.get('OPIK_API_KEY');
 
+    // Resolve Comet/Opik workspace name (required by Opik REST API)
+    let opikWorkspace = null;
+    let wsDebug = null;
+    if (opikKey) {
+      try {
+        const wsResp = await fetch('https://www.comet.com/api/rest/v2/workspaces', {
+          headers: { 'Authorization': opikKey },
+        });
+        wsDebug = { status: wsResp.status, ok: wsResp.ok };
+        if (wsResp.ok) {
+          const wsText = await wsResp.text();
+          wsDebug.body = wsText.substring(0, 500);
+          const wsData = JSON.parse(wsText);
+          const names = wsData.workspaceNames || wsData.workspaces || wsData;
+          if (Array.isArray(names) && names.length > 0) {
+            opikWorkspace = typeof names[0] === 'string' ? names[0] : (names[0]?.workspaceName || names[0]?.name || null);
+          }
+        }
+      } catch (e) { wsDebug = { error: e.message }; }
+    }
+
     const logs = await base44.asServiceRole.entities.PsychTestLog.list('-created_date', 200);
     if (!logs || logs.length === 0) {
       return Response.json({ success: true, exported: 0, opik_logged: 0, message: 'No logs to export.' });
     }
 
     let githubOk = 0, githubErr = 0, opikOk = 0;
+    const opikErrors = [];
 
     for (const log of logs) {
       const { content, ts } = buildMarkdown(log);
@@ -138,12 +165,13 @@ Deno.serve(async (req) => {
       const saved = await saveToGitHub(token, path, content, `chore: export psych log ${log.id.slice(0, 6)}`);
       saved ? githubOk++ : githubErr++;
 
-      // Log to Opik (fire-and-forget, non-blocking on failure)
-      if (opikKey) {
+      // Log to Opik
+      if (opikKey && opikWorkspace) {
         try {
-          const logged = await logToOpik(opikKey, log, ts);
-          if (logged) opikOk++;
-        } catch (_) { /* Opik errors are non-fatal */ }
+          const result = await logToOpik(opikKey, opikWorkspace, log, ts);
+          if (result.ok) opikOk++;
+          else opikErrors.push(`log ${log.id.slice(0,6)}: ${result.error || 'unknown'}`);
+        } catch (e) { opikErrors.push(`log ${log.id.slice(0,6)}: ${e.message}`); }
       }
     }
 
@@ -153,6 +181,10 @@ Deno.serve(async (req) => {
       errors: githubErr,
       opik_logged: opikOk,
       total: logs.length,
+      opik_errors: opikErrors.slice(0, 3),
+      opikKey_present: !!opikKey,
+      opik_workspace: opikWorkspace,
+      ws_debug: wsDebug,
       message: `Exported ${githubOk}/${logs.length} to Obsidian · ${opikKey ? `${opikOk}/${logs.length} logged to Opik` : 'Opik key not set'}.`,
     });
 
