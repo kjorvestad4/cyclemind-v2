@@ -682,7 +682,9 @@ Deno.serve(async (req) => {
     }
 
     // ── TIER 1: Deterministic RAG search ────────────────────────────────────
-    const ragResult = searchRAG(lastUserMsg);
+    // Search across last 3 messages to maintain context for follow-up questions
+    const recentMessages = messages.slice(-3).map(m => m.content || '').join(' ');
+    const ragResult = searchRAG(recentMessages);
 
     // Crisis: immediate escalation
     if (ragResult?.isCrisis) {
@@ -781,8 +783,14 @@ Deno.serve(async (req) => {
 
       // ── TIER 2: InvokeLLM (cloud fallback) ──────────────────────────────
       try {
+        // Build conversation transcript so the model has full context
+        const conversationTranscript = messages.map(m => {
+          const role = m.role === 'user' ? 'User' : 'Luna';
+          return `${role}: ${m.content}`;
+        }).join('\n\n');
+
         const raw = await base44.integrations.Core.InvokeLLM({
-          prompt: `${systemPrompt}\n\n${lastUserMsg}`,
+          prompt: `${systemPrompt}\n\nCONVERSATION HISTORY:\n${conversationTranscript}`,
           file_urls: [],
           add_context_from_internet: false,
           model: 'gpt_5_mini',
