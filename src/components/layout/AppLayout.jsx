@@ -4,6 +4,7 @@ import { LayoutDashboard, PenLine, BarChart3, BookOpen, User, LogOut, ChevronLef
 import { base44 } from "@/api/base44Client";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
 import { getCycleDay } from "@/lib/symptoms";
+import { calculateEDD, getPregnancyWeek } from "@/lib/eddCalculation";
 import { format, subDays } from "date-fns";
 import LunaButton from "@/components/luna/LunaButton";
 import { useAuth } from "@/lib/AuthContext";
@@ -30,7 +31,7 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const mainRef = useScrollPosition(location.pathname);
   const { user } = useAuth();
-  const [cycleData, setCycleData] = useState({ mode: 'menstrual', day: null, edd: null, phase: null });
+  const [cycleData, setCycleData] = useState({ mode: 'menstrual', day: null, edd: null, phase: null, fertilityMode: false, menopauseStage: null });
   const [streak, setStreak] = useState(0);
 
   const isTopLevel = Object.keys(PAGE_TITLES).includes(location.pathname);
@@ -44,9 +45,11 @@ export default function AppLayout() {
         if (cycles.length > 0) {
           const latestCycle = cycles[0];
           const cycleDay = getCycleDay(format(new Date(), "yyyy-MM-dd"), cycles);
+          const cycleType = latestCycle.cycle_type || 'menstrual';
+
           // Derive phase from cycle day using user's cycle profile settings
           let phase = latestCycle.phase || null;
-          if (!phase && cycleDay) {
+          if (!phase && cycleDay && (cycleType === 'menstrual' || cycleType === 'perimenopause')) {
             const userPeriodLength = user?.menstruation_length || 5;
             const userCycleLength = user?.cycle_length || latestCycle.cycle_length || 28;
             const userLutealLength = user?.luteal_phase_length || 14;
@@ -56,11 +59,33 @@ export default function AppLayout() {
             else if (cycleDay === userOvulationDay) phase = 'ovulatory';
             else phase = 'luteal';
           }
+
+          // Build proper eddInfo object for pregnancy mode
+          let eddInfo = null;
+          if (cycleType === 'pregnancy') {
+            const eddCalc = calculateEDD(latestCycle.ovulation_date, latestCycle.last_menstrual_period);
+            const edd = eddCalc?.edd || latestCycle.estimated_due_date;
+            if (edd) {
+              const baselineDate = eddCalc?.baselineDate || latestCycle.last_menstrual_period;
+              const week = getPregnancyWeek(baselineDate) ?? latestCycle.pregnancy_week ?? 0;
+              let trimester = 'first';
+              if (week >= 27) trimester = 'third';
+              else if (week >= 13) trimester = 'second';
+              eddInfo = { edd, week, trimester };
+            }
+          }
+
+          // Derive menopause stage and fertility flag
+          const menopauseStage = (cycleType === 'menopause' || cycleType === 'perimenopause') ? cycleType : null;
+          const fertilityMode = cycleType === 'fertility';
+
           setCycleData({
-            mode: latestCycle.cycle_type || 'menstrual',
+            mode: cycleType,
             day: cycleDay || null,
-            edd: latestCycle.estimated_due_date || null,
-            phase
+            edd: eddInfo,
+            phase,
+            fertilityMode,
+            menopauseStage,
           });
         }
       } catch (err) {
@@ -149,7 +174,7 @@ export default function AppLayout() {
       </main>
 
       {/* Luna AI Button */}
-      <LunaButton user={user} cycleMode={cycleData.mode} cycleDay={cycleData.day} cyclePhase={cycleData.phase} eddInfo={cycleData.edd} />
+      <LunaButton user={user} cycleMode={cycleData.mode} cycleDay={cycleData.day} cyclePhase={cycleData.phase} eddInfo={cycleData.edd} fertilityMode={cycleData.fertilityMode} menopauseStage={cycleData.menopauseStage} />
       <GuidedTour />
 
       {/* Bottom Navigation */}

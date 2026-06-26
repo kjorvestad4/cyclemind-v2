@@ -5,7 +5,7 @@ import LunaChat from './LunaChat';
 import LunaAlertsPopup from './LunaAlertsPopup';
 import LunaNotificationBadge from './LunaNotificationBadge';
 
-export default function LunaButton({ user, cycleMode, cycleDay, cyclePhase, eddInfo }) {
+export default function LunaButton({ user, cycleMode, cycleDay, cyclePhase, eddInfo, fertilityMode, menopauseStage }) {
   const [isOpen, setIsOpen] = useState(false);
   const [pendingMessage, setPendingMessage] = useState(null);
   const [showAlerts, setShowAlerts] = useState(false);
@@ -49,6 +49,8 @@ export default function LunaButton({ user, cycleMode, cycleDay, cyclePhase, eddI
             cycleDay={cycleDay}
             cyclePhase={cyclePhase}
             eddInfo={eddInfo}
+            fertilityMode={fertilityMode}
+            menopauseStage={menopauseStage}
             pendingMessage={pendingMessage}
             onPendingMessageConsumed={() => setPendingMessage(null)}
             onClose={() => setIsOpen(false)}

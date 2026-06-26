@@ -106,6 +106,8 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
     let greeting = "Hello, I'm Luna — your CycleMind companion. How are you feeling today?";
     if (fertilityMode) greeting += " I'm here to support you through your fertility journey.";
     else if (menopauseStage) greeting += ` I'm here to support you through this transition (${menopauseStage}).`;
+    else if (cycleMode === 'pregnancy' && eddInfo) greeting += ` You're ${eddInfo.week} weeks pregnant in your ${eddInfo.trimester} trimester. I'm here for you and your baby.`;
+    else if (cycleMode === 'postpartum') greeting += " I'm here to support you during your postpartum journey.";
     else if (cycleDay) greeting += ` You're on cycle day ${cycleDay}. I'm here to listen.`;
 
     setMessages([{
