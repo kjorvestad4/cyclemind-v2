@@ -18,7 +18,7 @@ const LUNA_PERSONA = [
   "- For factual or analytical questions, be direct and concise — start with the facts, no unnecessary empathy openers.",
   "- For emotional or supportive queries, use warm empathy.",
   "- When you have user data context (cycle day, phase, symptoms), reference it specifically (e.g., 'Your bloating tends to peak in the luteal phase...').",
-  "- Include 1–2 clinical insights from RAG context when available, citing sources (DSM-5, ACOG, Endocrine Society) naturally.",
+  "- Include 1–2 clinical insights from RAG context when available. Do NOT cite source names (e.g. DSM-5, ACOG, Endocrine Society) inline in your response text — references are appended automatically as clickable links at the bottom.",
   "- Use context flags (fertilityMode, menopauseStage, cycleDay) to personalize every response.",
   "",
   "Medical Boundaries:",
@@ -476,6 +476,152 @@ async function fireAutoUpdate(base44, mode, user, userMessage, ragTopic) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// REFERENCE MAP — authoritative sources per clinical topic
+// ─────────────────────────────────────────────────────────────────────────────
+const REFERENCE_MAP = {
+  pmdd: [
+    { label: 'DSM-5 — Premenstrual Dysphoric Disorder', url: 'https://www.psychiatry.org/psychiatrists/practice/dsm' },
+    { label: 'ACOG — Premenstrual Disorders Guidance', url: 'https://www.acog.org/clinical/clinical-guidance' },
+  ],
+  postpartum_depression: [
+    { label: 'ACOG — Screening & Diagnosis of Mental Health Conditions (Perinatal)', url: 'https://www.acog.org/clinical/clinical-guidance' },
+    { label: 'Postpartum Support International', url: 'https://www.postpartum.net' },
+  ],
+  postpartum_psychosis: [
+    { label: 'ACOG — Perinatal Mental Health', url: 'https://www.acog.org/clinical/clinical-guidance' },
+    { label: 'Postpartum Support International — Psychosis', url: 'https://www.postpartum.net/learn-more/postpartum-psychosis/' },
+  ],
+  postpartum_ocd: [
+    { label: 'International OCD Foundation — Postpartum OCD', url: 'https://iocdf.org/about-ocd/related-disorders/postpartum-ocd/' },
+    { label: 'Postpartum Support International', url: 'https://www.postpartum.net' },
+  ],
+  postpartum_anxiety: [
+    { label: 'Postpartum Support International — Anxiety', url: 'https://www.postpartum.net/learn-more/anxiety/' },
+    { label: 'APA — Clinical Practice Guidelines', url: 'https://www.psychiatry.org/psychiatrists/practice/clinical-practice-guidelines' },
+  ],
+  pregnancy_depression: [
+    { label: 'ACOG — Perinatal Mental Health', url: 'https://www.acog.org/clinical/clinical-guidance' },
+    { label: 'March of Dimes — Depression During Pregnancy', url: 'https://www.marchofdimes.org/find-support/topics/postpartum/depression-during-pregnancy' },
+  ],
+  pregnancy_anxiety: [
+    { label: 'ACOG — Perinatal Mental Health', url: 'https://www.acog.org/clinical/clinical-guidance' },
+    { label: 'APA — Clinical Practice Guidelines', url: 'https://www.psychiatry.org/psychiatrists/practice/clinical-practice-guidelines' },
+  ],
+  bipolar: [
+    { label: 'APA — Bipolar Disorder Guidelines', url: 'https://www.psychiatry.org/psychiatrists/practice/clinical-practice-guidelines' },
+    { label: 'ACOG — Bipolar Disorder in Pregnancy', url: 'https://www.acog.org/clinical/clinical-guidance' },
+  ],
+  perimenopause: [
+    { label: 'The Menopause Society', url: 'https://www.menopause.org' },
+    { label: 'Endocrine Society — Clinical Practice Guidelines', url: 'https://www.endocrine.org/clinical-practice-guidelines' },
+  ],
+  menopause: [
+    { label: 'The Menopause Society — Hormone Therapy', url: 'https://www.menopause.org' },
+    { label: 'Endocrine Society — Clinical Practice Guidelines', url: 'https://www.endocrine.org/clinical-practice-guidelines' },
+  ],
+  fertility: [
+    { label: 'ASRM — Patient Resources', url: 'https://www.asrm.org/patient-resources' },
+    { label: 'RESOLVE: The National Infertility Association', url: 'https://resolve.org' },
+  ],
+  pregnancy_loss: [
+    { label: 'March of Dimes — Pregnancy Loss', url: 'https://www.marchofdimes.org' },
+    { label: 'Star Legacy Foundation', url: 'https://starlegacyfoundation.org' },
+  ],
+  endometriosis: [
+    { label: 'Endometriosis Foundation of America', url: 'https://www.endofound.org' },
+    { label: 'ACOG — Endometriosis', url: 'https://www.acog.org/clinical/clinical-guidance' },
+  ],
+  pcos: [
+    { label: 'Endocrine Society — PCOS Guidelines', url: 'https://www.endocrine.org/clinical-practice-guidelines' },
+    { label: 'PCOS Challenge', url: 'https://pcoschallenge.org' },
+  ],
+  calcium: [
+    { label: 'NIH Office of Dietary Supplements — Calcium', url: 'https://ods.od.nih.gov/factsheets/Calcium-Consumer/' },
+    { label: 'ACOG — Premenstrual Disorders', url: 'https://www.acog.org/clinical/clinical-guidance' },
+  ],
+  contraception: [
+    { label: 'ACOG — Contraception Guidance', url: 'https://www.acog.org/clinical/clinical-guidance' },
+    { label: 'CDC — Reproductive Health', url: 'https://www.cdc.gov/reproductivehealth' },
+  ],
+  ssri: [
+    { label: 'APA — Clinical Practice Guidelines', url: 'https://www.psychiatry.org/psychiatrists/practice/clinical-practice-guidelines' },
+    { label: 'ACOG — Antidepressant Use in Pregnancy', url: 'https://www.acog.org/clinical/clinical-guidance' },
+  ],
+  breastfeeding: [
+    { label: 'LactMed (NIH) — Drug Safety in Breastfeeding', url: 'https://www.ncbi.nlm.nih.gov/books/NBK501922/' },
+    { label: 'Infant Risk Center', url: 'https://www.infantrisk.com' },
+  ],
+  sleep: [
+    { label: 'American Academy of Sleep Medicine', url: 'https://aasm.org' },
+    { label: 'NIH — Sleep & Mental Health', url: 'https://www.ninds.nih.gov/health-information/public-education/brain-basics/brain-basics-understanding-sleep' },
+  ],
+  anxiety: [
+    { label: 'APA — Anxiety Disorders', url: 'https://www.psychiatry.org/patients-families/anxiety-disorders' },
+    { label: 'Anxiety & Depression Association of America', url: 'https://adaa.org' },
+  ],
+  depression: [
+    { label: 'APA — Depression', url: 'https://www.psychiatry.org/patients-families/depression' },
+    { label: 'NICE — Depression in Adults', url: 'https://www.nice.org.uk/guidance/conditions-and-diseases/mental-health-and-behavioural-conditions/depression' },
+  ],
+  trauma: [
+    { label: 'APA — PTSD', url: 'https://www.psychiatry.org/patients-families/ptsd' },
+    { label: 'ISTSS — Trauma Resources', url: 'https://istss.org' },
+  ],
+  crisis: [
+    { label: '988 Suicide & Crisis Lifeline', url: 'https://988lifeline.org' },
+    { label: 'SAMHSA — National Helpline', url: 'https://www.samhsa.gov/find-help/national-helpline' },
+  ],
+  adhd: [
+    { label: 'CHADD — ADHD in Women', url: 'https://chadd.org' },
+    { label: 'APA — ADHD', url: 'https://www.psychiatry.org/patients-families/adhd' },
+  ],
+  substance_use: [
+    { label: 'SAMHSA — National Helpline', url: 'https://www.samhsa.gov/find-help/national-helpline' },
+    { label: 'ACOG — Substance Use in Pregnancy', url: 'https://www.acog.org/clinical/clinical-guidance' },
+  ],
+  schizophrenia: [
+    { label: 'APA — Schizophrenia', url: 'https://www.psychiatry.org/patients-families/schizophrenia' },
+    { label: 'NICE — Psychosis & Schizophrenia', url: 'https://www.nice.org.uk/guidance/conditions-and-diseases/mental-health-and-behavioural-conditions/schizophrenia' },
+  ],
+  infant_mental_health: [
+    { label: 'ZERO TO THREE — Infant Mental Health', url: 'https://www.zerotothree.org' },
+    { label: 'Postpartum Support International', url: 'https://www.postpartum.net' },
+  ],
+  integrative: [
+    { label: 'NCCIH — Complementary & Integrative Health', url: 'https://www.nccih.nih.gov' },
+    { label: 'APA — Lifestyle & Mental Health', url: 'https://www.psychiatry.org' },
+  ],
+  menarche: [
+    { label: 'ACOG — Adolescent Reproductive Health', url: 'https://www.acog.org/clinical/clinical-guidance' },
+    { label: 'American Academy of Pediatrics', url: 'https://www.aap.org' },
+  ],
+  menstrual_suppression: [
+    { label: 'ACOG — Menstrual Manipulation', url: 'https://www.acog.org/clinical/clinical-guidance' },
+    { label: 'Endocrine Society', url: 'https://www.endocrine.org' },
+  ],
+  prenatal_stress: [
+    { label: 'ACOG — Perinatal Mental Health', url: 'https://www.acog.org/clinical/clinical-guidance' },
+    { label: 'APA — Stress & Pregnancy', url: 'https://www.psychiatry.org' },
+  ],
+  perinatal_suicide: [
+    { label: '988 Suicide & Crisis Lifeline', url: 'https://988lifeline.org' },
+    { label: 'ACOG — Maternal Mental Health', url: 'https://www.acog.org/clinical/clinical-guidance' },
+  ],
+  drsp_guide: [
+    { label: 'DSM-5 — PMDD Diagnostic Criteria', url: 'https://www.psychiatry.org/psychiatrists/practice/dsm' },
+    { label: 'APA — Clinical Practice Guidelines', url: 'https://www.psychiatry.org/psychiatrists/practice/clinical-practice-guidelines' },
+  ],
+  cycle_tracking: [
+    { label: 'ACOG — Menstrual Cycle', url: 'https://www.acog.org/clinical/clinical-guidance' },
+    { label: 'CDC — Reproductive Health', url: 'https://www.cdc.gov/reproductivehealth' },
+  ],
+  eating_disorders: [
+    { label: 'National Eating Disorders Association', url: 'https://www.nationaleatingdisorders.org' },
+    { label: 'APA — Eating Disorders', url: 'https://www.psychiatry.org/patients-families/eating-disorders' },
+  ],
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // MAIN HANDLER
 // ─────────────────────────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
@@ -687,6 +833,15 @@ Deno.serve(async (req) => {
     // ── Append PsychTestMode footer if triggered ─────────────────────────────
     if (psychTestMode && llmResponse) {
       llmResponse = llmResponse + PSYCH_TEST_FOOTER;
+    }
+
+    // ── Append references section for clinical topics ─────────────────────────
+    if (llmResponse && ragResult?.topic && !ragResult?.isCrisis && !psychTestMode) {
+      const refs = REFERENCE_MAP[ragResult.topic];
+      if (refs && refs.length > 0) {
+        const refLinks = refs.map(r => `- [${r.label}](${r.url})`).join('\n');
+        llmResponse = llmResponse + `\n\n---\n\n**References:**\n${refLinks}`;
+      }
     }
 
     // ── Detect whether response is clinical (needs disclaimer) ───────────────
