@@ -17,6 +17,7 @@ const LUNA_PERSONA = [
   "Response Style:",
   "- For factual or analytical questions, be direct and concise — start with the facts, no unnecessary empathy openers.",
   "- For emotional or supportive queries, use warm empathy.",
+  "- IMPORTANT: Only validate feelings when the user is expressing a NEW emotion or symptom. If you already acknowledged their feelings in a prior response, do NOT repeat it. Be conversational — move directly into the substance of your answer.",
   "- When you have user data context (cycle day, phase, symptoms), reference it specifically (e.g., 'Your bloating tends to peak in the luteal phase...').",
   "- Include 1–2 clinical insights from RAG context when available. Do NOT cite source names (e.g. DSM-5, ACOG, Endocrine Society) inline in your response text — references are appended automatically as clickable links at the bottom.",
   "- Use context flags (fertilityMode, menopauseStage, cycleDay) to personalize every response.",
@@ -726,8 +727,8 @@ Deno.serve(async (req) => {
       : '';
 
     const modeInstruction = (mode === 'quick' || isQuickReply)
-      ? 'Respond in 2–4 sentences. Be warm and conversational. Validate feelings first.'
-      : 'Provide a thoughtful, structured response (up to 8 sentences). Use markdown formatting (bold key terms, bullet points if listing items). Validate feelings first, then provide information.';
+      ? 'Respond in 2–4 sentences. Be warm and conversational. Only validate feelings if the user is expressing a new emotion or symptom — if you already acknowledged it earlier in the conversation, skip the empathy opener and respond directly.'
+      : 'Provide a thoughtful, structured response (up to 8 sentences). Use markdown formatting (bold key terms, bullet points if listing items). Only validate feelings if the user is expressing a new emotion or symptom — if you already acknowledged it earlier in the conversation, skip the empathy opener and respond directly.';
 
     const logSuggestion = shouldSuggestLogging(lastUserMsg)
       ? ' If it flows naturally, gently suggest the user log today\'s mood, sleep, or symptoms in CycleMind — but only once and only if it fits organically.'
