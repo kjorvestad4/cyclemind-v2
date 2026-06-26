@@ -18,9 +18,11 @@ export default function LandingNav() {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-teal-600 rounded-2xl flex items-center justify-center">
-              <span className="text-white font-bold text-2xl font-serif">C</span>
-            </div>
+            <img
+              src="https://media.base44.com/images/public/69fb50354d2f1f828f13182f/1f6e3c73e_generated_image.png"
+              alt="CycleMind"
+              className="w-11 h-11 rounded-2xl object-cover"
+            />
             <span className="font-serif font-bold text-2xl text-teal-700">CycleMind</span>
           </div>
 

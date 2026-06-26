@@ -11,9 +11,11 @@ export default function LandingFooter() {
         {/* Brand */}
         <div className="md:col-span-5 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-white rounded-2xl flex items-center justify-center">
-              <span className="text-teal-600 font-bold text-xl font-serif">C</span>
-            </div>
+            <img
+              src="https://media.base44.com/images/public/69fb50354d2f1f828f13182f/1f6e3c73e_generated_image.png"
+              alt="CycleMind"
+              className="w-9 h-9 rounded-2xl object-cover"
+            />
             <span className="text-white font-serif font-bold text-2xl">CycleMind</span>
           </div>
           <p className="max-w-xs text-sm leading-relaxed">
