@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { calculateEDD, getPregnancyWeek } from "@/lib/eddCalculation";
+import { calculateEDD, getPregnancyWeek, parseLocalDate } from "@/lib/eddCalculation";
 import { Calendar, AlertCircle } from "lucide-react";
 
 export default function EDDDisplay({ lmp, ovulationDate, estimatedDueDate, pregnancyWeek }) {
@@ -46,7 +46,7 @@ export default function EDDDisplay({ lmp, ovulationDate, estimatedDueDate, pregn
               Estimated Due Date
             </p>
             <p className="text-lg font-bold text-pink-700 dark:text-pink-200">
-              {format(new Date(edd), "MMMM d, yyyy")}
+              {format(parseLocalDate(edd), "MMMM d, yyyy")}
             </p>
             <p className="text-[11px] text-pink-600 dark:text-pink-300 mt-0.5">
               Based on {method === "ovulation" ? "ovulation date" : "LMP"}

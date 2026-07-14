@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar, Heart } from "lucide-react";
-import { calculateEDD, getPregnancyWeek } from "@/lib/eddCalculation";
+import { calculateEDD, getPregnancyWeek, parseLocalDate } from "@/lib/eddCalculation";
 import { format } from "date-fns";
 
 const MODE_SETUP = {
@@ -45,7 +45,7 @@ export default function Step2CycleSetup({ selectedMode, formData, onUpdate }) {
   const pregnancyPreview = useMemo(() => {
     if (selectedMode !== "pregnancy") return null;
     if (!formData.lmp && !formData.ovulation_date) return null;
-    const eddData = calculateEDD(formData.ovulation_date ? new Date(formData.ovulation_date) : undefined, formData.lmp);
+    const eddData = calculateEDD(formData.ovulation_date || undefined, formData.lmp);
     const week = getPregnancyWeek(formData.ovulation_date || formData.lmp, new Date(format(new Date(), "yyyy-MM-dd")));
     const trimester = week <= 12 ? "first" : week <= 27 ? "second" : "third";
     return { edd: eddData.edd, week, trimester, method: eddData.method };
@@ -157,7 +157,7 @@ export default function Step2CycleSetup({ selectedMode, formData, onUpdate }) {
               <Calendar className="w-4 h-4 text-pink-600 dark:text-pink-300" />
               <p className="text-xs font-semibold text-pink-700 dark:text-pink-300">ESTIMATED DUE DATE</p>
             </div>
-            <p className="text-lg font-bold text-pink-700 dark:text-pink-200">{format(new Date(pregnancyPreview.edd), "MMMM d, yyyy")}</p>
+            <p className="text-lg font-bold text-pink-700 dark:text-pink-200">{format(parseLocalDate(pregnancyPreview.edd), "MMMM d, yyyy")}</p>
             <p className="text-xs text-pink-600 dark:text-pink-400">
               Week {pregnancyPreview.week} · {pregnancyPreview.trimester.charAt(0).toUpperCase() + pregnancyPreview.trimester.slice(1)} trimester
             </p>

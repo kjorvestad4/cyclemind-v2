@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { X, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
-import { calculateEDD, getPregnancyWeek } from "@/lib/eddCalculation";
+import { calculateEDD, getPregnancyWeek, parseLocalDate } from "@/lib/eddCalculation";
 import LMPPicker from "@/components/common/LMPPicker";
 
 export default function EditPregnancyModal({ cycle, onClose, onSuccess }) {
@@ -102,7 +102,7 @@ export default function EditPregnancyModal({ cycle, onClose, onSuccess }) {
           {pregnancyCalcs && (
             <div className="bg-pink-50 dark:bg-pink-950/30 rounded-xl p-3 border border-pink-200 dark:border-pink-900 space-y-1.5">
               <p className="text-xs font-semibold text-pink-700 dark:text-pink-400 uppercase">Live EDD Preview</p>
-              <p className="text-xl font-bold text-pink-700 dark:text-pink-300">{format(new Date(displayEdd), "MMM d, yyyy")}</p>
+              <p className="text-xl font-bold text-pink-700 dark:text-pink-300">{format(parseLocalDate(displayEdd), "MMM d, yyyy")}</p>
               <p className="text-xs text-pink-600 dark:text-pink-400">
                 Week {displayWeek} · {displayTrimester} trimester · {pregnancyCalcs.eddData.method === "ovulation" ? "from ovulation" : "from LMP"}
               </p>

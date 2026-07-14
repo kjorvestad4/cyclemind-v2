@@ -1,6 +1,18 @@
 import { format, addDays, differenceInDays } from "date-fns";
 
 /**
+ * Parse "yyyy-MM-dd" as LOCAL date to avoid UTC timezone shift.
+ * new Date("2026-01-15") parses as UTC midnight, which shifts back 1 day
+ * when formatted in local time. This helper prevents that.
+ */
+export function parseLocalDate(str) {
+  if (!str) return null;
+  if (str instanceof Date) return str;
+  const [y, m, d] = str.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+/**
  * Calculate Estimated Due Date (EDD)
  * Priority order:
  * 1. If ovulationDate exists → use ovulation-based EDD (ovulationDate + 266 days)
@@ -10,7 +22,8 @@ import { format, addDays, differenceInDays } from "date-fns";
 export function calculateEDD(ovulationDate, lmpDate) {
   // Ovulation takes priority
   if (ovulationDate) {
-    const eddDate = addDays(new Date(ovulationDate), 266);
+    const baseDate = parseLocalDate(ovulationDate);
+    const eddDate = addDays(baseDate, 266);
     return {
       edd: format(eddDate, "yyyy-MM-dd"),
       baselineDate: ovulationDate,
@@ -20,7 +33,8 @@ export function calculateEDD(ovulationDate, lmpDate) {
 
   // Fall back to LMP
   if (lmpDate) {
-    const eddDate = addDays(new Date(lmpDate), 280);
+    const baseDate = parseLocalDate(lmpDate);
+    const eddDate = addDays(baseDate, 280);
     return {
       edd: format(eddDate, "yyyy-MM-dd"),
       baselineDate: lmpDate,
@@ -46,7 +60,7 @@ export function getPregnancyWeek(baselineDate, currentDate = new Date()) {
  */
 export function formatEDDWithMethod(eddData) {
   if (!eddData) return null;
-  const eddDate = format(new Date(eddData.edd), "MMM d, yyyy");
+  const eddDate = format(parseLocalDate(eddData.edd), "MMM d, yyyy");
   const method = eddData.method === "ovulation" ? "based on ovulation" : "based on LMP";
   return `${eddDate} (${method})`;
 }
