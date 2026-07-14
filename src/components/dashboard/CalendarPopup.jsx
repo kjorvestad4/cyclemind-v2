@@ -10,10 +10,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleType, cycleLength = 28, ovulationDay = 14, menstruationLength = 5, lutealLength = 14, pmddWindowDays = 10 }) {
+  const navigate = useNavigate();
   const [viewMonth, setViewMonth] = useState(new Date());
   const [selectedDateInfo, setSelectedDateInfo] = useState(null);
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   // Quick logging mutation - must be at top level
   const quickLogMutation = useMutation({
@@ -568,9 +568,9 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
 
                 <Button
                    onClick={() => {
+                     setSelectedDateInfo(null);
                      onClose();
                      navigate(`/log?date=${selectedDateInfo.dateStr}`);
-                     setSelectedDateInfo(null);
                    }}
                    className="w-full h-9 text-xs gap-1"
                  >

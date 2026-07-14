@@ -10,6 +10,7 @@ import DOBPicker from "@/components/common/DOBPicker";
 import OnboardingStep3 from "@/components/onboarding/OnboardingStep3";
 import Step1ModeSelection from "@/components/onboarding/Step1ModeSelection";
 import Step2CycleSetup from "@/components/onboarding/Step2CycleSetup";
+import { canAccessMode, getUserTier, TIERS } from "@/lib/freemium";
 
 // Step: Personal Info (Name + DOB)
 function PersonalInfoStep({ fullName, setFullName, dateOfBirth, setDateOfBirth }) {
@@ -90,8 +91,16 @@ export default function Onboarding() {
         const u = await base44.auth.me();
         const existingCycles = await base44.entities.Cycle.filter({ created_by: u.email }, "-start_date", 1);
         if (existingCycles.length === 0) {
+          // Check if user can access the selected mode (freemium restriction)
+          const canUseMode = canAccessMode(u, selectedMode);
+          const effectiveMode = canUseMode ? selectedMode : "menstrual";
+
+          if (!canUseMode && selectedMode !== "menstrual") {
+            toast.info(`${selectedMode.charAt(0).toUpperCase() + selectedMode.slice(1)} mode requires Premium. Your cycle data has been saved — upgrade to unlock ${selectedMode} tracking.`);
+          }
+
           const cyclePayload = {
-            cycle_type: selectedMode,
+            cycle_type: effectiveMode,
             cycle_length: cycleFormData.cycle_length || 28,
             start_date: cycleFormData.lmp || today,
           };
