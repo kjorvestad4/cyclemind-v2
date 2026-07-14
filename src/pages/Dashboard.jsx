@@ -349,6 +349,16 @@ export default function Dashboard() {
           user={user}
         />
 
+        {/* Log Period button — opens NewCycleModal */}
+        <Button
+          onClick={() => setLogNewCycle(true)}
+          variant="default"
+          className="w-full h-12 rounded-2xl font-semibold text-base gap-2 shadow-sm"
+        >
+          <Plus className="w-5 h-5" />
+          Log Period
+        </Button>
+
         {/* Cycle Profile summary — hidden during Pregnancy and Postmenopause */}
         {cycleType !== "pregnancy" && cycleType !== "postmenopause" && (
           <CycleProfileSummary
