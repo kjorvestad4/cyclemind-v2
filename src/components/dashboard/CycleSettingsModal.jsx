@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import CycleTimelinePreview from "@/components/cycleprofile/CycleTimelinePreview";
 
 export default function CycleSettingsModal({ latestCycle, user, onClose }) {
   const queryClient = useQueryClient();
@@ -13,6 +14,13 @@ export default function CycleSettingsModal({ latestCycle, user, onClose }) {
   const [periodLength, setPeriodLength] = useState(user?.menstruation_length || 5);
   const [ovulationDay, setOvulationDay] = useState(user?.ovulation_day || Math.max(1, (latestCycle?.cycle_length || 28) - 14));
   const [saving, setSaving] = useState(false);
+
+  const previewProfile = {
+    cycleLength,
+    periodLength,
+    lutealLength: Math.max(1, cycleLength - ovulationDay),
+    pmddWindowDays: user?.pmdd_window_days || 10,
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -51,7 +59,7 @@ export default function CycleSettingsModal({ latestCycle, user, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
       <div
-        className="relative w-full max-w-sm bg-background rounded-2xl border border-border shadow-2xl p-5 space-y-4"
+        className="relative w-full max-w-md bg-background rounded-2xl border border-border shadow-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -105,6 +113,8 @@ export default function CycleSettingsModal({ latestCycle, user, onClose }) {
             <p className="text-[11px] text-muted-foreground">Usually cycle length minus 14 days</p>
           </div>
         </div>
+
+        <CycleTimelinePreview profile={previewProfile} currentDay={null} />
 
         <div className="flex gap-2 pt-2 border-t border-border/40">
           <Button variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
