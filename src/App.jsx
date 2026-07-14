@@ -34,8 +34,8 @@ const AnimatedOutlet = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait" initial={false} key={location.pathname}>
-      <Routes location={location}>
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={location.pathname}>
         <Route path="/share/:token" element={<DoctorShareView />} />
 
         {/* Landing Pages */}

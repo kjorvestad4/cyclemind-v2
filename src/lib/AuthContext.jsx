@@ -60,8 +60,9 @@ export const AuthProvider = ({ children }) => {
          // Already onboarded — go to dashboard
          window.location.href = '/dashboard';
          return;
-      } else if (cycles.length === 0) {
+      } else if (cycles.length === 0 && !window.location.pathname.startsWith('/start')) {
         // Onboarded but missing cycle — create a default one
+        // Skip during onboarding so the onboarding flow can create the correct cycle type
         await base44.entities.Cycle.create({
           cycle_type: "menstrual",
           cycle_length: 28,
