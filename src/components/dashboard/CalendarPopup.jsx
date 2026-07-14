@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { format, getDaysInMonth, startOfMonth, getDay } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X, Droplet, Heart, Sparkles, Baby, AlertCircle, Info } from "lucide-react";
@@ -12,6 +13,7 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
   const [viewMonth, setViewMonth] = useState(new Date());
   const [selectedDateInfo, setSelectedDateInfo] = useState(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Quick logging mutation - must be at top level
   const quickLogMutation = useMutation({
@@ -566,7 +568,8 @@ export default function CalendarPopup({ isOpen, onClose, entries, cycles, cycleT
 
                 <Button
                    onClick={() => {
-                     window.location.href = `/log?date=${selectedDateInfo.dateStr}`;
+                     onClose();
+                     navigate(`/log?date=${selectedDateInfo.dateStr}`);
                      setSelectedDateInfo(null);
                    }}
                    className="w-full h-9 text-xs gap-1"

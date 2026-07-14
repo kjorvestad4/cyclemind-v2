@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
-import { Eye, EyeOff, Pencil, Check, X, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Pencil, Check, X, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,7 @@ export default function CycleHistoryTable({ cycles, onToggleExclude, excludedIds
   const [editingId, setEditingId] = useState(null);
   const [editValues, setEditValues] = useState({});
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   if (!cycles || cycles.length === 0) {
     return (
@@ -62,6 +63,40 @@ export default function CycleHistoryTable({ cycles, onToggleExclude, excludedIds
       toast.error("Failed to update cycle");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = async (cycle) => {
+    setDeletingId(null);
+    const snapshot = {
+      cycle_type: cycle.cycle_type || "menstrual",
+      start_date: cycle.start_date,
+      cycle_length: cycle.cycle_length,
+      end_date: cycle.end_date || undefined,
+      notes: cycle.notes || undefined,
+      last_menstrual_period: cycle.last_menstrual_period || undefined,
+      estimated_due_date: cycle.estimated_due_date || undefined,
+    };
+    try {
+      await base44.entities.Cycle.delete(cycle.id);
+      await queryClient.invalidateQueries({ queryKey: ["cycles"] });
+      toast.success("Cycle deleted", {
+        duration: 6000,
+        action: {
+          label: "Undo",
+          onClick: async () => {
+            try {
+              await base44.entities.Cycle.create(snapshot);
+              await queryClient.invalidateQueries({ queryKey: ["cycles"] });
+              toast.success("Cycle restored");
+            } catch {
+              toast.error("Could not restore cycle");
+            }
+          },
+        },
+      });
+    } catch {
+      toast.error("Failed to delete cycle");
     }
   };
 
@@ -172,13 +207,39 @@ export default function CycleHistoryTable({ cycles, onToggleExclude, excludedIds
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => handleEdit(cycle)}
-                className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted transition-colors"
-                title="Edit cycle details"
-              >
-                <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => handleEdit(cycle)}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted transition-colors"
+                  title="Edit cycle details"
+                >
+                  <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+                {deletingId === cycle.id ? (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleDelete(cycle)}
+                      className="px-2 h-7 rounded-lg bg-destructive text-destructive-foreground text-[10px] font-semibold hover:bg-destructive/90 transition-colors"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => setDeletingId(null)}
+                      className="px-2 h-7 rounded-lg bg-muted text-muted-foreground text-[10px] font-semibold hover:bg-muted/80 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setDeletingId(cycle.id)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-destructive/10 transition-colors"
+                    title="Delete cycle"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+                  </button>
+                )}
+              </div>
             </div>
           );
         })}
