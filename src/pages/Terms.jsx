@@ -23,7 +23,7 @@ export default function Terms() {
           </div>
           <div>
             <h1 className="font-serif text-3xl font-bold text-gray-900">Terms of Use</h1>
-            <p className="text-sm text-gray-500">Last updated: May 2026</p>
+            <p className="text-sm text-gray-500">Last updated: July 2026</p>
           </div>
         </div>
 
@@ -78,10 +78,10 @@ export default function Terms() {
           {
             title: "6. Premium Subscription",
             content: [
-              "Premium features require a paid subscription.",
-              "Subscriptions auto-renew unless cancelled before the renewal date.",
-              "Founder's Plan pricing is locked for life as long as the subscription remains active.",
-              "Refunds are handled on a case-by-case basis — contact hello@cyclemind.app.",
+              "Premium features require a paid subscription (Premium: $9.99/mo or $99/yr; Premium+: $14.99/mo or $150/yr).",
+              "Subscriptions auto-renew unless cancelled at least 24 hours before the renewal date.",
+              "You can manage or cancel your subscription at any time through your App Store or Google Play account settings.",
+              "Refunds are handled per App Store / Google Play policies — contact hello@cyclemind.app for assistance.",
             ]
           },
           {

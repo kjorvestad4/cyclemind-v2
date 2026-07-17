@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Crown, Check, X, ArrowLeft, Sparkles, Zap } from "lucide-react";
+import { toast } from "sonner";
 
 const PLANS = [
   {
@@ -74,7 +75,23 @@ export default function Billing() {
   }, []);
 
   const handleUpgrade = (planId) => {
-    alert(`Stripe integration coming soon! (Plan: ${planId})`);
+    if (planId === "free") {
+      navigate("/welcome");
+      return;
+    }
+    // Detect if user is on mobile (in-app browser / native wrapper)
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      toast.info(
+        "Subscriptions are managed through the App Store or Google Play. Search for 'CycleMind' in your app store to subscribe.",
+        { duration: 6000 }
+      );
+    } else {
+      toast.info(
+        "Online subscriptions are coming soon! For now, please download the CycleMind app from the App Store or Google Play to subscribe.",
+        { duration: 6000 }
+      );
+    }
   };
 
   if (loading) return (

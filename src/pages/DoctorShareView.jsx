@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { format, differenceInDays, isPast } from "date-fns";
-import { Shield, AlertTriangle, CheckCircle, Clock } from "lucide-react";
-import { ALL_SYMPTOMS, SYMPTOM_CATEGORIES, calculateDayTotal } from "@/lib/symptoms";
+import { Shield, AlertTriangle, CheckCircle, Clock, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ALL_SYMPTOMS, calculateDayTotal } from "@/lib/symptoms";
 
 export default function DoctorShareView() {
   const token = window.location.pathname.split("/share/")[1];
-  const [state, setState] = useState("loading"); // loading | valid | expired | invalid
+  const [state, setState] = useState("loading"); // loading | pinRequired | valid | expired | invalid | revoked | limitReached
   const [share, setShare] = useState(null);
   const [entries, setEntries] = useState([]);
   const [cycles, setCycles] = useState([]);
+  const [pinInput, setPinInput] = useState("");
+  const [pinError, setPinError] = useState("");
 
   useEffect(() => {
     if (!token) { setState("invalid"); return; }
@@ -18,24 +22,52 @@ export default function DoctorShareView() {
       .then(async (results) => {
         if (!results || results.length === 0) { setState("invalid"); return; }
         const s = results[0];
-        if (!s.is_active || isPast(new Date(s.expires_at))) { setState("expired"); return; }
+        if (!s.is_active) { setState("revoked"); return; }
+        if (isPast(new Date(s.expires_at))) { setState("expired"); return; }
+        if (s.access_count >= (s.max_access_count || 50)) { setState("limitReached"); return; }
 
-        // Increment access count
-        base44.entities.DoctorShare.update(s.id, { access_count: (s.access_count || 0) + 1 }).catch(() => {});
+        // If share has a PIN, require it before showing data
+        if (s.access_pin) {
+          setShare(s);
+          setState("pinRequired");
+          return;
+        }
 
-        // Fetch data owned by the share creator
-        const [allEntries, allCycles] = await Promise.all([
-          base44.entities.DailyEntry.filter({ created_by: s.created_by }, "-date", 200),
-          base44.entities.Cycle.filter({ created_by: s.created_by }, "-start_date", 20),
-        ]);
-
-        setShare(s);
-        setEntries(allEntries || []);
-        setCycles(allCycles || []);
-        setState("valid");
+        // No PIN — load data directly
+        await loadData(s);
       })
       .catch(() => setState("invalid"));
   }, [token]);
+
+  const loadData = async (s) => {
+    try {
+      // Increment access count
+      base44.entities.DoctorShare.update(s.id, { access_count: (s.access_count || 0) + 1 }).catch(() => {});
+
+      const [allEntries, allCycles] = await Promise.all([
+        base44.entities.DailyEntry.filter({ created_by: s.created_by }, "-date", 200),
+        base44.entities.Cycle.filter({ created_by: s.created_by }, "-start_date", 20),
+      ]);
+
+      setShare(s);
+      setEntries(allEntries || []);
+      setCycles(allCycles || []);
+      setState("valid");
+    } catch {
+      setState("invalid");
+    }
+  };
+
+  const handlePinSubmit = async (e) => {
+    e.preventDefault();
+    if (!share) return;
+    if (pinInput.trim() === share.access_pin) {
+      setPinError("");
+      await loadData(share);
+    } else {
+      setPinError("Incorrect PIN. Please verify with the patient and try again.");
+    }
+  };
 
   if (state === "loading") {
     return (
@@ -48,8 +80,54 @@ export default function DoctorShareView() {
     );
   }
 
+  if (state === "pinRequired") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-6">
+        <div className="max-w-sm w-full text-center space-y-6">
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+            <Lock className="w-7 h-7 text-primary" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-xl font-bold text-foreground">PIN Required</h1>
+            <p className="text-sm text-muted-foreground">
+              This patient has protected their shared data with a PIN. Please enter the 4-digit PIN provided by the patient.
+            </p>
+          </div>
+          <form onSubmit={handlePinSubmit} className="space-y-3">
+            <Input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={4}
+              placeholder="••••"
+              value={pinInput}
+              onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ''))}
+              className="text-center text-2xl tracking-[0.5em] font-bold h-14"
+              autoFocus
+            />
+            {pinError && <p className="text-xs text-destructive">{pinError}</p>}
+            <Button type="submit" className="w-full h-11" disabled={pinInput.length < 4}>
+              Verify & View Data
+            </Button>
+          </form>
+          <p className="text-xs text-muted-foreground">
+            If you don't have the PIN, please ask the patient to share it with you.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (state === "expired") {
-    return <ErrorScreen icon={<Clock className="w-12 h-12 text-muted-foreground mx-auto" />} title="Link Expired" message="This share link has expired or been revoked by the patient." />;
+    return <ErrorScreen icon={<Clock className="w-12 h-12 text-muted-foreground mx-auto" />} title="Link Expired" message="This share link has expired or been revoked by the patient. Please ask them to generate a new one." />;
+  }
+
+  if (state === "revoked") {
+    return <ErrorScreen icon={<AlertTriangle className="w-12 h-12 text-destructive mx-auto" />} title="Link Revoked" message="The patient has revoked this share link. Please contact them if you need access." />;
+  }
+
+  if (state === "limitReached") {
+    return <ErrorScreen icon={<AlertTriangle className="w-12 h-12 text-destructive mx-auto" />} title="Access Limit Reached" message="This share link has reached its maximum number of views. Please ask the patient to generate a new one." />;
   }
 
   if (state === "invalid") {
@@ -137,7 +215,8 @@ function SharedDashboard({ share, entries, cycles }) {
           </div>
           <p className="text-xs text-muted-foreground">
             Shared on {format(new Date(share.created_date), "MMMM d, yyyy")} ·
-            Label: {share.label || "—"}
+            Label: {share.label || "—"} ·
+            Views: {share.access_count || 0}/{share.max_access_count || 50}
           </p>
         </div>
 

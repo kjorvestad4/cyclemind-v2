@@ -2,10 +2,12 @@ import { useEffect, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
-const TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
+const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes (mobile-friendly)
 const WARNING_MS = 2 * 60 * 1000;  // warn 2 min before
 
-const ACTIVITY_EVENTS = ['mousedown', 'mousemove', 'keydown', 'touchstart', 'scroll', 'click'];
+// Use visibilitychange + click for mobile; mousemove/keydown for desktop
+const ACTIVITY_EVENTS = ['mousedown', 'keydown', 'touchstart', 'click', 'scroll'];
+const VISIBILITY_EVENT = 'visibilitychange';
 
 export default function SessionTimeout() {
   const timeoutRef = useRef(null);
@@ -33,15 +35,24 @@ export default function SessionTimeout() {
     }, TIMEOUT_MS);
   }, []);
 
+  const handleVisibilityChange = useCallback(() => {
+    if (!document.hidden) {
+      // App came back to foreground — reset timers
+      resetTimers();
+    }
+  }, [resetTimers]);
+
   useEffect(() => {
     resetTimers();
     ACTIVITY_EVENTS.forEach(e => window.addEventListener(e, resetTimers, { passive: true }));
+    document.addEventListener(VISIBILITY_EVENT, handleVisibilityChange);
     return () => {
       clearTimeout(timeoutRef.current);
       clearTimeout(warningRef.current);
       ACTIVITY_EVENTS.forEach(e => window.removeEventListener(e, resetTimers));
+      document.removeEventListener(VISIBILITY_EVENT, handleVisibilityChange);
     };
-  }, [resetTimers]);
+  }, [resetTimers, handleVisibilityChange]);
 
   return null;
 }

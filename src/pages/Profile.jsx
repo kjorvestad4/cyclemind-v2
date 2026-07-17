@@ -28,6 +28,8 @@ import EditMenopauseModal from "@/components/profile/EditMenopauseModal";
 import EditPostpartumModal from "@/components/profile/EditPostpartumModal";
 import { getUserTier, TIERS } from "@/lib/freemium";
 import { Crown } from "lucide-react";
+import { APP_VERSION } from "@/lib/appVersion";
+import ResearchConsentModal from "@/components/profile/ResearchConsentModal";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -119,6 +121,7 @@ export default function Profile() {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [fullName, setFullName] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
+  const [showResearchConsent, setShowResearchConsent] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then((u) => {
@@ -129,6 +132,8 @@ export default function Profile() {
       if (u?.fertility_mode !== undefined) setFertilityMode(!!u.fertility_mode);
       if (u?.research_opt_in !== undefined) setResearchOptIn(!!u.research_opt_in);
       if (u?.luna_notifications !== undefined) setLunaNotifications(!!u.luna_notifications);
+      if (u?.notif_daily !== undefined) setNotifDaily(!!u.notif_daily);
+      if (u?.notif_mode !== undefined) setNotifMode(!!u.notif_mode);
     }).catch(() => {});
   }, []);
 
@@ -176,7 +181,8 @@ export default function Profile() {
   const deleteAccountMutation = useMutation({
     mutationFn: async () => {
       const currentUser = await base44.auth.me();
-      
+      const userId = currentUser.id;
+
       // Delete all cycles
       const userCycles = await base44.entities.Cycle.filter({ created_by: currentUser.email }, "-start_date", 1000);
       for (const cycle of userCycles) {
@@ -194,6 +200,30 @@ export default function Profile() {
       for (const share of userShares) {
         await base44.entities.DoctorShare.delete(share.id);
       }
+
+      // Delete user milestones (RLS-scoped by created_by_id)
+      await base44.entities.UserMilestone.deleteMany({ created_by_id: userId });
+
+      // Delete psych test feedback (RLS-scoped by created_by_id)
+      await base44.entities.PsychTestFeedback.deleteMany({ created_by_id: userId });
+
+      // Delete predictions
+      await base44.entities.Prediction.deleteMany({ user_id: userId });
+
+      // Delete Luna alerts
+      await base44.entities.LunaAlert.deleteMany({ user_id: userId });
+
+      // Delete user comments
+      await base44.entities.UserComment.deleteMany({ user_id: userId });
+
+      // Delete user submissions
+      await base44.entities.UserSubmission.deleteMany({ user_id: userId });
+
+      // Delete psych test logs (created_by_id built-in)
+      await base44.entities.PsychTestLog.deleteMany({ created_by_id: userId });
+
+      // Delete audit logs for this user
+      await base44.entities.AuditLog.deleteMany({ user_id: userId });
     },
     onSuccess: async () => {
       toast.success("Account and all data deleted. Goodbye!");
@@ -229,6 +259,16 @@ export default function Profile() {
   const handleLunaNotificationsToggle = (val) => {
     setLunaNotifications(val);
     savePrefToggle("luna_notifications", val);
+  };
+
+  const handleNotifDailyToggle = (val) => {
+    setNotifDaily(val);
+    savePrefToggle("notif_daily", val);
+  };
+
+  const handleNotifModeToggle = (val) => {
+    setNotifMode(val);
+    savePrefToggle("notif_mode", val);
   };
 
   const latestCycle = cycles.length > 0
@@ -369,7 +409,7 @@ export default function Profile() {
 
       Thank you for your help!
               `.trim();
-              window.location.href = `mailto:support@cyclemindapp.com?subject=CycleMind%20Support%20Request&body=${encodeURIComponent(emailBody)}`;
+              window.location.href = `mailto:hello@cyclemind.app?subject=CycleMind%20Support%20Request&body=${encodeURIComponent(emailBody)}`;
             }}
           />
           <ActionRow
@@ -406,14 +446,14 @@ export default function Profile() {
               <p className="text-sm font-medium">Daily Log Reminder</p>
               <p className="text-[11px] text-muted-foreground">Evening reminder to log your symptoms</p>
             </div>
-            <Toggle checked={notifDaily} onChange={setNotifDaily} />
+            <Toggle checked={notifDaily} onChange={handleNotifDailyToggle} />
           </div>
           <div className="flex items-center justify-between py-3">
             <div>
               <p className="text-sm font-medium">Mode-Specific Alerts</p>
               <p className="text-[11px] text-muted-foreground">Reminders for EPDS check, fetal movement, etc.</p>
             </div>
-            <Toggle checked={notifMode} onChange={setNotifMode} />
+            <Toggle checked={notifMode} onChange={handleNotifModeToggle} />
           </div>
           <div className="flex items-center justify-between py-3 border-b border-border/30">
             <div>
@@ -488,7 +528,16 @@ export default function Profile() {
                   Opt-in to contribute <strong>de-identified, aggregated</strong> data to reproductive mental health research (HIPAA-compliant). Your name and contact info are never included. You can withdraw at any time.
                 </p>
               </div>
-              <Toggle checked={researchOptIn} onChange={handleResearchToggle} />
+              <button
+                onClick={() => setShowResearchConsent(true)}
+                className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors shrink-0 ${
+                  researchOptIn
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }`}
+              >
+                {researchOptIn ? "✓ Opted In" : "Review & Consent"}
+              </button>
             </div>
             {researchOptIn && (
               <p className="text-[10px] text-primary font-medium">✓ Thank you for supporting research into PMDD and women's mental health.</p>
@@ -619,7 +668,7 @@ export default function Profile() {
       {/* ── Footer ── */}
       <div className="text-center space-y-1 pt-2 pb-4">
         <p className="text-sm font-serif text-muted-foreground italic">CycleMind – For cycles with a mind of their own</p>
-        <p className="text-[10px] text-muted-foreground">v1.0 · Based on DRSP (Endicott, Nee & Harrison, 2006)</p>
+        <p className="text-[10px] text-muted-foreground">v{APP_VERSION} · Based on DRSP (Endicott, Nee & Harrison, 2006)</p>
         <p className="text-[10px] text-muted-foreground">⚕️ Not a substitute for professional medical advice</p>
       </div>
 
@@ -651,6 +700,14 @@ export default function Profile() {
           cycle={latestCycle}
           onClose={() => setEditMode(null)}
           onSuccess={() => setEditMode(null)}
+        />
+      )}
+
+      {showResearchConsent && (
+        <ResearchConsentModal
+          onConsent={() => { handleResearchToggle(true); setShowResearchConsent(false); }}
+          onDecline={() => { handleResearchToggle(false); setShowResearchConsent(false); }}
+          onClose={() => setShowResearchConsent(false)}
         />
       )}
     </div>

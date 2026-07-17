@@ -18,6 +18,8 @@ export default function ShareWithDoctor({ cycles, entries, analysis }) {
   const [newLabel, setNewLabel] = useState("");
   const [opts, setOpts] = useState({ include_journal: false, include_medications: true, include_screening: true, anonymized: true });
   const [copiedId, setCopiedId] = useState(null);
+  const [usePin, setUsePin] = useState(false);
+  const [pinValue, setPinValue] = useState("");
 
   const { data: shares = [] } = useQuery({
     queryKey: ["doctor-shares"],
@@ -28,7 +30,7 @@ export default function ShareWithDoctor({ cycles, entries, analysis }) {
     mutationFn: async () => {
       const token = generateToken();
       const expires_at = addDays(new Date(), 30).toISOString();
-      return base44.entities.DoctorShare.create({
+      const payload = {
         share_token: token,
         expires_at,
         label: newLabel.trim() || `Doctor Share – ${format(new Date(), "MMM d, yyyy")}`,
@@ -37,13 +39,20 @@ export default function ShareWithDoctor({ cycles, entries, analysis }) {
         include_screening: opts.include_screening,
         anonymized: opts.anonymized,
         access_count: 0,
+        max_access_count: 50,
         is_active: true,
-      });
+      };
+      if (usePin && pinValue.length === 4) {
+        payload.access_pin = pinValue;
+      }
+      return base44.entities.DoctorShare.create(payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["doctor-shares"] });
       setCreating(false);
       setNewLabel("");
+      setUsePin(false);
+      setPinValue("");
       toast.success("Secure share link created — expires in 30 days");
     },
     onError: () => toast.error("Failed to create share link"),
@@ -123,6 +132,36 @@ export default function ShareWithDoctor({ cycles, entries, analysis }) {
                 <span className="flex items-center gap-1.5 text-sm text-foreground">{icon}{label}</span>
               </label>
             ))}
+          </div>
+
+          {/* PIN Protection */}
+          <div className="space-y-2 pt-1">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <div
+                onClick={() => setUsePin(!usePin)}
+                className={`w-9 h-5 rounded-full transition-colors relative ${usePin ? "bg-primary" : "bg-muted"}`}
+              >
+                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${usePin ? "translate-x-4" : "translate-x-0.5"}`} />
+              </div>
+              <span className="flex items-center gap-1.5 text-sm text-foreground">
+                <Shield className="w-3.5 h-3.5" /> Require PIN to view
+              </span>
+            </label>
+            {usePin && (
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={4}
+                placeholder="4-digit PIN"
+                value={pinValue}
+                onChange={e => setPinValue(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                className="w-32 h-9 rounded-lg border border-input bg-background px-3 text-sm text-center tracking-[0.3em] font-bold focus:outline-none focus:ring-1 focus:ring-ring"
+              />
+            )}
+            {usePin && pinValue.length === 4 && (
+              <p className="text-[11px] text-muted-foreground">Share this PIN separately from the link (e.g. verbally or by text).</p>
+            )}
           </div>
 
           <div className="flex items-center gap-2 pt-1 text-xs text-muted-foreground bg-muted/50 rounded-lg p-2.5">
@@ -210,6 +249,7 @@ function ShareCard({ share, onCopy, onRevoke, onDelete, copied, expired }) {
             {share.include_screening && <span className="text-[10px] text-muted-foreground">• PHQ/GAD</span>}
             {share.include_medications && <span className="text-[10px] text-muted-foreground">• Meds</span>}
             {share.include_journal && <span className="text-[10px] text-muted-foreground">• Journal</span>}
+            {share.access_pin && <span className="text-[10px] text-primary font-medium">• PIN protected</span>}
             {share.access_count > 0 && (
               <span className="text-[10px] text-muted-foreground">• {share.access_count} view{share.access_count !== 1 ? "s" : ""}</span>
             )}

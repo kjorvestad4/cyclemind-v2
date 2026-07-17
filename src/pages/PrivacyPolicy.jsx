@@ -23,7 +23,7 @@ export default function PrivacyPolicy() {
           </div>
           <div>
             <h1 className="font-serif text-3xl font-bold text-gray-900">Privacy Policy</h1>
-            <p className="text-sm text-gray-500">Last updated: May 2026</p>
+            <p className="text-sm text-gray-500">Last updated: July 2026</p>
           </div>
         </div>
 
@@ -100,6 +100,59 @@ export default function PrivacyPolicy() {
             content: [
               "We may update this policy as the app evolves. You will be notified of material changes via email or in-app notice.",
               "Continued use of CycleMind after changes constitutes acceptance of the updated policy.",
+            ]
+          },
+          {
+            title: "9. App Store Privacy Disclosure (Data Types)",
+            content: [
+              "Health & Fitness: Menstrual cycle data, symptom ratings, mood scores, vital signs, and clinical screening results (PHQ-9, GAD-7, DRSP, EPDS). Linked to identity. Used for app functionality.",
+              "Contact Info: Email address. Linked to identity. Used for account management and support.",
+              "Identifiers: User ID. Linked to identity. Used for app functionality.",
+              "Usage Data: Feature usage and session data. Not linked to identity. Used for analytics and improvement.",
+              "Audio Data: Voice recordings for symptom logging. Processed in real-time. Not stored permanently.",
+              "Diagnostics: Crash data and performance data. Not linked to identity. Used for app improvement.",
+            ]
+          },
+          {
+            title: "10. Third-Party SDKs and Services",
+            content: [
+              "Anthropic Claude (AI): Processes Luna chat messages to generate responses. Messages are transmitted securely and not used for model training.",
+              "Base44 SDK: Provides backend infrastructure, authentication, and database services. Data stored on encrypted servers.",
+              "Google / Web Search: Used only when Luna fetches external context. No personal data is sent.",
+              "Payment processors (when applicable): Process subscription payments. Payment card data is handled by the processor and never stored by CycleMind.",
+            ]
+          },
+          {
+            title: "11. Data Retention",
+            content: [
+              "Account data is retained for the lifetime of your account.",
+              "Health tracking data (cycles, entries, symptoms) is retained until you delete it or your account.",
+              "Doctor share links expire automatically after 30 days.",
+              "De-identified research data (if you opt in) is retained indefinitely in aggregated form.",
+              "Audit logs are retained for 6 years per HIPAA-aligned practices.",
+              "Session data and temporary voice recordings are deleted immediately after processing.",
+            ]
+          },
+          {
+            title: "12. CCPA / CPRA Compliance (California Residents)",
+            content: [
+              "California residents have the right to know what personal information is collected, sold, or shared.",
+              "Right to delete: You can request deletion of your personal data via Profile → Delete Account.",
+              "Right to opt-out of sale: CycleMind does not sell personal information.",
+              "Right to limit use of sensitive personal information: Health data is used only for app functionality and improvement, not for advertising.",
+              "Right to non-discrimination: We will not discriminate against you for exercising your privacy rights.",
+              "To exercise these rights, contact us at hello@cyclemind.app.",
+            ]
+          },
+          {
+            title: "13. Data Security Measures",
+            content: [
+              "Encryption in transit: All data is transmitted over TLS 1.2+ (HTTPS).",
+              "Encryption at rest: All stored data is encrypted using AES-256.",
+              "Access controls: Role-based access control (RBAC) with least-privilege principles.",
+              "Audit logging: All create, update, and delete actions on health data are logged for HIPAA audit trails.",
+              "Session management: Sessions expire after 30 minutes of inactivity.",
+              "Regular security reviews: We conduct periodic security assessments of our infrastructure.",
             ]
           },
         ].map(({ title, content }) => (

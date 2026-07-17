@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { canAccessLunaDeepMode } from '@/lib/freemium';
 import PsychTestFeedback from '@/components/luna/PsychTestFeedback';
+import CrisisBanner from '@/components/luna/CrisisBanner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2, Mic, MicOff, FileDown, Bell, Eye, EyeOff, HelpCircle } from 'lucide-react';
+import { X, Send, Loader2, Moon, AlertCircle, ExternalLink, Plus, CheckCircle2, Mic, MicOff, FileDown, Bell, Eye, EyeOff, HelpCircle, Shield } from 'lucide-react';
 // Loader2 kept for NotificationsPanel
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
@@ -333,13 +334,13 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
       `.trim();
 
       // Open email client
-      const mailtoLink = `mailto:support@cyclemindapp.com?subject=CycleMind%20Support%20Request&body=${encodeURIComponent(emailBody)}`;
+      const mailtoLink = `mailto:hello@cyclemind.app?subject=CycleMind%20Support%20Request&body=${encodeURIComponent(emailBody)}`;
       window.location.href = mailtoLink;
 
       toast.success('Opening your email client...');
     } catch (err) {
       console.error(err);
-      toast.error('Could not open email client. Please email support@cyclemindapp.com directly.');
+      toast.error('Could not open email client. Please email hello@cyclemind.app directly.');
     }
   };
 
@@ -395,6 +396,18 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
                   <span className="shrink-0">⚠️</span>
                   <span>
                     <strong>Clinician Test Mode active.</strong> Data is saved for AI improvement but is <strong>not used for clinical decisions</strong>. Exit by typing "Exit Test Mode".
+                  </span>
+                </div>
+              )}
+
+              {/* Conversation Privacy Notice */}
+              {messages.length === 0 && (
+                <div className="flex items-start gap-2 p-3 bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-2xl text-[11px] text-teal-700 dark:text-teal-300 leading-snug">
+                  <Shield className="w-3.5 h-3.5 shrink-0 mt-px" />
+                  <span>
+                    <strong>Your privacy matters.</strong> Conversations with Luna may be saved to improve response quality.
+                    No identifying information is shared. See our{' '}
+                    <a href="/privacy" className="underline font-medium">Privacy Policy</a>.
                   </span>
                 </div>
               )}
@@ -490,14 +503,9 @@ export default function LunaChat({ cycleMode, cycleDay, cyclePhase, eddInfo, fer
                   </div>
                 )}
 
-                {/* Crisis Banner */}
+                {/* Crisis Banner — full intervention UI */}
                 {msg.role === 'assistant' && msg.flags?.crisis && (
-                  <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-xs flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 mt-px shrink-0" />
-                    <div>
-                      I'm really concerned about how you're feeling. Please reach out right now to the <strong>988 Suicide &amp; Crisis Lifeline</strong> (call or text 988) or your doctor/ER.
-                    </div>
-                  </div>
+                  <CrisisBanner />
                 )}
 
                 {/* RAG source badge */}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { format } from "date-fns";
+import { format, differenceInYears } from "date-fns";
 import { toast } from "sonner";
 import { Check, Loader2, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -78,6 +78,19 @@ export default function Onboarding() {
   }, []);
 
   const handleComplete = async () => {
+    // Age validation — must be 13 or older per Terms of Use
+    if (dateOfBirth) {
+      const age = differenceInYears(new Date(), new Date(dateOfBirth));
+      if (isNaN(age) || age < 0) {
+        toast.error("Please enter a valid date of birth.");
+        return;
+      }
+      if (age < 13) {
+        toast.error("You must be at least 13 years old to use CycleMind.");
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       const today = format(new Date(), "yyyy-MM-dd");

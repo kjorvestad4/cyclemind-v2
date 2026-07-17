@@ -6,6 +6,14 @@
       "type": "string",
       "description": "Unique token used in the shareable link"
     },
+    "access_pin": {
+      "type": "string",
+      "description": "Optional 4-digit PIN required to view shared data (extra security layer)"
+    },
+    "doctor_email": {
+      "type": "string",
+      "description": "Optional email of the intended recipient clinician"
+    },
     "expires_at": {
       "type": "string",
       "format": "date-time",
@@ -35,6 +43,11 @@
       "type": "number",
       "default": 0,
       "description": "How many times this link has been accessed"
+    },
+    "max_access_count": {
+      "type": "number",
+      "default": 50,
+      "description": "Maximum number of times this link can be accessed"
     },
     "label": {
       "type": "string",

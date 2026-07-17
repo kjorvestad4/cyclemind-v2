@@ -221,17 +221,19 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14 space-y-3">
             <span className="text-teal-600 font-semibold text-sm uppercase tracking-widest">Plans</span>
-            <h2 className="font-serif text-4xl font-bold text-gray-900">Free vs Founder's Plan</h2>
-            <p className="text-gray-600">Start free. Lock in founder's pricing for life.</p>
+            <h2 className="font-serif text-4xl font-bold text-gray-900">Simple, Transparent Pricing</h2>
+            <p className="text-gray-600">Start free. Upgrade when you're ready.</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Free */}
             <div className="rounded-3xl border border-gray-200 p-8 space-y-5">
               <div>
                 <h3 className="text-2xl font-bold text-gray-900">Free</h3>
+                <p className="text-3xl font-bold text-gray-900 mt-2">$0<span className="text-base font-normal text-gray-500">/mo</span></p>
                 <p className="text-gray-500 text-sm mt-1">Everything you need to get started</p>
               </div>
               <ul className="space-y-3">
-                {["Daily symptom logging (mood, vitals)", "Menstrual mode tracking", "Interactive cycle calendar", "Basic insights & trends", "Medication & journal logging"].map(f => (
+                {["Daily symptom logging (mood, vitals)", "Menstrual mode tracking", "Interactive cycle calendar", "Basic insights & trends", "Medication & journal logging", "PHQ-9 & GAD-7 screening", "PDF reports & doctor links"].map(f => (
                   <li key={f} className="flex items-start gap-2.5 text-sm text-gray-700">
                     <CheckCircle className="w-4 h-4 text-teal-500 flex-shrink-0 mt-0.5" />{f}
                   </li>
@@ -239,20 +241,39 @@ export default function Landing() {
               </ul>
               <Button variant="outline" onClick={() => navigate('/welcome')} className="w-full border-teal-600 text-teal-700 hover:bg-teal-50">Start Free</Button>
             </div>
-            <div className="rounded-3xl border-2 border-teal-500 bg-gradient-to-br from-teal-50 to-purple-50 p-8 space-y-5 relative">
-              <span className="absolute -top-3 left-6 bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Founders: First 100 only</span>
+            {/* Premium */}
+            <div className="rounded-3xl border-2 border-teal-500 bg-gradient-to-br from-teal-50 to-blue-50 p-8 space-y-5 relative">
+              <span className="absolute -top-3 left-6 bg-teal-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Most Popular</span>
               <div>
-                <h3 className="text-2xl font-bold text-gray-900">Founder's Plan</h3>
-                <p className="text-gray-500 text-sm mt-1">3 months free, then $6.99/mo locked for life</p>
+                <h3 className="text-2xl font-bold text-gray-900">Premium</h3>
+                <p className="text-3xl font-bold text-gray-900 mt-2">$9.99<span className="text-base font-normal text-gray-500">/mo</span></p>
+                <p className="text-gray-500 text-sm mt-1">or $99/yr (save 17%)</p>
               </div>
               <ul className="space-y-3">
-                {["Everything in Free", "All 5 lifecycle modes", "DRSP symptom tracking (clinical-grade)", "Luna AI Companion", "Clinical-grade PDF reports", "Shareable doctor links", "EPDS postpartum screening", "Advanced PMDD pattern analysis", "Unlimited history & trends"].map(f => (
+                {["Everything in Free", "All 5 lifecycle modes", "DRSP symptom tracking (clinical-grade)", "Luna AI Companion", "EPDS postpartum screening", "Advanced PMDD pattern analysis", "Unlimited history & trends"].map(f => (
                   <li key={f} className="flex items-start gap-2.5 text-sm text-gray-700">
                     <CheckCircle className="w-4 h-4 text-teal-600 fill-teal-100 flex-shrink-0 mt-0.5" />{f}
                   </li>
                 ))}
               </ul>
-              <Button onClick={() => navigate('/billing')} className="w-full bg-teal-600 hover:bg-teal-700 text-white">Claim Founder's Pricing →</Button>
+              <Button onClick={() => navigate('/billing')} className="w-full bg-teal-600 hover:bg-teal-700 text-white">Choose Premium →</Button>
+            </div>
+            {/* Premium+ */}
+            <div className="rounded-3xl border border-purple-300 bg-gradient-to-br from-purple-50 to-pink-50 p-8 space-y-5 relative">
+              <span className="absolute -top-3 left-6 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">Best Value</span>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900">Premium+</h3>
+                <p className="text-3xl font-bold text-gray-900 mt-2">$14.99<span className="text-base font-normal text-gray-500">/mo</span></p>
+                <p className="text-gray-500 text-sm mt-1">or $149/yr (save 17%)</p>
+              </div>
+              <ul className="space-y-3">
+                {["Everything in Premium", "Luna AI deep mode (full analysis)", "Menopause trajectory tracking", "Fertility conception guidance", "Priority support"].map(f => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-gray-700">
+                    <CheckCircle className="w-4 h-4 text-purple-600 fill-purple-100 flex-shrink-0 mt-0.5" />{f}
+                  </li>
+                ))}
+              </ul>
+              <Button onClick={() => navigate('/billing')} className="w-full bg-purple-600 hover:bg-purple-700 text-white">Choose Premium+ →</Button>
             </div>
           </div>
         </div>
