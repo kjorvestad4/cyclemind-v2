@@ -1,7 +1,16 @@
-export async function saveToObsidian({ conversation, test_mode_feedback, save_request }) {
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
+
+Deno.serve(async (req) => {
   try {
+    const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const body = await req.json();
+    const { conversation, test_mode_feedback, save_request } = body;
+
     if (!save_request || !save_request.folder) {
-      throw new Error("No save_request provided");
+      return Response.json({ success: false, message: 'No save_request provided' }, { status: 400 });
     }
 
     const folder = save_request.folder;
@@ -20,47 +29,41 @@ export async function saveToObsidian({ conversation, test_mode_feedback, save_re
       content += `- Suggested changes: ${test_mode_feedback.suggested_changes || 'None'}\n\n`;
     }
 
-    const token = process.env.GITHUB_TOKEN;
+    const token = Deno.env.get('GITHUB_TOKEN');
     if (!token) {
-      throw new Error("GITHUB_TOKEN secret is missing or not loaded");
+      return Response.json({ success: false, message: 'GITHUB_TOKEN secret is missing' }, { status: 500 });
     }
 
-    // Safer base64 encoding for UTF-8 content
+    // UTF-8 safe base64 encoding for Deno
     const base64Content = btoa(
       new TextEncoder().encode(content).reduce((data, byte) => data + String.fromCharCode(byte), '')
     );
 
     const url = `https://api.github.com/repos/kjorvestad4/cyclemind/contents/${encodeURIComponent(path)}`;
-
-    const body = {
+    const body_ = {
       message: `chore: save Luna ${folder} conversation`,
       content: base64Content,
-      branch: "main",
+      branch: 'main',
     };
 
     const res = await fetch(url, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-        "Authorization": `token ${token}`,
-        "Accept": "application/vnd.github.v3+json",
-        "Content-Type": "application/json",
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'CycleMind-App',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(body_),
     });
 
     if (!res.ok) {
       const errText = await res.text();
-      throw new Error(`GitHub API error ${res.status}: ${errText}`);
+      return Response.json({ success: false, message: `GitHub API error ${res.status}: ${errText}` }, { status: 502 });
     }
 
-    return { success: true, filePath: path, message: `Saved to ${path}` };
-
-  } catch (err: any) {
-    console.error("[saveToObsidian] Full error:", err);
-    return { 
-      success: false, 
-      message: err.message || "Unknown error in saveToObsidian",
-      stack: err.stack 
-    };
+    return Response.json({ success: true, filePath: path, message: `Saved to ${path}` });
+  } catch (error) {
+    return Response.json({ success: false, message: error.message }, { status: 500 });
   }
-}
+});
