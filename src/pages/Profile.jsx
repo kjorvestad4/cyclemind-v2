@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
   User, Settings, LogOut, Shield, Trash2, FileDown, Link2,
-  ChevronRight, Moon, Sun, Bell, Heart, Bookmark, CalendarDays, X, ChevronDown, ChevronUp, Edit, HelpCircle, Plus, SlidersHorizontal
+  ChevronRight, Moon, Sun, Bell, BellRing, Clock, Heart, Bookmark, CalendarDays, X, ChevronDown, ChevronUp, Edit, HelpCircle, Plus, SlidersHorizontal
 } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -122,6 +122,7 @@ export default function Profile() {
   const [fullName, setFullName] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
   const [showResearchConsent, setShowResearchConsent] = useState(false);
+  const [reminderTime, setReminderTime] = useState("09:00");
 
   useEffect(() => {
     base44.auth.me().then((u) => {
@@ -134,6 +135,7 @@ export default function Profile() {
       if (u?.luna_notifications !== undefined) setLunaNotifications(!!u.luna_notifications);
       if (u?.notif_daily !== undefined) setNotifDaily(!!u.notif_daily);
       if (u?.notif_mode !== undefined) setNotifMode(!!u.notif_mode);
+      if (u?.notification_time) setReminderTime(u.notification_time);
     }).catch(() => {});
   }, []);
 
@@ -269,6 +271,27 @@ export default function Profile() {
   const handleNotifModeToggle = (val) => {
     setNotifMode(val);
     savePrefToggle("notif_mode", val);
+  };
+
+  const allNotificationsOff = !notifDaily && !notifMode && !lunaNotifications;
+
+  const handleMasterToggle = (val) => {
+    if (val) {
+      setNotifDaily(true); savePrefToggle("notif_daily", true);
+      setNotifMode(true); savePrefToggle("notif_mode", true);
+      setLunaNotifications(true); savePrefToggle("luna_notifications", true);
+      toast.success("Notifications resumed");
+    } else {
+      setNotifDaily(false); savePrefToggle("notif_daily", false);
+      setNotifMode(false); savePrefToggle("notif_mode", false);
+      setLunaNotifications(false); savePrefToggle("luna_notifications", false);
+      toast.info("All notifications paused");
+    }
+  };
+
+  const handleReminderTimeChange = (val) => {
+    setReminderTime(val);
+    savePrefToggle("notification_time", val);
   };
 
   const latestCycle = cycles.length > 0
@@ -441,26 +464,63 @@ export default function Profile() {
         {/* Notifications */}
         <div className="space-y-1 mb-4">
           <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Notifications</p>
-          <div className="flex items-center justify-between py-3 border-b border-border/30">
-            <div>
-              <p className="text-sm font-medium">Daily Log Reminder</p>
-              <p className="text-[11px] text-muted-foreground">Evening reminder to log your symptoms</p>
+
+          {/* Master Switch */}
+          <div className={`rounded-xl p-3 mb-3 border transition-colors ${allNotificationsOff ? "bg-muted/30 border-border/30" : "bg-primary/5 border-primary/20"}`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BellRing className={`w-4 h-4 ${allNotificationsOff ? "text-muted-foreground" : "text-primary"}`} />
+                <div>
+                  <p className="text-sm font-semibold">All Notifications</p>
+                  <p className="text-[11px] text-muted-foreground">{allNotificationsOff ? "Paused — you won't receive any emails or alerts" : "Active — customize individual alerts below"}</p>
+                </div>
+              </div>
+              <Toggle checked={!allNotificationsOff} onChange={handleMasterToggle} />
             </div>
-            <Toggle checked={notifDaily} onChange={handleNotifDailyToggle} />
           </div>
-          <div className="flex items-center justify-between py-3">
-            <div>
-              <p className="text-sm font-medium">Mode-Specific Alerts</p>
-              <p className="text-[11px] text-muted-foreground">Reminders for EPDS check, fetal movement, etc.</p>
+
+          {/* Reminder Time */}
+          {!allNotificationsOff && (
+            <div className="flex items-center justify-between py-3 border-b border-border/30">
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Reminder Time</p>
+                  <p className="text-[11px] text-muted-foreground">When you'd like daily reminders</p>
+                </div>
+              </div>
+              <input
+                type="time"
+                value={reminderTime}
+                onChange={(e) => handleReminderTimeChange(e.target.value)}
+                className="h-8 rounded-lg border border-input bg-background px-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-ring"
+              />
             </div>
-            <Toggle checked={notifMode} onChange={handleNotifModeToggle} />
-          </div>
-          <div className="flex items-center justify-between py-3 border-b border-border/30">
-            <div>
-              <p className="text-sm font-medium">🌙 Luna Notifications</p>
-              <p className="text-[11px] text-muted-foreground">AI-powered insights, patterns, and supportive check-ins</p>
+          )}
+
+          {/* Individual Toggles */}
+          <div className={`space-y-0 transition-opacity ${allNotificationsOff ? "opacity-40 pointer-events-none" : ""}`}>
+            <div className="flex items-center justify-between py-3 border-b border-border/30">
+              <div>
+                <p className="text-sm font-medium">Daily Log Reminder</p>
+                <p className="text-[11px] text-muted-foreground">Email reminder to log your symptoms</p>
+              </div>
+              <Toggle checked={notifDaily} onChange={handleNotifDailyToggle} />
             </div>
-            <Toggle checked={lunaNotifications} onChange={handleLunaNotificationsToggle} />
+            <div className="flex items-center justify-between py-3">
+              <div>
+                <p className="text-sm font-medium">Mode-Specific Alerts</p>
+                <p className="text-[11px] text-muted-foreground">Luteal phase, period end, fertility window</p>
+              </div>
+              <Toggle checked={notifMode} onChange={handleNotifModeToggle} />
+            </div>
+            <div className="flex items-center justify-between py-3 border-b border-border/30">
+              <div>
+                <p className="text-sm font-medium">🌙 Luna Notifications</p>
+                <p className="text-[11px] text-muted-foreground">AI-powered insights, patterns, and supportive check-ins</p>
+              </div>
+              <Toggle checked={lunaNotifications} onChange={handleLunaNotificationsToggle} />
+            </div>
           </div>
           {isMenstrual && (
             <>
