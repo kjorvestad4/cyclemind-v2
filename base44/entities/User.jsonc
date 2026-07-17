@@ -143,6 +143,26 @@
       "type": "boolean",
       "default": false,
       "description": "Whether user has opted in to contribute de-identified data to research (HIPAA-compliant)"
+    },
+    "notif_daily": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether user wants daily log reminder emails"
+    },
+    "notif_mode": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether user wants cycle mode notifications (luteal phase, period end, fertility)"
+    },
+    "luna_notifications": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether in-app Luna alerts are enabled"
+    },
+    "fertility_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether fertility tracking mode is enabled"
     }
   },
   "required": []
