@@ -452,6 +452,101 @@ function detectAutoUpdateMode(userMessage) {
   return null;
 }
 
+function formatScaleSummary(label, scale) {
+  if (!scale || (scale.average == null && !scale.recent?.length)) return null;
+  const parts = [];
+  if (scale.average != null && scale.average !== '') parts.push(`avg ${scale.average}`);
+  const recent = Array.isArray(scale.recent) ? scale.recent : [];
+  if (recent.length) {
+    const last = recent[recent.length - 1];
+    if (last && last.score != null) {
+      parts.push(`latest ${last.score}${last.date ? ` on ${last.date}` : ''}`);
+    }
+    parts.push(`${recent.length} recent scores`);
+  }
+  return parts.length ? `${label}: ${parts.join(', ')}` : null;
+}
+
+function compactUserHistory(ctx) {
+  if (!ctx || typeof ctx !== 'object' || ctx.error) return '';
+
+  const lines = [];
+  const cycleType = ctx.user?.cycle_type;
+  const status = ctx.current_status || {};
+  const hist = ctx.historical_summary || {};
+  const mood = ctx.mood_scores || {};
+
+  if (cycleType) lines.push(`Lifecycle mode: ${cycleType}.`);
+  if (status.cycle_day != null) {
+    lines.push(`Current cycle day: ${status.cycle_day} (avg length ${status.cycle_length || hist.avg_cycle_length || 'unknown'} days).`);
+  } else if (hist.avg_cycle_length) {
+    lines.push(`Average cycle length: ${hist.avg_cycle_length} days.`);
+  }
+  if (hist.total_cycles != null || hist.total_entries != null) {
+    lines.push(`Logged history: ${hist.total_cycles ?? 0} cycles, ${hist.total_entries ?? 0} daily entries.`);
+  }
+  if (hist.luteal_pattern_detected) {
+    lines.push('Luteal-phase symptom pattern detected from prior logs.');
+  }
+
+  const moodBits = [
+    formatScaleSummary('PHQ-9', mood.phq9),
+    formatScaleSummary('GAD-7', mood.gad7),
+    formatScaleSummary('EPDS', mood.epds),
+  ].filter(Boolean);
+  if (moodBits.length) lines.push(`Clinical scales (90 days): ${moodBits.join('; ')}.`);
+
+  if (ctx.pregnancy) {
+    const p = ctx.pregnancy;
+    const pregBits = [];
+    if (p.trimester) pregBits.push(`trimester ${p.trimester}`);
+    if (p.pregnancy_week) pregBits.push(`week ${p.pregnancy_week}`);
+    if (p.edd) pregBits.push(`EDD ${p.edd}`);
+    if (pregBits.length) lines.push(`Pregnancy: ${pregBits.join(', ')}.`);
+  }
+
+  if (ctx.menopause) {
+    const m = ctx.menopause;
+    const menoBits = [];
+    if (m.hrt_type) menoBits.push(`HRT ${m.hrt_type}`);
+    if (m.hrt_start_date) menoBits.push(`started ${m.hrt_start_date}`);
+    if (menoBits.length) lines.push(`Menopause/perimenopause: ${menoBits.join(', ')}.`);
+  }
+
+  if (Array.isArray(ctx.top_symptoms_last_30_days) && ctx.top_symptoms_last_30_days.length) {
+    const top = ctx.top_symptoms_last_30_days
+      .slice(0, 5)
+      .map((s) => `${s.symptom} (${s.days}d)`)
+      .join(', ');
+    lines.push(`Top symptoms last 30 days: ${top}.`);
+  }
+
+  return lines.join(' ');
+}
+
+function unwrapFunctionResult(result) {
+  if (!result || typeof result !== 'object') return result;
+  if (result.data && typeof result.data === 'object') return result.data;
+  return result;
+}
+
+async function fetchCompactUserHistory(base44) {
+  try {
+    let result;
+    try {
+      result = await base44.functions.invoke('getLunaContext', {});
+    } catch (userInvokeErr) {
+      if (!base44.asServiceRole?.functions?.invoke) throw userInvokeErr;
+      result = await base44.asServiceRole.functions.invoke('getLunaContext', {});
+    }
+    const ctx = unwrapFunctionResult(result);
+    return compactUserHistory(ctx);
+  } catch (err) {
+    console.warn('[lunaChat] getLunaContext failed open:', err?.message || err);
+    return '';
+  }
+}
+
 async function fireAutoUpdate(base44, mode, user, userMessage, ragTopic) {
   try {
     if (mode === 'user_logs') {
@@ -700,6 +795,9 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Compact history after crisis check. Fail open — never block chat.
+    const historySummary = await fetchCompactUserHistory(base44);
+
     // ── Build dynamic context ────────────────────────────────────────────────
     let cycleContext = '';
     if (fertilityMode) {
@@ -742,7 +840,11 @@ Deno.serve(async (req) => {
       ? '\n\nNOTE: This is a PSYCH TEST MODE session. Respond normally as Luna. Do NOT add any test mode footer or ratings form yourself — the UI handles that automatically.'
       : '';
 
-    const systemPrompt = `${LUNA_PERSONA}\n\nCURRENT CONTEXT:\nDate: ${new Date().toLocaleDateString()}\n${cycleContext}${ragContext}${wikiContext}${alreadySavedCtx}${psychTestInstruction}\n\nINSTRUCTION: ${modeInstruction}${logSuggestion} Respond directly to the user as Luna. Do not describe what you are going to do — just do it.`;
+    const historyContext = historySummary
+      ? `\n\nUSER HISTORY SUMMARY (compact logged metrics only — no journal text):\n${historySummary}\nUse these logged patterns when relevant. Do not invent details that are not listed. Never quote or request raw journal text.`
+      : '';
+
+    const systemPrompt = `${LUNA_PERSONA}\n\nCURRENT CONTEXT:\nDate: ${new Date().toLocaleDateString()}\n${cycleContext}${historyContext}${ragContext}${wikiContext}${alreadySavedCtx}${psychTestInstruction}\n\nINSTRUCTION: ${modeInstruction}${logSuggestion} Respond directly to the user as Luna. Do not describe what you are going to do — just do it.`;
 
     let llmResponse = null;
     let source = 'ollama_primary';
