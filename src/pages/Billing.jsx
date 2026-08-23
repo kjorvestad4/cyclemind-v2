@@ -119,6 +119,9 @@ export default function Billing() {
             <p className="text-muted-foreground max-w-md mx-auto">
               From essential tracking to full AI-powered support — find the plan that fits your journey.
             </p>
+            <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 max-w-lg mx-auto">
+              Checkout is not available in this release. Clinical scales and doctor share stay available. Email hello@cyclemind.app for Premium access.
+            </p>
 
             {/* Billing Toggle */}
             <div className="flex items-center justify-center gap-1 bg-muted p-1 rounded-full w-fit mx-auto mt-4">
