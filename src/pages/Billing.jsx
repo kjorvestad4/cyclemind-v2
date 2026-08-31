@@ -79,19 +79,10 @@ export default function Billing() {
       navigate("/welcome");
       return;
     }
-    // Detect if user is on mobile (in-app browser / native wrapper)
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      toast.info(
-        "Subscriptions are managed through the App Store or Google Play. Search for 'CycleMind' in your app store to subscribe.",
-        { duration: 6000 }
-      );
-    } else {
-      toast.info(
-        "Online subscriptions are coming soon! For now, please download the CycleMind app from the App Store or Google Play to subscribe.",
-        { duration: 6000 }
-      );
-    }
+    toast.info(
+      "Checkout is not available yet. Clinical scales and doctor share stay available. Email hello@cyclemind.app for Premium access.",
+      { duration: 6000 }
+    );
   };
 
   if (loading) return (
@@ -127,6 +118,9 @@ export default function Billing() {
             </h2>
             <p className="text-muted-foreground max-w-md mx-auto">
               From essential tracking to full AI-powered support — find the plan that fits your journey.
+            </p>
+            <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 max-w-lg mx-auto">
+              Checkout is not available in this release. Clinical scales and doctor share stay available. Email hello@cyclemind.app for Premium access.
             </p>
 
             {/* Billing Toggle */}
@@ -299,8 +293,8 @@ export default function Billing() {
           <div className="border-t border-border/50 pt-6 space-y-4 text-sm">
             <h3 className="text-lg font-semibold text-foreground">Questions?</h3>
             <div>
-              <p className="font-medium text-foreground">What payment methods do you accept?</p>
-              <p className="text-muted-foreground">We accept all major credit cards and digital payment methods.</p>
+              <p className="font-medium text-foreground">Can I check out online or in an app store?</p>
+              <p className="text-muted-foreground">Not in this release. There is no Stripe checkout and no App Store / Google Play billing yet. Email hello@cyclemind.app if you need Premium access.</p>
             </div>
             <div>
               <p className="font-medium text-foreground">Can I cancel anytime?</p>
