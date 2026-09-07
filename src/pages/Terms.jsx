@@ -23,7 +23,7 @@ export default function Terms() {
           </div>
           <div>
             <h1 className="font-serif text-3xl font-bold text-gray-900">Terms of Use</h1>
-            <p className="text-sm text-gray-500">Last updated: July 2026</p>
+            <p className="text-sm text-gray-500">Last updated: August 2026</p>
           </div>
         </div>
 
@@ -78,10 +78,10 @@ export default function Terms() {
           {
             title: "6. Premium Subscription",
             content: [
-              "Premium features require a paid subscription (Premium: $9.99/mo or $99/yr; Premium+: $14.99/mo or $150/yr).",
-              "Subscriptions auto-renew unless cancelled at least 24 hours before the renewal date.",
-              "You can manage or cancel your subscription at any time through your App Store or Google Play account settings.",
-              "Refunds are handled per App Store / Google Play policies — contact hello@cyclemind.app for assistance.",
+              "Paid Premium / Premium+ plans are listed for information only. Checkout is not available in this release.",
+              "There is no App Store or Google Play in-app purchase, and no Stripe checkout, at this time.",
+              "Clinical scales (DRSP, PHQ-9, GAD-7, EPDS) and doctor share remain available.",
+              "Contact hello@cyclemind.app if you need access to paid features.",
             ]
           },
           {

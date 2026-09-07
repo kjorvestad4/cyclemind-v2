@@ -1,15 +1,21 @@
 import os
+import sys
 import requests
 from datetime import datetime
 
 print("🔄 Pulling LIVE data from your Base44 workspace...")
 
+token = os.environ.get("BASE44_API_TOKEN")
+if not token:
+    print("❌ BASE44_API_TOKEN is not set. Export a workspace token before running this script.")
+    sys.exit(1)
+
 headers = {
-    "Authorization": "Bearer 74955646a7434787a6f0e6bea0d4d5f4",
+    "Authorization": f"Bearer {token}",
     "Content-Type": "application/json"
 }
 
-workspace_id = "69d93cb8c911ac4cb1905e0"
+workspace_id = os.environ.get("BASE44_WORKSPACE_ID", "69d93cb8c911ac4cb1905e0")
 
 # Try to fetch from the table (adjust table name if needed)
 url = f"https://api.base44.com/v1/workspaces/{workspace_id}/tables/psych_test_logs/records"

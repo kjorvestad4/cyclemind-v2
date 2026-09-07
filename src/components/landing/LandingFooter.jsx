@@ -46,7 +46,7 @@ export default function LandingFooter() {
       </div>
 
       <div className="border-t border-gray-800 mt-16 pt-8 max-w-7xl mx-auto px-6 space-y-2 text-xs text-center text-gray-500">
-        <p>CycleMind uses validated psychometric tools (DRSP, EPDS, PHQ-9, GAD-7) and follows HIPAA-aligned practices.</p>
+        <p>CycleMind uses validated psychometric tools (DRSP, EPDS, PHQ-9, GAD-7). Luna chat may use cloud language-model fallbacks, so we do not claim HIPAA coverage.</p>
         <p>CycleMind is an informational and tracking tool — not medical advice. Always consult a qualified healthcare provider.</p>
         <p className="pt-1">© {new Date().getFullYear()} CycleMind. Private by design.</p>
       </div>

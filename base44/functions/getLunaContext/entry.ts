@@ -140,10 +140,7 @@ Deno.serve(async (req) => {
       pregnancy: pregnancyData,
       menopause: menopauseData,
       top_symptoms_last_30_days: topSymptoms,
-      raw_data: {
-        cycles: recentCycles,
-        entries: recentEntries,
-      }
+      // Compact metrics only. Never return full DailyEntry rows or journal text.
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

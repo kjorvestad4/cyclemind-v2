@@ -23,7 +23,7 @@ export default function PrivacyPolicy() {
           </div>
           <div>
             <h1 className="font-serif text-3xl font-bold text-gray-900">Privacy Policy</h1>
-            <p className="text-sm text-gray-500">Last updated: July 2026</p>
+            <p className="text-sm text-gray-500">Last updated: August 2026</p>
           </div>
         </div>
 
@@ -55,7 +55,7 @@ export default function PrivacyPolicy() {
             title: "3. Data Storage & Security",
             content: [
               "All data is encrypted in transit (TLS) and at rest.",
-              "CycleMind follows HIPAA-aligned practices for health data protection.",
+              "CycleMind is a consumer wellness app. Because Luna chat can fall back to cloud language-model providers, we do not claim HIPAA compliance.",
               "Doctor share links are time-limited (30 days) and can be revoked at any time.",
               "You can export or delete all your data at any time from the Profile page.",
             ]
@@ -63,10 +63,11 @@ export default function PrivacyPolicy() {
           {
             title: "4. AI & Luna Chat",
             content: [
-              "Conversations with Luna are processed by a third-party AI provider (Anthropic Claude) to generate responses.",
+              "Luna prefers a local model when available. If that fails, conversation text may be sent to cloud language-model providers as a fallback.",
+              "Because those cloud fallbacks can process chat text, Luna conversations are not treated as HIPAA-covered.",
               "Luna conversations may be used in aggregate, anonymized form to improve response quality.",
               "Luna does NOT provide medical diagnoses. All responses are for informational and supportive purposes only.",
-              "If you disclose a crisis situation, Luna will provide safety resources but does not alert emergency services.",
+              "If you disclose a crisis situation, Luna will provide safety resources (including 988) but does not alert emergency services.",
             ]
           },
           {
@@ -103,7 +104,7 @@ export default function PrivacyPolicy() {
             ]
           },
           {
-            title: "9. App Store Privacy Disclosure (Data Types)",
+            title: "9. Data Types We Collect",
             content: [
               "Health & Fitness: Menstrual cycle data, symptom ratings, mood scores, vital signs, and clinical screening results (PHQ-9, GAD-7, DRSP, EPDS). Linked to identity. Used for app functionality.",
               "Contact Info: Email address. Linked to identity. Used for account management and support.",
@@ -116,10 +117,10 @@ export default function PrivacyPolicy() {
           {
             title: "10. Third-Party SDKs and Services",
             content: [
-              "Anthropic Claude (AI): Processes Luna chat messages to generate responses. Messages are transmitted securely and not used for model training.",
+              "Cloud language-model fallbacks: If the local Luna model is unavailable, chat text may be sent to third-party AI providers to generate a response.",
               "Base44 SDK: Provides backend infrastructure, authentication, and database services. Data stored on encrypted servers.",
               "Google / Web Search: Used only when Luna fetches external context. No personal data is sent.",
-              "Payment processors (when applicable): Process subscription payments. Payment card data is handled by the processor and never stored by CycleMind.",
+              "Payment processors: Checkout is not available in this release. We do not collect payment card data.",
             ]
           },
           {
@@ -129,7 +130,7 @@ export default function PrivacyPolicy() {
               "Health tracking data (cycles, entries, symptoms) is retained until you delete it or your account.",
               "Doctor share links expire automatically after 30 days.",
               "De-identified research data (if you opt in) is retained indefinitely in aggregated form.",
-              "Audit logs are retained for 6 years per HIPAA-aligned practices.",
+              "Audit logs are retained for security and accountability.",
               "Session data and temporary voice recordings are deleted immediately after processing.",
             ]
           },
@@ -150,7 +151,7 @@ export default function PrivacyPolicy() {
               "Encryption in transit: All data is transmitted over TLS 1.2+ (HTTPS).",
               "Encryption at rest: All stored data is encrypted using AES-256.",
               "Access controls: Role-based access control (RBAC) with least-privilege principles.",
-              "Audit logging: All create, update, and delete actions on health data are logged for HIPAA audit trails.",
+              "Audit logging: Create, update, and delete actions on health data are logged for security and accountability.",
               "Session management: Sessions expire after 30 minutes of inactivity.",
               "Regular security reviews: We conduct periodic security assessments of our infrastructure.",
             ]
